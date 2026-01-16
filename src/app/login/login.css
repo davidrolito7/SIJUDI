@@ -1,0 +1,5 @@
+:host {
+  display: block;
+  height: 100dvh;      /* mejor que 100vh en algunos navegadores */
+  overflow: hidden;    /* elimina el scrollbar */
+}

@@ -1,0 +1,38 @@
+<div class="h-dvh overflow-hidden px-6 md:px-20 lg:px-80 flex items-center justify-center backdrop-blur-3xl bg-cover! bg-center! bg-no-repeat!"
+    style="background-image: url('/img.png')">
+    <div
+        class="px-8 md:px-12 lg:px-20 py-12 flex flex-col items-center gap-12 w-full backdrop-blur-2xl rounded-2xl bg-white/10 border border-white/10 max-w-sm">
+        <div class="flex flex-col items-center gap-4 w-full">
+            <!-- Logo en imagen en lugar de SVG -->
+            <img src="/logo-01.png" alt="Logo" class="h-29 w-29 object-contain" />
+            <div class="flex flex-col gap-2 w-full">
+                <div class="text-center text-3xl font-medium text-white leading-tight">Bienvenido</div>
+                <!-- <div class="text-center">
+                    <span class="text-white/80">Don't have an account? </span>
+                    <a class="text-white/80 cursor-pointer hover:text-white/90 underline">Sign up</a>
+                </div> -->
+            </div>
+        </div>
+        <div class="flex flex-col items-center gap-8 w-full">
+            <div class="flex flex-col gap-6 w-full">
+                <p-iconfield icon-position="left">
+                    <p-inputicon class="pi pi-user text-white/70!"></p-inputicon>
+                    <input pInputText type="text"
+                        class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-white! placeholder:text-white/70! rounded-3xl! shadow-sm!"
+                        placeholder="Usuario" />
+                </p-iconfield>
+                <p-iconfield icon-position="left">
+                    <p-inputicon class="pi pi-lock text-white/70!"></p-inputicon>
+                    <input pInputText type="password"
+                        class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-white! placeholder:text-white/70! rounded-3xl! shadow-sm!"
+                        placeholder="Contraseña" />
+                </p-iconfield>
+            </div>
+            <button pButton routerLink="/login2"
+                class="w-full! rounded-3xl! bg-surface-950! border! border-surface-950! text-white! hover:bg-surface-950/80!">
+                <span pButtonLabel>Continuar</span>
+            </button>
+        </div>
+        <a class="text-white/80 cursor-pointer hover:text-white/90">¿Olvidaste tu Contraseña?</a>
+    </div>
+</div>

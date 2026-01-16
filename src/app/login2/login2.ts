@@ -1,0 +1,29 @@
+import { Component } from '@angular/core';
+import { ButtonModule } from "primeng/button";
+import { SelectModule } from 'primeng/select';
+import { RouterLink } from "@angular/router";
+interface City {
+    name: string;
+    code: string;
+}
+@Component({
+  selector: 'app-login2',
+  imports: [SelectModule, ButtonModule, RouterLink],
+  templateUrl: './login2.html',
+  styleUrl: './login2.css',
+})
+export class Login2 {
+ cities: City[] | undefined;
+
+    selectedCity: City | undefined;
+
+    ngOnInit() {
+        this.cities = [
+            { name: 'New York', code: 'NY' },
+            { name: 'Rome', code: 'RM' },
+            { name: 'London', code: 'LDN' },
+            { name: 'Istanbul', code: 'IST' },
+            { name: 'Paris', code: 'PRS' }
+        ];
+    }
+}

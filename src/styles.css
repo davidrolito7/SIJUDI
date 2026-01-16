@@ -1,1 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import "tailwindcss-primeui";
+@import "primeicons/primeicons.css";
+
+@theme {
+  --color-secondary-100: #f3eadc;
+  --color-secondary-200: #eadcc4;
+  --color-secondary-300: #ddc8a4;
+  --color-secondary-400: #c5a875;
+  --color-secondary-500: #b2915b; /* café base */
+  --color-secondary-600: #9a7b4e;
+  --color-secondary-700: #7f6542;
+
+  --color-secondary-contrast: #ffffff;
+}
+
+/* Botón secundario (café) */
+.btn-secondary {
+  @apply
+    bg-secondary-500
+    hover:bg-secondary-600
+    text-secondary-contrast
+    border-0;
+}

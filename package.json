@@ -37,15 +37,19 @@
     "primeicons": "^7.0.0",
     "primeng": "^21.0.3",
     "rxjs": "~7.8.0",
+    "tailwindcss-primeui": "^0.6.1",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^21.0.6",
     "@angular/cli": "^21.0.6",
     "@angular/compiler-cli": "^21.0.0",
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
     "jsdom": "^27.1.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
   }
