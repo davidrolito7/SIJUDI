@@ -2,31 +2,54 @@
     <div class="flex lg:flex lg:flex-row flex-col justify-center md:justify-normal h-full flex-1">
         <div class="relative flex-1 z-20 flex items-center justify-center">
             <div class="flex items-center justify-center h-full">
-                <div class="w-full max-w-2xl px-6 py-12 lg:p-12 xl:p-16 text-center lg:text-left">
+
+                <div *ngIf="step === 1" class="w-full max-w-2xl px-6 py-12 lg:p-12 xl:p-16 text-center lg:text-left">
+                    <h1
+                        class="text-4xl xl:text-5xl font-bold text-surface-0 lg:text-surface-900 dark:text-surface-0 mb-6 leading-tight!">
+                        <span class="block">Ingresa tu código</span>
+                        <span class="block text-[#4285f4]">Google Autenticator</span>
+                    </h1>
+                    <p class="text-surface-600 dark:text-surface-200 mb-6">
+                        Selecciona primero la adscripción y después el perfil con el que deseas ingresar al sistema.
+                    </p>
+
+                    <div class="flex flex-col gap-6">
+                        <p-inputmask mask="999-999" placeholder="123-456" />
+                        <div
+                            class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
+                            <p-button type="button" (onClick)="goToStep2()"
+                                styleClass="w-full sm:w-auto bg-[#4285f4] border-[#4285f4] hover:bg-[#3367d6]">
+                                <span pButtonIcon class="pi pi-google mr-1"></span>
+                                <span pButtonLabel>Continuar</span>
+                            </p-button>
+
+                            <p-button type="button" outlined class="w-full sm:w-auto">
+                                <span pButtonLabel>Salir</span>
+                            </p-button>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div *ngIf="step === 2" class="w-full max-w-2xl px-6 py-12 lg:p-12 xl:p-16 text-center lg:text-left transition-all duration-500 ease-out opacity-100 translate-y-0">
                     <h1
                         class="text-4xl xl:text-5xl font-bold text-surface-0 lg:text-surface-900 dark:text-surface-0 mb-6 leading-tight!">
                         <span class="block">Configura tu acceso</span>
-                        <span class="block text-primary">selecciona juzgado y perfil</span>
+                        <span class="block text-primary">selecciona adscripción y perfil</span>
                     </h1>
                     <p class="text-surface-600 dark:text-surface-200 mb-6">
-  Selecciona primero el juzgado y después el perfil con el que deseas ingresar al sistema.
-</p>
+                        Selecciona primero la adscripción y después el perfil con el que deseas ingresar al sistema.
+                    </p>
 
                     <div class="flex flex-col gap-6">
-                            <p-select
-                                [options]="cities"
-                                optionLabel="name"
-                                placeholder="Selecciona tu juzgado"
-                                class="w-full"
-                            />
-                            <p-select
-                                [options]="cities"
-                                optionLabel="name"
-                                placeholder="Selecciona tu perfil"
-                                class="w-full"
-                            />
+                        <p-select [options]="cities" optionLabel="name" placeholder="Selecciona tu adscripción"
+                            class="w-full" />
+                        <p-select [options]="cities" optionLabel="name" placeholder="Selecciona tu perfil"
+                            class="w-full" />
 
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
+                        <div
+                            class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
                             <p-button routerLink="/sidebar" type="button" class="w-full sm:w-auto">
                                 <span pButtonLabel>Continuar</span>
                             </p-button>
@@ -36,13 +59,15 @@
                         </div>
                     </div>
                 </div>
+
             </div>
+
         </div>
 
         <div class="absolute lg:relative inset-0 lg:inset-auto flex-1">
             <div class="absolute lg:hidden inset-0 bg-surface-900/60 dark:bg-surface-900/80 z-10"></div>
             <img src="/justice.jpg" alt="hero-1"
-                class="h-full w-full object-cover xl:[clip-path:polygon(12%_0,100%_0%,100%_100%,0_100%)]" />
+                class="h-full w-full object-cover [clip-path:polygon(12%_0,100%_0%,100%_100%,0_100%)]" />
         </div>
     </div>
 </div>
