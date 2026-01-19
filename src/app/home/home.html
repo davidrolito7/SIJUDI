@@ -1,4 +1,4 @@
-<div class="bg-surface dark:bg-surface-950 ">
+<div class="bg-surface dark:bg-surface-900 ">
     <ul class="list-none p-0 m-0 flex items-center font-medium mb-5">
         <li>
             <a class="text-surface-500 dark:text-surface-300 no-underline leading-normal cursor-pointer">Home</a>
@@ -43,7 +43,7 @@
 
 <div class="card pt-4">
      <p-table #dt1 [value]="customers" dataKey="id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [loading]="loading" [paginator]="true" [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']" showGridlines>
-        <ng-template #caption class="p-8">
+        <ng-template #caption >
             <div class="flex ">
                 <p-button label="Clear" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
                 <p-iconfield iconPosition="left" class="ml-auto">
@@ -54,7 +54,7 @@
                 </p-iconfield>
             </div>
         </ng-template>
-        <ng-template #header pStyleClass="p-12">
+        <ng-template #header>
             <tr>
                 <th style="min-width:15rem">
                     <div class="flex items-center justify-between">

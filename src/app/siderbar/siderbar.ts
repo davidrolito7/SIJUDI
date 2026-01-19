@@ -8,10 +8,11 @@ import { StyleClassModule } from 'primeng/styleclass';
 import { FileUploadModule } from 'primeng/fileupload';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-siderbar',
-  imports: [DrawerModule, ButtonModule, AvatarModule, StyleClassModule, RippleModule, DividerModule, FileUploadModule, CommonModule, RouterOutlet],
+  imports: [DrawerModule, ButtonModule, AvatarModule, StyleClassModule, RippleModule, DividerModule, FileUploadModule, CommonModule, RouterOutlet, TooltipModule],
   templateUrl: './siderbar.html',
   styleUrl: './siderbar.css',
 })

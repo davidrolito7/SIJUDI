@@ -1,24 +1,72 @@
-<div class="flex flex-col gap-6 w-full sm:w-auto">
+<div class="bg-surface dark:bg-surface-900 ">
+    <ul class="list-none p-0 m-0 flex items-center font-medium mb-5">
+        <li>
+            <a class="text-surface-500 dark:text-surface-300 no-underline leading-normal cursor-pointer">Home</a>
+        </li>
+         <li class="px-2">
+            <i class="pi pi-angle-right text-surface-500 dark:text-surface-300 text-sm! leading-normal!"></i>
+        </li>
+         <li>
+            <a class="text-surface-500 dark:text-surface-300 no-underline leading-normal cursor-pointer">Exhorto</a>
+        </li>
+        <li class="px-2">
+            <i class="pi pi-angle-right text-surface-500 dark:text-surface-300 text-sm! leading-normal!"></i>
+        </li>
+        <li>
+            <span class="text-surface-900 dark:text-surface-0 leading-normal">Crear</span>
+        </li>
+    </ul>
+    <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div>
+            <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-4">Crear</div>
+            <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-users text-base! leading-normal!"></i>
+                    <span>332 Registros</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-globe text-base! leading-normal!"></i>
+                    <span>9.402 Sesiones</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-clock text-base! leading-normal!"></i>
+                    <span>2.32m Promedio</span>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 md:mt-0 flex items-center">
+            <p-button   [outlined]="true" class="mr-3">
+                <i pButtonIcon class="pi pi-user-plus"></i>
+                <span pButtonLabel>Agregar</span>
+            </p-button>
+            <p-button routerLink="/home"  class="whitespace-nowrap">
+                <i pButtonIcon class="pi pi-check"></i>
+                <span pButtonLabel>Guardar </span>
+            </p-button>
+        </div>
+    </div>
+</div>
+<div class="flex flex-col gap-6 w-full sm:w-auto pt-4">
     <div class="flex flex-col sm:flex-row sm:items-center gap-6">
         <div class="flex-auto">
-            <label for="firstname" class="block font-semibold mb-2">Firstname</label>
+            <label for="firstname" class="block font-semibold mb-2">Nombre</label>
             <input type="text" pInputText id="firstname" class="w-full" />
         </div>
         <div class="flex-auto">
-            <label for="lastname" class="block font-semibold mb-2">Lastname</label>
+            <label for="lastname" class="block font-semibold mb-2">Apellido</label>
             <input type="text" pInputText id="lastname" class="w-full" />
         </div>
     </div>
     <div class="flex flex-col sm:flex-row sm:items-center gap-6">
         <div class="flex-1">
-            <label for="date" class="block font-semibold mb-2">Date</label>
-            <p-datepicker inputId="date" class="w-full" />
+            <label for="date" class="block font-semibold mb-2">Fecha</label>
+            <p-datepicker ngSkipHydration inputId="date" class="w-full" />
         </div>
         <div class="flex-1">
-            <label for="country" class="block font-semibold mb-2">Country</label>
+            <label for="country" class="block font-semibold mb-2">Municipio</label>
             <p-select
                 optionLabel="name"
-                placeholder="Select a Country"
+                placeholder="Selecciona un municipio"
                 class="w-full"
             >
                 <ng-template #selectedItem>
@@ -44,7 +92,7 @@
         </div>
     </div>
     <div class="flex-auto">
-        <label for="message" class="block font-semibold mb-2">Message</label>
+        <label for="message" class="block font-semibold mb-2">Mensaje</label>
         <textarea pTextarea id="message" class="w-full" rows="4"></textarea>
     </div>
 </div>
