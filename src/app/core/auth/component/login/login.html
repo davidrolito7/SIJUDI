@@ -16,18 +16,18 @@
             <div class="flex flex-col gap-6 w-full">
                 <p-iconfield icon-position="left">
                     <p-inputicon class="pi pi-user text-white/70!"></p-inputicon>
-                    <input pInputText type="text"
+                    <input pInputText type="text" [(ngModel)]="usuario" (keydown.enter)="passwordFocus()"
                         class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-white! placeholder:text-white/70! rounded-3xl! shadow-sm!"
                         placeholder="Usuario" />
                 </p-iconfield>
                 <p-iconfield icon-position="left">
                     <p-inputicon class="pi pi-lock text-white/70!"></p-inputicon>
-                    <input pInputText type="password"
+                    <input pInputText type="password" [(ngModel)]="contrasenia" (keydown.enter)="passwordEnter()" #passwordInput
                         class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-white! placeholder:text-white/70! rounded-3xl! shadow-sm!"
                         placeholder="Contraseña" />
                 </p-iconfield>
             </div>
-            <button pButton routerLink="/login2fase"
+            <button pButton (click)="validarUsuario()"
                 class="w-full! rounded-3xl! bg-surface-950! border! border-surface-950! text-white! hover:bg-surface-950/80!">
                 <span pButtonLabel>Continuar</span>
             </button>
