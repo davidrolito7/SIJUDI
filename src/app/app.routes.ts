@@ -1,14 +1,14 @@
 import { Routes } from '@angular/router';
-import { Siderbar } from './siderbar/siderbar';
-import { Login } from './login/login';
-import { Login2 } from './login2/login2';
+import { Siderbar } from './layout/component/siderbar/siderbar';
+import { Login } from './layout/component/login/login';
+import { Login2 } from './layout/component/login2fase/login2fase';
 import { Home } from './home/home';
 import { Form } from './form/form';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'login', component: Login },
-  { path: 'login2', component: Login2 },
+  { path: 'login2fase', component: Login2 },
   {
     path: '',
     component: Siderbar,

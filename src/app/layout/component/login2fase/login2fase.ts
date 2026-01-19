@@ -11,8 +11,8 @@ interface City {
 @Component({
   selector: 'app-login2',
   imports: [SelectModule, ButtonModule, RouterLink, InputMaskModule, CommonModule],
-  templateUrl: './login2.html',
-  styleUrl: './login2.css',
+  templateUrl: './login2fase.html',
+  styleUrl: './login2fase.css',
 })
 export class Login2 {
   cities: City[] | undefined;
