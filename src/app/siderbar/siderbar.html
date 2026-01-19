@@ -157,7 +157,8 @@
                     <hr class="mb-4 mx-4 border-t border-0 border-surface" />
                     <a pRipple
                         class="m-4 flex items-center cursor-pointer p-4 gap-2 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple">
-                        <p-avatar image="https://www.primefaces.org/cdn/primevue/images/landing/apps/main-avatar.png"                            shape="circle" />
+                        <p-avatar image="https://www.primefaces.org/cdn/primevue/images/landing/apps/main-avatar.png"
+                            shape="circle" />
                         <span class="font-medium">Juanito P.</span>
                     </a>
                 </div>
@@ -168,56 +169,121 @@
 
 </div>
 
-<div class="rounded-2xl p-5 bg-surface-50 dark:bg-surface-900 min-h-screen flex flex-col justify-between w-auto">
-    <div class="w-12 flex flex-col items-center">
-        <div class="flex items-center gap-3">
-            <div (click)="visible = true"
-                class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
-                pc133=""><i class="pi pi-bars"></i><span class="hidden">・</span><span class="hidden">Overview</span>
-            </div><!---->
-            <div class="text-surface-950 dark:text-surface-0 font-normal text-3xl hidden"> Prime </div>
+<div class="min-h-screen flex bg-surface-50 dark:bg-surface-900 p-4 ">
+
+    <!-- ASIDE -->
+    <aside
+        class=" bg-primary-50 p-4 dark:bg-surface-900  flex flex-col justify-between w-auto border border-surface rounded-2xl">
+        <div class="w-12 flex flex-col items-center">
+            <div class="flex items-center gap-3">
+                <div (click)="visible=true"
+                    class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
+                    pc133=""><i class="pi pi-bars"></i><span class="hidden">・</span><span class="hidden">Overview</span>
+                </div><!---->
+                <div class="text-surface-950 dark:text-surface-0 font-normal text-3xl hidden"> Prime </div>
+            </div>
+            <div class="mt-10 flex flex-col gap-2">
+                <div (click)="showMailMenu = !showMailMenu"
+                    class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
+                    pc133=""><i class="pi pi-home"></i><span class="hidden">・</span><span class="hidden">Overview</span>
+                </div><!---->
+                <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
+                    pc134=""><i class="pi pi-comment"></i><span class="hidden">・</span><span class="hidden">Chat</span>
+                </div><!---->
+                <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
+                    pc135=""><i class="pi pi-inbox"></i><span class="hidden">・</span><span class="hidden">Inbox</span>
+                </div>
+                <!---->
+                <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
+                    pc136=""><i class="pi pi-th-large"></i><span class="hidden">・</span><span
+                        class="hidden">Cards</span>
+                </div><!---->
+                <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
+                    pc137=""><i class="pi pi-user"></i><span class="hidden">・</span><span
+                        class="hidden">Customers</span>
+                </div><!---->
+                <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-secondary-500 hover:bg-secondary-500 hover:text-secondary-contrast "
+                    pc138=""><i class="pi pi-video"></i><span class="hidden">・</span><span class="hidden">Movies</span>
+                </div><!----><!---->
+            </div>
         </div>
-        <div class="mt-10 flex flex-col gap-2">
-            <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
-                pc133=""><i class="pi pi-home"></i><span class="hidden">・</span><span class="hidden">Overview</span>
-            </div><!---->
-            <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
-                pc134=""><i class="pi pi-comment"></i><span class="hidden">・</span><span class="hidden">Chat</span>
-            </div><!---->
-            <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
-                pc135=""><i class="pi pi-inbox"></i><span class="hidden">・</span><span class="hidden">Inbox</span></div>
-            <!---->
-            <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
-                pc136=""><i class="pi pi-th-large"></i><span class="hidden">・</span><span class="hidden">Cards</span>
-            </div><!---->
-            <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
-                pc137=""><i class="pi pi-user"></i><span class="hidden">・</span><span class="hidden">Customers</span>
-            </div><!---->
-            <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-secondary-500 hover:bg-secondary-500 hover:text-secondary-contrast "
-                pc138=""><i class="pi pi-video"></i><span class="hidden">・</span><span class="hidden">Movies</span>
-            </div><!----><!---->
+        <div class="w-12 flex flex-col items-center">
+            <div class="mt-10 flex flex-col gap-2"><!---->
+                <div class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
+                    pc139=""><i class="pi pi-cog"></i><span class="hidden">・</span><span class="hidden">Settings</span>
+                </div><!----><!---->
+            </div><p-divider role="separator" aria-orientation="horizontal" data-p="horizontal solid"
+                class="p-component p-divider p-divider-horizontal p-divider-left p-divider-solid" pc108=""
+                data-pc-section="root" data-pc-name="t" style="justify-content: center;">
+                <div class="p-divider-content" data-pc-section="content"></div>
+            </p-divider>
+            <div class="flex items-center justify-center"><p-avatar
+                    image="https://www.primefaces.org/cdn/primevue/images/landing/apps/main-avatar.png" size="large"
+                    shape="circle" class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component"
+                    data-p="circle large" pc109="" data-pc-section="root" data-pc-name="t">
+                </p-avatar>
+                <div>
+                    <div class="hidden">Robin Jonas</div>
+                    <div class="hidden">hi@robin.xyz</div>
+
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="w-12 flex flex-col items-center">
-        <div class="mt-10 flex flex-col gap-2"><!---->
-            <div class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
-                pc139=""><i class="pi pi-cog"></i><span class="hidden">・</span><span class="hidden">Settings</span>
-            </div><!----><!---->
-        </div><p-divider role="separator" aria-orientation="horizontal" data-p="horizontal solid"
-            class="p-component p-divider p-divider-horizontal p-divider-left p-divider-solid" pc108=""
-            data-pc-section="root" data-pc-name="t" style="justify-content: center;">
-            <div class="p-divider-content" data-pc-section="content"></div>
-        </p-divider>
-        <div class="flex items-center justify-center"><p-avatar
-                image="https://www.primefaces.org/cdn/primevue/images/landing/apps/main-avatar.png" size="large"
-                shape="circle" class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component"
-                data-p="circle large" pc109="" data-pc-section="root" data-pc-name="t">
-            </p-avatar>
-            <div>
-                <div class="hidden">Robin Jonas</div>
-                <div class="hidden">hi@robin.xyz</div>
+
+    </aside>
+
+    <!-- MENU DESPLEGABLE -->
+    <div *ngIf="showMailMenu" class="transition-all duration-300 pl-4">
+
+        <!-- AQUÍ VA TU DIV GRANDE -->
+
+        <div class="w-64 h-full overflow-hidden border border-surface rounded-2xl flex flex-col">
+            <div class="flex items-center justify-between gap-2 p-4 border-b border-surface">
+                <div class="text-xl font-medium leading-7 text-color">Exhortos</div>
+            </div>
+            <div class="flex-1 flex flex-col overflow-auto justify-between gap-4 pt-4 pb-4 px-4">
+                <div class="flex-1 overflow-auto flex flex-col gap-2">
+                    <div class="flex flex-col gap-2">
+                        <div class="text-sm font-medium leading-5 text-surface-400 dark:text-surface-500"> Navigation
+                        </div>
+                        <button
+                            class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-color bg-emphasis"><i
+                                class="pi pi-inbox"></i><span class="font-medium">Recibidos</span></button>
+
+                        <button
+                            class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-muted-color bg-transparent"><i
+                                class="pi pi-send"></i><span class="font-medium">Enviados</span></button>
+                        <button
+                            class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-muted-color bg-transparent"><i
+                                class="pi pi-file-o"></i><span class="font-medium">Borradores</span></button>
+                        <button
+                            class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-muted-color bg-transparent"><i
+                                class="pi pi-file-import"></i><span class="font-medium">Important</span></button>
+                        <button
+                            class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-muted-color bg-transparent"><i
+                                class="pi pi-inbox"></i><span class="font-medium">Archivos</span></button>
+                        <button
+                            class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-muted-color bg-transparent"><i
+                                class="pi pi-info-circle"></i><span class="font-medium">Otro</span></button>
+                        <button
+                            class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-muted-color bg-transparent"><i
+                                class="pi pi-trash"></i><span class="font-medium">Ejemplo</span></button><!---->
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <div class="text-sm font-medium leading-5 text-surface-400 dark:text-surface-500"> Otros </div>
+                        <button
+                            class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-muted-color bg-transparent"><i
+                                class="pi pi-tag"></i><span class="font-medium">Ejemplo 1</span></button><button
+                            class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-muted-color bg-transparent"><i
+                                class="pi pi-tag"></i><span class="font-medium">Ejemplo 2</span></button>
+                    </div><!---->
+                </div>
 
             </div>
         </div>
+
     </div>
+<main class="flex-1 p-6 overflow-auto">
+    <router-outlet></router-outlet>
+  </main>
 </div>
