@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { Siderbar } from './layout/component/siderbar/siderbar';
-import { Login } from './layout/component/login/login';
-import { Login2 } from './layout/component/login2fase/login2fase';
+import { Siderbar } from './core/layout/siderbar/siderbar';
+import { Login } from './core/auth/component/login/login';
+import { Login2 } from './core/auth/component/login2fase/login2fase';
 import { Home } from './home/home';
 import { Form } from './form/form';
 
