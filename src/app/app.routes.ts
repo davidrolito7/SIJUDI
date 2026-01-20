@@ -4,11 +4,14 @@ import { Login } from './core/auth/component/login/login';
 import { Login2 } from './core/auth/component/login2fase/login2fase';
 import { Home } from './home/home';
 import { Form } from './form/form';
+import { Perfil } from './core/auth/component/perfil/perfil';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'login', component: Login },
   { path: 'login2fase', component: Login2 },
+    { path: 'perfil', component: Perfil },
+
   {
     path: '',
     component: Siderbar,

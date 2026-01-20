@@ -17,6 +17,8 @@
 
 /* Botón secundario (café) */
 .btn-secondary {
+    --p-button-primary-background: #b2915b;
+
   @apply
     bg-secondary-500
     hover:bg-secondary-600
