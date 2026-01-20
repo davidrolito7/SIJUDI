@@ -9,10 +9,12 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-siderbar',
-  imports: [DrawerModule, ButtonModule, AvatarModule, StyleClassModule, RippleModule, DividerModule, FileUploadModule, CommonModule, RouterOutlet, TooltipModule],
+  imports: [DrawerModule, ButtonModule, AvatarModule, StyleClassModule, RippleModule, DividerModule, FileUploadModule, CommonModule, RouterOutlet, TooltipModule, BreadcrumbModule],
   templateUrl: './siderbar.html',
   styleUrl: './siderbar.css',
 })
@@ -26,4 +28,7 @@ export class Siderbar {
   showMailMenu = false;
 
   visible: boolean = false;
+
+  items: MenuItem[] = [{ label: 'Components' }, { label: 'Form' }, { label: 'InputText', routerLink: '/inputtext' }];
+    home: MenuItem = { icon: 'pi pi-home', routerLink: '/' };
 }
