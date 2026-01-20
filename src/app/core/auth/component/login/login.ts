@@ -7,6 +7,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { Router } from "@angular/router";
 import { CheckboxModule } from 'primeng/checkbox';
+import { ToastModule } from 'primeng/toast';
 
 import { AuthService } from '../../service/auth.service';
 import { TokenService } from '../../service/token.service';
@@ -15,7 +16,7 @@ import { MessageService } from 'primeng/api';
 @Component({
   standalone: true,
   selector: 'app-login',
-  imports: [CommonModule, FormsModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, CheckboxModule],
+  imports: [CommonModule, FormsModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, CheckboxModule,ToastModule],
   providers: [MessageService],
   templateUrl: './login.html',
   styleUrl: './login.css',
