@@ -26,12 +26,20 @@
                         class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-white! placeholder:text-white/70! rounded-3xl! shadow-sm!"
                         placeholder="Contraseña" />
                 </p-iconfield>
+                <div class="flex items-center justify-between mt-2 mb-8 gap-8">
+                    <div class="flex items-center text-white/80">
+                        <p-checkbox  [(ngModel)]="recordar" id="rememberme" [binary]="true"  class="mr-1"></p-checkbox>
+                        <label for="rememberme">Recordarme</label>
+                    </div>
+                    <span class="font-medium no-underline ml-2 text-right  text-white/80 cursor-pointer hover:text-white/90" (click)="forgotPassword()">¿Olvidaste tu Contraseña?</span>
+                </div>
             </div>
+            
             <button pButton (click)="validarUsuario()"
                 class="w-full! rounded-3xl! bg-surface-950! border! border-surface-950! text-white! hover:bg-surface-950/80!">
                 <span pButtonLabel>Continuar</span>
             </button>
         </div>
-        <a class="text-white/80 cursor-pointer hover:text-white/90">¿Olvidaste tu Contraseña?</a>
+        <!--<a class="text-white/80 cursor-pointer hover:text-white/90" (click)="forgotPassword()">¿Olvidaste tu Contraseña?</a>-->
     </div>
 </div>
