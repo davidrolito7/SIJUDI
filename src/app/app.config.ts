@@ -7,7 +7,12 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 //import Lara from '@primeuix/themes/lara';
 import { Custom } from './theme/cj';
+<<<<<<< HEAD
 import { provideHttpClient, withFetch } from '@angular/common/http';
+=======
+import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
+import { tokenInterceptor } from './core/auth/interceptor/token.interceptor';
+>>>>>>> b8b847614338e633adfbb77747bb6c4fa70e8eb3
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,6 +30,14 @@ export const appConfig: ApplicationConfig = {
         }
       }
     }),
+<<<<<<< HEAD
     provideHttpClient(withFetch())
+=======
+    provideHttpClient(
+      withInterceptors([tokenInterceptor]),
+      withInterceptorsFromDi(),
+      withFetch()
+    ),
+>>>>>>> b8b847614338e633adfbb77747bb6c4fa70e8eb3
   ]
 };

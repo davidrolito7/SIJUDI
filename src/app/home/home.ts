@@ -28,7 +28,6 @@ import { RouterLink } from "@angular/router";
     ButtonModule,
     IconFieldModule,
     InputIconModule,
-    StyleClass,
     RouterLink
 ],
   templateUrl: './home.html',
