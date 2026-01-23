@@ -22,14 +22,15 @@
     --p-button-primary-hover-background: #9a7b4e;
     --p-button-primary-hover-border: #9a7b4e;
 
-
-
+  --p-button-primary-active-background: #7f6542;
+  --p-button-primary-active-border: #7f6542;
   @apply
     bg-secondary-500
     hover:bg-secondary-600
     text-secondary-contrast
     border-0;
 }
+
 /* Botón eliminar (rojo) */
 .btn-rojo {
   --p-button-primary-background: #ef4444;

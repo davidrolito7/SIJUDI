@@ -35,8 +35,8 @@ export class TramitesJuicioOral implements OnInit {
   validarCausaForm!: FormGroup;
 
   //* === LISTAS Y DATOS TEMPORALES ===
-  TramitesElectronicosRecibidos: TramitesElectronicosRecibidosResponse[] = [];
-  CatJuzgados: CatJuzgadoResponse[] = [];
+  tramitesElectronicosRecibidos: TramitesElectronicosRecibidosResponse[] = [];
+  catJuzgados: CatJuzgadoResponse[] = [];
   //* === ESTADOS DE UI Y MODALES ===
   //* === FLAGS Y VARIABLES DE CONTROL ===
   isLoading: boolean = false;
@@ -84,8 +84,8 @@ export class TramitesJuicioOral implements OnInit {
     this.loadCatJuzgados();
 
     this.validarCausaForm = this.fb.group({
-      numeroCausa: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]],   
-         idJuzgado: [null, Validators.required],
+      numeroCausa: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
+      idJuzgado: [null, Validators.required],
       idPantalla: [1]
     });
   }
@@ -98,7 +98,7 @@ export class TramitesJuicioOral implements OnInit {
       (response) => {
         this.isLoading = false;
         if (response.success) {
-          this.TramitesElectronicosRecibidos = response.data;
+          this.tramitesElectronicosRecibidos = response.data;
           this.mostrarTramites.set(true);
 
         } else {
@@ -119,8 +119,14 @@ export class TramitesJuicioOral implements OnInit {
     this.isLoading = true;
     this.apiService.getCatJuzgados().subscribe(
       (response) => {
-        this.isLoading = false;
-        this.CatJuzgados = response.data;
+        if (response.success) {
+          this.catJuzgados = response.data;
+          this.isLoading = false;
+
+        } else {
+          this.isLoading = false;
+        }
+
       },
       (error) => {
         this.isLoading = false;

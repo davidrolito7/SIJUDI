@@ -9,11 +9,11 @@
                     @if (step === 1) {
                     <div>
                         <h1
-                            class="text-4xl xl:text-5xl font-bold text-surface-0 lg:text-surface-900 dark:text-surface-0 mb-6 leading-tight!">
+                        class="text-4xl xl:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-6 leading-tight!">
                             <span class="block">Ingresa tu código</span>
                             <span class="block text-primary">Google Autenticator</span>
                         </h1>
-                        <p class="text-surface-600 dark:text-surface-0 sm:text-surface-0 mb-6">
+                        <p class="text-surface-600 dark:text-surface-0 lg:text-surface-0 mb-6">
                             Ingrese a su aplicación de Google Autenticator para obtener el código de 6 dígitos.
                         </p>
 
@@ -26,7 +26,7 @@
                                     <span pButtonLabel>Continuar</span>
                                 </p-button>
 
-                                <p-button type="button" outlined styleClass="sm:text-surface-0">
+                                <p-button type="button" outlined >
                                     <span pButtonLabel>Salir</span>
                                 </p-button>
                             </div>
@@ -36,23 +36,23 @@
 
                     <div>
                         <h1
-                            class="text-4xl xl:text-5xl font-bold text-surface-0 lg:text-surface-900 dark:text-surface-0 mb-6 leading-tight!">
+                        class="text-4xl xl:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-6 leading-tight!">
                             <span class="block">Ingresa tu Archivo de</span>
                             <span class="block text-primary">Llave Privada </span>
                         </h1>
-                        <p class="text-surface-600 dark:text-surface-0 sm:text-surface-0 mb-6">
+                        <p class="text-surface-600 dark:text-surface-0 lg:text-surface-0 mb-6">
                             El archivo de llave privada es único y está resguardado exclusivamente por su titular,
                             con
                             esto es posible determinar que se trata de la persona que se identifica y no de alguien
                             que
                             desea suplantarlo. </p>
 
-<div class="flex flex-col gap-6 items-center lg:items-start">
+                        <div class="flex flex-col gap-6 items-center lg:items-start">
 
                             <p-fileupload #fu mode="basic" chooseLabel="Llave" chooseIcon="pi pi-upload" name="demo[]"
                                 accept=".pfx ,.p12" maxFileSize="1000000" />
                             <label
-                                class="text-sm font-medium text-surface-700 dark:text-surface-200 sm:text-surface-0">Contraseña</label>
+                                class="text-sm font-medium text-surface-700 dark:text-surface-200 ">Contraseña</label>
 
                             <p-password [feedback]="false" [toggleMask]="true" />
 
@@ -62,7 +62,7 @@
                                 <p-button (onClick)="goToStep2()" type="button">
                                     <span pButtonLabel>Continuar</span>
                                 </p-button>
-                                <p-button type="button" outlined styleClass="sm:text-surface-0">
+                                <p-button type="button" outlined >
                                     <span pButtonLabel>Salir</span>
                                 </p-button>
                             </div>

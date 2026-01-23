@@ -21,7 +21,7 @@
         <form class="flex flex-col" [formGroup]="validarCausaForm">
 
             <div class="flex items-start flex-col md:flex-row justify-between">
-                <label class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
                     Crear promoción
                 </label>
 
@@ -37,7 +37,7 @@
                 <div class="col-span-6 sm:col-span-3">
                     <label class="block mb-2 text-sm font-medium">Causa</label>
                     <p-inputmask fluid formControlName="numeroCausa"
-                        class="uppercase text-sm rounded-lg" [unmask]="true" mask="9999/9999" placeholder="0001/2026" />
+                        class="uppercase text-sm rounded-lg" mask="9999/9999" placeholder="0001/2026" />
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
@@ -57,7 +57,7 @@
 
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
-        <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
+        <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
 
         <div class="flex items-center">
             <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"

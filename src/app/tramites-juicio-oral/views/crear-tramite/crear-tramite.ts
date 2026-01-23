@@ -72,10 +72,10 @@ export class CrearTramite {
     this.loadCatJuzgados();
 
     this.validarCausaForm = this.fb.group({
-      numeroCausa: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]],   
+      numeroCausa: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
       idJuzgado: [null, Validators.required],
       observaciones: [''],
-      idPantalla: [0]
+      idPantalla: [1]
     });
   }
 
@@ -108,8 +108,14 @@ export class CrearTramite {
     this.isLoading = true;
     this.apiService.getCatJuzgados().subscribe(
       (response) => {
-        this.isLoading = false;
-        this.catJuzgados = response.data;
+        if (response.success) {
+          this.catJuzgados = response.data;
+          this.isLoading = false;
+
+        } else {
+          this.isLoading = false;
+        }
+
       },
       (error) => {
         this.isLoading = false;

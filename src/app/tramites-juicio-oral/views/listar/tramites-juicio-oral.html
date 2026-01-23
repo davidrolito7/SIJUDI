@@ -23,7 +23,7 @@
         <form class="flex flex-col" [formGroup]="validarCausaForm">
 
             <div class="flex items-start flex-col md:flex-row justify-between">
-                <label class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
                     Búsqueda
                 </label>
 
@@ -39,12 +39,12 @@
                 <div class="col-span-6 sm:col-span-3">
                     <label class="block mb-2 text-sm font-medium">Nombre Completo</label>
                     <p-inputmask fluid formControlName="numeroCausa" class="uppercase text-sm rounded-lg"
-                        mask="9999/9999" [unmask]="true" placeholder="0001/2026" />
+                        mask="9999/9999"  placeholder="0001/2026" />
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                     <label class="block mb-2 text-sm font-medium">Nombre</label>
-                    <p-select class="w-full" [options]="CatJuzgados" formControlName="idJuzgado"
+                    <p-select class="w-full" [options]="catJuzgados" formControlName="idJuzgado"
                         optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
                         optionLabel="descripcion" appendTo="body" />
                 </div>
@@ -60,7 +60,7 @@
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
         <div>
-            <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
+            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
             <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
                 <div class="flex items-center gap-2">
                     <i class="pi pi-users text-base! leading-normal!"></i>
@@ -79,7 +79,7 @@
     </div>
 
     <div class="card pt-4">
-        <p-table #dt1 [value]="TramitesElectronicosRecibidos" dataKey="idTramiteElectronicoRecibido" [rows]="10"
+        <p-table #dt1 [value]="tramitesElectronicosRecibidos" dataKey="idTramiteElectronicoRecibido" [rows]="10"
             [rowsPerPageOptions]="[10, 25, 50]" [loading]="loading" [paginator]="true"
             [globalFilterFields]="['folio','fechaEnvio','observaciones','cantidadAnexos']">
             <ng-template #caption>
@@ -119,6 +119,11 @@
                             <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
                         </div>
                     </th>
+                      <th style="min-width:10rem">
+                        <div class="flex items-center justify-between">
+                            Acciones
+                        </div>
+                    </th>
                 </tr>
             </ng-template>
 
@@ -128,6 +133,9 @@
                     <td>{{ tramite.fechaEnvio | date: 'MM/dd/yyyy' }}</td>
                     <td>{{ tramite.observaciones }}</td>
                     <td>{{ tramite.cantidadAnexos }}</td>
+                    <td> <p-button type="button" class="btn-secondary" >
+                                    <i class="pi pi-eye"></i>
+                                </p-button></td>
                 </tr>
             </ng-template>
 
