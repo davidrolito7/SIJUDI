@@ -8,7 +8,7 @@ import { authGuard } from './core/auth/guard/auth-guard';
 import { Perfil } from './core/auth/component/perfil/perfil';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'tramites-juicio-oral', pathMatch: 'full' },
   { path: 'login', component: Login },
   { path: 'login2fase', component: Login2, canActivate: [authGuard] },
   { path: 'perfil', component: Perfil },
@@ -17,8 +17,12 @@ export const routes: Routes = [
     path: '',
     component: Siderbar,
     children: [
-      { path: 'home', component: Home },
       { path: 'form', component: Form },
+      {
+        path: 'tramites-juicio-oral', loadChildren: () =>
+          import('./tramites-juicio-oral/tramites-juicio-oral.routes')
+            .then(m => m.TRAMITES_JUICIO_ORAL_ROUTES)
+      }
     ],
   },
 ];

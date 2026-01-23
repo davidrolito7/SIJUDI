@@ -1,0 +1,153 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
+
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+
+    <!-- HEADER -->
+    <header
+        class="border border-surface rounded-2xl bg-surface-50 dark:bg-surface-900 flex items-center justify-between overflow-hidden">
+        <p-breadcrumb class="hidden lg:block" styleClass="bg-surface-50 dark:bg-surface-900" [home]="home"
+            [model]="items" />
+
+        <div class="ml-auto flex items-center gap-2 pr-4 pt-2 pb-2">
+            <span class="text-base font-medium text-surface-700 dark:text-surface-200">Abogado: Juan Pérez</span>
+            <p-avatar image="https://www.primefaces.org/cdn/primevue/images/landing/apps/main-avatar.png" size="large"
+                shape="circle" class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component">
+            </p-avatar>
+        </div>
+    </header>
+
+    <!-- BUSQUEDA -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+        <form class="flex flex-col" [formGroup]="validarCausaForm">
+
+            <div class="flex items-start flex-col md:flex-row justify-between">
+                <label class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                    Crear promoción
+                </label>
+
+                <div class="flex items-center">
+                    <p-button (click)="onValidarCausa()" [disabled]="validarCausaForm.invalid">
+                        <i pButtonIcon class="pi pi-search"></i>
+                        <span pButtonLabel>Buscar</span>
+                    </p-button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-6 gap-4 w-full items-end">
+                <div class="col-span-6 sm:col-span-3">
+                    <label class="block mb-2 text-sm font-medium">Causa</label>
+                    <p-inputmask fluid formControlName="numeroCausa"
+                        class="uppercase text-sm rounded-lg" [unmask]="true" mask="9999/9999" placeholder="0001/2026" />
+                </div>
+
+                <div class="col-span-6 sm:col-span-3">
+                    <label class="block mb-2 text-sm font-medium">Juzgado</label>
+                    <p-select class="w-full" [options]="catJuzgados" formControlName="idJuzgado"
+                        optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
+                        optionLabel="descripcion" appendTo="body" />
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+@if (mostrarAddDocumentos()) {
+
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+    <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
+
+        <div class="flex items-center">
+            <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
+                accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
+                chooseLabel="Cargar" />
+
+            <!-- <p-button routerLink="/form" [outlined]="true" class="mr-3">
+                <i pButtonIcon class="pi pi-user-plus"></i>
+                <span pButtonLabel>Agregar</span>
+            </p-button>
+            <p-button class="whitespace-nowrap">
+                <i pButtonIcon class="pi pi-check"></i>
+                <span pButtonLabel>Guardar </span>
+            </p-button> -->
+        </div>
+    </div>
+
+    <div class="w-full">
+        <div class="grid grid-cols-6 gap-4 w-full items-end">
+            @if (documentosAnexados.length > 0) {
+            <div class="col-span-6 sm:col-span-6 ">
+
+                <p-table [value]="documentosAnexados" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+                    <ng-template #header>
+                        <tr>
+                            <th>Nombre del archivo</th>
+                            <th>Peso</th>
+                            <th>Visualizar</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-documento let-i="index">
+                        <tr>
+                            <td>{{ documento.name }}</td>
+                            <td>{{ (documento.size / 1024) | number:'1.0-2' }} KB</td>
+                            <td>
+                                <p-button type="button" class="btn-secondary" (click)="onVerDocumento(documento)">
+                                    <i class="pi pi-file-pdf"></i>
+                                </p-button>
+                            </td>
+                            <td>
+                                <p-button type="button" (click)="eliminarAnexo(i)" styleClass="btn-rojo"
+                                    label="Eliminar">
+                                </p-button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                </app-pdf-dialog>
+
+            </div>
+            }
+            <div class="col-span-6 sm:col-span-6" [formGroup]="validarCausaForm">
+                <label class="block mb-2 text-sm font-medium">Observaciones</label>
+                <textarea pTextarea rows="5" formControlName="observaciones" name="nombre" id="nombre" fluid
+                    class=" text-sm" placeholder="Escribe algo aquí..."></textarea>
+            </div>
+
+            <!-- <div class="col-span-6 sm:col-span-1 flex justify-end">
+                <p-button routerLink="/form">
+                    <i pButtonIcon class="pi pi-user-plus"></i>
+                    <span pButtonLabel>Agregar</span>
+                </p-button>
+            </div> -->
+        </div>
+        <div>
+        </div>
+    </div>
+</div>
+}
+<!--* MODAL DE CONFIRMACION ELIMINAR DOCUMENTO -->
+<app-confirm-dialog key="anexo" title="Confirmación" message="¿Está seguro de eliminar el documento?"
+    icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Eliminar" acceptStyleClass="btn-rojo">
+</app-confirm-dialog>
+
+<!--* RESPONSE ENVIAR PROMOCION -->
+<app-confirm-dialog key="success" title="Confirmación"
+    [message]="'Promoción enviada correctamente al ' + (tramitesElectronicosRecibidos?.juzgado ?? '')"
+    icon="pi pi-check" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary"  [showReject]="false">
+</app-confirm-dialog>
+
+<app-confirm-dialog key="info" title="No hay conincidencias"
+   message="La causa o el juzgado es incorrecto."
+    icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info"  [showReject]="false">
+</app-confirm-dialog>
+
+@if (validarCausaForm.valid && documentosAnexados.length > 0) {
+<div class="flex w-full items-center justify-center mt-4">
+    <p-button  label="Enviar Trámite" (click)="onEnviarTramite()">
+    </p-button>
+</div>
+}

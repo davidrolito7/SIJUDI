@@ -15,7 +15,7 @@ interface City {
 }
 @Component({
   selector: 'app-login2',
-  imports: [SelectModule, FormsModule, ButtonModule, RouterLink, InputMaskModule, CommonModule, SelectButtonModule, ToggleButtonModule, FileUploadModule, PasswordModule],
+  imports: [SelectModule, FormsModule, ButtonModule, InputMaskModule, CommonModule, SelectButtonModule, ToggleButtonModule, FileUploadModule, PasswordModule],
   templateUrl: './login2fase.html',
   styleUrl: './login2fase.css',
 })

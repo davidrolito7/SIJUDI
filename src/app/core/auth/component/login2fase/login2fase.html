@@ -2,12 +2,11 @@
     <div class="flex lg:flex lg:flex-row flex-col justify-center md:justify-normal h-full flex-1">
         <div class="relative flex-1 z-20 flex items-center justify-center">
             <div class="flex items-center justify-center h-full">
-                
+
                 <div class="w-full max-w-2xl px-6 py-12 lg:p-12 xl:p-16 text-center lg:text-left">
                     <p-selectbutton [options]="loginOptions" [(ngModel)]="step" optionLabel="label" optionValue="value"
-                        [fluid]="true" styleClass="w-full mb-10"></p-selectbutton>
+                        [fluid]="true" [allowEmpty]="false" styleClass="w-full mb-10"></p-selectbutton>
                     @if (step === 1) {
-
                     <div>
                         <h1
                             class="text-4xl xl:text-5xl font-bold text-surface-0 lg:text-surface-900 dark:text-surface-0 mb-6 leading-tight!">

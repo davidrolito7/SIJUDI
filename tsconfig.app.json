@@ -8,6 +8,9 @@
       "node"
     ]
   },
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  },
   "include": [
     "src/**/*.ts"
   ],

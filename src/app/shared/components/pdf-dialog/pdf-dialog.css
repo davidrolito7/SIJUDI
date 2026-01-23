@@ -1,0 +1,8 @@
+:host ::ng-deep .dialog-compact .p-dialog-header {
+  padding: 0.2rem 0.75rem;
+}
+
+:host ::ng-deep .dialog-compact .p-dialog-content {
+  padding: 0.5rem;
+}
+
