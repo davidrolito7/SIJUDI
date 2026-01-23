@@ -13,18 +13,15 @@
                             <span class="block">Ingresa tu código</span>
                             <span class="block text-primary">Google Authenticator</span>
                         </h1>
-<<<<<<< HEAD
-                        @if (objectTwoAccess != null) {
+
+                        @if (objectTwoAccess.activo != undefined && objectTwoAccess.activo===false ) {
                         <div class="flex flex-col gap-1 m-1 mb-6">
                             <div>
                             <p class="text-surface-600 dark:text-surface-200 mt-6">
                             Escanee este código QR o copie el código de captura manual en la aplicación de Google Authenticator, despues ingrese el código obtenido de 6 dígitos y pulse el botón Continuar. <br>  <span class="text-surface-800 dark:text-surface-300 text-sm"> Para mayor información consulte el enlace : <u (click)="visible = true" aria-controls="{{visible ? 'dialog' : null}}" aria-expanded="{{visible ? true : false}}" >
                                             ( Video guía sobre el uso de Google Authenticator ) 
                             </u></span>
-=======
-                        <p class="text-surface-600 dark:text-surface-0 lg:text-surface-0 mb-6">
-                            Ingrese a su aplicación de Google Autenticator para obtener el código de 6 dígitos.
->>>>>>> b8b847614338e633adfbb77747bb6c4fa70e8eb3
+
                         </p>
                         </div><div class="flex">
 
@@ -48,7 +45,7 @@
                                     <span pButtonLabel>Continuar</span>
                                 </p-button>
 
-                                <p-button type="button" outlined >
+                                <p-button (onClick)="salir()" type="button" outlined  >
                                     <span pButtonLabel>Salir</span>
                                 </p-button>
                                 
@@ -98,7 +95,7 @@
                                 <p-button (onClick)="goToStep2()" type="button">
                                     <span pButtonLabel>Continuar</span>
                                 </p-button>
-                                <p-button type="button" outlined >
+                                <p-button (onClick)="salir()" type="button" outlined >
                                     <span pButtonLabel>Salir</span>
                                 </p-button>
                             </div>
@@ -113,7 +110,7 @@
                 <img src="/justice.jpg" alt="hero-1"
                     class="h-full w-full object-cover lg:[clip-path:polygon(12%_0,100%_0%,100%_100%,0_100%)] md:[clip-path:none]" />
             </div>
-<<<<<<< HEAD
+
         </div>
          
 
@@ -122,6 +119,4 @@
 
     <p-toast></p-toast>
     
-=======
-        </div>
->>>>>>> b8b847614338e633adfbb77747bb6c4fa70e8eb3
+

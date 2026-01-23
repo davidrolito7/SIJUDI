@@ -26,14 +26,9 @@ interface City {
 }
 @Component({
   selector: 'app-login2',
-<<<<<<< HEAD
-  imports: [SelectModule, FormsModule, ButtonModule, RouterLink, InputMaskModule, CommonModule, SelectButtonModule, ToggleButtonModule, FileUploadModule, PasswordModule,QRCodeComponent,DialogModule,ToastModule],
   providers: [MessageService],
-   templateUrl: './login2fase.html',
-=======
-  imports: [SelectModule, FormsModule, ButtonModule, InputMaskModule, CommonModule, SelectButtonModule, ToggleButtonModule, FileUploadModule, PasswordModule],
+  imports: [SelectModule, FormsModule, ButtonModule, InputMaskModule, CommonModule, SelectButtonModule, ToggleButtonModule, FileUploadModule, PasswordModule, PasswordModule,QRCodeComponent,DialogModule,ToastModule],
   templateUrl: './login2fase.html',
->>>>>>> b8b847614338e633adfbb77747bb6c4fa70e8eb3
   styleUrl: './login2fase.css',
 })
 export class Login2 {
@@ -45,8 +40,13 @@ export class Login2 {
   private tokenService: TokenService,
     private mensaje: MessageService
   ) { }
-
- objectTwoAccess! :  twoAccess;
+objectTwoAccess! :  twoAccess;
+//  objectTwoAccess :  twoAccess= {
+//          activo: false,
+//     encodedSecret: '' ,
+//     user: '',
+//     LastLoginUTC : new Date()
+//       };
  
   cities: City[] | undefined;
 
@@ -82,14 +82,16 @@ export class Login2 {
     return;
    } else{
 
-    this.authService.GetConfirmationTwoValidation(this.code).subscribe({
+   
+
+    this.authService.GetConfirmationTwoValidation(this.code.replace('-','')).subscribe({
       next: (response) => {
         if (response.success) {
          console.log('Respuesta API:', response.data);
 
 // this.objectTwoAccess = response.data;
 
-        this.router.navigate(['/perfil']);
+       this.goToStep2();
 
 
          } 
@@ -163,7 +165,9 @@ this.objectTwoAccess = response.data;
   } // end getGoogle()
 
 
-
+salir(){
+   this.router.navigate(['/login']);
+}
 }
 
 

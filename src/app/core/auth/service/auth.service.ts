@@ -5,7 +5,7 @@ import { Observable,tap } from 'rxjs';
 import { TokenService} from './token.service';
 import { responseLogin,areas,twoAccess } from '../interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
-import { checkToken} from '../interceptor/token.interceptor';
+import { checkToken, tokenInterceptor} from '../interceptor/token.interceptor';
 import { BehaviorSubject } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -232,27 +232,27 @@ obtenerDatosUsuario(idUsuario: string, tipoBusqueda: number=4): Observable<any> 
 
     GetTwoValidation(): Observable<GenericResponse<twoAccess>> {
         const url = `/api/Permisos/getEncodeAuthenticator`;
-              const headers = new HttpHeaders({
-          'Authorization': `Bearer ${this.tokenService.getToken()}`,
-          'Content-Type': 'application/json'
-        });
+        //       const headers = new HttpHeaders({
+        //   'Authorization': `Bearer ${this.tokenService.getToken()}`,
+        //   'Content-Type': 'application/json'
+        // });
         
        
-        return this.http.get<GenericResponse<twoAccess>>(`${this.constService.ruta}${url}`,{headers});
+        return this.http.get<GenericResponse<twoAccess>>(`${this.constService.ruta}${url}`,{context:checkToken()});
         
     }
 
      GetConfirmationTwoValidation(codigo: string): Observable<any> {
-        const url = `${this.constService.ruta}/api/Permisos/SendTwoFactorCodeAuthenticator`;
-              const headers = new HttpHeaders({
-          'Authorization': `Bearer ${this.tokenService.getToken()}`,
-          'Content-Type': 'application/json',
-          'accept': '*/*'
-        });
+        const url = `/api/Permisos/SendTwoFactorCodeAuthenticator?codigo=${codigo}`;
+        //       const headers = new HttpHeaders({
+        //   'Authorization': `Bearer ${this.tokenService.getToken()}`,
+        //   'Content-Type': 'application/json',
+        //   'accept': '*/*'
+        // });
 
         
-        const body = { codigo };
-        return this.http.post(`${this.constService.ruta}${url}`, body,{headers:headers,context:checkToken()});
+        //const body = { codigo };
+        return this.http.post(`${this.constService.ruta}${url}`, null,{context:checkToken()});
        
         //return this.http.post<GenericResponse<twoAccess>>(`${this.constService.ruta}${url}`,{headers});
         
