@@ -7,6 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 //import Lara from '@primeuix/themes/lara';
 import { Custom } from './theme/cj';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
           }
         }
       }
-    })
+    }),
+    provideHttpClient(withFetch())
   ]
 };

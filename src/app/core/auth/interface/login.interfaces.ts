@@ -47,3 +47,66 @@ export interface Pantallas {
   visibleMenu : boolean;
   //FechaProduccion  : string;
 }
+
+
+export interface UsrProfile{
+  userId: number,
+        userName: string,
+        idGeneral: number,
+        creationDate: Date,
+        isActive: boolean,
+        isAdmin: boolean,
+        isRoot: boolean,
+        token: string,
+        password:string,
+        passwordQuestion: string,
+        passwordAnswer: string,
+        isApproved: boolean,
+        digitalCert: boolean,
+        use2FAToken: boolean
+}
+
+export interface UsrAbogado{
+  idGeneral: number,
+        folio: string ,
+        nombre: string,
+        idTitulo: number,
+        curp: string,
+        direccion: string,
+        direccionPart: string,
+        correo: string,
+        correoAlterno: string,
+        celular: string,
+        telefono: string,
+        idBarra: number,
+        idEstatus: number,
+        observaciones: string,
+        idTipoPersona: number,
+        fechaAlta: Date,
+        noEmpleado: number,
+        correoVerificado: true,
+        direccionNoExt: string,
+        direccionNoInt: string,
+        direccionCP: string,
+        direccionColonia: string,
+        direccionMunicipio: string,
+        direccionEstado: string,
+        direccionPartNoExt: string,
+        direccionPartNoInt:string,
+        direccionPartCP: string,
+        direccionPartColonia:string,
+        direccionPartMunicipio: string,
+        direccionPartEstado: string,
+        activo: boolean,
+        foto: string
+}
+
+
+
+
+      export interface twoAccess{
+         activo: boolean,
+    encodedSecret: string ,
+    user: string,
+    LastLoginUTC :Date
+      }

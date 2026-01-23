@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { Observable,tap } from 'rxjs';
 import { TokenService} from './token.service';
-import { responseLogin,areas } from '../interface/login.interfaces';
+import { responseLogin,areas,twoAccess } from '../interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
 import { checkToken} from '../interceptor/token.interceptor';
 import { BehaviorSubject } from 'rxjs';
@@ -227,5 +227,34 @@ obtenerDatosUsuario(idUsuario: string, tipoBusqueda: number=4): Observable<any> 
   GetSeccionesUsuario(idAreaSistemaUsuario : string | null ,IdPantalla:string,idPerfil : string  | null):Observable<any>{
       const url = `${this.constService.ruta}/api/Permisos/ObtenerSeccionesUsuario?IdAreaSistemaUsuario=${idAreaSistemaUsuario}&IdPantalla=${IdPantalla}&idPerfil=${idPerfil}`;
       return this.http.post(url, null,{context:checkToken()});
+    }
+
+
+    GetTwoValidation(): Observable<GenericResponse<twoAccess>> {
+        const url = `/api/Permisos/getEncodeAuthenticator`;
+              const headers = new HttpHeaders({
+          'Authorization': `Bearer ${this.tokenService.getToken()}`,
+          'Content-Type': 'application/json'
+        });
+        
+       
+        return this.http.get<GenericResponse<twoAccess>>(`${this.constService.ruta}${url}`,{headers});
+        
+    }
+
+     GetConfirmationTwoValidation(codigo: string): Observable<any> {
+        const url = `${this.constService.ruta}/api/Permisos/SendTwoFactorCodeAuthenticator`;
+              const headers = new HttpHeaders({
+          'Authorization': `Bearer ${this.tokenService.getToken()}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*'
+        });
+
+        
+        const body = { codigo };
+        return this.http.post(`${this.constService.ruta}${url}`, body,{headers:headers,context:checkToken()});
+       
+        //return this.http.post<GenericResponse<twoAccess>>(`${this.constService.ruta}${url}`,{headers});
+        
     }
 }
