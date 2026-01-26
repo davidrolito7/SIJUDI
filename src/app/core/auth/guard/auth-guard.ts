@@ -1,48 +1,73 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, CanMatch, Router,UrlTree,ActivatedRouteSnapshot,RouterStateSnapshot,Route,UrlSegment  } from '@angular/router';
-import {TokenService} from '../service/token.service';
-import { Observable } from 'rxjs';
+import {
+  CanActivate,
+  CanMatch,
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+  Route,
+  UrlSegment
+} from '@angular/router';
+import { TokenService } from '../service/token.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class authGuard implements CanActivate, CanMatch {
-  constructor(private tokenService: TokenService, private router: Router) {}
+  constructor(private tokenService: TokenService, private router: Router) { }
 
-  
-  private checkAuth():  boolean
-     {
-    try{
-        const isValidToken = this.tokenService.isValidRefreshToken();
-        // Marcar validación completada
-        this.tokenService.setValidacionCompletada(true);
+  private checkAuth(targetUrl: string): boolean {
+    try {
+      const isValidToken = this.tokenService.isValidRefreshToken();
+      this.tokenService.setValidacionCompletada(true);
 
-        if (!isValidToken) {
-           // ❌ Usuario no autenticado → devuelve UrlTree en vez de false
-           // Esto evita que Angular intente cargar la ruta y permite redirigir de forma limpia
-           // return this.router.parseUrl('/login?expired=true');
-            this.router.navigate(['/login']);
-            return false;
-        }
-        return true;
-      }
-    catch(error){
-       console.error('Error en AuthGuard al verificar el token:', error);
-        this.tokenService.setValidacionCompletada(true);
-        //this.router.navigate(['/login']);
+      if (!isValidToken) {
+        // limpiar flags si la sesión ya no es válida
+        this.tokenService.clearTwoFactorValidated?.();
+        this.tokenService.clearPerfilCompleted?.();
+
         this.router.navigate(['/login']);
         return false;
+      }
+
+      const twoOk = this.tokenService.isTwoFactorValidated();
+      const isLogin2fase = targetUrl.startsWith('/login2fase');
+
+      //  validado 2FA/llave privada, solo permitimos /login2fase
+      if (!twoOk && !isLogin2fase) {
+        this.router.navigate(['/login2fase']);
+        return false;
+      }
+
+      //  validó 2FA
+      if (twoOk && isLogin2fase) {
+        this.router.navigate(['/perfil']);
+        return false;
+      }
+
+      // si ya completó perfil, no permitir volver a /perfil
+      const perfilDone = this.tokenService.isPerfilCompleted?.() ?? false;
+      const isPerfil = targetUrl === '/perfil' || targetUrl.startsWith('/perfil/');
+      if (twoOk && perfilDone && isPerfil) {
+        this.router.navigate(['/tramites-juicio-oral'], { replaceUrl: true });
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error en AuthGuard al verificar el token:', error);
+      this.tokenService.setValidacionCompletada(true);
+      this.router.navigate(['/login']);
+      return false;
     }
   }
 
-  // Se ejecuta cuando ya se resolvió la ruta
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean  {
-    return this.checkAuth();
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    return this.checkAuth(state.url);
   }
 
-  // Se ejecuta antes de cargar el componente o módulo
-  canMatch(route: Route, segments: UrlSegment[]): boolean  {
-    return this.checkAuth();
+  canMatch(route: Route, segments: UrlSegment[]): boolean {
+    const url = '/' + (segments?.map(s => s.path).join('/') || '');
+    return this.checkAuth(url);
   }
-
 }

@@ -14,6 +14,8 @@ export class TokenService {
   private sessionExpiredSubject = new BehaviorSubject<boolean>(false);
   sessionExpired$ = this.sessionExpiredSubject.asObservable();
   private validacionCompletada = new BehaviorSubject<boolean>(false);
+  private readonly TWO_FACTOR_KEY = 'twoFactorValidated';
+  private readonly PERFIL_COMPLETED_KEY = 'perfilCompleted';
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { 
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -150,5 +152,35 @@ export class TokenService {
       //console.error("Error al obtener usuario del token:");
       return null;
     }
+  }
+
+  setTwoFactorValidated(value: boolean): void {
+    if (typeof window === 'undefined') return;
+    sessionStorage.setItem(this.TWO_FACTOR_KEY, value ? 'true' : 'false');
+  }
+
+  isTwoFactorValidated(): boolean {
+    if (typeof window === 'undefined') return false;
+    return sessionStorage.getItem(this.TWO_FACTOR_KEY) === 'true';
+  }
+
+  clearTwoFactorValidated(): void {
+    if (typeof window === 'undefined') return;
+    sessionStorage.removeItem(this.TWO_FACTOR_KEY);
+  }
+  
+  setPerfilCompleted(value: boolean): void {
+    if (!this.isBrowser) return;
+    sessionStorage.setItem(this.PERFIL_COMPLETED_KEY, value ? 'true' : 'false');
+  }
+
+  isPerfilCompleted(): boolean {
+    if (!this.isBrowser) return false;
+    return sessionStorage.getItem(this.PERFIL_COMPLETED_KEY) === 'true';
+  }
+
+  clearPerfilCompleted(): void {
+    if (!this.isBrowser) return;
+    sessionStorage.removeItem(this.PERFIL_COMPLETED_KEY);
   }
 }

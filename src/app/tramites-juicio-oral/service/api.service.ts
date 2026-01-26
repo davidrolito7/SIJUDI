@@ -8,7 +8,7 @@ import { checkToken } from '../../core/auth/interceptor/token.interceptor';
   providedIn: 'root',
 })
 export class ApiService {
-  private apiUrl = 'https://localhost:7057/api/PromocionesJuicioOral'; // Replace with your API URL
+  private apiUrl = 'https://localhost:4200/api/PromocionesJuicioOral'; // Replace with your API URL
 
   constructor(private http: HttpClient) { }
 

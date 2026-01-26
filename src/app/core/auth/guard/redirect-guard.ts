@@ -11,20 +11,17 @@ export const redirectGuard: CanActivateFn = (route, state) => {
     const authService = inject(AuthService);
 
     const isValidRefreshToken = tokenService.isValidRefreshToken();
-    //const refreshToken = tokenService.getRefreshToken();
-  
 
-  // Si el token es válido y el usuario intenta entrar a /login → redirigir a /inicio
-    if (state.url === '/login' && isValidRefreshToken)  
-      return router.parseUrl('/inicio');
-
-    //console.log('Validando RedirectGuard para la ruta:', state.url);
-    //console.log(isValidRefreshToken)
+    // Si el token es válido y el usuario intenta entrar a /login:
+    // - invalidado 2FA/llave => /login2fase
+    // - validó => /perfil
+    if (state.url === '/login' && isValidRefreshToken) {
+      const twoOk = tokenService.isTwoFactorValidated();
+      return router.parseUrl(twoOk ? '/perfil' : '/login2fase');
+    }
 
     // Si el token no es válido y el usuario intenta entrar a cualquier ruta protegida → redirigir a /login
     if (!isValidRefreshToken ) {
-       //return router.parseUrl('/login'); // 👈 devuelve UrlTree
-      //router.navigate(['/login']);
       return true;
     }
     else{
@@ -44,8 +41,6 @@ export const redirectGuard: CanActivateFn = (route, state) => {
       const permiso = authService.buscarPantallaPermiso(state.url.substring(8));
 
       if ( permiso.length>0) {
-        //router.navigate(['/inicio']);
-        //return router.parseUrl('/inicio'); // 👈 devuelve UrlTree
         return true;
       }else{
         if(state.url=='/inicio/dashboard'){

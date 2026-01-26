@@ -111,11 +111,10 @@ export class Login implements OnInit {
     this.authService.login(this.usuario, this.contrasenia, this.idSistema, this.recordar).subscribe({
       next: (response) => {
         if (response.success) {
-          //console.log('Respuesta API:', response.success)
 
           this.authService.actualizaPerfilSeleccionado("");
+          this.tokenService.setTwoFactorValidated(false);
           this.router.navigate(['login2fase']);
-          //this.router.parseUrl('login2fase');
 
         } else {
           this.mensaje.add({
@@ -127,7 +126,6 @@ export class Login implements OnInit {
         }
       },
       error: (error) => {
-        //console.error('Error al validar usuario:', error);
         this.mensaje.add({
           severity: 'error',
           summary: 'Error',
