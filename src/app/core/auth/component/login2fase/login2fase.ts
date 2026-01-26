@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ButtonModule } from "primeng/button";
 import { SelectModule } from 'primeng/select';
 import { Router, RouterLink } from "@angular/router";
@@ -27,12 +27,22 @@ import { twoAccess } from '../../interface/login.interfaces';
   templateUrl: './login2fase.html',
   styleUrl: './login2fase.css',
 })
-export class Login2 {
-
-  codigo: string = '';
-  //  para llave privada ---
+export class Login2 implements OnInit {
+  //* === FORMULARIOS ===
   llavePrivadaForm!: FormGroup;
   llaveFile: File | null = null;
+
+  //* === LISTAS Y DATOS TEMPORALES ===
+  objectTwoAccess!: twoAccess;
+
+  codigo: string = '';
+  qrData: string = '';
+
+  //* === ESTADOS DE UI Y MODALES ===
+  visible: boolean = false;
+
+  //* === FLAGS Y VARIABLES DE CONTROL ===
+
 
   constructor(private authService: AuthService,
     private router: Router,
@@ -41,12 +51,6 @@ export class Login2 {
     private fb: FormBuilder
 
   ) { }
-
-  objectTwoAccess!: twoAccess;
-
-
-  qrData: string = '';
-  visible: boolean = false;
 
 
   ngOnInit() {

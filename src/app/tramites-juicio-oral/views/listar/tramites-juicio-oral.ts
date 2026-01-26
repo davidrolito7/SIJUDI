@@ -53,7 +53,6 @@ export class TramitesJuicioOral implements OnInit {
   items: MenuItem[] = [{ label: 'Components' }, { label: 'Form' }, { label: 'InputText', routerLink: '/inputtext' }];
   home: MenuItem = { icon: 'pi pi-home', routerLink: '/' };
 
-  loading = false;
   searchValue: string | undefined;
 
   clear(table: Table) {

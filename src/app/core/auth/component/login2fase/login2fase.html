@@ -15,12 +15,13 @@
                         </h1>
 
                         @if (objectTwoAccess.activo != undefined && objectTwoAccess.activo===false ) {
-                        <div class="flex flex-col gap-1 m-1 mb-6">
+                        <div class="flex flex-col  ">
                             <div>
-                                <p class="text-surface-600 dark:text-surface-200 mt-6">
+                                <p class="text-surface-600 dark:text-surface-0 lg:text-surface mb-6">
                                     Escanee este código QR o copie el código de captura manual en la aplicación de
                                     Google Authenticator, despues ingrese el código obtenido de 6 dígitos y pulse el
-                                    botón Continuar. <br> <span class="text-surface-800 dark:text-surface-300 text-sm">
+                                    botón Continuar. <br> <span
+                                        class="text-surface-600 dark:text-surface-0 lg:text-surface mb-6">
                                         Para mayor información consulte el enlace : <u (click)="visible = true"
                                             aria-controls="{{visible ? 'dialog' : null}}"
                                             aria-expanded="{{visible ? true : false}}">
@@ -29,40 +30,62 @@
 
                                 </p>
                             </div>
-                            <div class="flex">
 
-                                <qrcode [qrdata]="qrData" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
-                                <p class="text-surface-600 dark:text-surface-200 mt-6 text-sm">Código para capturar
-                                    manualmente : {{objectTwoAccess.encodedSecret}}
-                                </p>
+                            <!-- ✅ 2 columnas: izquierda QR, derecha form -->
+                            <div
+                                class="flex flex-col sm:flex-row gap-6 items-center justify-center mt-4 lg:items-start lg:justify-start">
+                                <div class="w-full sm:w-1/2 flex flex-col items-center lg:items-start gap-3">
+                                    <qrcode [qrdata]="qrData" [width]="150" [margin]="0" [errorCorrectionLevel]="'M'">
+                                    </qrcode>
+                                    <p class="text-surface-600 dark:text-surface-200 text-sm">
+                                        Código para capturar manualmente : <b>{{objectTwoAccess.encodedSecret}}</b>
+                                    </p>
+                                </div>
+
+                                <div class="w-full sm:w-1/2 ">
+                                    <div class="flex flex-col gap-6">
+                                        <p-inputmask mask="999-999" placeholder="123-456" [unmask]="true"
+                                            [(ngModel)]="codigo" />
+
+                                        <div
+                                            class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
+                                            <p-button type="button" (onClick)="onValidarCodeAthenticator()">
+                                                <span pButtonIcon class="pi pi-google mr-1"></span>
+                                                <span pButtonLabel>Continuar</span>
+                                            </p-button>
+
+                                            <p-button (onClick)="salir()" type="button" outlined>
+                                                <span pButtonLabel>Salir</span>
+                                            </p-button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         } @else {
                         <p class="text-surface-600 dark:text-surface-200 mb-6">
                             Ingrese a su aplicación de Google Authenticator para obtener el código de 6 dígitos.
                         </p>
-                        }
-                        <div class="flex flex-col gap-1">
-                            <div class="flex flex-col gap-6">
-                                <p-inputmask mask="999-999" placeholder="123-456" [unmask]="true"
-                                    [(ngModel)]="codigo" />
-                                <div
-                                    class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
-                                    <p-button type="button" (onClick)="onValidarCodeAthenticator()">
-                                        <span pButtonIcon class="pi pi-google mr-1"></span>
-                                        <span pButtonLabel>Continuar</span>
-                                    </p-button>
 
-                                    <p-button (onClick)="salir()" type="button" outlined>
-                                        <span pButtonLabel>Salir</span>
-                                    </p-button>
+                        <!-- ✅ En el ELSE sí necesitas el form (porque no hay QR) -->
+                        <div class="flex flex-col gap-6">
+                            <p-inputmask mask="999-999" placeholder="123-456" [unmask]="true" [(ngModel)]="codigo" />
 
-                                </div>
+                            <div
+                                class="flex flex-col  sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
+                                <p-button type="button" (onClick)="onValidarCodeAthenticator()">
+                                    <span pButtonIcon class="pi pi-google mr-1"></span>
+                                    <span pButtonLabel>Continuar</span>
+                                </p-button>
 
-
+                                <p-button (onClick)="salir()" type="button" outlined>
+                                    <span pButtonLabel>Salir</span>
+                                </p-button>
                             </div>
-
                         </div>
+                        }
+
+
                     </div>
 
 
@@ -87,14 +110,14 @@
                             <span class="block">Ingresa tu Archivo de</span>
                             <span class="block text-primary">Llave Privada </span>
                         </h1>
-                        <p class="text-surface-600 dark:text-surface-0 lg:text-surface-0 mb-6">
+                        <p class="text-surface-600 dark:text-surface-0 lg:text-surface mb-6">
                             El archivo de llave privada es único y está resguardado exclusivamente por su titular,
                             con
                             esto es posible determinar que se trata de la persona que se identifica y no de alguien
                             que
                             desea suplantarlo. </p>
 
-                        <div [formGroup]="llavePrivadaForm"  class="flex flex-col gap-6 items-center lg:items-start">
+                        <div [formGroup]="llavePrivadaForm" class="flex flex-col gap-6 items-center lg:items-start">
 
                             <p-fileupload #fu mode="basic" chooseLabel="Llave" chooseIcon="pi pi-upload" name="archivo"
                                 accept=".pjo" maxFileSize="1000000" (onSelect)="onFileSelect($event)"

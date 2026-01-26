@@ -48,8 +48,8 @@
                         optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
                         optionLabel="descripcion" appendTo="body" />
                 </div>
-            </div>
 
+            </div>
         </form>
     </div>
 
@@ -80,7 +80,7 @@
 
     <div class="card pt-4">
         <p-table #dt1 [value]="tramitesElectronicosRecibidos" dataKey="idTramiteElectronicoRecibido" [rows]="10"
-            [rowsPerPageOptions]="[10, 25, 50]" [loading]="loading" [paginator]="true"
+            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="['folio','fechaEnvio','observaciones','cantidadAnexos']">
             <ng-template #caption>
                 <div class="flex">
