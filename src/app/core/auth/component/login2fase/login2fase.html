@@ -7,64 +7,66 @@
                     <p-selectbutton [options]="loginOptions" [(ngModel)]="step" optionLabel="label" optionValue="value"
                         [fluid]="true" [allowEmpty]="false" styleClass="w-full mb-10 "></p-selectbutton>
                     @if (step === 1) {
-                    <div>
-                        <h1
-                        class="text-4xl xl:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-6 leading-tight!">
-                            <span class="block">Ingresa tu código</span>
-                            <span class="block text-primary">Google Authenticator</span>
-                        </h1>
-
-                        @if (objectTwoAccess.activo != undefined && objectTwoAccess.activo===false ) {
-                        <div class="flex flex-col gap-1 m-1 mb-6">
-                            <div>
-                            <p class="text-surface-600 dark:text-surface-200 mt-6">
-                            Escanee este código QR o copie el código de captura manual en la aplicación de Google Authenticator, despues ingrese el código obtenido de 6 dígitos y pulse el botón Continuar. <br>  <span class="text-surface-800 dark:text-surface-300 text-sm"> Para mayor información consulte el enlace : <u (click)="visible = true" aria-controls="{{visible ? 'dialog' : null}}" aria-expanded="{{visible ? true : false}}" >
-                                            ( Video guía sobre el uso de Google Authenticator ) 
-                            </u></span>
-
-                        </p>
-                        </div><div class="flex">
-
-                                <qrcode [qrdata]="qrData" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
-                                <p class="text-surface-600 dark:text-surface-200 mt-6 text-sm">Código para capturar manualmente : {{objectTwoAccess.encodedSecret}}
-                        </p>
-                                               </div>
-                                                         </div>
-                                                        } @else {
-                        <p class="text-surface-600 dark:text-surface-200 mb-6">
-                            Ingrese a su aplicación de Google Authenticator para obtener el código de 6 dígitos.
-                        </p>
-                    }
- <div class="flex flex-col gap-1">
-                        <div class="flex flex-col gap-6">
-                            <p-inputmask mask="999-999" placeholder="123-456" [(ngModel)]="code"  />
-                            <div
-                                class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
-                                <p-button type="button" (onClick)="goToStep2()">
-                                    <span pButtonIcon class="pi pi-google mr-1"></span>
-                                    <span pButtonLabel>Continuar</span>
-                                </p-button>
-
-                                <p-button (onClick)="salir()" type="button" outlined  >
-                                    <span pButtonLabel>Salir</span>
-                                </p-button>
-                                
-                            </div>
-
+                        <div>
+                            <h1
+                            class="text-4xl xl:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-6 leading-tight!">
+                                <span class="block">Ingresa tu código</span>
+                                <span class="block text-primary">Google Authenticator</span>
+                            </h1>
                             
-                        </div>
- 
-                    </div>
-                   </div>
-                     
+                            @if (objectTwoAccess?.activo != undefined && objectTwoAccess?.activo===false ) {
+                                <div class="flex flex-col gap-1 m-1 mb-6">
+                                    <div>
+                                        <p class="text-surface-600 dark:text-surface-200 mt-6">
+                                        Escanee este código QR o copie el código de captura manual en la aplicación de Google Authenticator, despues ingrese el código obtenido de 6 dígitos y pulse el botón Continuar. <br>  <span class="text-surface-800 dark:text-surface-300 text-sm"> Para mayor información consulte el enlace : <u (click)="visible = true" aria-controls="{{visible ? 'dialog' : null}}" aria-expanded="{{visible ? true : false}}" >
+                                                        ( Video guía sobre el uso de Google Authenticator ) 
+                                        </u></span>
 
-<p-dialog header="Video guía sobre el uso de Google Authenticator." [(visible)]="visible" [modal]="true" [style]="{width: '50vw', height:'90%'}" [draggable]="false" [resizable]="false"><div  [style]="{ height:'20vw'}">
-<iframe id="frameVideoGoogle" class="embed-responsive-item" width="100%" height= "100%" src="https://virtual.tribunaloaxaca.gob.mx/Files/TVAutenticadorGoogle2021.webm" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
-</div>
-<ng-template pTemplate="footer">
-<p-button label="Close" (click)="visible = false"></p-button>
-</ng-template>
-</p-dialog>
+                                    </p>
+                                    </div>
+                                    <div class="flex">
+
+                                            <qrcode [qrdata]="qrData" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
+                                            <p class="text-surface-600 dark:text-surface-200 mt-6 text-sm">Código para capturar manualmente : {{objectTwoAccess.encodedSecret}}
+                                            </p>
+                                    </div>
+                                </div>
+                            } @else {
+                                <p class="text-surface-600 dark:text-surface-200 mb-6">
+                                    Ingrese a su aplicación de Google Authenticator para obtener el código de 6 dígitos.
+                                </p>
+                            }
+                            <div class="flex flex-col gap-1">
+                                <div class="flex flex-col gap-6">
+                                    <p-inputmask mask="999-999" placeholder="123-456" [(ngModel)]="code"  />
+                                    <div
+                                        class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
+                                        <p-button type="button" (onClick)="goToStep2()">
+                                            <span pButtonIcon class="pi pi-google mr-1"></span>
+                                            <span pButtonLabel>Continuar</span>
+                                        </p-button>
+
+                                        <p-button (onClick)="salir()" type="button" outlined  >
+                                            <span pButtonLabel>Salir</span>
+                                        </p-button>
+                                        
+                                    </div>
+
+                                    
+                                </div>
+        
+                            </div>
+                        </div>
+                        
+
+                        <p-dialog header="Video guía sobre el uso de Google Authenticator." [(visible)]="visible" [modal]="true" [style]="{width: '50vw', height:'90%'}" [draggable]="false" [resizable]="false">
+                        <div  [style]="{ height:'20vw'}">
+                            <iframe id="frameVideoGoogle" class="embed-responsive-item" width="100%" height= "100%" src="https://virtual.tribunaloaxaca.gob.mx/Files/TVAutenticadorGoogle2021.webm" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        </div>
+                        <ng-template pTemplate="footer">
+                            <p-button label="Close" (click)="visible = false"></p-button>
+                        </ng-template>
+                        </p-dialog>
                     } @else if (step === 2) {
 
                     <div>
@@ -112,11 +114,8 @@
             </div>
 
         </div>
-         
-
-      
     </div>
-
-    <p-toast></p-toast>
+</div>
+<p-toast></p-toast>
     
 

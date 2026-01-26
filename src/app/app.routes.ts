@@ -8,14 +8,19 @@ import { authGuard } from './core/auth/guard/auth-guard';
 import { Perfil } from './core/auth/component/perfil/perfil';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'tramites-juicio-oral', pathMatch: 'full' },
-  { path: 'login', component: Login },
-  { path: 'login2fase', component: Login2, canActivate: [authGuard] },
-  { path: 'perfil', component: Perfil },
-
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: Login},
+    
+  // Aquí usamos canMatch para evitar que se cargue el componente si no pasa el guard
+  //y para que no se cargue el modulo ademas de canMatch lo cargamos el component en modo lazy load
+  {path: 'login2fase',loadComponent:()=>import('./core/auth/component/login2fase/login2fase').then(m=>m.Login2),canMatch:[authGuard]},
+    // Aquí mantenemos canActivate porque ya es una vista interna
+  { path: 'perfil', component: Perfil,canActivate: [authGuard] },
+    
   {
     path: '',
     component: Siderbar,
+    canActivate: [authGuard],
     children: [
       { path: 'form', component: Form },
       {

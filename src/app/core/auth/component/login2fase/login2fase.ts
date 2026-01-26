@@ -137,7 +137,7 @@ objectTwoAccess! :  twoAccess;
         if (response.success) {
        //   console.log('Respuesta API:', response.data);
 
-this.objectTwoAccess = response.data;
+          this.objectTwoAccess = response.data;
 
           this.qrData = 'otpauth://totp/Oaxaca-TV-'+ this.objectTwoAccess.user +'?secret='+this.objectTwoAccess.encodedSecret ;
 

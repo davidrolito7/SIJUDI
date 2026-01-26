@@ -104,9 +104,9 @@ export interface UsrAbogado{
 
 
 
-      export interface twoAccess{
-         activo: boolean,
+export interface twoAccess{
+    activo: boolean,
     encodedSecret: string ,
     user: string,
     LastLoginUTC :Date
-      }
+}
