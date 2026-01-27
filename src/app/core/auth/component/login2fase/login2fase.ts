@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ElementRef } from '@angular/core';
 import { ButtonModule } from "primeng/button";
 import { SelectModule } from 'primeng/select';
 import { Router, RouterLink } from "@angular/router";
@@ -18,6 +18,7 @@ import { TokenService } from '../../service/token.service';
 import { MessageService } from 'primeng/api';
 
 import { twoAccess } from '../../interface/login.interfaces';
+import { After } from 'node:v8';
 
 
 @Component({
@@ -27,13 +28,21 @@ import { twoAccess } from '../../interface/login.interfaces';
   templateUrl: './login2fase.html',
   styleUrl: './login2fase.css',
 })
-export class Login2 implements OnInit {
+export class Login2 implements OnInit  {
+
+  
+
+
   //* === FORMULARIOS ===
   llavePrivadaForm!: FormGroup;
   llaveFile: File | null = null;
 
   //* === LISTAS Y DATOS TEMPORALES ===
-  objectTwoAccess!: twoAccess;
+  objectTwoAccess : twoAccess = {
+        activo: false,
+        encodedSecret: '',
+        user: '',
+        lastLoginUTC: new Date() };
 
   codigo: string = '';
   qrData: string = '';
@@ -48,16 +57,17 @@ export class Login2 implements OnInit {
     private router: Router,
     private tokenService: TokenService,
     private mensaje: MessageService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private el: ElementRef,
 
   ) { }
 
 
   ngOnInit() {
+    this.getGoogle();
     this.llavePrivadaForm = this.fb.group({
       password: ['', Validators.required]
-    });
-    this.getGoogle();
+    });    
   }
 
   step: 1 | 2 = 1;
@@ -117,7 +127,16 @@ export class Login2 implements OnInit {
 
           this.objectTwoAccess = response.data;
 
+          
+          this.objectTwoAccess.encodedSecret=(this.objectTwoAccess.encodedSecret === null?'':this.objectTwoAccess.encodedSecret);
+         
           this.qrData = 'otpauth://totp/Oaxaca-TV-' + this.objectTwoAccess.user + '?secret=' + this.objectTwoAccess.encodedSecret;
+         // 
+    // refresca el tap para el uso del  QR
+      this.step=2;
+      this.step=1;
+         
+            
 
 
         }
@@ -153,7 +172,7 @@ export class Login2 implements OnInit {
       this.mensaje.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'Solo se permiten archivos con extensión .pfx',
+        detail: 'Solo se permiten archivos con extensión .pjo',
         life: 3000
       });
       return;
@@ -171,7 +190,7 @@ export class Login2 implements OnInit {
       this.mensaje.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'Seleccione un archivo .pfx y capture la contraseña.',
+        detail: 'Seleccione un archivo .pjo y capture la contraseña.',
         life: 3000
       });
       return;

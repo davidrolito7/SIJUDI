@@ -14,7 +14,7 @@
                             <span class="block text-primary">Google Authenticator</span>
                         </h1>
 
-                        @if (objectTwoAccess.activo != undefined && objectTwoAccess.activo===false ) {
+                        @if (objectTwoAccess.activo === false ) {
                         <div class="flex flex-col  ">
                             <div>
                                 <p class="text-surface-600 dark:text-surface-0 lg:text-surface mb-6">
@@ -35,7 +35,7 @@
                             <div
                                 class="flex flex-col sm:flex-row gap-6 items-center justify-center mt-4 lg:items-start lg:justify-start">
                                 <div class="w-full sm:w-1/2 flex flex-col items-center lg:items-start gap-3">
-                                    <qrcode [qrdata]="qrData" [width]="150" [margin]="0" [errorCorrectionLevel]="'M'">
+                                    <qrcode [qrdata]="qrData" [allowEmptyString]="true"  [width]="150" [margin]="0" [errorCorrectionLevel]="'M'">
                                     </qrcode>
                                     <p class="text-surface-600 dark:text-surface-200 text-sm">
                                         Código para capturar manualmente : <b>{{objectTwoAccess.encodedSecret}}</b>
@@ -44,7 +44,7 @@
 
                                 <div class="w-full sm:w-1/2 ">
                                     <div class="flex flex-col gap-6">
-                                        <p-inputmask mask="999-999" placeholder="123-456" [unmask]="true"
+                                        <p-inputmask #codigoinput mask="999-999" placeholder="123-456" [unmask]="true"
                                             [(ngModel)]="codigo" />
 
                                         <div

@@ -108,5 +108,5 @@ export interface twoAccess{
     activo: boolean,
     encodedSecret: string ,
     user: string,
-    LastLoginUTC :Date
+    lastLoginUTC :Date
 }
