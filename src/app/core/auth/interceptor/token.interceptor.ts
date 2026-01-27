@@ -52,7 +52,6 @@ export function tokenInterceptor(
           : false;
           
         if (!refreshToken || !isValidRefreshToken) {
-          tokenService.notifySessionExpired();
           return next(request);
         }
 

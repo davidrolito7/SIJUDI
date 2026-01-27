@@ -4,27 +4,27 @@ import { Login } from './core/auth/component/login/login';
 import { Login2 } from './core/auth/component/login2fase/login2fase';
 import { Home } from './home/home';
 import { Form } from './form/form';
-import { authGuard } from './core/auth/guard/auth-guard';
+import { authMatchGuard } from './core/auth/guard/auth-guard';
 import { Perfil } from './core/auth/component/perfil/perfil';
 import { redirectGuard } from './core/auth/guard/redirect-guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: Login, canActivate: [redirectGuard] },
+  { path: 'login', component: Login, canMatch: [redirectGuard] },
   {
     path: 'login2fase',
     loadComponent: () =>
       import('./core/auth/component/login2fase/login2fase')
         .then(m => m.Login2),
-    canMatch: [authGuard],
+    canMatch: [authMatchGuard],
   },
 
-  { path: 'perfil', component: Perfil, canActivate: [authGuard] },
+  { path: 'perfil', component: Perfil, canMatch: [authMatchGuard] },
 
   {
     path: '',
     component: Siderbar,
-    canActivate: [authGuard],
+    canMatch: [authMatchGuard],
     children: [
       { path: 'form', component: Form },
       {
@@ -34,4 +34,5 @@ export const routes: Routes = [
       }
     ],
   },
+
 ];
