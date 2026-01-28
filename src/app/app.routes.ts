@@ -7,6 +7,7 @@ import { Form } from './form/form';
 import { authGuard } from './core/auth/guard/auth-guard';
 import { Perfil } from './core/auth/component/perfil/perfil';
 import { redirectGuard } from './core/auth/guard/redirect-guard';
+import { Listar } from './exhortos/recibidos/listar/listar';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -34,4 +35,6 @@ export const routes: Routes = [
       }
     ],
   },
+
+   { path: 'listar_exhortos_recibidos', component: Listar},
 ];

@@ -39,7 +39,7 @@ export class Login2 implements OnInit  {
 
   //* === LISTAS Y DATOS TEMPORALES ===
   objectTwoAccess : twoAccess = {
-        activo: false,
+        activo: true,
         encodedSecret: '',
         user: '',
         lastLoginUTC: new Date() };

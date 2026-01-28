@@ -1,0 +1,186 @@
+<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+
+    <!-- HEADER -->
+    <header
+        class="border border-surface rounded-2xl bg-surface-50 dark:bg-surface-900 flex items-center justify-between overflow-hidden">
+        <p-breadcrumb class="hidden lg:block" styleClass="bg-surface-50 dark:bg-surface-900" [home]="home"
+            [model]="items" />
+
+        <div class="ml-auto flex items-center gap-2 pr-4 pt-2 pb-2">
+            <span class="text-base font-medium text-surface-700 dark:text-surface-200">Abogado: Juan Pérez</span>
+            <p-avatar image="https://www.primefaces.org/cdn/primevue/images/landing/apps/main-avatar.png" size="large"
+                shape="circle" class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component">
+            </p-avatar>
+        </div>
+    </header>
+
+    <!-- BUSQUEDA -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+        <form class="flex flex-col" [formGroup]="validarExhortosRecibidos">
+
+            <div class="flex items-start flex-col md:flex-row justify-between">
+                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                    Búsqueda
+                </label>
+
+                <div class="flex items-center">
+                    <p-button (click)="onBuscarExhortosRecibidos()" [disabled]="validarExhortosRecibidos.invalid">
+                        <i pButtonIcon class="pi pi-search"></i>
+                        <span pButtonLabel>Buscar</span>
+                    </p-button>
+                </div>
+            </div>
+            
+
+            <div class="grid grid-cols-6 gap-4 w-full items-end">
+                 <div class="col-span-6 sm:col-span-3">
+                    <label class="block mb-2 text-sm font-medium">Estatus</label>
+                    <p-select class="w-full" [options]="catEstatusExhortos" formControlName="idEstatusExhorto"
+                        optionValue="idEstatusExhorto" fluid placeholder="Selecciona un estatus" [filter]="true"
+                        optionLabel="descripcion" appendTo="body" />
+                </div>
+
+                <div class="col-span-6 sm:col-span-3">
+                    <label class="block mb-2 text-sm font-medium">Exp. origen</label>
+                    <input type="text" pInputText fluid formControlName="expOrigen" class="uppercase text-sm rounded-lg"
+                        />
+                </div>
+
+                
+
+                <div class="flex  gap-4  col-span-6 sm:col-span-6">
+                <div class="col-span-2 sm:col-span-1">
+                <label class="font-medium block mb-2"> Fecha Inicial </label>
+                <p-datepicker ngSkipHydration  [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="fechaInicial"  />
+                     </div>
+            <div class="col-span-2 sm:col-span-1">
+                <label class="font-medium block mb-2"> Fecha Final </label>
+                <p-datepicker ngSkipHydration  [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="fechaFinal"/>
+                
+            </div>
+            <div class="flex items-center">
+             <p-button  [outlined]="true" icon="pi pi-filter-slash" (click)="clearFecha()" />
+             </div>
+             
+</div>
+            
+
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<!-- CONTENIDO (ya no se mete "debajo" visualmente) -->
+
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+    <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div>
+            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
+            <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-users text-base! leading-normal!"></i>
+                    <span>332 Registros</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-globe text-base! leading-normal!"></i>
+                    <span>9.402 Sesiones</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-clock text-base! leading-normal!"></i>
+                    <span>2.32m Promedio</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card pt-4">
+        <p-table #dt1  dataKey="idTramiteElectronicoRecibido" [rows]="10"
+            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [globalFilterFields]="['folio','fechaEnvio','observaciones','cantidadAnexos']">
+            <ng-template #caption>
+                <div class="flex">
+                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Buscar una palabra" />
+                    </p-iconfield>
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <tr>
+                    <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            Estado exhortante
+                            <p-columnFilter type="text" field="folio" display="menu" />
+                        </div>
+                    </th>
+                    <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            Juzgado origen
+                            <p-columnFilter type="date" field="fechaEnvio" display="menu"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width:10rem">
+                        <div class="flex items-center justify-between">
+                            Exp. origen
+                            <p-columnFilter type="text" field="observaciones" display="menu" />
+                        </div>
+                    </th>
+                    <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            Materia
+                            <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
+                        </div>
+                    </th> <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            Municipio destino
+                            <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
+                        </div>
+                    </th> <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            Fecha de recepción
+                            <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
+                        </div>
+                    </th> <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            Estatus
+                            <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
+                        </div>
+                    </th>
+                      <th style="min-width:10rem">
+                        <div class="flex items-center justify-between">
+                            Acciones
+                        </div>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-tramite>
+                <tr>
+                    <td>{{ tramite.estadoExhortable }}</td>
+                    <td>{{ tramite.jusgadoOrigen}}</td>
+                    <td>{{ tramite.expedienteOriginal }}</td>
+                    <td>{{ tramite.materia }}</td>
+                      <td>{{ tramite.municiapioDestino }}</td>
+                        <td>{{ tramite.fechaRecepcion }}</td>
+                        <td>{{ tramite.estatus }}</td>
+                    <td> <p-button type="button" class="btn-secondary" >
+                                    <i class="pi pi-eye"></i>
+                                </p-button></td>
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="7">No customers found.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+
