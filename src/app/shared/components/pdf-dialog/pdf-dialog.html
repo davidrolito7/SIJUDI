@@ -11,7 +11,7 @@
   [contentStyle]="{ overflow: 'hidden', height: 'calc(90vh - 3rem)' }"
   [draggable]="false"
   [resizable]="false">
-  <iframe *ngIf="url" [src]="url" type="application/pdf" width="100%" height="100%">
+  <iframe @if(url) [src]="url" type="application/pdf" width="100%" height="100%">
     <p>
       No se pudo mostrar el PDF.
       <a [href]="url" download>Descargar</a> en su lugar.

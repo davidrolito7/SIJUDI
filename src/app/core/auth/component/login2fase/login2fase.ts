@@ -33,7 +33,7 @@ export class Login2 implements OnInit {
   llaveFile: File | null = null;
 
   //* === LISTAS Y DATOS TEMPORALES ===
-  objectTwoAccess!: twoAccess;
+objectTwoAccess: twoAccess | null = null;
 
   codigo: string = '';
   qrData: string = '';
