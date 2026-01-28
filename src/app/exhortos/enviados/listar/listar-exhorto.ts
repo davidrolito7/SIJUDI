@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-listar',
   imports: [],
-  templateUrl: './listar.html',
-  styleUrl: './listar.css',
+  templateUrl: './listar-exhorto.html',
+  styleUrl: './listar-exhorto.css',
 })
 export class Listar {
 

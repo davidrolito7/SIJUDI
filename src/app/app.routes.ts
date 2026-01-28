@@ -31,6 +31,13 @@ export const routes: Routes = [
         path: 'tramites-juicio-oral', loadChildren: () =>
           import('./tramites-juicio-oral/tramites-juicio-oral.routes')
             .then(m => m.TRAMITES_JUICIO_ORAL_ROUTES)
+      },
+      {
+        path: 'exhortos', loadChildren: () =>
+          import('./exhortos/exhortos.routes')
+            .then(m => m.EXHORTOS_ROUTES)
+
+            
       }
     ],
   },
