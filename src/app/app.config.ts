@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withDebugTracing, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
@@ -15,7 +15,14 @@ import { tokenInterceptor } from './core/auth/interceptor/token.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes), provideClientHydration(withEventReplay()),
+    provideRouter(
+      routes,
+     // withDebugTracing(),
+      withRouterConfig({
+        urlUpdateStrategy: 'deferred',
+        canceledNavigationResolution: 'computed',
+      })
+    ),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

@@ -4,3 +4,4 @@ export interface GenericResponse<T>{
     errors: string[];
     data:T;
 }
+

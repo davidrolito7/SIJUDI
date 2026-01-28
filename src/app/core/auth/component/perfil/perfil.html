@@ -15,10 +15,30 @@
                     </p>
 
                     <div class="flex flex-col gap-6">
-                        <p-select [options]="cities" optionLabel="name" placeholder="Selecciona tu adscripción"
+                        <p-select 
+                        [options]="listaAreas" 
+                        optionLabel="area" 
+                        optionValue="idArea"
+                        [ngModel]="areaSeleccionada()"
+                        placeholder="Selecciona un área"
+                        class="w-full"
+                             (ngModelChange)="onAreaChange($event)"
+                             />
+
+                        <p-select [options]="perfil" 
+                        optionLabel="descripcion" 
+                        placeholder="Selecciona tu perfil"
+                        optionValue="idSistemaPerfil"
+                        [ngModel]="perfilSeleccionado()"
+                        (ngModelChange)="perfilSeleccionado.set($event)"
                             class="w-full" />
-                        <p-select [options]="cities" optionLabel="name" placeholder="Selecciona tu perfil"
-                            class="w-full" />
+                             <div class="flex items-center text-white/80">
+                                <p-checkbox  [(ngModel)]="recordar"
+                                 id="rememberme" 
+                                 [binary]="true"  
+                                 class="mr-3"></p-checkbox>
+                                <label>Recordar perfil seleccionado</label>
+                            </div>   
                         <div
                             class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
                             <p-button type="button" (click)="continuar()" styleClass="w-full sm:w-auto ">
@@ -35,6 +55,7 @@
                 </div>
 
             </div>
+<p-toast></p-toast>
 
             <div class="hidden lg:block lg:static lg:inset-auto lg:z-0 lg:flex-1">
                 <img src="/justice.jpg" alt="hero-1"
