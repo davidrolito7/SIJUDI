@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { Observable, tap } from 'rxjs';
 import { TokenService } from './token.service';
-import { responseLogin, areas, twoAccess } from '../interface/login.interfaces';
+import { responseLogin, areasResponse, twoAccess } from '../interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
 import { checkToken, tokenInterceptor } from '../interceptor/token.interceptor';
 import { BehaviorSubject } from 'rxjs';
@@ -146,7 +146,7 @@ export class AuthService {
   }
   GetRootURL() { return this.constService.ruta; }
 
-  GetPerfiles(idAreaSistemaUsuario: string): Observable<any> {
+  GetPerfiles(idAreaSistemaUsuario: number): Observable<any> {
     //const url = `${this.constService.ruta}/api/Permisos/PerfilesUsuario?Usuario=${"5"}`;
     const url = `${this.constService.ruta}/api/Permisos/PerfilesUsuario?IdAreaSistemaUsuario=${idAreaSistemaUsuario}`;
 
@@ -206,9 +206,9 @@ export class AuthService {
       descripcion.toLowerCase().includes(valor.toLowerCase())
     );
   }
-  getAreas(idSistema: number, idGeneral: number): Observable<GenericResponse<areas[]>> {
+  getAreas(idSistema: number, idGeneral: number): Observable<GenericResponse<areasResponse[]>> {
     const url = `${this.constService.ruta}/api/Permisos/AreasUsuarioSistema?idsistema=${idSistema}&idgeneral=${idGeneral}`;
-    return this.http.post<GenericResponse<areas[]>>(url, null, { context: checkToken() });
+    return this.http.post<GenericResponse<areasResponse[]>>(url, null, { context: checkToken() });
   }
   getAreaUsuario(): string {
     var idAreaUsuario = null;
