@@ -37,8 +37,11 @@ export const routes: Routes = [
         path: 'exhortos', loadChildren: () =>
           import('./exhortos/exhortos.routes')
             .then(m => m.EXHORTOS_ROUTES)
-
-            
+      },
+      {
+        path:'catalogos',loadChildren:() =>
+          import('./catalogos/catalogos.route')
+            .then(m=>m.CATALOGOS_ROUTES)
       }
     ],
   },

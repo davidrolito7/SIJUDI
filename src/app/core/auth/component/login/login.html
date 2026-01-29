@@ -22,9 +22,12 @@
                 </p-iconfield>
                 <p-iconfield icon-position="left">
                     <p-inputicon class="pi pi-lock text-white/70!"></p-inputicon>
-                    <input pInputText type="password" [(ngModel)]="contrasenia" (keydown.enter)="passwordEnter()" #passwordInput
+                    <input pInputText [type]="verPassword ? 'text' : 'password'" [(ngModel)]="contrasenia" (keydown.enter)="passwordEnter()" #passwordInput
                         class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-white! placeholder:text-white/70! rounded-3xl! shadow-sm!"
                         placeholder="Contraseña" />
+                    <p-inputicon class="cursor-pointer text-white/70! hover:text-white!" (click)="togglePassword()">
+                        <i [class]="verPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+                    </p-inputicon>
                 </p-iconfield>
                 <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                     <div class="flex items-center text-white/80 ">

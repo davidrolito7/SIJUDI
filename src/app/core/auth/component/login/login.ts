@@ -87,6 +87,10 @@ export class Login implements OnInit {
     }
   }
 
+  togglePassword() {
+    this.verPassword = !this.verPassword;
+  }
+
   validarUsuario() {
     if (!this.usuario || this.usuario.trim()==='' || this.usuario=== undefined) {
       this.mensaje.add({
