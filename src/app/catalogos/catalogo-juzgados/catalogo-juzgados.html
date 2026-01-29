@@ -1,0 +1,71 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+    <div class="card pt-4">
+        <p-table #dt1 [value]="listaJuzgado" dataKey="idJuzgado" [rows]="10"
+            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [globalFilterFields]="['descripcion']">
+            <ng-template #caption>
+                <div class="flex">
+                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Buscar una palabra" />
+                    </p-iconfield>
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <tr>
+                    <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            idJuzgado
+                            <p-columnFilter type="text" field="idJuzgado" display="menu" />
+                        </div>
+                    </th>
+                    <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            Clave
+                            <p-columnFilter type="text" field="clave" display="menu"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            Descripción
+                            <p-columnFilter type="text" field="descripcion" display="menu"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            Activo
+                            <p-columnFilter type="text" field="activo" display="menu"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width:10rem">
+                        <div class="flex items-center justify-between">
+                            Acciones
+                        </div>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-lista>
+                <tr>
+                    <td>{{ lista.idJuzgado }}</td>
+                    <td>{{ lista.clave  }}</td>
+                    <td>{{ lista.descripcion }}</td>
+                    <td>{{ lista.activo }}</td>
+                    <td> <p-button type="button" class="btn-secondary" >
+                                    <i class="pi pi-pencil"></i>
+                                </p-button></td>
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="7">No customers found.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

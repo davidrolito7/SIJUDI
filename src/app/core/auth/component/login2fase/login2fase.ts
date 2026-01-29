@@ -233,6 +233,34 @@ objectTwoAccess: twoAccess | null = null;
   salir() {
     this.router.navigate(['/login']);
   }
+  codigoEnter(){
+    if(!this.codigo || this.codigo.trim()==='' || this.codigo === undefined)
+    {
+      this.mensaje.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Por favor, ingrese el codigo de autenticator.',
+        life: 3000
+      });
+      return;
+    }
+    else
+      this.onValidarCodeAthenticator();
+  }
+  contraseniaEnter(){
+    const pass =  this.llavePrivadaForm.get('password')!.value;
+    if(!pass || pass.trim()==='' || pass === undefined)
+    {
+      this.mensaje.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Por favor, ingrese su contraseña!.',
+        life: 3000
+      });
+    }
+    else
+      this.onValidarLlavePrivada();
+  }
 }
 
 
