@@ -17,8 +17,7 @@
 
     <!-- BUSQUEDA -->
     <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
-        <form class="flex flex-col" [formGroup]="validarExhortosRecibidos">
-
+        <form [formGroup]="validarExhortosRecibidos">
             <div class="flex items-start flex-col md:flex-row justify-between">
                 <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
                     Búsqueda
@@ -31,49 +30,45 @@
                     </p-button>
                 </div>
             </div>
-            
 
-            <div class="grid grid-cols-6 gap-4 w-full items-end">
-                 <div class="col-span-6 sm:col-span-3 p-float-label mt-4">
-                   <p-floatlabel>
-                    <p-select class="w-full" inputId="over_label" [options]="catEstatusExhortos" formControlName="idEstatusExhorto"
-                        optionValue="idEstatusExhorto" fluid 
-                        optionLabel="descripcion" appendTo="body" />
-                         <label for="over_label">Estatus</label>
-                        </p-floatlabel>
+            <div class="grid grid-cols-12 gap-4 w-full items-end">
+                <!-- Estatus -->
+                <div class="col-span-6 lg:col-span-3 w-full">
+                    <label class="block mb-2 text-sm font-medium">Estatus</label>
+                    <p-select inputId="idEstatusExhorto" class="w-full" [options]="catEstatusExhortos"
+                        formControlName="idEstatusExhorto" optionValue="idEstatusExhorto" optionLabel="descripcion"
+                        appendTo="body" fluid></p-select>
                 </div>
 
-                <div class="col-span-6 sm:col-span-3 p-float-label mt-4">
-                <p-floatlabel>
+                <!-- Exp. origen -->
+                <div class="col-span-6 lg:col-span-3 w-full">
                     <label class="block mb-2 text-sm font-medium">Exp. origen</label>
-                    <input type="text" pInputText fluid formControlName="expOrigen" class="uppercase text-sm rounded-lg"
-                        />
-                        </p-floatlabel>
+                    <input type="text" pInputText fluid formControlName="expOrigen" class="w-full" />
                 </div>
 
-                
 
-                <div class="flex  gap-4  col-span-6 sm:col-span-6">
-                <div class="col-span-2 sm:col-span-1 p-float-label mt-4">
-                    <p-floatlabel>
-                
-                <p-datepicker ngSkipHydration inputId="over_label" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="fechaInicial"  />
-                   <label for="over_label">Fecha Inicial</label> </p-floatlabel> </div>
-            <div class="col-span-2 sm:col-span-1 p-float-label mt-4">
-                <p-floatlabel>
-                <p-datepicker ngSkipHydration inputId="over_label" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="fechaFinal"/>
-              <label for="over_label">Fecha Final</label>
-             </p-floatlabel> 
-            </div>
-            <div class="flex items-center">
-             <p-button  [outlined]="true" icon="pi pi-filter-slash" (click)="clearFecha()" />
-             </div>
-             
-</div>
-            
+                <!-- Fecha Inicial -->
+                <div class="col-span-6 lg:col-span-2 w-full">
+                    <label class="block mb-2 text-sm font-medium">Fecha Inicial</label>
+                    <p-datepicker ngSkipHydration inputId="fechaInicial" [iconDisplay]="'input'" [showIcon]="true"
+                        formControlName="fechaInicial" class="w-full" fluid></p-datepicker>
+                </div>
 
+                <!-- Fecha Final -->
+                <div class="col-span-6 lg:col-span-2 w-full">
+                    <label class="block mb-2 text-sm font-medium">Fecha Final</label>
+                    <p-datepicker ngSkipHydration inputId="fechaFinal" [iconDisplay]="'input'" [showIcon]="true"
+                        formControlName="fechaFinal" class="w-full" fluid></p-datepicker>
+                </div>
+
+                <!-- Botón limpiar fechas -->
+                <div class="col-span-6 lg:col-span-2 w-full">
+                    <p-button [outlined]="true" icon="pi pi-filter-slash" (click)="clearFecha()"></p-button>
+                </div>
             </div>
+
         </form>
+
     </div>
 
 </div>
@@ -81,10 +76,10 @@
 <!-- CONTENIDO (ya no se mete "debajo" visualmente) -->
 
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
-    <!-- <div class="flex items-start flex-col md:justify-between md:flex-row">
+     <div class="flex items-start flex-col md:justify-between md:flex-row">
         <div>
             <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
-            <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+            <!-- <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
                 <div class="flex items-center gap-2">
                     <i class="pi pi-users text-base! leading-normal!"></i>
                     <span>332 Registros</span>
@@ -97,14 +92,13 @@
                     <i class="pi pi-clock text-base! leading-normal!"></i>
                     <span>2.32m Promedio</span>
                 </div>
-            </div>
+            </div> -->
         </div>
-    </div> -->
+    </div> 
 
-    <div class="card pt-4">
-        <p-table #dt1  dataKey="idTramiteElectronicoRecibido" [rows]="10"
-            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
-            [globalFilterFields]="['folio','fechaEnvio','observaciones','cantidadAnexos']">
+    <div class="card">
+        <p-table #dt1 dataKey="idTramiteElectronicoRecibido" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+            [paginator]="true" [globalFilterFields]="['folio','fechaEnvio','observaciones','cantidadAnexos']">
             <ng-template #caption>
                 <div class="flex">
                     <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
@@ -141,23 +135,26 @@
                             Materia
                             <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
                         </div>
-                    </th> <th style="min-width:15rem">
+                    </th>
+                    <th style="min-width:15rem">
                         <div class="flex items-center justify-between">
                             Municipio destino
                             <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
                         </div>
-                    </th> <th style="min-width:15rem">
+                    </th>
+                    <th style="min-width:15rem">
                         <div class="flex items-center justify-between">
                             Fecha de recepción
                             <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
                         </div>
-                    </th> <th style="min-width:15rem">
+                    </th>
+                    <th style="min-width:15rem">
                         <div class="flex items-center justify-between">
                             Estatus
                             <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
                         </div>
                     </th>
-                      <th style="min-width:10rem">
+                    <th style="min-width:10rem">
                         <div class="flex items-center justify-between">
                             Acciones
                         </div>
@@ -171,12 +168,12 @@
                     <td>{{ tramite.jusgadoOrigen}}</td>
                     <td>{{ tramite.expedienteOriginal }}</td>
                     <td>{{ tramite.materia }}</td>
-                      <td>{{ tramite.municiapioDestino }}</td>
-                        <td>{{ tramite.fechaRecepcion }}</td>
-                        <td>{{ tramite.estatus }}</td>
-                    <td> <p-button type="button" class="btn-secondary" >
-                                    <i class="pi pi-eye"></i>
-                                </p-button></td>
+                    <td>{{ tramite.municiapioDestino }}</td>
+                    <td>{{ tramite.fechaRecepcion }}</td>
+                    <td>{{ tramite.estatus }}</td>
+                    <td> <p-button type="button" class="btn-secondary">
+                            <i class="pi pi-eye"></i>
+                        </p-button></td>
                 </tr>
             </ng-template>
 
@@ -188,5 +185,3 @@
         </p-table>
     </div>
 </div>
-
-

@@ -28,14 +28,16 @@ import {AuthService} from '../../../core/auth/service/auth.service';
 import {secciones} from '../../../core/auth/interface/login.interfaces';
 import {Base64ToBlob,convertDate, download ,validaPdf} from '../../../shared/functions/utils';
 import {TokenService} from '../../../core/auth/service/token.service';
-
+import { MessageModule } from 'primeng/message';
+import { TableModule } from 'primeng/table';
+import { CheckboxModule } from 'primeng/checkbox';
 interface FileUploadSelectEvent {
   files: File[];
 }
 
 @Component({
   selector: 'app-crear',
-  imports: [FloatLabelModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, NgClass, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule,ConfirmDialogModule,InputMaskModule,ToastModule],
+  imports: [FloatLabelModule,TableModule,CheckboxModule,SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule,ConfirmDialogModule,InputMaskModule,ToastModule, MessageModule],
   templateUrl: './crear-exhorto.html',
   styleUrl: './crear-exhorto.css',
   providers: [MessageService, ConfirmationService]

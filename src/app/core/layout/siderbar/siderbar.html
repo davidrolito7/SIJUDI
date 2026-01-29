@@ -65,9 +65,10 @@
     </aside>
 
     <!-- MENU DESPLEGABLE -->
-    <div *ngIf="showMailMenu" class="transition-all duration-300">
+    <div *ngIf="showMailMenu"   class="transition-all duration-300 h-[calc(100vh-2rem)] sticky top-4 overflow-auto"
+>
 
-        <div class="w-64 overflow-hidden border border-surface rounded-2xl flex flex-col">
+        <div class="h-full w-64 overflow-hidden border border-surface rounded-2xl flex flex-col">
             <div class="flex items-center justify-between gap-2 p-4 border-b border-surface">
                 <div class="text-xl font-medium leading-7 text-color">Exhortos</div>
             </div>
