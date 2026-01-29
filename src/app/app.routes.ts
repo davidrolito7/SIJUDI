@@ -38,7 +38,7 @@ export const routes: Routes = [
           import('./exhortos/exhortos.routes')
             .then(m => m.EXHORTOS_ROUTES)
 
-            
+
       }
     ],
   },

@@ -105,20 +105,16 @@ export class CrearTramite {
   }
 
   loadCatJuzgados() {
-    this.isLoading = true;
     this.apiService.getCatJuzgados().subscribe(
       (response) => {
         if (response.success) {
           this.catJuzgados = response.data;
-          this.isLoading = false;
 
         } else {
-          this.isLoading = false;
         }
 
       },
       (error) => {
-        this.isLoading = false;
       }
     );
   }
