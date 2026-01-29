@@ -38,11 +38,15 @@ export class Login2 implements OnInit  {
   llaveFile: File | null = null;
 
   //* === LISTAS Y DATOS TEMPORALES ===
-  objectTwoAccess : twoAccess = {
-        activo: true,
-        encodedSecret: '',
-        user: '',
-        lastLoginUTC: new Date() };
+
+  // objectTwoAccess : twoAccess = {
+  //       activo: true,
+  //       encodedSecret: '',
+  //       user: '',
+  //       lastLoginUTC: new Date() };
+
+objectTwoAccess: twoAccess | null = null;
+
 
   codigo: string = '';
   qrData: string = '';

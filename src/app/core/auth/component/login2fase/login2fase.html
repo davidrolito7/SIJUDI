@@ -14,8 +14,13 @@
                             <span class="block text-primary">Google Authenticator</span>
                         </h1>
 
-                        @if (objectTwoAccess.activo !== true ) {
-                        <div class="flex flex-col  ">
+
+                        <!-- @if (objectTwoAccess.activo !== true ) {
+                        <div class="flex flex-col  "> -->
+
+                        @if (objectTwoAccess && objectTwoAccess.activo === false)
+                        { <div class="flex flex-col  ">
+
                             <div>
                                 <p class="text-surface-600 dark:text-surface-0 lg:text-surface mb-6">
                                     Escanee este código QR o copie el código de captura manual en la aplicación de

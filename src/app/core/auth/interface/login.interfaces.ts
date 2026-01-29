@@ -4,10 +4,10 @@ export interface responseLogin{
 }
 
 export interface responseCatalogoPerfiles{
-  idSistemaPerfil : string;
+  idSistemaPerfil : number;
   descripcion : string
 }
-export interface areas{
+export interface areasResponse{
   idAreaSistema:number; 
 	area:string; 
 	idArea:number; 
