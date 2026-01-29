@@ -82,7 +82,7 @@ constructor(
 
     partesForm = new FormGroup({
         nombre: new FormControl('', Validators.required),
-        paterno: new FormControl('',Validators.required),
+        paterno: new FormControl(''),
         materno: new FormControl(''),
         genero: new FormControl(''),
         moral: new FormControl(false,{nonNullable: true,validators:[Validators.required]}),
@@ -93,7 +93,7 @@ constructor(
     });
     promoventesForm = new FormGroup({
       nombrePromo: new FormControl('', Validators.required),
-      paternoPromo: new FormControl('',Validators.required),
+      paternoPromo: new FormControl(''),
       maternoPromo: new FormControl(''),
       generoPromo: new FormControl(''),
       moralPromo: new FormControl(false,{nonNullable:true, validators: [Validators.required]}),

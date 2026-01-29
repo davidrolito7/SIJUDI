@@ -47,7 +47,7 @@
   <div [formGroup]="exhortosForm" class="grid grid-cols-12 gap-4 w-full items-end">
     <!-- Estado destino -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Estado exhortado</label>
+      <label class="block mb-2 text-sm font-medium">Estado exhortado*</label>
       <p-select id="estadoDestino" [options]="listaEstadoDestino" formControlName="estadoDestino"
         optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar estado..."
         inputId="estadoDestino-dropdown" (onChange)="cargarCatalogos($event.value)" class="w-full" fluid></p-select>
@@ -57,7 +57,7 @@
 
     <!-- Municipio destino -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Municipio Turnado</label>
+      <label class="block mb-2 text-sm font-medium">Municipio turnado*</label>
       <p-select id="municipio" [options]="listaMunicipioDestino" optionLabel="descripcion"
         formControlName="municipioDestino" appendTo="body" filter="true" filterPlaceholder="Buscar municipio..."
         inputId="municipio-dropdown" class="w-full" fluid></p-select>
@@ -67,7 +67,7 @@
 
     <!-- Materia destino -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Materia destino</label>
+      <label class="block mb-2 text-sm font-medium">Materia destino*</label>
       <p-select id="materiaEstadoDestino" [options]="listaMateriaEstadoDestino" formControlName="materiaEstadoDestino"
         optionLabel="nombre" appendTo="body" filter="true" filterPlaceholder="Buscar materia..."
         inputId="materiaEstadoDestino-dropdown" class="w-full" fluid></p-select>
@@ -77,7 +77,7 @@
 
     <!-- Materia origen -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Materia origen</label>
+      <label class="block mb-2 text-sm font-medium">Materia origen*</label>
       <p-select id="materiaOrigen" name="materiaOrigen" inputId="materia-dropdown" formControlName="materiaOrigen"
         [options]="listaMateria" optionLabel="nombre" required appendTo="body" [filter]="true"
         filterPlaceholder="Buscar materia..." (onChange)="getVias()" class="w-full" fluid></p-select>
@@ -86,7 +86,7 @@
 
     <!-- Municipio origen -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Municipio Origen</label>
+      <label class="block mb-2 text-sm font-medium">Municipio origen*</label>
       <p-select id="municipio-origen" [options]="listaMunicipioOrigen" formControlName="municipioOrigen"
         optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar municipio..."
         inputId="municipioOrigen-dropdown" class="w-full" fluid></p-select>
@@ -96,7 +96,7 @@
 
     <!-- Juzgado origen -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Juzgado Origen</label>
+      <label class="block mb-2 text-sm font-medium">Juzgado origen</label>
       <p-select id="juzgado" [options]="listaJuzgadoOrigen" optionLabel="juzgado" formControlName="juzgadoOrigen"
         appendTo="body" filter="true" filterPlaceholder="Buscar juzgado..." inputId="juzgado-dropdown" class="w-full"
         fluid></p-select>
@@ -106,7 +106,7 @@
 
     <!-- Número de expediente -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Número de expediente</label>
+      <label class="block mb-2 text-sm font-medium">Número de expediente*</label>
       <input pInputText type="text" id="noExpediente" formControlName="noExpediente" name="noExpediente" class="w-full"
         maxlength="50" />
 
@@ -115,7 +115,7 @@
 
     <!-- Número de Oficio -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Número de Oficio</label>
+      <label class="block mb-2 text-sm font-medium">Número de oficio</label>
       <input pInputText type="text" id="OficioOrigen" name="OficioOrigen" formControlName="OficioOrigen" class="w-full"
         maxlength="50" />
 
@@ -124,7 +124,7 @@
 
     <!-- Tipo de juicio -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Tipo de juicio</label>
+      <label class="block mb-2 text-sm font-medium">Tipo de juicio*</label>
       <p-select id="tipojuicio" name="tipojuicio" inputId="juicio-dropdown" formControlName="tipojuicio"
         [options]="listaTipoVias" optionLabel="descripcion" required appendTo="body" [filter]="true"
         filterPlaceholder="Buscar vía..." (onChange)="getVias()" class="w-full" fluid></p-select>
@@ -143,7 +143,7 @@
 
     <!-- Número de fojas -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Número de fojas</label>
+      <label class="block mb-2 text-sm font-medium">Número de fojas*</label>
       <p-inputNumber inputId="numeroFojas" formControlName="numeroFojas" [showButtons]="true" mode="decimal" [min]="0"
         [max]="5000" [useGrouping]="false" class="w-full" fluid></p-inputNumber>
 
@@ -152,7 +152,7 @@
 
     <!-- Días para responder -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Días para responder</label>
+      <label class="block mb-2 text-sm font-medium">Días para responder*</label>
       <p-inputNumber inputId="DiasResponder" formControlName="DiasResponder" [showButtons]="true" mode="decimal"
         [min]="0" [max]="365" [useGrouping]="false" class="w-full" fluid></p-inputNumber>
 
@@ -160,7 +160,7 @@
 
     <!-- Tipo de diligencia -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Tipo de diligencia</label>
+      <label class="block mb-2 text-sm font-medium">Tipo de diligencia*</label>
       <p-select id="tipoDiligencia" [options]="listaTipoDiligencia" formControlName="TipoDiligencia"
         optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar tipo de diligencia..."
         inputId="tipoDiligencia-dropdown" class="w-full" fluid></p-select>
@@ -299,7 +299,7 @@
               <th>Género</th>
               <th>Tipo persona</th>
               <th>Tipo parte</th>
-              <th>correo</th>
+              <th>Correo</th>
               <th>Teléfono</th>
               @if(idEstatus == 1) {
               <th>Acciones</th>
@@ -357,7 +357,7 @@
   </div>
 </div>
 
-    <!-- 
+<!-- 
     <section class="bg-gray-50 dark:bg-gray-900 mt-10">
       <div class="w-full max-w-screen-xl px-0 mx-auto ">
         <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
@@ -550,9 +550,9 @@
         </div>
       </div>
     </section> -->
-    <!--LISTA PARTES-->
+<!--LISTA PARTES-->
 
-    <!-- <section class="bg-gray-50 dark:bg-gray-900 mt-10">
+<!-- <section class="bg-gray-50 dark:bg-gray-900 mt-10">
       <div class="w-full max-w-screen-xl px-0 mx-auto lg:px-0">
         <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
           <div class="relative overflow-hidden bg-white  dark:bg-gray-800 sm:rounded-lg">
@@ -623,8 +623,8 @@
         </div>
       </div>
     </section> -->
-    <!--LISTA PROMOVENTES-->
-    <!-- <section class="bg-gray-50 dark:bg-gray-900 mt-10">
+<!--LISTA PROMOVENTES-->
+<!-- <section class="bg-gray-50 dark:bg-gray-900 mt-10">
       <div class="w-full max-w-screen-xl px-0 mx-auto lg:px-0">
         <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
           <div class="relative overflow-hidden bg-white  dark:bg-gray-800 sm:rounded-lg">
@@ -870,7 +870,7 @@
     <div class="grid grid-cols-6 gap-4 w-full items-end">
       <!-- Nombre -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Nombre de la parte</label>
+        <label class="block mb-2 text-sm font-medium">Nombre de la parte*</label>
         <input id="nombre" pInputText type="text" formControlName="nombre" class="w-full" maxlength="200" />
       </div>
 
@@ -903,7 +903,7 @@
 
       <!-- Tipo de parte -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Tipo de parte</label>
+        <label class="block mb-2 text-sm font-medium">Tipo de parte*</label>
         <p-select id="tipoParte" [options]="listaTipoParte" formControlName="tipoParte" optionLabel="descripcion"
           appendTo="body" inputId="tipoParte-dropdown" class="w-full" fluid></p-select>
       </div>
@@ -937,7 +937,7 @@
 
       <!-- Nombre del promovente -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Nombre del promovente</label>
+        <label class="block mb-2 text-sm font-medium">Nombre del promovente*</label>
         <input id="nombrePromo" pInputText type="text" formControlName="nombrePromo" class="w-full" maxlength="200" />
       </div>
 
@@ -970,7 +970,7 @@
 
       <!-- Tipo de parte -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Tipo de parte</label>
+        <label class="block mb-2 text-sm font-medium">Tipo de parte*</label>
         <p-select id="tipoPartePromo" [options]="listaTipoParte" formControlName="tipoPartePromo"
           optionLabel="descripcion" appendTo="body" inputId="tipoPartePromo-dropdown" class="w-full" fluid></p-select>
       </div>
@@ -985,7 +985,7 @@
       <!-- Teléfono -->
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Teléfono</label>
-        <p-inputmask id="telefonoPromo"  mask="(999) 999-9999" formControlName="telefonoPromo" class="w-full"
+        <p-inputmask id="telefonoPromo" mask="(999) 999-9999" formControlName="telefonoPromo" class="w-full"
           placeholder="(999) 999-9999"></p-inputmask>
       </div>
     </div>
