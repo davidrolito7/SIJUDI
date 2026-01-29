@@ -14,6 +14,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { InputMaskModule } from 'primeng/inputmask';
 import { DatePickerModule } from 'primeng/datepicker';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 
 interface EstatusExhortos {
@@ -24,7 +25,7 @@ interface EstatusExhortos {
   selector: 'app-listar',
    standalone: true,
   imports: [DatePickerModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-     BreadcrumbModule, AvatarModule, InputMaskModule],
+     BreadcrumbModule, AvatarModule, InputMaskModule,FloatLabelModule],
   templateUrl: './listar.html',
   styleUrl: './listar.css',
  
@@ -76,7 +77,7 @@ export class Listar {
     this.cargarEstatus();
 
     this.validarExhortosRecibidos = this.fb.group({
-      expOrigen: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
+      expOrigen: [''],
       idEstatusExhorto: [null, Validators.required],
       idPantalla: [1],
       fechaInicial:[],

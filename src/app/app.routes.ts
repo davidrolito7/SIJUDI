@@ -43,7 +43,4 @@ export const routes: Routes = [
     ],
   },
 
-
-//   { path: 'listar_exhortos_recibidos', component: Listar},
-
 ];

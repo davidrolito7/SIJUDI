@@ -34,30 +34,36 @@
             
 
             <div class="grid grid-cols-6 gap-4 w-full items-end">
-                 <div class="col-span-6 sm:col-span-3">
-                    <label class="block mb-2 text-sm font-medium">Estatus</label>
-                    <p-select class="w-full" [options]="catEstatusExhortos" formControlName="idEstatusExhorto"
-                        optionValue="idEstatusExhorto" fluid placeholder="Selecciona un estatus" [filter]="true"
+                 <div class="col-span-6 sm:col-span-3 p-float-label mt-4">
+                   <p-floatlabel>
+                    <p-select class="w-full" inputId="over_label" [options]="catEstatusExhortos" formControlName="idEstatusExhorto"
+                        optionValue="idEstatusExhorto" fluid 
                         optionLabel="descripcion" appendTo="body" />
+                         <label for="over_label">Estatus</label>
+                        </p-floatlabel>
                 </div>
 
-                <div class="col-span-6 sm:col-span-3">
+                <div class="col-span-6 sm:col-span-3 p-float-label mt-4">
+                <p-floatlabel>
                     <label class="block mb-2 text-sm font-medium">Exp. origen</label>
                     <input type="text" pInputText fluid formControlName="expOrigen" class="uppercase text-sm rounded-lg"
                         />
+                        </p-floatlabel>
                 </div>
 
                 
 
                 <div class="flex  gap-4  col-span-6 sm:col-span-6">
-                <div class="col-span-2 sm:col-span-1">
-                <label class="font-medium block mb-2"> Fecha Inicial </label>
-                <p-datepicker ngSkipHydration  [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="fechaInicial"  />
-                     </div>
-            <div class="col-span-2 sm:col-span-1">
-                <label class="font-medium block mb-2"> Fecha Final </label>
-                <p-datepicker ngSkipHydration  [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="fechaFinal"/>
+                <div class="col-span-2 sm:col-span-1 p-float-label mt-4">
+                    <p-floatlabel>
                 
+                <p-datepicker ngSkipHydration inputId="over_label" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="fechaInicial"  />
+                   <label for="over_label">Fecha Inicial</label> </p-floatlabel> </div>
+            <div class="col-span-2 sm:col-span-1 p-float-label mt-4">
+                <p-floatlabel>
+                <p-datepicker ngSkipHydration inputId="over_label" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="fechaFinal"/>
+              <label for="over_label">Fecha Final</label>
+             </p-floatlabel> 
             </div>
             <div class="flex items-center">
              <p-button  [outlined]="true" icon="pi pi-filter-slash" (click)="clearFecha()" />
@@ -75,7 +81,7 @@
 <!-- CONTENIDO (ya no se mete "debajo" visualmente) -->
 
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
-    <div class="flex items-start flex-col md:justify-between md:flex-row">
+    <!-- <div class="flex items-start flex-col md:justify-between md:flex-row">
         <div>
             <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
             <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
@@ -93,7 +99,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <div class="card pt-4">
         <p-table #dt1  dataKey="idTramiteElectronicoRecibido" [rows]="10"

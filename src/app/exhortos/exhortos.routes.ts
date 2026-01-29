@@ -12,6 +12,7 @@ import { CrearExhortoComponent } from './enviados/crear/crear-exhorto';
 //import { AcuerdoExhortosComponent } from './views/acuerdo-exhorto/acuerdo-exhortos/acuerdo-exhortos.component';
 //import { PromocionExhortosEnviadosComponent } from './views/promocion-exhortos-enviados/promocion-exhortos-enviados.component';
 import { redirectGuard } from '../core/auth/guard/redirect-guard';
+import { Listar } from './recibidos/listar/listar';
 
 export const EXHORTOS_ROUTES: Routes = [
   //{ path: 'exhortos', component: exhortosComponent, title: 'Exhortos'/*, canActivate: [RedirectGuard]*/ },
@@ -26,4 +27,5 @@ export const EXHORTOS_ROUTES: Routes = [
   //{ path: 'exhortos-enviados/promocion-exhortos-enviados', component: PromocionExhortosEnviadosComponent, title: 'Promocionar Exhorto Enviado', canActivate: [RedirectGuard] },
   //{ path: 'asignarJuzgado', component: RecibirExhortoJuzgadoComponent, title: 'Asignar juzgado', canActivate: [RedirectGuard] },
   //{ path: 'configuracionJuzgado', component: JuzgadoComponent, title: 'Juzgados', canActivate: [RedirectGuard]  }
+  { path: 'listar-exhortos-recibidos', component: Listar},
 ];
