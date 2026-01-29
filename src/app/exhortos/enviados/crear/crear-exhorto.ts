@@ -13,6 +13,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { Dialog,DialogModule } from "primeng/dialog";
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputMaskModule} from 'primeng/inputmask';
+import { ToastModule } from 'primeng/toast';
 import {FileUploadEvent, FileProgressEvent, FileRemoveEvent, FileUploadModule,FileUpload } from 'primeng/fileupload';
 import { CatalogoMateria, CatalogoEstadoDestino,CatalogoMunicipioDestino,CatalogoMateriasEstadoDestino, CatalogoMunicipioOrigen,CatalogoJuzgadoOrigen,tipoVia,catTipoDiligencia,partesExhortoEnviado,ProvomenteExhortoEnviado,partesExhortoEnviadoRequest,generalesExhortoEnviado,ExhortoEnviadoGuardarGeneralesRequest,EnviadoConfirmacionDatosRecibidosResponse,EnviadoArchivoRecibidoConAcuseResponse,CatalogoGenero,CONATRIB_catTipoDocumento,ListadoCatalogoTipoDocumento,archivoExhortoEnviado,CatalogoTipoParte,archivoRespuesta,detalleExhortosEnviados } from '../../interfaces/exhortos.model';
 import ValidateForm from '../../../helpers/validateform';
@@ -34,7 +35,7 @@ interface FileUploadSelectEvent {
 
 @Component({
   selector: 'app-crear',
-  imports: [FloatLabelModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, NgClass, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule,ConfirmDialogModule,InputMaskModule],
+  imports: [FloatLabelModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, NgClass, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule,ConfirmDialogModule,InputMaskModule,ToastModule],
   templateUrl: './crear-exhorto.html',
   styleUrl: './crear-exhorto.css',
   providers: [MessageService, ConfirmationService]
@@ -125,7 +126,7 @@ constructor(
   tipoDiligenciaSelect!: catTipoDiligencia;
   formSubmitted: boolean = false;
   formSubmittedPartes: boolean = false;
-  formSubmitted3: boolean = false;
+  formSubmittedPromovente: boolean = false;
   materiaSelect!: any;
   listaMateria:CatalogoMateria[]=[];
   band: boolean = false;
@@ -137,6 +138,7 @@ constructor(
   mostrarBotonEnviarGenerales: boolean = false;
   mostrarBotonEnviarArchivos: boolean = false;
   partesDialog: boolean = false;
+  promoDialog: boolean=false;
  // @ViewChild('modalconfirmacion') modalconfirmacion!: ModalComponent;
   @ViewChild('modal2') modal2!: ModalComponent;
   @ViewChild('modal1') modal1!: ModalComponent;
@@ -149,11 +151,11 @@ constructor(
 @ViewChild('fileUpload') fileUpload!: FileUpload;
 
   //boleans modal confirmacion
-  confirmacionGuardarExhorto: boolean = false
-  confirmacionEnviarGenerales: boolean = false
-  confirmacionEnviarArchivos: boolean = false
-  confirmacionAgregarPersona: boolean = false
-  confirmacionAgregarPromovente: boolean = false
+  //confirmacionGuardarExhorto: boolean = false
+  //confirmacionEnviarGenerales: boolean = false
+  //confirmacionEnviarArchivos: boolean = false
+  //confirmacionAgregarPersona: boolean = false
+  //confirmacionAgregarPromovente: boolean = false
   confirmacionEliminarPromovente: boolean = false
   confirmacionEliminarDocumento: boolean = false
   confirmacionAplicarFirmas:boolean=false;
@@ -693,7 +695,7 @@ onSelect(event: FileUploadSelectEvent) {
             //this.router.navigate(['/inicio/exhortos/exhortos']);
           }
       });
-      this.confirmacionGuardarExhorto = false
+      //this.confirmacionGuardarExhorto = false
    }
 
  cargarCatalogos(estado:CatalogoEstadoDestino){
@@ -837,12 +839,18 @@ cargaMateriasDestino(estado: CatalogoEstadoDestino): Promise<void> {
     //this.catalogoSelect = null;
   }
 
-  abrirConfirmacionGuardarOActualizarExhorto(){
+  /*abrirConfirmacionGuardarOActualizarExhorto(){
     this.confirmacionGuardarExhorto = true
-  }
-
+  }*/
 
   guardarOActualizarExhorto() {
+    this.confirmationService.confirm({
+      key: 'guardarExhorto',
+      accept: () => this.onGuardarOActualizarExhorto(),
+      reject: () => { }
+    });
+  }
+  onGuardarOActualizarExhorto() {
     if (this.exhortosForm.valid && this.idExhortoEditando) {
       this.actualizarExhorto();
     } else if(this.exhortosForm.valid){
@@ -931,7 +939,7 @@ actualizarExhorto() {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error });
       }
     });
-    this.confirmacionGuardarExhorto = false
+    //this.confirmacionGuardarExhorto = false
   
 }
 
@@ -946,6 +954,14 @@ actualizarExhorto() {
   }
 
   eliminarPromovente(promo: ProvomenteExhortoEnviado) {
+    this.confirmationService.confirm({
+      key: 'eliminarPromovente',
+      accept: () => this.onEliminarPromovente(promo),
+      reject: () => { }
+    });
+
+  }
+  onEliminarPromovente(promo: ProvomenteExhortoEnviado) {
     //console.log('Eliminar promovente:', promo);
     if (promo.idPromoventeExhortoEnviado === undefined || promo.idPromoventeExhortoEnviado === null|| promo.idPromoventeExhortoEnviado === 0) {
       // Si aún no ha sido guardado en la BD, lo eliminamos de la lista
@@ -960,6 +976,14 @@ actualizarExhorto() {
   }
 
   eliminarParte(partes: partesExhortoEnviado) {
+    this.confirmationService.confirm({
+      key: 'eliminarParte',
+      accept: () => this.onEliminarParte(partes),
+      reject: () => { }
+    });
+  }
+
+  onEliminarParte(partes: partesExhortoEnviado) {
   //console.log('Eliminar parte:', partes);
   if (partes.idExhortoEnviado === undefined || partes.idExhortoEnviado === null || partes.idExhortoEnviado === 0) {
     // Si aún no ha sido guardado en la BD, lo eliminamos de la lista
@@ -1180,7 +1204,7 @@ actualizarExhorto() {
     });
   }
 
-  abrirConfirmacionAgregarPersona(){
+  /*abrirConfirmacionAgregarPersona(){
     if(this.partesForm.valid)
     {
       this.confirmacionAgregarPersona = true
@@ -1189,10 +1213,22 @@ actualizarExhorto() {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
       this.formSubmittedPartes = true;
     }
+  }*/
+  agregarParte(){
+    this.confirmationService.confirm({
+      key: 'agregarParte',
+      accept: () => this.onAgregarParte(),
+      reject: () => { }
+    });
   }
-
-  AgregarParte(){
-    
+  onAgregarParte(){
+    if(!this.partesForm.valid)
+    {
+      ValidateForm.validateAllFormFields(this.partesForm);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
+      return;
+    }
+        this.formSubmittedPartes = true;
         var genero={} as CatalogoGenero;
         genero=this.partesForm.value.genero as any;
 
@@ -1218,13 +1254,16 @@ actualizarExhorto() {
         this.partesForm.reset();
         //this.partesForm.value.moral=false;
         this.messageService.add({ severity: 'success', summary: 'OK', detail: "Parte agregada" });
-        this.formSubmitted3 = false;
-        this.confirmacionAgregarPersona = false
+        //this.formSubmitted3 = false;
+        //this.confirmacionAgregarPersona = false
+        
+        this.partesDialog = false; //cerramos el modal
+
         return;
 
   }
 
-  abrirConfirmacionAgregarPromovente(){
+  /*abrirConfirmacionAgregarPromovente(){
     if(this.promoventesForm.valid)
       {
       this.confirmacionAgregarPromovente = true
@@ -1233,10 +1272,22 @@ actualizarExhorto() {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
         this.formSubmitted3 = true;
       }
+  }*/
+  agregarPromovente(){
+    this.confirmationService.confirm({
+      key: 'agregarPromovente',
+      accept: () => this.onAgregarPromovente(),
+      reject: () => { }
+    });
   }
+  onAgregarPromovente(){
+    if(!this.promoventesForm.valid)
+    {
+        ValidateForm.validateAllFormFields(this.promoventesForm);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
+    }
+        this.formSubmittedPromovente = true;
 
-  AgregarPromovente(){
-    
         var genero={} as CatalogoGenero;
         genero=this.promoventesForm.value.generoPromo as any;
 
@@ -1266,8 +1317,9 @@ actualizarExhorto() {
         this.promoventesForm.reset();
         //this.partesForm.value.moral=false;
         this.messageService.add({ severity: 'success', summary: 'OK', detail: "Parte agregada" });
-        this.formSubmitted3 = false;
-        this.confirmacionAgregarPromovente = false
+        //this.confirmacionAgregarPromovente = false
+
+        this.promoDialog = false; //cerramos el modal
         return;
 
   }
@@ -1419,15 +1471,21 @@ actualizarExhorto() {
   }
 
   
-abrirConfirmacionEnviarGenerales(){ 
-  if(this.idExhorto !== undefined){
-    this.confirmacionEnviarGenerales = true
-  }else{
-    this.messageService.add({ severity: 'error', summary: 'Error', detail: "No se ha guardado el Exhorto" });
-  } 
-}
-
-  enviarGenerales(){
+  /*abrirConfirmacionEnviarGenerales(){ 
+    if(this.idExhorto !== undefined){
+      this.confirmacionEnviarGenerales = true
+    }else{
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: "No se ha guardado el Exhorto" });
+    } 
+  }*/
+  enviarGenerales() {
+    this.confirmationService.confirm({
+      key: 'enviarGenerales',
+      accept: () => this.onEnviarGenerales(),
+      reject: () => { }
+    });
+  }
+  onEnviarGenerales(){
     if(this.idExhorto !== undefined)
     {
       this.ExhortosService.enviarGeneralesExhortoEnviado(this.idExhorto).subscribe({
@@ -1456,20 +1514,26 @@ abrirConfirmacionEnviarGenerales(){
     {
       this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: "No existe exhorto para enviar" });
     } 
-    this.confirmacionEnviarGenerales = false
+    //this.confirmacionEnviarGenerales = false
   }
 
-  abrirConfirmacionEnvioArchivos(){
+  /*abrirConfirmacionEnvioArchivos(){
     if(this.idExhorto !== undefined)
     {
       this.confirmacionEnviarArchivos = true
     }else{ 
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se a guardado el exhorto' });
     }
+  }*/
+
+  enviarArchivos() {
+    this.confirmationService.confirm({
+      key: 'enviarArchivos',
+      accept: () => this.onEnviarArchivos(),
+      reject: () => { }
+    });
   }
-
-
-  enviarArchivos(){
+  onEnviarArchivos(){
     //this.modalService.open('modal2');
     if(this.idExhorto !== undefined)
       {
@@ -1508,7 +1572,7 @@ abrirConfirmacionEnviarGenerales(){
         }
       });
     }
-    this.confirmacionEnviarArchivos = false
+    //this.confirmacionEnviarArchivos = false
   }
 
   setupReactiveListeners() {
@@ -1936,8 +2000,21 @@ return new Promise((resolve, reject) => {
     }
 
   }
-  openNew(){
+  openNewParte(){
     this.formSubmittedPartes = false;
     this.partesDialog = true;
   }
+  hideDialogParte() {
+        this.partesDialog = false;
+        this.formSubmittedPartes = false;
+    }
+ 
+  openNewPromovente(){
+    this.formSubmittedPromovente = false;
+    this.promoDialog = true;
+  }
+  hideDialogPromovente(){
+    this.promoDialog=false;
+    this.formSubmittedPromovente= false;
+  }  
 }

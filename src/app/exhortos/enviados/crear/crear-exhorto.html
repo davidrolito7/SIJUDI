@@ -1,3 +1,4 @@
+
 <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 mt-5">
 
   <div class="mx-auto max-w-screen-xl px-4 lg:px-6">
@@ -396,7 +397,7 @@
                 <div class="relative overflow-hidden bg-white  dark:bg-gray-800 sm:rounded-lg">
                   <p-toolbar class="mb-6">
                         <ng-template #start>
-                            <p-button label="Agregar parte" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+                            <p-button label="Agregar parte" icon="pi pi-plus" class="mr-2" (onClick)="openNewParte()" />
                       </ng-template>
                   </p-toolbar>
                   <div
@@ -471,7 +472,7 @@
                 <div class="relative overflow-hidden bg-white  dark:bg-gray-800 sm:rounded-lg">
                    <p-toolbar class="mb-6">
                         <ng-template #start>
-                            <p-button label="Agregar promovente" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+                            <p-button label="Agregar promovente" icon="pi pi-plus" class="mr-2" (onClick)="openNewPromovente()" />
                       </ng-template>
                   </p-toolbar>
                   <div
@@ -564,10 +565,17 @@
     icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA ELIMINAR PROMOVENTES -->
-<app-confirm-dialog key="eliminarPromovente" title="Confirmación" message="¿Estás seguro de eeliminar el promovente?"
+<app-confirm-dialog key="eliminarPromovente" title="Confirmación" message="¿Estás seguro de eliminar el promovente?"
     icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
 </app-confirm-dialog>
-
+<!--* MODAL DE CONFIRMACION PARA AGREGAR PARTES -->
+<app-confirm-dialog key="agregarParte" title="Confirmación" message="¿Estás seguro de agregar la parte?"
+    icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA AGREGAR PROMOVENTES -->
+<app-confirm-dialog key="agregarPromovente" title="Confirmación" message="¿Estás seguro de agregar el promovente?"
+    icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
 
 <!--* RESPONSE ENVIAR PROMOCION -->
 <!--<app-confirm-dialog key="success" title="Confirmación"
@@ -675,11 +683,11 @@
     </app-modal-component>
 </div>
 
-<!--
-<p-dialog [(visible)]="DialogPartes" [style]="{ width: '450px' }" header="Agregra parte" [modal]="true">
+<!--DIALOG PARA AGREGAR PARTES-->
+<p-dialog [(visible)]="partesDialog" [style]="{ width: '600px' }" header="Agregra parte" [modal]="true">
   <div class="overflow-x-auto">
     <form [formGroup]="partesForm" [ngClass]="{ 'submitted': formSubmittedPartes }">
-      <div class="p-4 grid gap-4 sm:grid-cols-4 sm:gap-6">
+      <div class="p-4 grid gap-4 sm:grid-cols-2 sm:gap-6">
         <div class="w-full">
           <div class="flex items-center gap-3">
               <input
@@ -816,9 +824,159 @@
         </div>
     </form>
   </div>
+  <ng-template #footer>
+      <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogParte()" />
+      <p-button label="Agregar" icon="pi pi-check" (click)="agregarParte()" />
+  </ng-template>
 </p-dialog>
-<p-confirmdialog [style]="{ width: '450px' }" />
--->
+<!--DIALOG PARA AGREGAR PROMOVENTES-->
+<p-dialog [(visible)]="promoDialog" [style]="{ width: '600px' }" header="Agregra promovente" [modal]="true">
+   <div class="overflow-x-auto">
+  <form [formGroup]="promoventesForm" [ngClass]="{ 'submitted': formSubmittedPromovente }">
+    <div class="overflow-x-auto">
+      <div class="p-4 grid gap-4 sm:grid-cols-2 sm:gap-6">
+
+        <div class="w-full">
+          <div class="flex items-center gap-3">
+            <input
+              id="moralPromo"
+              type="checkbox"
+              formControlName="moralPromo"
+              class="rounded border-gray-300 text-violet-600 shadow-sm focus:ring-violet-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-violet-600"
+              />
+              <label for="moralPromo" class="text-sm font-medium text-gray-700 dark:text-white">
+                ¿Es persona moral?
+              </label>
+          </div>
+        </div>
+        <div class="w-full">
+          <div class="mt-4">
+            <p-float-label>
+              <input
+                id="nombrePromo"
+                pInputText
+                type="text"
+                formControlName="nombrePromo"
+                [(ngModel)]="promoventesForm.value.nombrePromo"
+                class="w-full"
+                maxlength="200"
+                />
+                <label for="nombrePromo">Nombre del promovente</label>
+                </p-float-label>
+            </div>
+          </div>
+          <div class="w-full">
+            <div class="p-float-label mt-4">
+                <p-float-label>
+                  <input
+                    id="paternoPromo"
+                    pInputText
+                    type="text"
+                    formControlName="paternoPromo"
+                    [(ngModel)]="promoventesForm.value.paternoPromo"
+                    class="w-full"
+                    maxlength="50"
+                    />
+                  <label for="paternoPromo">Apellido paterno</label>
+                </p-float-label>
+            </div>
+          </div>
+          <div class="w-full">
+            <div class="p-float-label mt-4">
+              <p-float-label>
+                  <input
+                    id="maternoPromo"
+                    pInputText
+                    type="text"
+                    formControlName="maternoPromo"
+                    [(ngModel)]="promoventesForm.value.maternoPromo"
+                    class="w-full"
+                    maxlength="50"
+                    />
+                  <label for="maternoPromo">Apellido materno</label>
+                </p-float-label>
+            </div>
+            </div>
+            <div class="w-full">
+              <div class="p-float-label mt-4">
+                <p-float-label>
+                    <p-select
+                      id="generoPromo"
+                      [options]="listagenero"
+                      [(ngModel)]="generoPromoSelect"
+                      formControlName="generoPromo"
+                      optionLabel="descripcion"
+                      [style]="{ 'width': '100%' }"
+                      appendTo="body"
+                      inputId="generoPromo-dropdown"
+                    ></p-select>
+                  <label for="generoPromo-dropdown">Género</label>
+                </p-float-label>
+              </div>
+            </div>
+
+            <div class="w-full">
+              <div class="p-float-label mt-4" [ngClass]="{
+                  'error-border': formSubmittedPromovente && promoventesForm.controls['tipoPartePromo'].invalid
+                }">
+              <p-float-label>
+                <p-select
+                  id="tipoPartePromo"
+                  [options]="listaTipoParte"
+                  [(ngModel)]="tipoPartePromoSelect"
+                  formControlName="tipoPartePromo"
+                  optionLabel="descripcion"
+                  [style]="{ 'width': '100%' }"
+                  appendTo="body"
+                  inputId="tipoPartePromo-dropdown"
+                ></p-select>
+                <label for="tipoPartePromo-dropdown">Tipo de parte</label>
+                </p-float-label>
+              </div>
+            </div>
+            <div class="w-full">
+              <div class="p-float-label mt-4">
+                <p-float-label>
+                  <input
+                    id="correoPromo"
+                    pInputText
+                    type="text"
+                    formControlName="correoElectronicoPromo"
+                    [(ngModel)]="promoventesForm.value.correoElectronicoPromo"
+                    class="w-full"
+                    maxlength="50"
+                    />
+                  <label for="correoElectronicoPromo">Correo electrónico</label>
+                  </p-float-label>
+                </div>
+            </div>
+            <div class="w-full">
+                <div class="p-float-label mt-4">
+                  <p-float-label>
+                    <p-inputmask
+                      id="telefonoPromo"
+                      mask="9999999999"
+                      formControlName="telefonoPromo"
+                      [(ngModel)]="promoventesForm.value.telefonoPromo"
+                      class="w-full"
+                      placeholder="9999999999"
+                      />
+                    <label for="telefonoPromo">Teléfono</label>
+                    </p-float-label>
+                </div>
+            </div>
+        </div>
+      </div>
+    </form>
+   </div>
+   <ng-template #footer>
+      <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogPromovente()" />
+      <p-button label="Agregar" icon="pi pi-check" (click)="agregarPromovente()" />
+  </ng-template>
+</p-dialog>
+<p-confirmdialog [style]="{ width: '600px' }" />
+<p-toast></p-toast>
+
                     
                                  
                                 
