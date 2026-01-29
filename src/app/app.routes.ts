@@ -7,6 +7,7 @@ import { Form } from './form/form';
 import { authMatchGuard } from './core/auth/guard/auth-guard';
 import { Perfil } from './core/auth/component/perfil/perfil';
 import { redirectGuard } from './core/auth/guard/redirect-guard';
+import { Listar } from './exhortos/recibidos/listar/listar';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -31,6 +32,13 @@ export const routes: Routes = [
         path: 'tramites-juicio-oral', loadChildren: () =>
           import('./tramites-juicio-oral/tramites-juicio-oral.routes')
             .then(m => m.TRAMITES_JUICIO_ORAL_ROUTES)
+      },
+      {
+        path: 'exhortos', loadChildren: () =>
+          import('./exhortos/exhortos.routes')
+            .then(m => m.EXHORTOS_ROUTES)
+
+            
       }
     ],
   },

@@ -18,6 +18,6 @@ export class ConfirmDialog {
   @Input() acceptLabel = 'Aceptar';
   @Input() rejectLabel = 'Cancelar';
   @Input() acceptStyleClass = 'btn-rojo';
-    @Input() showAccept = true;
+  @Input() showAccept = true;
   @Input() showReject = true;
 }

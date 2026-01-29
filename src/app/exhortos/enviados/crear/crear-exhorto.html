@@ -1,0 +1,986 @@
+
+<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 mt-5">
+
+  <div class="mx-auto max-w-screen-xl px-4 lg:px-6">
+
+    <section class="flex items-center mb-3 bg-gray-50 dark:bg-gray-900 md:sticky top-16 z-10 p-3 shadow-sm">
+      <div class="w-full max-w-screen-xl px-0 mx-auto ">
+        <!-- Start coding here -->
+        <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+          <div class="flex-row items-center justify-between p-4 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
+            <div>
+              <p class="mr-3 text-3xl font-semibold dark:text-white">Crear Exhorto </p>
+              <h5 class="mr-3 font-semibold dark:text-white text-gray-500">Inicia un exhorto</h5>
+            </div>
+            <div class="flex items-center">
+              <div class="flex items-center">
+                @if(tienePermisoGuardar){
+                  @if (mostrarBotonGuardar) {
+                    <div class="relative mr-4">
+                      <button type="button" (click)="guardarOActualizarExhorto()"
+                        class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">Guardar
+                      </button>
+                    </div>
+                  }
+                }
+
+                @if (mostrarBotonEnviarGenerales) {
+                  <div class="relative mr-4">
+                    @if(tienePermisoEnviarGenerales){
+                      <button type="button" (click)="enviarGenerales()"
+                        class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">Enviar generales
+                      </button>
+                    }
+                  </div>
+                }
+                @if (mostrarBotonEnviarArchivos) {
+                  <div class="relative mr-4">
+                    @if(tienePermisoEnviarArchvios){
+                      <button type="button" (click)="enviarArchivos()"
+                        class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">Enviar archivos
+                      </button>
+                      
+                    }
+                  </div>
+                }
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+    <section class="bg-gray-50 dark:bg-gray-900 mt-10">
+      <div class="w-full max-w-screen-xl px-0 mx-auto ">
+        <!-- Start coding here -->
+        <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+          <div class=" relative overflow-hidden bg-white dark:bg-gray-800 sm:rounded-lg mt-0">
+            <div
+              class="flex-row items-center justify-between p-4 pb-0 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
+              <div>
+                <h5 class="mr-3 font-semibold dark:text-white">Generales</h5>
+                <p class="text-gray-500 dark:text-gray-400">Datos generales del exhorto </p>
+              </div>
+              <!-- Modal de búsqueda flotante -->
+              <!--<div *ngIf="searchModalOpen" class="w-35 bg-white p-2 rounded-lg shadow-lg relative"
+              (mousedown)="preventModalClose($event)">
+              !-- Contenedor para input y botón --
+              <div class="flex gap-2">
+                !-- Input de búsqueda --
+                <input type="text" [(ngModel)]="searchQuery" (input)="filterStates()"
+                  class="flex-1 p-2 text-sm rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Buscar municipio" />
+                  !-- Botón para cerrar el modal --
+                  <button (click)="closeSearchModal()"
+                    class="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    Cerrar
+                  </button>
+                </div>
+              </div>-->
+
+
+            </div>
+
+          </div>
+          <!-- sm:col-span-2 -->
+          <div class="overflow-x-auto">
+            <form [formGroup]="exhortosForm" [ngClass]="{ 'submitted': formSubmitted }">
+              <div class="p-4 grid gap-4 sm:grid-cols-4 sm:gap-6">
+
+                <!-- Select con opciones -->
+                <div class="w-full">
+                                    <div class="p-float-label mt-4" [ngClass]="{
+                                        'error-border': formSubmitted && exhortosForm.controls['estadoDestino'].invalid
+                                      }">
+                    <p-float-label>
+                      <p-select
+                        id="estadoDestino"
+                        [options]="listaEstadoDestino"
+                        [(ngModel)]="estadoDestinoSelect"
+                        formControlName="estadoDestino"
+                        optionLabel="descripcion"
+                        [style]="{'width': '100%'}"
+                        appendTo="body"
+                        filter="true"
+                        filterPlaceholder="Buscar estado..."
+                        inputId="estadoDestino-dropdown"
+                        (onChange)="cargarCatalogos($event.value)">
+                      </p-select>
+                    <label for="estadoDestino-dropdown">Estado exhortado</label>
+                    </p-float-label>
+                  </div>
+                </div>
+
+                <div class="w-full">
+                                    <div class="p-float-label mt-4" [ngClass]="{
+                                        'error-border': formSubmitted && exhortosForm.controls['municipioDestino'].invalid
+                                      }">
+                    <p-float-label>
+                      <p-select
+                        id="municipio"
+                        [options]="listaMunicipioDestino"
+                        [(ngModel)]="municipioDestinoSelect"
+                        optionLabel="descripcion"
+                        formControlName="municipioDestino"
+                        [style]="{'width': '100%'}"
+                        appendTo="body"
+                        filter="true"
+                        filterPlaceholder="Buscar municipio..."
+                        inputId="municipio-dropdown"
+                      ></p-select>
+                    <label for="municipio-dropdown">Municipio Turnado</label>
+                    </p-float-label>
+                  </div>
+                </div>
+                <div class="w-full">
+                                    <div class="p-float-label mt-4" [ngClass]="{
+                                        'error-border': formSubmitted && exhortosForm.controls['materiaEstadoDestino'].invalid
+                                      }">
+                    <p-float-label>
+                      <p-select
+                        id="materiaEstadoDestino"
+                        [options]="listaMateriaEstadoDestino"
+                        [(ngModel)]="materiaEstadoDestinoSelect"
+                        formControlName="materiaEstadoDestino"
+                        optionLabel="nombre"
+                        [style]="{'width': '100%'}"
+                        appendTo="body"
+                        filter="true"
+                        filterPlaceholder="Buscar materia..."
+                        inputId="materiaEstadoDestino-dropdown"
+                      ></p-select>
+                    <label for="materiaEstadoDestino-dropdown">Materia destino</label>
+                    </p-float-label>
+                  </div>
+                </div>
+                <div class="w-full">
+                  <div class="p-float-label mt-4" [ngClass]="{ 'error-border': formSubmitted &&  exhortosForm.controls['materiaOrigen'].invalid }">
+                    <p-floatLabel>
+                      <p-select
+                        id="materiaOrigen"
+                        name="materiaOrigen"
+                        inputId="materia-dropdown"
+                        formControlName="materiaOrigen"
+                        [options]="listaMateria"
+                        [(ngModel)]="materiaSelect"
+                        optionLabel="nombre"
+                        required
+                        appendTo="body"
+                        [style]="{'width': '100%'}"
+                        [filter]="true"
+                        filterPlaceholder="Buscar materia..."
+                        (onChange)="getVias()"
+                        class="w-full"
+                      ></p-select>
+                      <label for="materia-dropdown">Materia origen</label>
+                    </p-floatLabel>
+                  </div>
+                  <!-- Mensaje de error -->
+                </div>
+                <div class="w-full">
+                                    <div class="p-float-label mt-4" [ngClass]="{
+                                        'error-border': formSubmitted && exhortosForm.controls['municipioOrigen'].invalid
+                                      }">
+                    <p-float-label>
+                      <p-select
+                        id="municipio-origen"
+                        [options]="listaMunicipioOrigen"
+                        [(ngModel)]="municipioOrigenSelect"
+                        formControlName="municipioOrigen"
+                        optionLabel="descripcion"
+                        [style]="{ 'width': '100%' }"
+                        appendTo="body"
+                        filter="true"
+                        filterPlaceholder="Buscar municipio..."
+                        inputId="municipioOrigen-dropdown"
+                      ></p-select>
+                    <label for="municipioOrigen-dropdown">Municipio Origen</label>
+                    </p-float-label>
+                  </div>
+                </div>
+                <div class="w-full">
+                                    <div class="p-float-label mt-4" [ngClass]="{
+                                        'error-border': formSubmitted && exhortosForm.controls['juzgadoOrigen'].invalid
+                                      }">
+                    <p-float-label>
+                      <p-select
+                        id="juzgado"
+                        [options]="listaJuzgadoOrigen"
+                        [(ngModel)]="JuzgadoOrigenSelect"
+                        optionLabel="juzgado"
+                        formControlName="juzgadoOrigen"
+                        [style]="{ 'width': '100%' }"
+                        appendTo="body"
+                        filter="true"
+                        filterPlaceholder="Buscar juzgado..."
+                        inputId="juzgado-dropdown"
+                      ></p-select>
+                    <label for="juzgado-dropdown">Juzgado Origen</label>
+                    </p-float-label>
+                  </div>
+                </div>
+
+                <div class="w-full">
+                  <div class="p-float-label mt-4">
+                    <p-float-label>
+                      <input
+                        pInputText
+                        type="text"
+                        id="noExpediente"
+                        formControlName="noExpediente"
+                        name="noExpediente"
+                        class="w-full"
+                        maxlength="50"
+                        />
+                        <label for="noExpediente">Número de expediente</label>
+                      </p-float-label>
+                    </div>
+                  </div>
+                  <div class="w-full">
+                    <div class="p-float-label mt-4">
+                      <p-float-label>
+                        <input
+                          pInputText
+                          type="text"
+                          id="OficioOrigen"
+                          name="OficioOrigen"
+                          formControlName="OficioOrigen"
+                          class="w-full"
+                          maxlength="50"
+                          />
+                          <label for="OficioOrigen">Número de Oficio</label>
+                        </p-float-label>
+                      </div>
+                    </div>
+
+                    <!--<div class="w-full">
+                    <div class="p-float-label mt-4">
+                      <input
+                        pInputText
+                        type="text"
+                        id="Tipojuicio"
+                        name="Tipojuicio"
+                        formControlName="Tipojuicio"
+                        class="w-full"
+                        maxlength="100"
+                        />
+                        <label for="Tipojuicio">Tipo de juicio</label>
+                      </div>
+                    </div>-->
+                    <div class="w-full">
+                      <div class="p-float-label mt-4" [ngClass]="{ 'error-border': formSubmitted &&  exhortosForm.controls['tipojuicio'].invalid }">
+                        <p-floatLabel>
+                          <p-select
+                            id="tipojuicio"
+                            name="tipojuicio"
+                            inputId="juicio-dropdown"
+                            formControlName="tipojuicio"
+                            [options]="listaTipoVias"
+                            [(ngModel)]="tipoViaSelect"
+                            optionLabel="descripcion"
+                            required
+                            [style]="{ 'width': '100%' }"
+                            appendTo="body"
+                            [filter]="true"
+                            filterPlaceholder="Buscar vía..."
+                            (onChange)="getVias()"
+                            class="w-full"
+                          ></p-select>
+                          <label for="juicio-dropdown">Tipo de juicio</label>
+                        </p-floatLabel>
+                      </div>
+                      <!-- Mensaje de error -->
+                    </div>
+                    <div class="w-full">
+                      <div class="p-float-label mt-4">
+                        <p-float-label>
+                          <input
+                            pInputText
+                            type="text"
+                            id="nombreJuez"
+                            name="nombreJuez"
+                            formControlName="nombreJuez"
+                            class="w-full"
+                            maxlength="100"
+                            />
+                          <label for="nombreJuez">Nombre de juez</label>
+                          </p-float-label>
+                        </div>
+                      </div>
+                      <div class="w-full">
+                                    <div class="p-float-label mt-4" [ngClass]="{
+                                        'error-border': formSubmitted && exhortosForm.controls['numeroFojas'].invalid
+                                      }">
+                          <p-float-label>
+                            <p-inputNumber
+                              inputId="numeroFojas"
+                              formControlName="numeroFojas"
+                              [showButtons]="true"
+                              mode="decimal"
+                              [min]="0"
+                              [max]="5000"
+                              [useGrouping]="false"
+                              class="w-full">
+                            </p-inputNumber>
+                          <label for="numeroFojas">Número de fojas</label>
+                          </p-float-label>
+                        </div>
+                      </div>
+                      <div class="w-full">
+                                    <div class="p-float-label mt-4" [ngClass]="{
+                                        'error-border': formSubmitted && exhortosForm.controls['DiasResponder'].invalid
+                                      }">
+                          <p-float-label>
+                            <p-inputNumber
+                              inputId="DiasResponder"
+                              formControlName="DiasResponder"
+                              [showButtons]="true"
+                              mode="decimal"
+                              [min]="0"
+                              [max]="365"
+                              [useGrouping]="false"
+                              class="w-full">
+                            </p-inputNumber>
+                          <label for="DiasResponder">Días para responder</label>
+                          </p-float-label>
+                        </div>
+                      </div>
+                      <div class="w-full">
+                                    <div class="p-float-label mt-4" [ngClass]="{
+                                        'error-border': formSubmitted && exhortosForm.controls['TipoDiligencia'].invalid
+                                      }">
+                          <p-float-label>
+                            <p-select
+                              id="tipoDiligencia"
+                              [options]="listaTipoDiligencia"
+                              [(ngModel)]="tipoDiligenciaSelect"
+                              formControlName="TipoDiligencia"
+                              optionLabel="descripcion"
+                              [style]="{ 'width': '100%' }"
+                              appendTo="body"
+                              filter="true"
+                              filterPlaceholder="Buscar tipo de diligencia..."
+                              inputId="tipoDiligencia-dropdown"
+                            ></p-select>
+                          <label for="tipoDiligencia-dropdown">Tipo de diligencia</label>
+                          </p-float-label>
+                        </div>
+                      </div>
+                      <div class="w-full sm:col-span-4">
+                        <div class="p-float-label mt-4">
+                          <p-float-label>
+                            <textarea
+                              id="observaciones"
+                              formControlName="observaciones"
+                              rows="4"
+                              pInputTextarea
+                              class="w-full"
+                              maxlength="1000">
+                            </textarea>
+                          <label for="observaciones">Observaciones</label>
+                          </p-float-label>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!--LISTA PARTES-->
+          
+          <section class="bg-gray-50 dark:bg-gray-900 mt-10">
+            <div class="w-full max-w-screen-xl px-0 mx-auto lg:px-0">
+              <!-- Start coding here -->
+              <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                <div class="relative overflow-hidden bg-white  dark:bg-gray-800 sm:rounded-lg">
+                  <p-toolbar class="mb-6">
+                        <ng-template #start>
+                            <p-button label="Agregar parte" icon="pi pi-plus" class="mr-2" (onClick)="openNewParte()" />
+                      </ng-template>
+                  </p-toolbar>
+                  <div
+                    class="flex-row items-center justify-between p-4 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
+                    <div>
+                      <h5 class="mr-3 font-semibold dark:text-white">Partes</h5>
+                    </div>
+
+                  </div>
+
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                      <tr>
+                        <th scope="col" class="px-4 py-3">Nombre</th>
+                        <th scope="col" class="px-4 py-3">Apellido paterno</th>
+                        <th scope="col" class="px-4 py-3">Apellido materno</th>
+                        <th scope="col" class="px-4 py-3">Género</th>
+                        <th scope="col" class="px-4 py-3">Tipo persona</th>
+                        <th scope="col" class="px-4 py-3">Tipo parte</th>
+                        <th scope="col" class="px-4 py-3">correo</th>
+                        <th scope="col" class="px-4 py-3">Teléfono</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (partes of listaPartes; track partes; let i = $index) {
+                        <tr
+                          class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                          [ngClass]="{ 'opacity-50': !partes.activo }">
+                          <th scope="row"
+                            class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {{ partes.nombre }}
+                          </th>
+                          <td class="px-6 py-3">
+                            {{ partes.apellidoPaterno }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ partes.apellidoMaterno }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ partes.genero }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ partes.esPersonaMoral ? "Moral":"Física" }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ partes.tipoParteNombre }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ partes.correoElectronico }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ partes.telefono }}
+                          </td>
+                          @if(idEstatus == 1 ){ <!--//Pendiente de enviar-->
+                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="eliminarParte(partes)"></p-button>
+                          }
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!--LISTA PROMOVENTES-->
+          <section class="bg-gray-50 dark:bg-gray-900 mt-10">
+            <div class="w-full max-w-screen-xl px-0 mx-auto lg:px-0">
+              <!-- Start coding here -->
+              <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                <div class="relative overflow-hidden bg-white  dark:bg-gray-800 sm:rounded-lg">
+                   <p-toolbar class="mb-6">
+                        <ng-template #start>
+                            <p-button label="Agregar promovente" icon="pi pi-plus" class="mr-2" (onClick)="openNewPromovente()" />
+                      </ng-template>
+                  </p-toolbar>
+                  <div
+                    class="flex-row items-center justify-between p-4 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
+                    <div>
+                      <h5 class="mr-3 font-semibold dark:text-white">Promoventes</h5>
+                    </div>
+
+                  </div>
+
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                      <tr>
+                        <th scope="col" class="px-4 py-3">Nombre</th>
+                        <th scope="col" class="px-4 py-3">Apellido paterno</th>
+                        <th scope="col" class="px-4 py-3">Apellido materno</th>
+                        <th scope="col" class="px-4 py-3">Género</th>
+                        <th scope="col" class="px-4 py-3">Tipo persona</th>
+                        <th scope="col" class="px-4 py-3">Tipo parte</th>
+                        <th scope="col" class="px-4 py-3">Correo</th>
+                        <th scope="col" class="px-4 py-3">Teléfono</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (promo of listaPromovetes; track promo; let i = $index) {
+                        <tr
+                          class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                          [ngClass]="{ 'opacity-50': !promo.activo }">
+                          <th scope="row"
+                            class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {{ promo.nombre }}
+                          </th>
+                          <td class="px-6 py-3">
+                            {{ promo.apellidoPaterno }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ promo.apellidoMaterno }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ promo.genero }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ promo.esPersonaMoral ? "Moral":"Física" }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ promo.tipoParteNombre }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ promo.correoElectronico }}
+                          </td>
+                          <td class="px-6 py-3">
+                            {{ promo.telefono }}
+                          </td>
+                          @if(idEstatus == 1 ){ <!--//Pendiente de enviar-->
+                            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="eliminarPromovente(promo)"></p-button>
+                           
+                          }
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+
+                </div>
+
+
+              </div>
+            </div>
+          </section>
+          
+
+  </div>
+</section>
+<!--* MODAL DE CONFIRMACION GUADAR EXHORTO -->
+<app-confirm-dialog key="guardarExhorto" title="Confirmación" message="¿Estás seguro de guardar el exhorto?"
+    icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA ENVIAR DATOS GENERALES DEL EXHORTO AL JUZGADO EXHORTADO -->
+<app-confirm-dialog key="enviarGenerales" title="Confirmación" message="¿Estás seguro de enviar los datos generales al juzgado exhortado?"
+    icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA ENVIAR LOS ARCHIVOS DEL EXHORTO AL JUZGADO EXHORTADO -->
+<app-confirm-dialog key="enviarArchivos" title="Confirmación" message="¿Estás seguro de enviar los archivos al juzgado exhortado?"
+    icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA ELIMINAR PARTES -->
+<app-confirm-dialog key="eliminarParte" title="Confirmación" message="¿Estás seguro de eliminar la parte?"
+    icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA ELIMINAR PROMOVENTES -->
+<app-confirm-dialog key="eliminarPromovente" title="Confirmación" message="¿Estás seguro de eliminar el promovente?"
+    icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA AGREGAR PARTES -->
+<app-confirm-dialog key="agregarParte" title="Confirmación" message="¿Estás seguro de agregar la parte?"
+    icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA AGREGAR PROMOVENTES -->
+<app-confirm-dialog key="agregarPromovente" title="Confirmación" message="¿Estás seguro de agregar el promovente?"
+    icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+
+<!--* RESPONSE ENVIAR PROMOCION -->
+<!--<app-confirm-dialog key="success" title="Confirmación"
+    [message]="'Promoción enviada correctamente al ' + (tramitesElectronicosRecibidos?.juzgado ?? '')"
+    icon="pi pi-check" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary"  [showReject]="false">
+</app-confirm-dialog>-->
+
+<!--<app-confirm-dialog key="info" title="No hay conincidencias"
+   message="La causa o el juzgado es incorrecto."
+    icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info"  [showReject]="false">
+</app-confirm-dialog>-->
+
+<!--modal de la confirmacion al enviar los archivos-->
+
+<div class="z-50">
+    <app-modal-component id="modal2" class="z-40" (modalClosed)="modalClosed(idExhorto)">
+    <div class="relative z-20 p-4 w-full max-w-md max-h-full">
+        <div  class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+        <div class="panel-body p-3">
+            <div class="flex flex-col space-y-2">
+            <div class="overflow-x-auto"  style="overflow-y: auto;"> <!-- Contenedor responsivo -->
+                <div class="overflow-x-auto p-4">
+                <div class="text-center">
+                    <button (click)="printDivContent()">Imprimir Contenido</button>
+                </div>
+                <div id="contentToPrint" #contentToPrint  class="panel border bg-white">
+                    <div  class="panel-heading bg-morado hover:bg-morado_hover rounded-lg">
+                    <h3 class="pt-3 font-weight-bold">Información origen</h3>
+                    </div>
+                    <div class="panel-body p-3">
+                    <div class="flex flex-col space-y-2">
+                        <div class="overflow-x-auto"> <!-- Contenedor responsivo -->
+                        @if (archivoRecibidoConAcuse) {
+                            <table class="table-auto md:table-fixed w-full">
+                            <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Exhorto origen: </b></p></td>
+                                <td class="col2">{{ archivoRecibidoConAcuse.acuse.exhortoOrigenId || 'No disponible' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Número exhorto: </b></p></td>
+                                <td class="col2">{{ numeroExhorto }}</td>
+                            </tr>
+                            </table>
+                        }
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="panel-heading bg-morado hover:bg-morado_hover rounded-lg">
+                    <h3 class="pt-3 font-weight-bold">Información destino</h3>
+                    </div>
+                    <div class="panel-body p-3">
+                    <div class="flex flex-col space-y-2">
+                        <div class="overflow-x-auto"> <!-- Contenedor responsivo -->
+                        @if (archivoRecibidoConAcuse) {
+                            <table class="table-auto md:table-fixed w-full">
+                            <!--INFORMACION DESTINO-->
+                            <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Folio seguimiento: </b></p></td>
+                                <td class="col2">{{ archivoRecibidoConAcuse.acuse.folioSeguimiento || 'No disponible' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Fecha recepción: </b></p></td>
+                                <td class="col2">{{ (archivoRecibidoConAcuse.acuse.fechaHoraRecepcion ) || 'No disponible' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Estado destino: </b></p></td>
+                                <td class="col2">{{ estadoDestinoSelect.descripcion || 'No disponible' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Municipio destino: </b></p></td>
+                                <td class="col2">{{ municipioDestinoSelect.descripcion || 'No disponible' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Municipio turnado: </b></p></td>
+                                <td class="col2">{{ archivoRecibidoConAcuse.acuse.municipioAreaRecibeNombre || 'No disponible' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Juzgado turnado: </b></p></td>
+                                <td class="col2">{{ archivoRecibidoConAcuse.acuse.areaRecibeNombre || 'No disponible' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center" colspan="2"><p class="text-gray-700 dark:text-gray-300"><b>URL: </b></p></td>
+                            </tr>
+                            <tr>
+                                <td class=" text-center" colspan="2">
+                                @if (archivoRecibidoConAcuse.acuse.urlInfo) {
+                                    <app-qr-generator-component class="centrar-qr" [qrData]="archivoRecibidoConAcuse.acuse.urlInfo"></app-qr-generator-component>
+                                }
+                                </td>
+                            </tr>
+                            </table>
+                        }
+                        </div>
+                    </div>
+                    </div>
+
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </app-modal-component>
+</div>
+
+<!--DIALOG PARA AGREGAR PARTES-->
+<p-dialog [(visible)]="partesDialog" [style]="{ width: '600px' }" header="Agregra parte" [modal]="true">
+  <div class="overflow-x-auto">
+    <form [formGroup]="partesForm" [ngClass]="{ 'submitted': formSubmittedPartes }">
+      <div class="p-4 grid gap-4 sm:grid-cols-2 sm:gap-6">
+        <div class="w-full">
+          <div class="flex items-center gap-3">
+              <input
+                id="moral"
+                type="checkbox"
+                formControlName="moral"
+                class="rounded border-gray-300 text-violet-600 shadow-sm focus:ring-violet-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-violet-600"
+                />
+              <label for="moral" class="text-sm font-medium text-gray-700 dark:text-white">
+                ¿Es persona moral?
+              </label>
+              
+            </div>
+        </div>
+        <div class="w-full">
+          <div class="p-float-label mt-4">
+            <p-float-label>
+              <input
+                id="nombre"
+                pInputText
+                type="text"
+                formControlName="nombre"
+                [(ngModel)]="partesForm.value.nombre"
+                class="w-full"
+                maxlength="200"
+                />
+              <label for="nombre">Nombre de la parte</label>
+              </p-float-label>
+            </div>
+        </div>
+        <div class="w-full">
+          <div class="p-float-label mt-4">
+            <p-float-label>
+              <input
+                id="paterno"
+                pInputText
+                type="text"
+                formControlName="paterno"
+                [(ngModel)]="partesForm.value.paterno"
+                class="w-full"
+                maxlength="50"
+                />
+              <label for="paterno">Apellido paterno</label>
+              </p-float-label>
+            </div>
+        </div>
+        <div class="w-full">
+          <div class="p-float-label mt-4">
+            <p-float-label>
+              <input
+                id="materno"
+                pInputText
+                type="text"
+                formControlName="materno"
+                [(ngModel)]="partesForm.value.materno"
+                class="w-full"
+                maxlength="50"
+                />
+              <label for="materno">Apellido materno</label>
+              </p-float-label>
+          </div>
+        </div>
+        <div class="w-full">
+          <div class="p-float-label mt-4">
+            <p-float-label>
+              <p-select
+                id="genero"
+                [options]="listagenero"
+                [(ngModel)]="generoSelect"
+                formControlName="genero"
+                optionLabel="descripcion"
+                [style]="{ 'width': '100%' }"
+                appendTo="body"
+                inputId="genero-dropdown"
+              ></p-select>
+            <label for="genero-dropdown">Género</label>
+            </p-float-label>
+          </div>
+        </div>
+        <div class="w-full">
+              <div class="p-float-label mt-4" [ngClass]="{
+                  'error-border': formSubmittedPartes && partesForm.controls['tipoParte'].invalid
+                }">
+            <p-float-label>
+              <p-select
+                id="tipoParte"
+                [options]="listaTipoParte"
+                [(ngModel)]="tipoParteSelect"
+                formControlName="tipoParte"
+                optionLabel="descripcion"
+                [style]="{ 'width': '100%' }"
+                appendTo="body"
+                inputId="tipoParte-dropdown"
+              ></p-select>
+            <label for="tipoParte-dropdown">Tipo de parte</label>
+            </p-float-label>
+          </div>
+        </div>
+        <div class="w-full">
+          <div class="p-float-label mt-4">
+            <p-float-label>
+              <input
+                id="correo"
+                pInputText
+                type="text"
+                formControlName="correoElectronico"
+                [(ngModel)]="partesForm.value.correoElectronico"
+                class="w-full"
+                maxlength="50"
+                />
+              <label for="correoElectronico">Correo electrónico</label>
+              </p-float-label>
+            </div>
+          </div>
+          <div class="w-full">
+            <div class="p-float-label mt-4">
+              <p-float-label>
+                
+                <p-inputmask
+                  id="telefono"
+                  mask="9999999999"
+                  formControlName="telefono"
+                  [(ngModel)]="partesForm.value.telefono"
+                  class="w-full"
+                  placeholder="9999999999"
+                  slotChar="_"
+                  (onBlur)="validarTelefono()"
+
+                  />
+                <label for="telefono">Teléfono</label>
+                </p-float-label>
+              </div>
+            </div>
+        </div>
+    </form>
+  </div>
+  <ng-template #footer>
+      <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogParte()" />
+      <p-button label="Agregar" icon="pi pi-check" (click)="agregarParte()" />
+  </ng-template>
+</p-dialog>
+<!--DIALOG PARA AGREGAR PROMOVENTES-->
+<p-dialog [(visible)]="promoDialog" [style]="{ width: '600px' }" header="Agregra promovente" [modal]="true">
+   <div class="overflow-x-auto">
+  <form [formGroup]="promoventesForm" [ngClass]="{ 'submitted': formSubmittedPromovente }">
+    <div class="overflow-x-auto">
+      <div class="p-4 grid gap-4 sm:grid-cols-2 sm:gap-6">
+
+        <div class="w-full">
+          <div class="flex items-center gap-3">
+            <input
+              id="moralPromo"
+              type="checkbox"
+              formControlName="moralPromo"
+              class="rounded border-gray-300 text-violet-600 shadow-sm focus:ring-violet-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-violet-600"
+              />
+              <label for="moralPromo" class="text-sm font-medium text-gray-700 dark:text-white">
+                ¿Es persona moral?
+              </label>
+          </div>
+        </div>
+        <div class="w-full">
+          <div class="mt-4">
+            <p-float-label>
+              <input
+                id="nombrePromo"
+                pInputText
+                type="text"
+                formControlName="nombrePromo"
+                [(ngModel)]="promoventesForm.value.nombrePromo"
+                class="w-full"
+                maxlength="200"
+                />
+                <label for="nombrePromo">Nombre del promovente</label>
+                </p-float-label>
+            </div>
+          </div>
+          <div class="w-full">
+            <div class="p-float-label mt-4">
+                <p-float-label>
+                  <input
+                    id="paternoPromo"
+                    pInputText
+                    type="text"
+                    formControlName="paternoPromo"
+                    [(ngModel)]="promoventesForm.value.paternoPromo"
+                    class="w-full"
+                    maxlength="50"
+                    />
+                  <label for="paternoPromo">Apellido paterno</label>
+                </p-float-label>
+            </div>
+          </div>
+          <div class="w-full">
+            <div class="p-float-label mt-4">
+              <p-float-label>
+                  <input
+                    id="maternoPromo"
+                    pInputText
+                    type="text"
+                    formControlName="maternoPromo"
+                    [(ngModel)]="promoventesForm.value.maternoPromo"
+                    class="w-full"
+                    maxlength="50"
+                    />
+                  <label for="maternoPromo">Apellido materno</label>
+                </p-float-label>
+            </div>
+            </div>
+            <div class="w-full">
+              <div class="p-float-label mt-4">
+                <p-float-label>
+                    <p-select
+                      id="generoPromo"
+                      [options]="listagenero"
+                      [(ngModel)]="generoPromoSelect"
+                      formControlName="generoPromo"
+                      optionLabel="descripcion"
+                      [style]="{ 'width': '100%' }"
+                      appendTo="body"
+                      inputId="generoPromo-dropdown"
+                    ></p-select>
+                  <label for="generoPromo-dropdown">Género</label>
+                </p-float-label>
+              </div>
+            </div>
+
+            <div class="w-full">
+              <div class="p-float-label mt-4" [ngClass]="{
+                  'error-border': formSubmittedPromovente && promoventesForm.controls['tipoPartePromo'].invalid
+                }">
+              <p-float-label>
+                <p-select
+                  id="tipoPartePromo"
+                  [options]="listaTipoParte"
+                  [(ngModel)]="tipoPartePromoSelect"
+                  formControlName="tipoPartePromo"
+                  optionLabel="descripcion"
+                  [style]="{ 'width': '100%' }"
+                  appendTo="body"
+                  inputId="tipoPartePromo-dropdown"
+                ></p-select>
+                <label for="tipoPartePromo-dropdown">Tipo de parte</label>
+                </p-float-label>
+              </div>
+            </div>
+            <div class="w-full">
+              <div class="p-float-label mt-4">
+                <p-float-label>
+                  <input
+                    id="correoPromo"
+                    pInputText
+                    type="text"
+                    formControlName="correoElectronicoPromo"
+                    [(ngModel)]="promoventesForm.value.correoElectronicoPromo"
+                    class="w-full"
+                    maxlength="50"
+                    />
+                  <label for="correoElectronicoPromo">Correo electrónico</label>
+                  </p-float-label>
+                </div>
+            </div>
+            <div class="w-full">
+                <div class="p-float-label mt-4">
+                  <p-float-label>
+                    <p-inputmask
+                      id="telefonoPromo"
+                      mask="9999999999"
+                      formControlName="telefonoPromo"
+                      [(ngModel)]="promoventesForm.value.telefonoPromo"
+                      class="w-full"
+                      placeholder="9999999999"
+                      />
+                    <label for="telefonoPromo">Teléfono</label>
+                    </p-float-label>
+                </div>
+            </div>
+        </div>
+      </div>
+    </form>
+   </div>
+   <ng-template #footer>
+      <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogPromovente()" />
+      <p-button label="Agregar" icon="pi pi-check" (click)="agregarPromovente()" />
+  </ng-template>
+</p-dialog>
+<p-confirmdialog [style]="{ width: '600px' }" />
+<p-toast></p-toast>
+
+                    
+                                 
+                                
+                             
+                              
+
+
