@@ -1,0 +1,353 @@
+<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+
+    <!-- HEADER -->
+    <!-- <header
+        class="border border-surface rounded-2xl bg-surface-50 dark:bg-surface-900 flex items-center justify-between overflow-hidden">
+        <p-breadcrumb class="hidden lg:block" styleClass="bg-surface-50 dark:bg-surface-900" [home]="home"
+            [model]="items" />
+
+        <div class="ml-auto flex items-center gap-2 pr-4 pt-2 pb-2">
+            <span class="text-base font-medium text-surface-700 dark:text-surface-200">Abogado: Juan Pérez</span>
+            <p-avatar image="https://www.primefaces.org/cdn/primevue/images/landing/apps/main-avatar.png" size="large"
+                shape="circle" class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component">
+            </p-avatar>
+        </div>
+    </header> -->
+
+    <!-- BUSQUEDA -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+        <form class="flex flex-col" #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
+
+            <div class="flex items-start flex-col md:flex-row justify-between">
+                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                    Búsqueda de juzgados
+                </label>
+                <div class="mt-6 md:mt-0 flex items-center">
+                    <!-- <button pButton [outlined]="true" class="mr-3">
+                        <i pButtonIcon class="pi pi-user-plus"></i>
+                        <span pButtonLabel>Add</span>
+                    </button> -->
+                    @if(tienePermisoAnadirJuzgadoMateria){
+                    <button (click)="visibleDrawer = true" pButton class="whitespace-nowrap btn-secondary  ">
+                        <i pButtonIcon class="pi pi-plus color"></i>
+                        <span pButtonLabel>Agregar</span>
+                    </button>
+                    }
+                </div>
+
+
+            </div>
+
+            <div class="overflow-x-auto"
+                [ngStyle]="isHeightExpanded ? { 'min-height': '300px', 'max-height': '500px' } : {}">
+
+                <div class="grid grid-cols-6 gap-4 w-full items-end mt-4" [ngClass]="{ 'submitted': formSubmitted }">
+
+                    <!-- Tipo de Materia (SELECT NUEVO) -->
+                    <div class="col-span-6 sm:col-span-2">
+                        <label class="block mb-2 text-sm font-medium">Tipo de Materia</label>
+
+                        <p-select id="materia" name="materia" inputId="materia-dropdown" [options]="listaMateria"
+                            [(ngModel)]="materiaSelect" optionLabel="nombre" #materiaSelectModel="ngModel" required
+                            appendTo="body" [filter]="true" filterPlaceholder="Buscar materia..." class="w-full"
+                            [ngClass]="{ 'p-invalid': formSubmitted && materiaSelectModel.invalid }"></p-select>
+                    </div>
+
+                    <!-- Municipio (SELECT NUEVO) -->
+                    <div class="col-span-6 sm:col-span-2">
+                        <label class="block mb-2 text-sm font-medium">Municipio</label>
+
+                        <p-select id="municipio" name="municipio" inputId="municipio-dropdown"
+                            [options]="listaMunicipiosOaxaca" [(ngModel)]="selectedMunicipio"
+                            (onChange)="onMunicipioChange($event)" optionLabel="descripcion"
+                            #municipioSelectModel="ngModel" required appendTo="body" [filter]="true"
+                            filterPlaceholder="Buscar municipio..." class="w-full"
+                            [ngClass]="{ 'p-invalid': formSubmitted && municipioSelectModel.invalid }"></p-select>
+                    </div>
+                    <div class="col-span-6 sm:col-span-1">
+                        <p-button type="submit">
+                            <i pButtonIcon class="pi pi-search"></i>
+                            <span pButtonLabel>Buscar</span>
+                        </p-button>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+    <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">
+                Resultado
+            </div>
+
+            <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-building text-base! leading-normal!"></i>
+                    <span>{{ listaMatJuz.length || 0 }} Registros</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:ml-auto">
+            <p-button [outlined]="true" (click)="descargarJSON()" class="whitespace-nowrap ">
+                <i pButtonIcon class="pi pi-file-excel color"></i>
+                <span pButtonLabel>Exportar</span>
+            </p-button>
+        </div>
+    </div>
+
+
+    <div class="card pt-4">
+        <p-table #dt1 [value]="listaMatJuz" dataKey="idMatJuz" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+            [paginator]="true" [globalFilterFields]="['juzgado']">
+
+            <ng-template #header>
+                <tr>
+                    <th style="min-width: 15rem">
+                        <div class="flex items-center justify-between">
+                            Juzgado
+                        </div>
+                    </th>
+
+                    <th style="min-width: 10rem">
+                        <div class="flex items-center justify-between">Activo</div>
+                    </th>
+
+                    @if(tienePermisoEliminarAsignacion){
+                    <th style="min-width: 12rem">
+                        <div class="flex items-center justify-between">Acciones</div>
+                    </th>
+                    }
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-item>
+                <tr>
+                    <td>{{ item.juzgado }}</td>
+
+                    <td>
+                        <i class="pi pi-check text-green-500"></i>
+                    </td>
+
+                    <td>
+                        @if (tienePermisoEliminarAsignacion) {
+                        <p-button type="button" severity="danger" label="Eliminar" icon="pi pi-trash"
+                            (click)="abrirConfirmacionEliminarJuzgado()"></p-button>
+                        }
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="3">No hay registros.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+
+<p-toast></p-toast>
+<!-- 
+<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 mt-5">
+    <div class="mx-auto max-w-7xl px-4 lg:px-6">
+        <div class="flex-row mb-3 justify-between space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
+            <div>
+                <p class="mr-3 text-3xl font-semibold dark:text-white">Juzgados</p>
+            </div>
+
+        </div>
+
+        <section class="flex items-center mb-10  bg-gray-50 dark:bg-gray-900">
+            <div class="w-full max-w-7xl px-0 mx-auto">
+                <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
+                    <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                        <div class="relative overflow-hidden bg-white dark:bg-gray-800 sm:rounded-lg mt-0">
+                            <div
+                                class="flex-row items-center justify-between p-4 pb-0 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
+                                <div>
+                                    <h5 class="mr-3 font-semibold dark:text-white">Búsqueda</h5>
+                                    <p class="text-gray-500 dark:text-gray-400">Datos generales de los Juzgados</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <button type="submit" class="text-white  bg-morado hover:bg-morado_hover focus:outline-none focus:ring-2 focus:ring-violeta/50 
+                                  font-medium rounded-full text-sm px-8 py-2.5 text-center
+                                  me-2 mb-0 dark:focus:ring-yellow-900">
+                                        Buscar Juzgado
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto"
+                            [ngStyle]="isHeightExpanded ? { 'min-height': '300px', 'max-height': '500px' } : {}">
+                            <div class="p-4 grid gap-4 sm:grid-cols-4 sm:gap-6"
+                                [ngClass]="{ 'submitted': formSubmitted }">
+                                <div class="w-full sm:col-span-2">
+                                    <div class="w-full mt-4 mb-4"
+                                        [ngClass]="{ 'error-border': formSubmitted && materiaSelectModel.invalid }">
+                                        <p-floatLabel>
+                                            <p-select id="materia" name="materia" inputId="materia-dropdown"
+                                                [options]="listaMateria" [(ngModel)]="materiaSelect"
+                                                optionLabel="nombre" #materiaSelectModel="ngModel" required
+                                                appendTo="body"
+                                                [ngClass]="{ 'p-invalid': formSubmitted && materiaSelectModel.invalid }"
+                                                [filter]="true" filterPlaceholder="Buscar materia..."
+                                                [style]="{'width': '100%' }"></p-select>
+                                            <label for="materia-dropdown">Tipo de Materia</label>
+                                        </p-floatLabel>
+                                    </div>
+                                </div>
+                                <div class="w-full sm:col-span-2">
+                                    <div class="w-full mt-4"
+                                        [ngClass]="{ 'error-border': formSubmitted && municipioSelectModel.invalid }">
+                                        <p-floatLabel>
+                                            <p-select id="municipio" name="municipio" inputId="municipio-dropdown"
+                                                required [options]="listaMunicipiosOaxaca"
+                                                [(ngModel)]="selectedMunicipio" (onChange)="onMunicipioChange($event)"
+                                                optionLabel="descripcion" #municipioSelectModel="ngModel"
+                                                appendTo="body" [filter]="true" filterPlaceholder="Buscar municipio..."
+                                                [style]="{'width': '100%' }"></p-select>
+                                            <label for="municipio-dropdown">Municipio</label>
+                                        </p-floatLabel>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="bg-gray-50 dark:bg-gray-900 mt-10">
+            <div class="w-full max-w-7xl px-0 mx-auto">
+                <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                    <div class="relative overflow-hidden bg-white dark:bg-gray-800 sm:rounded-lg mt-0">
+                        <div
+                            class="flex-row items-center justify-between p-4 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
+                            <div>
+                                <h5 class="mr-3 font-semibold dark:text-white">Juzgados</h5>
+                                <p class="text-gray-500 dark:text-gray-400">Juzgados encontrados</p>
+                            </div>
+                            <div class="flex items-center">
+                                <button type="button" class="text-white  bg-morado hover:bg-morado_hover focus:outline-none focus:ring-2 focus:ring-violeta/50
+                                          font-medium rounded-full text-sm px-8 py-2.5 text-center
+                                          me-2 mb-0 dark:focus:ring-yellow-900" (click)="descargarJSON()">
+                                    Exportar JSON
+                                </button>
+                                @if(tienePermisoAnadirJuzgadoMateria){
+                                <button type="button" class="text-white  bg-morado hover:bg-morado_hover focus:outline-none focus:ring-2 focus:ring-violeta/50
+                                          font-medium rounded-full text-sm px-8 py-2.5 text-center
+                                          me-2 mb-0 dark:focus:ring-yellow-900" (click)="abrirModal()">
+                                    Añadir Juzgado - Materia
+                                </button>
+                                }
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead
+                                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3">Juzgado</th>
+                                    <th scope="col" class="px-4 py-3">Activo</th>
+                                    <th scope="col" class="px-4 py-3">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of listaMatJuz; track item) {
+                                <tr class="border-b dark:border-gray-700">
+                                    <th scope="row"
+                                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        {{ item.juzgado }}
+                                    </th>
+                                    <td class="px-4 py-3">
+                                        <img src="assets/icons/palomita.png" alt="Activo" class="icon" />
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        @if(tienePermisoEliminarAsignacion){
+                                        <button type="button" class="text-white bg-red-500 
+                                               hover:bg-red-600 focus:outline-none 
+                                                 focus:ring-4 focus:ring-red-300 font-medium 
+                                                 rounded-full text-sm px-3 py-2.5 text-center 
+                                                 me-2 mb-2 dark:focus:ring-red-900"
+                                            (click)="abrirConfirmacionEliminarJuzgado()">
+                                            Eliminar
+                                        </button>
+                                        }
+                                      
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section> -->
+
+<p-drawer header="Relacionar" [(visible)]="visibleDrawer" position="right" styleClass="!w-full sm:!w-[30rem] ">
+    <form class="flex flex-col" #myForm="ngForm" (ngSubmit)="onSubmitGuardar(myForm, 'form1')">
+        <div class="grid grid-cols-6 gap-4 w-full items-end">
+            <!-- Región -->
+            <div class="col-span-6">
+                <label class="block mb-2 text-sm font-medium">Región</label>
+                <p-select id="region" name="region" class="w-full" [options]="listaRegion" [(ngModel)]="selectRegion"
+                    optionLabel="descripcion" appendTo="body" [filter]="true" filterPlaceholder="Buscar región..."
+                    inputId="region-dropdown" (onChange)="onRegionChange($event)" fluid></p-select>
+            </div>
+
+            <!-- Municipio -->
+            <div class="col-span-6">
+                <label class="block mb-2 text-sm font-medium">Municipio</label>
+                <p-select id="municipio" name="municipio" class="w-full" [options]="listaMunicipiosRegion"
+                    [(ngModel)]="selectedMunicipioRegion" optionLabel="descripcion" [editable]="true" appendTo="body"
+                    [filter]="true" filterPlaceholder="Buscar municipio..." inputId="municipio-dropdown"
+                    (onChange)="onMunicipioChange($event)" fluid></p-select>
+            </div>
+
+            <!-- Juzgado -->
+            <div class="col-span-6">
+                <label class="block mb-2 text-sm font-medium">Juzgado</label>
+                <p-select id="juzgado" name="juzgado" class="w-full" [options]="listaJuzgado"
+                    [(ngModel)]="selectedJuzgado" optionLabel="descripcion" [editable]="true" appendTo="body"
+                    [filter]="true" filterPlaceholder="Buscar juzgado..." inputId="juzgado-dropdown"
+                    (onChange)="onJuzgadoChange($event)" fluid></p-select>
+            </div>
+
+            <!-- Tipo de Materia -->
+            <div class="col-span-6">
+                <label class="block mb-2 text-sm font-medium">Tipo de Materia</label>
+                <p-select id="materia" name="materia" class="w-full" [options]="listaMateria"
+                    [(ngModel)]="selectMateria" optionLabel="nombre" appendTo="body" [filter]="true"
+                    filterPlaceholder="Buscar materia..." inputId="materia-dropdown" fluid></p-select>
+            </div>
+        </div>
+
+        @if (!tienePermisoAgregarJuzgadoMateria) {
+        <div class="mt-4 flex  justify-center gap-2">
+            <p-button type="submit">
+                <i pButtonIcon class="pi pi-save"></i>
+                <span pButtonLabel>Guardar</span>
+            </p-button>
+        </div>
+        }
+    </form>
+
+</p-drawer>
+<!-- Modal -->
+<!-- <app-agregar-juzgado
+  [(visible)]="visible">
+</app-agregar-juzgado> -->
