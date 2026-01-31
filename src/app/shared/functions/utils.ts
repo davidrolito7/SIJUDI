@@ -22,8 +22,8 @@ export function convertDate(inputDate: string): string {
   
   return resultDate;
 }
-//funcion para descargar archivos
-export function download(data: any, filename:string, extension:string) {
+//funcion para descargar archivos en base64
+export function downloadBase64(data: any, filename:string, extension:string) {
    
   var a = document.createElement("a");
 
@@ -75,3 +75,26 @@ export function  isPdf(content: ArrayBuffer): boolean {
     // Un archivo PDF válido debe comenzar con '%PDF'
     return header.startsWith('%PDF');
   }
+  // funcion para convertir un file a base64
+export function  convertFileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = error => reject(error);
+  });
+}
+//funcion para descargar File
+export function downloadFile(file: File) {
+   
+  var a = document.createElement("a");
+
+  convertFileToBase64(file).then(base64 =>{
+      a.href = base64;
+      a.download = file.name; // Nombre del archivo a descargar
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+  })
+}
+

@@ -133,8 +133,8 @@ export interface ExhortoEnviadoGuardarGeneralesRequest{
     tipoDiligenciaId:string;
     tipoDiligenciacionNombre: string,
     observaciones: string,
-    partes: partesExhortoEnviadoRequest[],
-    promoventes: ProvomenteExhortoEnviado[],
+    partes: partesExhortoEnviadoRequest[] | null,
+    promoventes: ProvomenteExhortoEnviado[] | null,
     idUsuario: number,
     materiaNombre: string,
     estadoDestinoId: number,
@@ -267,7 +267,7 @@ export interface archivoExhortoEnviado{
       nombre: string;
       activo: boolean;
     },
-    tamaño: number;
+    tamanio: number;
     paginas: number;
     recibido: boolean;
     idClasificacionArchivo: number;
@@ -277,6 +277,7 @@ export interface archivoExhortoEnviado{
     activo: boolean;
     selecParaFirma: boolean;
     firmantes:Firmantes[];
+    file:File;
 }
 export interface PromocionExhortoEnviado {
     idPromocionEnviado:number;
