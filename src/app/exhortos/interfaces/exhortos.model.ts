@@ -504,6 +504,8 @@ export interface archivoExhortoEnviado{
     firmado:boolean;
     fechaFirmado:Date;
     activo: boolean;
+    selecParaFirma: boolean;
+    firmantes:Firmantes[];
     file:File;
 }
 
@@ -571,8 +573,8 @@ export interface ExhortoEnviadoGuardarGeneralesRequest{
     tipoDiligenciaId:string;
     tipoDiligenciacionNombre: string,
     observaciones: string,
-    partes: partesExhortoEnviadoRequest[],
-    promoventes: ProvomenteExhortoEnviado[],
+    partes: partesExhortoEnviadoRequest[] | null,
+    promoventes: ProvomenteExhortoEnviado[] | null,
     idUsuario: number,
     materiaNombre: string,
     estadoDestinoId: number,
@@ -834,3 +836,11 @@ export interface CONATRIB_ExhortoRecibidoPromoventes
   idClasificacionArchivo: number;
   passwordFirma: string;
  }
+ export interface AgregarJuzgadoMat{
+    idConfiguracion: number;
+    idMunicipio: number;
+    idCatMateria: number;
+    idCatJuzgado: number;
+    idRegion: number;
+    activo: boolean;
+}

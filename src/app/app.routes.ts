@@ -7,7 +7,6 @@ import { Form } from './form/form';
 import { authMatchGuard } from './core/auth/guard/auth-guard';
 import { Perfil } from './core/auth/component/perfil/perfil';
 import { redirectGuard } from './core/auth/guard/redirect-guard';
-import { Listar } from './exhortos/recibidos/listar/listar';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },

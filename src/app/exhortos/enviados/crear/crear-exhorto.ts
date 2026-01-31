@@ -95,6 +95,17 @@ constructor(
     correoElectronico: new FormControl(''),
     telefono: new FormControl('')
   });
+   promoventesForm = new FormGroup({
+      nombrePromo: new FormControl('', Validators.required),
+      paternoPromo: new FormControl(''),
+      maternoPromo: new FormControl(''),
+      generoPromo: new FormControl(''),
+      moralPromo: new FormControl(false,{nonNullable:true, validators: [Validators.required]}),
+      //moralPromo: new FormControl(false,[Validators.required]),
+      tipoPartePromo: new FormControl('',Validators.required),
+      correoElectronicoPromo : new FormControl(''),
+      telefonoPromo: new FormControl('')
+  });
     doctosForm= new FormGroup({
       tipoDocumento: new FormControl(null as ListadoCatalogoTipoDocumento | null,Validators.required),
     });
@@ -520,7 +531,7 @@ constructor(
     );
   }
 
-  onTipoDocumentoChange(event: any) {
+  /*onTipoDocumentoChange(event: any) {
     const tipoDocId = event.target.value;
     const tipoSeleccionado = this.listadoTipoDocumento.find(doc => doc.idTipoDocumento === +tipoDocId);
 
@@ -531,7 +542,7 @@ constructor(
       this.selectedTipoDocumento = undefined!;
       //console.warn('No se encontró tipo de documento');
     }
-  }
+  }*/
 
 /*onTipoDocumentoChange(event: any) {
   const tipoDocId = event.target.value;
@@ -546,35 +557,39 @@ constructor(
   }
 }*/
 
-    const materiaObj = materiaRaw as CatalogoMateria | number;
-    const municipioObj = municipioRaw as CatalogoMunicipioOrigen | number;
+  verificarYFiltrarJuzgados() {
+  const materiaRaw = this.exhortosForm.get('materiaOrigen')?.value as unknown;
+  const municipioRaw = this.exhortosForm.get('municipioOrigen')?.value as unknown;
 
-    const juzgadoControl = this.exhortosForm.get('juzgadoOrigen');
+  const materiaObj = materiaRaw as CatalogoMateria | number;
+  const municipioObj = municipioRaw as CatalogoMunicipioOrigen | number;
 
-    const idMateria = typeof materiaObj === 'object' ? (materiaObj as CatalogoMateria)?.clave : materiaObj;
-    const idMunicipio = typeof municipioObj === 'object' ? (municipioObj as CatalogoMunicipioOrigen)?.idMunicipio : municipioObj;
+  const juzgadoControl = this.exhortosForm.get('juzgadoOrigen');
 
-    if (idMateria && idMunicipio) {
-      juzgadoControl?.enable();
+  const idMateria = typeof materiaObj === 'object' ? (materiaObj as CatalogoMateria)?.clave : materiaObj;
+  const idMunicipio = typeof municipioObj === 'object' ? (municipioObj as CatalogoMunicipioOrigen)?.idMunicipio : municipioObj;
 
-      this.ExhortosService.getConfigMunicipioMateriaJuzgado(idMunicipio, idMateria).subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            //console.log('Juzgados filtrados:', response.data);
-            this.listaJuzgadoOrigen = response.data;
-          } else {
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
-          }
-        },
-        error: () => {
-          //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el catálogo de juzgados.' });
+  if (idMateria && idMunicipio) {
+    juzgadoControl?.enable();
+
+    this.ExhortosService.getConfigMunicipioMateriaJuzgado(idMunicipio, idMateria).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          //console.log('Juzgados filtrados:', response.data);
+          this.listaJuzgadoOrigen = response.data;
+        } else {
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
         }
-      });
-    } else {
-      juzgadoControl?.disable();
-      this.listaJuzgadoOrigen = [];
-    }
+      },
+      error: () => {
+        //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el catálogo de juzgados.' });
+      }
+    });
+  } else {
+    juzgadoControl?.disable();
+    this.listaJuzgadoOrigen = [];
   }
+}
 
   CatalogoMateria() {
     this.ExhortosService.getCatalogoMateria().subscribe({
@@ -1441,20 +1456,10 @@ constructor(
         complete:()=>{
           //console.log('FIN:');
         }
-        else {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.error });
-        }
-      },
-      error: (e) => {
-        //console.error('Error al recibir el archivo', e);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
-      },
-      complete: () => {
-        //console.log('FIN:');
-      }
+      
     });
-    }
   }
+}
 
   /*abrirConfirmacionEliminarDocumento(idArchivo: number){
      this.idArchivo = idArchivo;

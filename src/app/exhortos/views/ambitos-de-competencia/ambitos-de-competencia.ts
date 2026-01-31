@@ -1,4 +1,4 @@
-import { Component, CreateEffectOptions, effect, inject, Output, signal, Signal, EventEmitter } from '@angular/core';
+import { Component, CreateEffectOptions, effect, inject, Output, signal, Signal, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CatalogoMateria, CatalogoMunicipioDestino, CatalogoRegion, ConfigMateriaJuzgado } from '../../interfaces/exhortos.model';
@@ -38,6 +38,7 @@ export class AmbitosDeCompetencia {
     private messageService: MessageService,
     private ExhortosService: ExhortosService,
     public authService: AuthService,
+    private cd: ChangeDetectorRef
   ) {
     //Detecta si el perfil seleccionado ha cambiado y actualiza las secciones
     this.perfilSeleccionado = signal(this.perfilSeleccionadoService.perfil_Seleccionado());
@@ -123,7 +124,7 @@ export class AmbitosDeCompetencia {
     const materia = form.value.materia; // Valor del campo "Tipo de Materia"
     const municipio = form.value.municipio; // Valor del campo "Municipio"
 
-    this.ConfigMuncipioJuzgado(municipio.idMunicipio, materia.clave)
+    this.cargarConfig(municipio.idMunicipio, materia.clave);
 
     // Imprime los valores en la consola
     //console.log('Formulario enviado:', { materia, municipio });
@@ -189,20 +190,27 @@ export class AmbitosDeCompetencia {
       },
     });
   }
+  //se agrega esta funcion intermedia para usar await y detectChanges porque no refrescaba la vista
+  async cargarConfig(municipioId: number, idMateria: number) {
+    await this.ConfigMuncipioJuzgado(municipioId, idMateria);
+    this.cd.detectChanges();
+    // Aquí Angular sí detecta el cambio porque el flujo sigue dentro de su zona
+  }
 
   ConfigMuncipioJuzgado(idMunicipio: number, idMateria: number): Promise<void> {
     return new Promise((resolve, reject) => {
       this.ExhortosService.getConfigMunicipioMateriaJuzgado(idMunicipio, idMateria).subscribe({
         next: (response: any) => {
           if (response.success) {
-            setTimeout(() => {
+            //setTimeout(() => {
               if (idMunicipio === 0 && idMateria === 0) {
                 this.listaMatJuzAll = response.data ? [...response.data] : [];
               } else {
                 this.listaMatJuz = response.data ? [...response.data] : [];
               }
+              this.formSubmitted=false;
               resolve();
-            });
+            //});
           } else {
             this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
             reject(response.message);
