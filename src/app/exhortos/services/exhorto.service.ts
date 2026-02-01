@@ -4,12 +4,13 @@ import { Observable, } from 'rxjs';
 import { checkToken } from '../../core/auth/interceptor/token.interceptor';
 import { environment } from '../../../environments/environment';
 import { GenericResponse } from '../../shared/interface/shared.interface';
-import { ExhortoEnviadoGuardarGeneralesRequest, generalesExhortoEnviado, EnviadoConfirmacionDatosRecibidosResponse, EnviadoArchivoRecibidoConAcuseResponse, EstadoSeleccionado, CatalogoMunicipioDestino, CatalogoMateriasEstadoDestino, tipoVia, CatalogoMunicipioOrigen, CatalogoEstadoDestino, CatalogoJuzgadoOrigen, CatalogoGenero, CatalogoMateria, ListadoCatalogoTipoDocumento, ConfigMateriaJuzgado, detalleExhortosEnviados, CatalogoTipoParte, validaFirmaRequest, guardaFirmaTmpRequest, AgregarJuzgadoMat, CatalogoRegion, CatJuzgado } from '../interfaces/exhortos.model';
+import { ExhortoEnviadoGuardarGeneralesRequest, generalesExhortoEnviado, EnviadoConfirmacionDatosRecibidosResponse, EnviadoArchivoRecibidoConAcuseResponse, EstadoSeleccionado, CatalogoMunicipioDestino, CatalogoMateriasEstadoDestino, tipoVia, CatalogoMunicipioOrigen, CatalogoEstadoDestino, CatalogoJuzgadoOrigen, CatalogoGenero, CatalogoMateria, ListadoCatalogoTipoDocumento, ConfigMateriaJuzgado, detalleExhortosEnviados, CatalogoTipoParte, validaFirmaRequest, guardaFirmaTmpRequest, AgregarJuzgadoMat, CatalogoRegion, CatJuzgado,UI_ParamlistadoExhortosRecibidosRequest,ListadoExhortosEnviados,ListadoEstatus,ListadoExhortosRecibidosI } from '../interfaces/exhortos.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExhortosService {
+  private baseUrl:string= environment.urlApiExhortosElectronicos+"/Exhortos/";
   private exhortoEnviar: string = environment.urlApiExhortosElectronicos + "/ExhortosEnviar/";
   private cat: string = environment.urlApiExhortosElectronicos + "/Catalogos/";
   private Juz = environment.urlApiExhortosElectronicos + "/Juzgado";
@@ -177,5 +178,21 @@ export class ExhortosService {
     getCatalogoRegionMunicipio(idRegion: number): Observable<GenericResponse<CatalogoMunicipioDestino[]>> {
     return this.http.get<GenericResponse<CatalogoMunicipioDestino[]>>(this.configJuz+"/RegionMunicipio?idRegion="+idRegion,{context: checkToken()});
   }
-
+   //Listado de exhortos enviados
+  getExhortosEnviados(param:UI_ParamlistadoExhortosRecibidosRequest):Observable<GenericResponse<ListadoExhortosEnviados>>{;
+    //const headers = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    return this.http.post<GenericResponse<ListadoExhortosEnviados>>(this.exhortoEnviar + "ListadoExhortosEnviados",param,{context:checkToken()});
+  }
+   // obtenemos el detalle de un exhorto
+  getListadoEstatus(tipoTramite: number):Observable<GenericResponse<ListadoEstatus[]>>{
+    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+     //return this.http.get<GenericResponse<DetalleExhortoRecibidoResponseI>>(this.baseUrl + "DetalleExhortoRecibido?idExhortoRecibido="+idExhortoRecibido,{context:checkToken()});
+     const url = `${this.cat}Estatus?tipoTramite=${tipoTramite}`;
+     return this.http.get<GenericResponse<|[]>>(url,{context:checkToken()});
+  }
+  //Obtiene el listado de exhortos recibidos
+  getExhortosRecibidosListado(param:UI_ParamlistadoExhortosRecibidosRequest): Observable<GenericResponse<ListadoExhortosRecibidosI>>{
+    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    return this.http.post<GenericResponse<ListadoExhortosRecibidosI>>(this.baseUrl + "ListadoExhortosRecibidos",param,{context:checkToken()});
+  }
 }

@@ -1,12 +1,12 @@
 import { BlobOptions } from "node:buffer";
 
 //toda respuesta de la API devolverá esta clase generica, donde T puede ser cualquier tipo de objeto
-export interface GenericResponse<T>{
+/*export interface GenericResponse<T>{
     success:boolean;
     message:string;
     errors: string[];
     data:T;
-}
+}*/
 //Esta interfaz es la estructura que recibimos de la api cuando consultamos el listado de exhortos recibidos
 export interface ListadoExhortosRecibidosI{
     idExhortoRecibido:number;
@@ -843,4 +843,74 @@ export interface CONATRIB_ExhortoRecibidoPromoventes
     idCatJuzgado: number;
     idRegion: number;
     activo: boolean;
+}
+// esta interfaz es la estructura del request que se le envia como parametro a la API para consultar el listado de exhortos recibidos
+export interface UI_ParamlistadoExhortosRecibidosRequest{
+    fechaIni?:Date;
+    fechaFin?:Date;
+    estatus?:number;
+    perfil?: string;
+}
+//Listado de exhortos enviados
+export interface ListadoExhortosEnviados{
+    idExhortoEnviado: number;
+    exhortoOrigenId: string;
+    municipioDestino: string;
+    estadoDestino: string;
+    materiaNombre: string;
+    municipioOrigen: string;
+    juzgadoOrigenNombre: string;
+    numeroExpedienteOrigen: string;
+    numeroOficioOrigen: string;
+    tipoJuicioAsuntoDelitos: string;
+    juezExhortante: string;
+    fojas: number;
+    diasResponder: number;
+    tipoDiligenciacionNombre: string;
+    fechaOrigen: string;
+    observaciones: string;
+    fechaHoraRecepcion: string;
+    folioSeguimiento: string;
+    estatus: string;
+    municipioTurnado: string;
+    areaTurnadoNombre: string;
+    urlInfo: string;
+}
+export interface ListadoEstatus{
+   idEstatus : number;
+   descripcion : string;
+   Activo : boolean;
+   idTipoTramite : number;
+ }
+ // esta interfaz es la estructura del request que se le envia como parametro a la API para consultar el listado de exhortos recibidos
+export interface UI_ParamlistadoExhortosRecibidosRequest{
+    fechaIni?:Date;
+    fechaFin?:Date;
+    estatus?:number;
+    perfil?: string;
+}
+//Esta interfaz es la estructura que recibimos de la api cuando consultamos el listado de exhortos recibidos
+export interface ListadoExhortosRecibidosI{
+    idExhortoRecibido:number;
+    estadoOrigen:string;
+    juzgadoOrigenNombre:string;
+    municipioDestino:string;
+    materiaNombre:string;
+    numeroExpedienteOrigen:string;
+    numeroOficioOrigen:string;
+    fechaHoraRecepcion:string;
+    folioSeguimiento:string;
+    estatus:string;
+    respuesta : number;
+    numeroExhorto:string;
+    municipioOrigen:string;
+    url:string;
+    fechaOrigen:string;
+    observaciones:string;
+    tipoJuicioAsuntoDelitos:string;
+    diasResponder:number;
+    fojas:number;
+    juezExhortante:string;
+    tipoDiligenciacionNombre:string;
+    juzgadoDestino:string;
 }

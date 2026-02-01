@@ -1,3 +1,4 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
 <!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
 <div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
 
@@ -17,14 +18,14 @@
 
     <!-- BUSQUEDA -->
     <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
-        <form [formGroup]="validarExhortosRecibidos">
+
             <div class="flex items-start flex-col md:flex-row justify-between">
                 <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
                     Búsqueda
                 </label>
 
                 <div class="flex items-center">
-                    <p-button (click)="onBuscarExhortosRecibidos()" [disabled]="validarExhortosRecibidos.invalid">
+                    <p-button (click)="getListaExhortosEnviados()" >
                         <i pButtonIcon class="pi pi-search"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
@@ -35,30 +36,31 @@
                 <!-- Estatus -->
                 <div class="col-span-6 lg:col-span-3 w-full">
                     <label class="block mb-2 text-sm font-medium">Estatus</label>
-                    <p-select inputId="idEstatusExhorto" class="w-full" [options]="catEstatusExhortos"
-                        formControlName="idEstatusExhorto" optionValue="idEstatusExhorto" optionLabel="descripcion"
-                        appendTo="body" fluid></p-select>
+                    <p-select inputId="idEstatus" class="w-full" 
+                            [options]="[...listadoEstatus, { idEstatus: 0, descripcion: 'Todos' }]" [(ngModel)]="selectedEstatus"
+                            optionLabel="descripcion"
+                            appendTo="body" fluid></p-select>
                 </div>
 
                 <!-- Exp. origen -->
-                <div class="col-span-6 lg:col-span-3 w-full">
+                <!--<div class="col-span-6 lg:col-span-3 w-full">
                     <label class="block mb-2 text-sm font-medium">Exp. origen</label>
-                    <input type="text" pInputText fluid formControlName="expOrigen" class="w-full" />
-                </div>
+                    <p-input type="text" pInputText fluid formControlName="expOrigen" class="w-full" />
+                </div>-->
 
 
                 <!-- Fecha Inicial -->
                 <div class="col-span-6 lg:col-span-2 w-full">
                     <label class="block mb-2 text-sm font-medium">Fecha Inicial</label>
-                    <p-datepicker ngSkipHydration inputId="fechaInicial" [iconDisplay]="'input'" [showIcon]="true"
-                        formControlName="fechaInicial" class="w-full" fluid></p-datepicker>
+                    <p-datepicker ngSkipHydration inputId="fechaInicio" [iconDisplay]="'input'" [showIcon]="true" [(ngModel)]="fechaInicio"
+                        class="w-full" fluid dateFormat="dd/mm/yy"></p-datepicker>
                 </div>
 
                 <!-- Fecha Final -->
                 <div class="col-span-6 lg:col-span-2 w-full">
                     <label class="block mb-2 text-sm font-medium">Fecha Final</label>
-                    <p-datepicker ngSkipHydration inputId="fechaFinal" [iconDisplay]="'input'" [showIcon]="true"
-                        formControlName="fechaFinal" class="w-full" fluid></p-datepicker>
+                    <p-datepicker ngSkipHydration inputId="fechaFin" [iconDisplay]="'input'" [showIcon]="true" [(ngModel)]="fechaFin"
+                        class="w-full" fluid dateFormat="dd/mm/yy"></p-datepicker>
                 </div>
 
                 <!-- Botón limpiar fechas -->
@@ -67,7 +69,7 @@
                 </div>
             </div>
 
-        </form>
+       
 
     </div>
 
@@ -97,8 +99,8 @@
     </div> 
 
     <div class="card">
-        <p-table #dt1 dataKey="idTramiteElectronicoRecibido" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
-            [paginator]="true" [globalFilterFields]="['folio','fechaEnvio','observaciones','cantidadAnexos']">
+        <p-table #dt1 [value]="listadosSignal()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+            [paginator]="true" [globalFilterFields]="['estadoDestino','municipioDestino','folioSeguimiento','areaTurnadoNombre']">
             <ng-template #caption>
                 <div class="flex">
                     <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
@@ -112,76 +114,60 @@
 
             <ng-template #header>
                 <tr>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Estado exhortante
-                            <p-columnFilter type="text" field="folio" display="menu" />
-                        </div>
+                    <th>
+                        <div class="flex items-center justify-between">Estado exhortado</div>
                     </th>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Juzgado origen
-                            <p-columnFilter type="date" field="fechaEnvio" display="menu"></p-columnFilter>
-                        </div>
+                    <th>
+                        <div class="flex items-center justify-between">Municipio</div>
                     </th>
-                    <th style="min-width:10rem">
-                        <div class="flex items-center justify-between">
-                            Exp. origen
-                            <p-columnFilter type="text" field="observaciones" display="menu" />
-                        </div>
+                    <th>
+                        <div class="flex items-center justify-between">Materia</div>
                     </th>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Materia
-                            <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
-                        </div>
+                    <th>
+                        <div class="flex items-center justify-between">Folio</div>
                     </th>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Municipio destino
-                            <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
-                        </div>
+                    <th>
+                        <div class="flex items-center justify-between">Area turnado</div>
                     </th>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Fecha de recepción
-                            <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
-                        </div>
+                    <th>
+                        <div class="flex items-center justify-between">Fecha de envío</div>
                     </th>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Estatus
-                            <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
-                        </div>
+                    <th>
+                        <div class="flex items-center justify-between">Fecha recepción destino</div>
                     </th>
-                    <th style="min-width:10rem">
-                        <div class="flex items-center justify-between">
-                            Acciones
-                        </div>
+                    <th>
+                        <div class="flex items-center justify-between">Estatus</div>
+                    </th>
+                    <th style="min-width: 5rem">
+                        <div class="flex items-center justify-between">Acciones</div>
                     </th>
                 </tr>
             </ng-template>
 
-            <ng-template #body let-tramite>
-                <tr>
-                    <td>{{ tramite.estadoExhortable }}</td>
-                    <td>{{ tramite.jusgadoOrigen}}</td>
-                    <td>{{ tramite.expedienteOriginal }}</td>
-                    <td>{{ tramite.materia }}</td>
-                    <td>{{ tramite.municiapioDestino }}</td>
-                    <td>{{ tramite.fechaRecepcion }}</td>
-                    <td>{{ tramite.estatus }}</td>
-                    <td> <p-button type="button" class="btn-secondary">
-                            <i class="pi pi-eye"></i>
-                        </p-button></td>
+            <ng-template #body let-listado >
+                <tr [ngClass]="selectClass(listado.estatus)">
+                    <td style="font-size: small;">{{ listado.estadoDestino }}</td>
+                    <td style="font-size: small;">{{ listado.municipioDestino}}</td>
+                    <td style="font-size: small;">{{ listado.materiaNombre }}</td>
+                    <td style="font-size: small;">{{ listado.folioSeguimiento }}</td>
+                    <td style="font-size: small;">{{ listado.areaTurnadoNombre }}</td>
+                    <td style="font-size: small;">{{ listado.fechaOrigen | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                    <td style="font-size: small;">{{ listado.fechaHoraRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                    <td style="font-size: small;" [ngClass]="selectClass(listado.estatus)">{{ listado.estatus }}</td>
+                    <td class="text-center"> 
+                        <p-button (click)="verDetalleEnviado(listado.idExhortoEnviado)" severity="success" [rounded]="true"
+                                icon="pi pi-info-circle" class="mr-2" title="Detalle">
+                        </p-button>
+                    </td>
                 </tr>
             </ng-template>
 
             <ng-template #emptymessage>
                 <tr>
-                    <td colspan="7">No customers found.</td>
+                    <td colspan="9">Sin exhortos</td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
 </div>
+<p-toast></p-toast>

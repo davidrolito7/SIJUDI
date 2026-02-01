@@ -1,119 +1,285 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Table, TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { SelectModule } from 'primeng/select';
-import { MultiSelectModule } from 'primeng/multiselect';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { AvatarModule } from 'primeng/avatar';
-import { ConfirmationService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MenuItem,MessageService } from 'primeng/api';
 import { InputMaskModule } from 'primeng/inputmask';
-import { DatePickerModule } from 'primeng/datepicker';
+import { DatePicker } from 'primeng/datepicker';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { Router } from "@angular/router";
+import { ToastModule } from 'primeng/toast';
+import {GenericResponse} from '../../../shared/interface/shared.interface';
+import { ListadoExhortosRecibidosI, UI_ParamlistadoExhortosRecibidosRequest,ListadoEstatus } from "../../interfaces/exhortos.model";
+import {AuthService} from '../../../core/auth/service/auth.service';
+import {ExhortosService} from '../../services/exhorto.service';
+import { Spinner } from '../../../shared/components/spinner/spinner';
 
-
-interface EstatusExhortos {
-    idEstatusExhorto: number;
-    descripcion: string;
-}
 @Component({
   selector: 'app-ListaExhortosRecibidos',
    standalone: true,
-  imports: [DatePickerModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-     BreadcrumbModule, AvatarModule, InputMaskModule,FloatLabelModule],
+  imports: [DatePicker, TableModule, InputTextModule, TagModule, SelectModule,  ButtonModule, IconFieldModule, InputIconModule, 
+     BreadcrumbModule, AvatarModule, InputMaskModule,FloatLabelModule,ToastModule,CommonModule,FormsModule,Spinner],
   templateUrl: './lista-exhorto-recibido.html',
   styleUrl: './lista-exhorto-recibido.css',
- 
+  providers:[MessageService]
     
 })
-export class ListaExhortosRecibidos {
+export class ListaExhortosRecibidos implements OnInit {
 
 
-    //* === FORMULARIOS ===
-  validarExhortosRecibidos!: FormGroup;
+  isLoading: boolean = false;
+  statuses: any[] = [];
+  //loading: boolean = true;
 
-  //* === LISTAS Y DATOS TEMPORALES ===
-   exhortosRecibidos: [] = [];
-   catEstatusExhortos: EstatusExhortos[] = [];
-  
+  filter!: UI_ParamlistadoExhortosRecibidosRequest;
+  response!: GenericResponse<ListadoExhortosRecibidosI[]>;
+  listadosExhortos= signal<ListadoExhortosRecibidosI[]>([]);
+
+
+  fechaInicio : Date | undefined;
+  fechaFin : Date | undefined;
+  fechaMaxima: Date| undefined;
+
+  formSubmitted: boolean = false;
+   // Fechas predeterminadas
+   defaultDateIni: string | undefined;
+   defaultDateFin: string | undefined;
+
+
+  //@ViewChild('dt1') dt1: any;
+
+ 
+  listadoEstatus: ListadoEstatus[] = [];
+  //selectedEstatus : number=5; ///se ponme en 5 por que es el valor del estatus "recibidos"
+  selectedEstatus : ListadoEstatus | undefined;
 
 
   constructor(
-    private readonly fb: FormBuilder,
-    //private apiService: ApiService,
-    
+    private exhortoService: ExhortosService,
+    public authService: AuthService,
+    public router: Router,
+    private messageService: MessageService,
+    private cdr: ChangeDetectorRef
+  ) { 
 
-
-  ) { }
+  }
   items: MenuItem[] = [{ label: 'Components' }, { label: 'Form' }, { label: 'InputText', routerLink: '/inputtext' }];
   home: MenuItem = { icon: 'pi pi-home', routerLink: '/' };
 
-  searchValue: string | undefined;
-    // fechaInicial: Date | undefined;
-    //   fechaFinal: Date | undefined;
+  ngOnInit() {
 
-  clearFecha() {
+    this.catalogoEstatus();
+   
+    //const today = new Date();
 
-    this.validarExhortosRecibidos.get('fechaInicial')?.setValue('');
-        this.validarExhortosRecibidos.get('fechaFinal')?.setValue('');
+    //this.fechaMaxima = new Date(today);
 
-  }
-  clear(table: Table) {
-    // this.fechaInicial = undefined;
-    // this.fechaFinal = undefined;
+    //this.fechaFin = new Date(today);
+    //this.fechaInicio = new Date(today.setDate(today.getDate() - 300));
+
+    //this.defaultDateIni = new Date(today.setDate(today.getDate() - 800)).toISOString().split('T')[0]; // Hace 400 días
+    //this.defaultDateFin = new Date().toISOString().split('T')[0]; // Hoy
 
   }
 
   
+  // Método para navegar al componente de detalle-notificacion
+  verDetalleNotificacion(idExhortoRecibido: number) {
+    //console.log('Naavegando a detalle-exhorto con idExhortoRecibido:', idExhortoRecibido);
+    this.router.navigate(['/inicio/exhortos/detalle'], { state: { idExhortoRecibido } });
 
-  ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    this.cargarEstatus();
+  }
 
-    this.validarExhortosRecibidos = this.fb.group({
-      expOrigen: [''],
-      idEstatusExhorto: [null, Validators.required],
-      idPantalla: [1],
-      fechaInicial:[],
-      fechaFinal:[]
+  verAcuerdos(idExhortoRecibido: number) {
+    //console.log('Naavegando a detalle-promocion con idPromocion:', idExhortoRecibido);
+    this.router.navigate(['/inicio/exhortos/acuerdos'], { state: { idExhortoRecibido } });
+
+  }
+
+  async ListaExhortos(){
+    await this.getListado();
+  }
+
+  getListado(): Promise<void>{
+    return new Promise((resolve,reject) =>{
+    this.formSubmitted = true;
+    // Utilizar fechas predeterminadas si date1 o date2 no están definidas
+    let fechaIni = this.fechaInicio;
+    let fechaFin = this.fechaFin;
+    [fechaIni, fechaFin] = [this.fechaInicio, this.fechaFin];
+
+    if(fechaIni===null){
+
+      fechaIni=undefined;
+    }
+    if(fechaFin===null){
+      fechaFin=undefined;
+    }
+
+    
+    const perfil = this.authService.getRolesUsuario(); // Obtener perfil del servicio
+    const area = this.authService.getAreaUsuario();
+
+    const obj = {
+      fechaIni: fechaIni,
+      fechaFin: fechaFin,
+      perfil: perfil,
+      estatus : this.selectedEstatus?.idEstatus,
+      IdAreaAdminAplicaciones : area 
+    };
+
+    this.isLoading=true;
+    this.cdr.detectChanges();
+
+    this.exhortoService.getExhortosRecibidosListado(obj).subscribe({
+      next: (res => {
+        this.response = res as any;
+        if (this.response.success) {
+          //console.log("Respuesta del servidor:", this.response);
+          this.listadosExhortos.set(this.response.data);
+
+        } else {
+          // Manejo de errores
+          this.messageService.add({severity: 'error', summary: this.response.message, detail: this.response.errors[0]})
+        }
+        //this.loading = false;
+      }),
+      error: (err => {
+        // Manejo de errores
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el listado de exhortos' });
+        //this.loading = false;
+      }),
+      complete:()=>{
+        this.isLoading=false;
+        this.cdr.detectChanges();
+      }
+    });
     });
   }
 
-  onBuscarExhortosRecibidos() {
-    
-  }
 
-  cargarEstatus() {
-        this.catEstatusExhortos.push({
-            idEstatusExhorto: 4,
-            descripcion: "Pendiente de recibir",
-        },
-        {
-            idEstatusExhorto: 5,
-            descripcion: "Recibido",
-        },
-        {
-            idEstatusExhorto: 6,
-            descripcion: "En proceso de diligencia",
-        },
-        {
-            idEstatusExhorto: 7,
-            descripcion: "Acordado",
-        },
-        {
-            idEstatusExhorto: 8,
-            descripcion: "Respondido"},
-        {
-            idEstatusExhorto: 9,
-            descripcion: "Incompetencia",
-        }
+  esRangoInvalido(): boolean {
+    /*return this.formSubmitted && (
+      !this.rangoFechas ||
+      this.rangoFechas.length !== 2 ||
+      !this.rangoFechas[0] ||
+      !this.rangoFechas[1]
+    );*/
+    return this.formSubmitted && (
+      !this.fechaInicio ||
+      !this.fechaFin ||
+      this.fechaInicio > this.fechaFin
     );
   }
 
+  resetFilter() {
+    // Limpiar fechas
+    //localStorage.removeItem('dateE3');
+    //localStorage.removeItem('dateE4');
+
+    this.fechaInicio = undefined;
+    this.fechaFin = undefined;
+
+    // Limpiar resultados visibles
+    this.listadosExhortos.set([]);
+
+    // Mostrar mensaje opcional
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Filtros reiniciados',
+      detail: 'Fechas y resultados han sido limpiados'
+    });
+  }
+
+  onGlobalFilter(event: Event, dt: any) {
+    const input = event.target as HTMLInputElement;
+    dt.filterGlobal(input.value, 'contains');
+  }
+  getSeverity(status: string) {
+    switch (status.toLowerCase()) {
+      case 'unqualified':
+        return 'danger';
+
+      case 'proposal':
+        return 'success';
+
+      case 'new':
+        return 'info';
+
+      case 'negotiation':
+        return 'warning';
+
+      case 'qualified':
+        return 'secondary'; // Devuelve undefined si no hay un valor de severidad definido
+
+      default:
+        return 'secondary'; // Manejar cualquier otro caso no previsto devolviendo undefined
+    }
+  }
+  openPdf() {
+    const pdfUrl = 'https://www.clickdimensions.com/links/TestPDFfile.pdf'; // Reemplaza esto con la URL de tu PDF
+    window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  selectClass(estatus: string){
+    if(estatus === "Recibido"){
+      return 'bg-orange-400/50'
+    }else if(estatus === "Pendiente de recibir"){
+      return 'bg-orange-400/50'
+    }else if(estatus === "En proceso de diligencia"){
+      return 'bg-violeta/50'
+    }else if(estatus === "Acordado"){
+       return 'bg-lime-300/50'
+    }else if(estatus === "Respondido"){
+      return 'bg-lime-600/50'
+    }else{
+      return 'bg-blue-300/50'
+    }
+
+  }
+
+  async catalogoEstatus(){
+    await this.getlistadoEstatus();
+    
+  }
+
+  getlistadoEstatus(): Promise<void>{
+    return new Promise((resolve,reject) =>{
+        this.exhortoService.getListadoEstatus(1).subscribe({
+          next: (response:any) => {
+            if(response.success)
+            {
+              //console.log('Datos recibidos del catálogo:', response);
+              this.listadoEstatus = response.data;
+              this.selectedEstatus = this.listadoEstatus.find(f=>f.idEstatus=5);
+               this.ListaExhortos();
+              //console.log(this.listadoEstatus);
+            }
+            else
+            {
+              this.messageService.add({severity: 'error', summary: response.message, detail:response.errors})
+            }
+          },
+          error:(e)=>
+          {
+            //console.error('Error al cargar el catálogo de Materia', e);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
+          },
+        });
+    });
+  }
+  
+   clear(table: Table) {
+    // this.fechaInicial = undefined;
+    // this.fechaFinal = undefined;
+    table.clear();
+  }
 }
