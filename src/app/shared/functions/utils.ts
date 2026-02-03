@@ -97,4 +97,19 @@ export function downloadFile(file: File) {
       document.body.removeChild(a);
   })
 }
+export function base64ToFile(base64String: string, fileName: string, mimeType: string): File {
+  // Decodificar el Base64
+  const byteCharacters = atob(base64String);
+  const byteNumbers = new Array(byteCharacters.length);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const byteArray = new Uint8Array(byteNumbers);
+
+  // Crear el objeto File
+  return new File([byteArray], fileName, { type: mimeType });
+}
+
 

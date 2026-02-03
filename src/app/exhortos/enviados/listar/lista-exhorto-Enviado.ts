@@ -100,7 +100,7 @@ export class ListaExhortosEnviados implements OnInit {
    // Método para navegar al componente de detalle-exhortos-recibidos
    verDetalleEnviado(idExhortoEnviado: number) {
     //console.log('Naavegando a detalle-exhorto-enviado con idExhortoEnviado:', idExhortoEnviado);
-    this.router.navigate(['/exhortos/exhortos-enviados/detalle'], { state: { idExhortoEnviado } });
+    this.router.navigate(['/exhortos/detalles-exhorto-enviado'], { state: { idExhortoEnviado } });
 
   }
   CrearExhorto(){
@@ -145,7 +145,7 @@ export class ListaExhortosEnviados implements OnInit {
     //localStorage.setItem('dateE3', fechaIni.toISOString());
     //localStorage.setItem('dateE4', fechaFin.toISOString());
     // Realizar la búsqueda
-    const perfil = this.authService.getRolesUsuario(); // Obtener perfil del servicio
+    const perfil = this.authService.getRoleNameUsuario(); // Obtener perfil del servicio
    const area = this.authService.getAreaUsuario();
 
     const obj = {
@@ -175,7 +175,8 @@ export class ListaExhortosEnviados implements OnInit {
       error: (err => {
         // Manejo de errores
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
-        
+        this.isLoading=false;
+        this.cdr.detectChanges();
       }),
       complete:()=>{
         this.isLoading=false;

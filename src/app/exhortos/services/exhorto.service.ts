@@ -4,7 +4,13 @@ import { Observable, } from 'rxjs';
 import { checkToken } from '../../core/auth/interceptor/token.interceptor';
 import { environment } from '../../../environments/environment';
 import { GenericResponse } from '../../shared/interface/shared.interface';
-import { ExhortoEnviadoGuardarGeneralesRequest, generalesExhortoEnviado, EnviadoConfirmacionDatosRecibidosResponse, EnviadoArchivoRecibidoConAcuseResponse, EstadoSeleccionado, CatalogoMunicipioDestino, CatalogoMateriasEstadoDestino, tipoVia, CatalogoMunicipioOrigen, CatalogoEstadoDestino, CatalogoJuzgadoOrigen, CatalogoGenero, CatalogoMateria, ListadoCatalogoTipoDocumento, ConfigMateriaJuzgado, detalleExhortosEnviados, CatalogoTipoParte, validaFirmaRequest, guardaFirmaTmpRequest, AgregarJuzgadoMat, CatalogoRegion, CatJuzgado,UI_ParamlistadoExhortosRecibidosRequest,ListadoExhortosEnviados,ListadoEstatus,ListadoExhortosRecibidosI } from '../interfaces/exhortos.model';
+import { ExhortoEnviadoGuardarGeneralesRequest, generalesExhortoEnviado, EnviadoConfirmacionDatosRecibidosResponse, 
+         EnviadoArchivoRecibidoConAcuseResponse, EstadoSeleccionado, CatalogoMunicipioDestino, CatalogoMateriasEstadoDestino, 
+         tipoVia, CatalogoMunicipioOrigen, CatalogoEstadoDestino, CatalogoJuzgadoOrigen, CatalogoGenero, CatalogoMateria, 
+         ListadoCatalogoTipoDocumento, ConfigMateriaJuzgado, detalleExhortosEnviados, CatalogoTipoParte, validaFirmaRequest, 
+         guardaFirmaTmpRequest, AgregarJuzgadoMat, CatalogoRegion, CatJuzgado,UI_ParamlistadoExhortosRecibidosRequest,
+         ListadoExhortosEnviados,ListadoEstatus,ListadoExhortosRecibidosI,respuestExhortoEnviado,ConfirmacionDatosPromocionRecibida,
+         ArchivoRecibidoPromocionConAcuse,actualizacionesExhortoEnviado,VerMovimientosEnviadosResponse} from '../interfaces/exhortos.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +27,8 @@ export class ExhortosService {
   private ExhortosEfirma = environment.urlApiExhortosElectronicos + "/eFirma/";
   private deleteConfigMatJuz = environment.urlApiExhortosElectronicos + "/Configuraciones/quitarAsignacionJuzgado";//'https://api.tribunaloaxaca.gob.mx/exhortoselectronicos/api/Configuraciones/quitarAsignacionJuzgado'
   private configJuz = environment.urlApiExhortosElectronicos + "/Configuraciones";//'https://api.tribunaloaxaca.gob.mx/exhortoselectronicos/api/Configuraciones';
-
+  private turnos = environment.urlApiExhortosElectronicos+"/Turnos";
+  
   constructor(private http: HttpClient) { }
 
   actualizarExhortoEnviado(request: any): Observable<GenericResponse<any>> {
@@ -194,5 +201,30 @@ export class ExhortosService {
   getExhortosRecibidosListado(param:UI_ParamlistadoExhortosRecibidosRequest): Observable<GenericResponse<ListadoExhortosRecibidosI>>{
     //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.post<GenericResponse<ListadoExhortosRecibidosI>>(this.baseUrl + "ListadoExhortosRecibidos",param,{context:checkToken()});
+  }
+  //Respuestas de los exhortos enviados
+  getRespuestaExhortoEnviado(idExhortoEnviado:number):Observable<GenericResponse<respuestExhortoEnviado>>{
+    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    return this.http.get<GenericResponse<respuestExhortoEnviado>>(this.apiUI+"/verRespuestaExhortoEnviado?idExhortoEnviado="+idExhortoEnviado,{context:checkToken()});
+
+  }
+      //anviar los datos generales de una promocion
+  enviarPromocionGenerales(idPromocionEnviado: number):Observable<GenericResponse<ConfirmacionDatosPromocionRecibida>>{
+    const url = `${this.exhortoEnviar}EntregarGeneralesPromocion?idPromocionEnviada=${idPromocionEnviado}`;
+    return this.http.post<GenericResponse<ConfirmacionDatosPromocionRecibida>>(url,null,{context:checkToken()});
+  }
+  //anviar los archivos de una promocion
+  enviarPromocionArchivos(idPromocionEnviado: number):Observable<GenericResponse<ArchivoRecibidoPromocionConAcuse>>{
+    const url = `${this.exhortoEnviar}EntregarArchivosPromocion?idPromocionEnviada=${idPromocionEnviado}`;
+    return this.http.post<GenericResponse<ArchivoRecibidoPromocionConAcuse>>(url,null,{context:checkToken()});
+  }
+  //obtiene la lista de actualizaciones de un exhorto enviado
+  getActualizacionesExhortoEnviado(idExhortoEnviado : number ):Observable<GenericResponse<actualizacionesExhortoEnviado[]>>{
+    return this.http.get<GenericResponse<actualizacionesExhortoEnviado[]>>(this.exhortoEnviar + "verActualizacionesRecibidas?idExhortoEnviado="+idExhortoEnviado, {context:checkToken()});
+  }
+  // Método para obtener los movimientos de un exhorto enviado
+  getMovimientosExhortoEnviado(idExhortoEnviado: number): Observable<GenericResponse<VerMovimientosEnviadosResponse[]>> {
+    const url = `${this.turnos}/verMovimientosEnviados?idExhortoEnviado=${idExhortoEnviado}`;
+    return this.http.get<GenericResponse<VerMovimientosEnviadosResponse[]>>(url,{context:checkToken()});
   }
 }

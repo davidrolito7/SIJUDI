@@ -1,3 +1,4 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
 <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4 sticky-header">
 
   <div class="flex items-start flex-col md:justify-between md:flex-row">
@@ -14,31 +15,25 @@
     <div class="mt-6 md:mt-0 flex items-center">
 
 
-      @if(tienePermisoGuardar){
-      @if (mostrarBotonGuardar) {
-      <button pButton (click)="guardarOActualizarExhorto()" class="whitespace-nowrap">
-        <i pButtonIcon class="pi pi-check"></i>
-        <span pButtonLabel>Guardar</span>
-      </button>
-      }
+      @if(tienePermisoGuardar()){
+        @if (mostrarBotonGuardar) {
+        <p-button  (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-check"> 
+        </p-button>
+        }
       }
 
       @if (mostrarBotonEnviarGenerales) {
-      @if(tienePermisoEnviarGenerales){
-      <button pButton (click)="enviarGenerales()" class="whitespace-nowrap">
-        <i pButtonIcon class="pi pi-send"></i>
-        <span pButtonLabel>Enviar generales</span>
-      </button>
-      }
+        @if(tienePermisoEnviarGenerales()){
+        <p-button  (onClick)="enviarGenerales()" label="Enviar generales" icon="pi pi-send">
+        </p-button>
+        }
       }
       @if (mostrarBotonEnviarArchivos) {
-      @if(tienePermisoEnviarArchvios){
-      <button pButton (click)="enviarArchivos()" class="whitespace-nowrap">
-        <i pButtonIcon class="pi pi-file"></i>
-        <span pButtonLabel>Enviar archivos</span>
-      </button>
+        @if(tienePermisoEnviarArchvios()){
+        <p-button  (onClick)="enviarArchivos()" label="Enviar archivos" icon="pi pi-file">
+        </p-button>
 
-      }
+        }
       }
     </div>
   </div>
@@ -49,7 +44,7 @@
     <!-- Estado destino -->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Estado exhortado*</label>
-      <p-select id="estadoDestino" [options]="listaEstadoDestino" formControlName="estadoDestino"
+      <p-select id="estadoDestino" [options]="listaEstadoDestino()" formControlName="estadoDestino"
         optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar estado..."
         inputId="estadoDestino-dropdown" (onChange)="cargarCatalogos($event.value)" class="w-full" fluid></p-select>
 
@@ -59,7 +54,7 @@
     <!-- Municipio destino -->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Municipio turnado*</label>
-      <p-select id="municipio" [options]="listaMunicipioDestino" optionLabel="descripcion"
+      <p-select id="municipio" [options]="listaMunicipioDestino()" optionLabel="descripcion"
         formControlName="municipioDestino" appendTo="body" filter="true" filterPlaceholder="Buscar municipio..."
         inputId="municipio-dropdown" class="w-full" fluid></p-select>
 
@@ -69,7 +64,7 @@
     <!-- Materia destino -->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Materia destino*</label>
-      <p-select id="materiaEstadoDestino" [options]="listaMateriaEstadoDestino" formControlName="materiaEstadoDestino"
+      <p-select id="materiaEstadoDestino" [options]="listaMateriaEstadoDestino()" formControlName="materiaEstadoDestino"
         optionLabel="nombre" appendTo="body" filter="true" filterPlaceholder="Buscar materia..."
         inputId="materiaEstadoDestino-dropdown" class="w-full" fluid></p-select>
 
@@ -80,7 +75,7 @@
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Materia origen*</label>
       <p-select id="materiaOrigen" name="materiaOrigen" inputId="materia-dropdown" formControlName="materiaOrigen"
-        [options]="listaMateria" optionLabel="nombre" required appendTo="body" [filter]="true"
+        [options]="listaMateria()" optionLabel="nombre" required appendTo="body" [filter]="true"
         filterPlaceholder="Buscar materia..." (onChange)="getVias($event.value)" class="w-full" fluid></p-select>
 
     </div>
@@ -88,7 +83,7 @@
     <!-- Municipio origen -->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Municipio origen*</label>
-      <p-select id="municipio-origen" [options]="listaMunicipioOrigen" formControlName="municipioOrigen"
+      <p-select id="municipio-origen" [options]="listaMunicipioOrigen()" formControlName="municipioOrigen"
         optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar municipio..."
         inputId="municipioOrigen-dropdown" class="w-full" fluid></p-select>
 
@@ -98,7 +93,7 @@
     <!-- Juzgado origen -->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Juzgado origen</label>
-      <p-select id="juzgado" [options]="listaJuzgadoOrigen" optionLabel="juzgado" formControlName="juzgadoOrigen"
+      <p-select id="juzgado" [options]="listaJuzgadoOrigen()" optionLabel="juzgado" formControlName="juzgadoOrigen"
         appendTo="body" filter="true" filterPlaceholder="Buscar juzgado..." inputId="juzgado-dropdown" class="w-full"
         fluid></p-select>
 
@@ -162,7 +157,7 @@
     <!-- Tipo de diligencia -->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Tipo de diligencia*</label>
-      <p-select id="tipoDiligencia" [options]="listaTipoDiligencia" formControlName="TipoDiligencia"
+      <p-select id="tipoDiligencia" [options]="listaTipoDiligencia()" formControlName="TipoDiligencia"
         optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar tipo de diligencia..."
         inputId="tipoDiligencia-dropdown" class="w-full" fluid></p-select>
 
@@ -204,7 +199,7 @@
 
         <p-table [value]="listaPartes" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
           <ng-template #header>
-            <tr>
+            <tr class="uppercase text-xs">
               <th>Nombre</th>
               <th>Apellido paterno</th>
               <th>Apellido materno</th>
@@ -219,29 +214,29 @@
             </tr>
           </ng-template>
           <ng-template #body let-promo let-i="index">
-            <tr>
-              <td class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <tr class="uppercase text-xs">
+              <td style="font-size: small;">
                 {{ promo.nombre }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.apellidoPaterno }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.apellidoMaterno }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.genero }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.esPersonaMoral ? "Moral" : "Física" }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.tipoParteNombre }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.correoElectronico }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.telefono }}
               </td>
               @if(idEstatus <= 1) {
@@ -293,7 +288,7 @@
 
         <p-table [value]="listaPromovetes" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
           <ng-template #header>
-            <tr>
+            <tr class="uppercase text-xs">
               <th>Nombre</th>
               <th>Apellido paterno</th>
               <th>Apellido materno</th>
@@ -309,28 +304,28 @@
           </ng-template>
           <ng-template #body let-promo let-i="index">
             <tr>
-              <td class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <td style="font-size: small;">
                 {{ promo.nombre }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.apellidoPaterno }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.apellidoMaterno }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.genero }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.esPersonaMoral ? "Moral" : "Física" }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.tipoParteNombre }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.correoElectronico }}
               </td>
-              <td class="px-6 py-3">
+              <td style="font-size: small;">
                 {{ promo.telefono }}
               </td>
               @if(idEstatus <= 1) {
@@ -364,6 +359,12 @@
           <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
 
           <div class="flex items-center">
+             @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
+                <p-button 
+                  (click)="openNewFirma()"
+                  severity="warn">Firmar
+                </p-button>
+              }
               <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
                   accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
                   chooseLabel="Agregar documento" />
@@ -376,23 +377,18 @@
                   <i pButtonIcon class="pi pi-check"></i>
                   <span pButtonLabel>Guardar </span>
               </p-button> -->
-              @if (tienePermisoFirmarArchivo && seleccionadosParaFirma()) {
-                <button type="button"
-                  (click)="openNewFirma()"
-                  class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">Firmar
-                </button>
-              }
+             
           </div>
       </div>
 
       <div class="w-full">
           <div class="grid grid-cols-6 gap-4 w-full items-end">
-              @if (listaDocumentos.length > 0) {
+              @if (listaDocumentos().length > 0) {
               <div class="col-span-6 sm:col-span-6 ">
 
-                  <p-table [value]="listaDocumentos" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+                  <p-table [value]="listaDocumentos()" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
                       <ng-template #header>
-                          <tr>
+                          <tr class="uppercase text-xs">
                               <th>para firmar</th>
                               <th>Documento</th>
                               <th>Tipo documento</th>
@@ -400,7 +396,7 @@
                               <th>Fecha firmado</th>
                               <th>Firmantes</th>
                               <th>Peso</th>
-                              <th>Acciones</th>
+                              <th style="min-width: 10rem">Acciones</th>
                           </tr>
                       </ng-template>
                       <ng-template #body let-documento let-i="rowIndex">
@@ -411,8 +407,8 @@
                                         type="checkbox" [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma"/>
                               }
                               </td>
-                              <td>{{ documento.nombreArchivo }}</td>
-                              <td>
+                              <td style="font-size: small;">{{ documento.nombreArchivo }}</td>
+                              <td style="font-size: small;">
                                 @if(documento.idArchivo === 0){
                                   <form [formGroup]="doctosForm">
                                     <p-select id="tipoDocumento" inputId="tipoDocumento-dropdown"
@@ -429,12 +425,12 @@
                                 }
                                 @else{
                                   <span>
-                                    {{ doctosForm.get('tipoDocumento')?.value?.nombre }}
+                                    {{ documento.tipoDocumento.nombre }}
                                   </span>
                                 }
                               </td>
-                              <td>{{ documento.firmado ? 'Sí' : 'No' }}</td>
-                              <td>{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+                              <td style="font-size: small;">{{ documento.firmado ? 'Sí' : 'No' }}</td>
+                              <td style="font-size: small;">{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
                               <td>
                                 <table>
                                     @for (firmante of documento.firmantes; track firmante) {
@@ -453,9 +449,9 @@
                                     }
                                 </table>
                               </td>
-                              <td>{{ ((documento.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
+                              <td style="font-size: small;">{{ ((documento.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
                             
-                              <td>
+                              <td class="text-center">
                                 @if(documento.idArchivo === 0){
                                   <p-button (click)="onUpload(documento.file)" severity="success" [rounded]="true"
                                         icon="pi pi-upload" class="mr-2" title="cargar documento">
@@ -474,7 +470,7 @@
 
                                 <!--ELIMINAR DOCUMENTO-->
                                 @if(idEstatus == 1 || idEstatus==0 ){ <!--//Pendiente de enviar-->
-                                  @if(tienePermisoEliminarArchivo){
+                                  @if(tienePermisoEliminarArchivo()){
                                     <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                                     (click)="eliminarDocumento(documento,2,i)" ></p-button>
                                     
@@ -485,9 +481,10 @@
                           </tr>
                       </ng-template>
                   </p-table>
-                  <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-                  </app-pdf-dialog>
-
+                  @if(mostrarDocumento()){
+                    <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                    </app-pdf-dialog>
+                  }
               </div>
               }
               
@@ -850,17 +847,17 @@
 
 
 <!--* MODAL DE CONFIRMACION GUADAR EXHORTO -->
-<app-confirm-dialog key="guardarExhorto" title="Confirmación" message="¿Estás seguro de guardar el exhorto?"
+<app-confirm-dialog key="guardarExhorto" title="Confirmación" message="¿Está seguro de guardar el exhorto?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA ENVIAR DATOS GENERALES DEL EXHORTO AL JUZGADO EXHORTADO -->
 <app-confirm-dialog key="enviarGenerales" title="Confirmación"
-  message="¿Estás seguro de enviar los datos generales al juzgado exhortado?" icon="pi pi-question"
+  message="¿Está seguro de enviar los datos generales al juzgado exhortado?" icon="pi pi-question"
   circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA ENVIAR LOS ARCHIVOS DEL EXHORTO AL JUZGADO EXHORTADO -->
 <app-confirm-dialog key="enviarArchivos" title="Confirmación"
-  message="¿Estás seguro de enviar los archivos al juzgado exhortado?" icon="pi pi-question" circleClass="bg-red-500"
+  message="¿Está seguro de enviar los archivos al juzgado exhortado?" icon="pi pi-question" circleClass="bg-red-500"
   acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA ELIMINAR PARTES -->
@@ -1051,14 +1048,14 @@
       <!-- Género -->
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Género</label>
-        <p-select id="genero" [options]="listagenero" formControlName="genero" optionLabel="descripcion" appendTo="body"
+        <p-select id="genero" [options]="listagenero()" formControlName="genero" optionLabel="descripcion" appendTo="body"
           inputId="genero-dropdown" class="w-full" fluid></p-select>
       </div>
 
       <!-- Tipo de parte -->
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Tipo de parte*</label>
-        <p-select id="tipoParte" [options]="listaTipoParte" formControlName="tipoParte" optionLabel="descripcion"
+        <p-select id="tipoParte" [options]="listaTipoParte()" formControlName="tipoParte" optionLabel="descripcion"
           appendTo="body" inputId="tipoParte-dropdown" class="w-full" fluid></p-select>
       </div>
 
@@ -1118,14 +1115,14 @@
       <!-- Género -->
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Género</label>
-        <p-select id="generoPromo" [options]="listagenero" formControlName="generoPromo" optionLabel="descripcion"
+        <p-select id="generoPromo" [options]="listagenero()" formControlName="generoPromo" optionLabel="descripcion"
           appendTo="body" inputId="generoPromo-dropdown" class="w-full" fluid></p-select>
       </div>
 
       <!-- Tipo de parte -->
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Tipo de parte*</label>
-        <p-select id="tipoPartePromo" [options]="listaTipoParte" formControlName="tipoPartePromo"
+        <p-select id="tipoPartePromo" [options]="listaTipoParte()" formControlName="tipoPartePromo"
           optionLabel="descripcion" appendTo="body" inputId="tipoPartePromo-dropdown" class="w-full" fluid></p-select>
       </div>
 
@@ -1169,7 +1166,7 @@
 
   <ng-template #footer>
     <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogFirma()" />
-    <p-button label="Agregar" icon="pi pi-check" (click)="iniciarFirmaDocumentos()" />
+    <p-button label="Firmar" icon="pi pi-check" (click)="iniciarFirmaDocumentos()" />
   </ng-template>
 </p-dialog>
 <p-confirmdialog [style]="{ width: '600px' }" />

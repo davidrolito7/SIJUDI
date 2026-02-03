@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, signal, effect, CreateEffectOptions, inject, Signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal, effect, CreateEffectOptions, inject, Signal, ChangeDetectorRef } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectModule } from 'primeng/select';
@@ -28,19 +28,20 @@ import {ModalService} from '../../../shared/services/modal.service';
 import {QrGeneratorComponent} from '../../../shared/components/qr-generator-component/qr-generator-component';
 import {AuthService} from '../../../core/auth/service/auth.service';
 import {secciones} from '../../../core/auth/interface/login.interfaces';
-import {Base64ToBlob,convertDate, downloadFile ,validaPdf,convertFileToBase64, downloadBase64} from '../../../shared/functions/utils';
+import {Base64ToBlob,convertDate, downloadFile ,validaPdf,convertFileToBase64, downloadBase64, base64ToFile} from '../../../shared/functions/utils';
 import {TokenService} from '../../../core/auth/service/token.service';
 import { MessageModule } from 'primeng/message';
 import { TableModule } from 'primeng/table';
 import { CheckboxModule } from 'primeng/checkbox';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
+import { Spinner } from "../../../shared/components/spinner/spinner";
 interface FileUploadSelectEvent {
   files: File[];
 }
 
 @Component({
   selector: 'app-crear',
-  imports: [FloatLabelModule,TableModule,CheckboxModule,SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule,ConfirmDialogModule,InputMaskModule,ToastModule, MessageModule,FileUploadModule,PdfDialog,InputIconModule],
+  imports: [FloatLabelModule, TableModule, CheckboxModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule, ConfirmDialogModule, InputMaskModule, ToastModule, MessageModule, FileUploadModule, PdfDialog, InputIconModule, Spinner],
   templateUrl: './crear-exhorto.html',
   styleUrl: './crear-exhorto.css',
   providers: [MessageService, ConfirmationService]
@@ -57,13 +58,16 @@ constructor(
   private router:Router,
   public authService : AuthService,
   private sanitizer: DomSanitizer,
+  private cd: ChangeDetectorRef,
 ) { 
   //Detecta si el perfil seleccionado ha cambiado y actualiza las secciones
-    this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccionado());
+    /*this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccionado());
     effect(() => {
       this.perfilSeleccionado = signal(this.perfilSeleccionadoService.perfil_Seleccionado());
       this.GetSeccionesUsuario();
     }, { allowSignalWrites: true } as CreateEffectOptions);
+    */
+    this.GetSeccionesUsuario();
   }
   //exhortosForm = signal<FormGroup>(
   exhortosForm = new FormGroup({
@@ -132,7 +136,9 @@ constructor(
   formSubmittedPartes: boolean = false;
   formSubmittedPromovente: boolean = false;
   //materiaSelect!: any;
-  listaMateria: CatalogoMateria[] = [];
+  //listaMateria: CatalogoMateria[] = [];
+  listaMateria=signal<CatalogoMateria[]>([]);
+
   band: boolean = false;
   contador_firmas: any = "";
   isLoading: boolean = false;
@@ -147,7 +153,7 @@ constructor(
   //documentosAnexados: File[] = [];
   nombre = '';
   documentoUrl: SafeResourceUrl | null = null;
-  mostrarDocumento = false;
+  mostrarDocumento = signal<boolean>(false);
  // @ViewChild('modalconfirmacion') modalconfirmacion!: ModalComponent;
   @ViewChild('modal2') modal2!: ModalComponent;
   @ViewChild('modal1') modal1!: ModalComponent;
@@ -170,23 +176,30 @@ constructor(
   //confirmacionAplicarFirmas:boolean=false;
 
 
-  listaEstadoDestino: CatalogoEstadoDestino[] = [];
+  //listaEstadoDestino: CatalogoEstadoDestino[] = [];
+  listaEstadoDestino=signal<CatalogoEstadoDestino[]>([]);
   //estadoDestinoSelect!: any;
 
-  listaMunicipioDestino: CatalogoMunicipioDestino[] = [];
+  //listaMunicipioDestino: CatalogoMunicipioDestino[] = [];
+  listaMunicipioDestino=signal<CatalogoMunicipioDestino[]>([]);
   //municipioDestinoSelect!: CatalogoMunicipioDestino;
 
-  listaMunicipioOrigen: CatalogoMunicipioOrigen[] = [];
+  //listaMunicipioOrigen: CatalogoMunicipioOrigen[] = [];
+  listaMunicipioOrigen=signal<CatalogoMunicipioOrigen[]>([]);
   //municipioOrigenSelect!: CatalogoMunicipioOrigen;
 
-  listaMateriaEstadoDestino : CatalogoMateriasEstadoDestino []=[];
+  //listaMateriaEstadoDestino : CatalogoMateriasEstadoDestino []=[];
+  listaMateriaEstadoDestino=signal<CatalogoMateriasEstadoDestino[]>([]);
   //materiaEstadoDestinoSelect! : CatalogoMateriasEstadoDestino ;
 
-  listaJuzgadoOrigen: CatalogoJuzgadoOrigen[] = [];
+  //listaJuzgadoOrigen: CatalogoJuzgadoOrigen[] = [];
+  listaJuzgadoOrigen=signal<CatalogoJuzgadoOrigen[]>([]);
   //JuzgadoOrigenSelect!: CatalogoJuzgadoOrigen;
 
-  listagenero: CatalogoGenero[] = [];
-  generoSelect!: CatalogoGenero;
+  //listagenero: CatalogoGenero[] = [];
+  listagenero=signal<CatalogoGenero[]>([]);
+
+  //generoSelect!: CatalogoGenero;
   generoPromoSelect!: CatalogoGenero;
 
   idExhortoEditando: number = 0
@@ -194,17 +207,19 @@ constructor(
 
   exhortoYaGuardado: boolean = false;
 
-  listaTipoParte: CatalogoTipoParte[] = [];
-  tipoParteSelect!: CatalogoTipoParte;
-  tipoPartePromoSelect!: CatalogoTipoParte;
+  //listaTipoParte: CatalogoTipoParte[] = [];
+  listaTipoParte=signal<CatalogoTipoParte[]>([]);
+  //tipoParteSelect!: CatalogoTipoParte;
+  //tipoPartePromoSelect!: CatalogoTipoParte;
 
   listaPartes: partesExhortoEnviado[] = [];
   listaPromovetes: ProvomenteExhortoEnviado[] = [];
 
   listaTipoDocumento: CONATRIB_catTipoDocumento[] = [];
-  tipoDocumentoSelect!: CONATRIB_catTipoDocumento;
+  //tipoDocumentoSelect!: CONATRIB_catTipoDocumento;
 
-  listaTipoDiligencia: catTipoDiligencia[]=[];
+  //listaTipoDiligencia: catTipoDiligencia[]=[];
+  listaTipoDiligencia=signal<catTipoDiligencia[]>([]);
   //tipoDiligenciaSelect!: catTipoDiligencia;
 
   url: string = '';
@@ -218,7 +233,8 @@ constructor(
   ExhortoEnviadoGenerales!: generalesExhortoEnviado;
   detallesExhortos: detalleExhortosEnviados | any;
 
-  listaDocumentos: archivoExhortoEnviado[] = [];
+  //listaDocumentos: archivoExhortoEnviado[] = [];
+  listaDocumentos=signal<archivoExhortoEnviado[]>([]);
   //documento!:archivoExhortoEnviado;
 
   banderaDocumento: boolean = false;
@@ -250,15 +266,15 @@ constructor(
   idArchivo: number | null = null; //variable para controlar un archivo seleccionado para eliminar o para aplicar la firma
 
   //Se declaran las variables para la visualizacion de las secciones
-  tienePermisoGuardar = false;
-  tienePermisoEnviarGenerales = false;
-  tienePermisoEnviarArchvios = false;
-  tienePermisoSeleccionarArchivo = false;
-  tienePermisoCargarArchivo = false;
-  tienePermisoFirmarArchivo = false;
-  tienePermisoEliminarArchivo = false;
+  tienePermisoGuardar = signal<boolean>(false);
+  tienePermisoEnviarGenerales = signal<boolean>(false);
+  tienePermisoEnviarArchvios = signal<boolean>(false);
+  tienePermisoSeleccionarArchivo = signal<boolean>(false);
+  tienePermisoCargarArchivo = signal<boolean>(false);
+  tienePermisoFirmarArchivo = signal<boolean>(false);
+  tienePermisoEliminarArchivo = signal<boolean>(false);
 
-  loading = false;
+  //loading = false;
 
   showPassword: boolean = false;
   seleccionadosParaFirma = signal(false);
@@ -357,7 +373,7 @@ constructor(
       setTimeout(() => {
         // Estado
         const estadoDescripcion = state.datosExhorto.estadoDestinoId; // es el nombre del estado
-        const estadoObj = this.listaEstadoDestino.find(e => e.descripcion === estadoDescripcion);
+        const estadoObj = this.listaEstadoDestino().find(e => e.descripcion === estadoDescripcion);
 
         if (estadoObj) {
           //this.estadoDestinoSelect = estadoObj;
@@ -365,7 +381,7 @@ constructor(
 
           this.cargarCatalogoMunicipioDestino(estadoObj).then(() => {
             const municipioNombre = state.datosExhorto.municipioDestinoId; // ← es nombre
-            const municipioObj = this.listaMunicipioDestino.find(m => m.descripcion === municipioNombre);
+            const municipioObj = this.listaMunicipioDestino().find(m => m.descripcion === municipioNombre);
 
             if (municipioObj) {
               //this.municipioDestinoSelect = municipioObj;
@@ -374,7 +390,7 @@ constructor(
 
               this.cargaMateriasDestino(estadoObj).then(() => {
                 const materiaNombre = state.datosExhorto.materiaNombre;
-                const materiaObj = this.listaMateriaEstadoDestino.find(m => m.nombre === materiaNombre);
+                const materiaObj = this.listaMateriaEstadoDestino().find(m => m.nombre === materiaNombre);
                 //console.log('¿Existe materia nombre?:', materiaNombre);
                 if (materiaObj) {
                   //console.log('materiaObj de modo edición:', materiaObj);
@@ -407,10 +423,10 @@ constructor(
         this.verificarYFiltrarJuzgados();
 
         // Juzgado Origen
-        const municipioOrigenObj = this.listaMunicipioOrigen.find(m => m.idMunicipio === state.datosExhorto.municipioOrigenTrue);
-        const materiaOrigenObj = this.listaMateria.find(m => m.idCatMateria === state.datosExhorto.materiaOrigenId);
-        const tipoDiligenciaObj = this.listaTipoDiligencia.find(t => t.descripcion === state.datosExhorto.tipoDiligenciacionNombre);
-        const materiaEstadoDestinoObj = this.listaMateriaEstadoDestino.find(m => m.nombre === state.datosExhorto.materiaNombre);
+        const municipioOrigenObj = this.listaMunicipioOrigen().find(m => m.idMunicipio === state.datosExhorto.municipioOrigenTrue);
+        const materiaOrigenObj = this.listaMateria().find(m => m.idCatMateria === state.datosExhorto.materiaOrigenId);
+        const tipoDiligenciaObj = this.listaTipoDiligencia().find(t => t.descripcion === state.datosExhorto.tipoDiligenciacionNombre);
+        const materiaEstadoDestinoObj = this.listaMateriaEstadoDestino().find(m => m.nombre === state.datosExhorto.materiaNombre);
 
         //console.log('municipioOrigenObj:', municipioOrigenObj);
         //console.log('materiaOrigenObj:', materiaOrigenObj);
@@ -452,7 +468,7 @@ constructor(
 
         if (municipioOrigenObj && materiaOrigenObj) {
           this.getConfigMunicipioMateriaJuzgado(municipioOrigenObj, materiaOrigenObj).then(() => {
-            const juzgadoObj = this.listaJuzgadoOrigen.find(
+            const juzgadoObj = this.listaJuzgadoOrigen().find(
               j => j.juzgado === state.datosExhorto.juzgadoOrigenNombre
             );
 
@@ -566,7 +582,7 @@ constructor(
 
   const juzgadoControl = this.exhortosForm.get('juzgadoOrigen');
 
-  const idMateria = typeof materiaObj === 'object' ? (materiaObj as CatalogoMateria)?.clave : materiaObj;
+  const idMateria = typeof materiaObj === 'object' ? (materiaObj as CatalogoMateria)?.idCatMateria : materiaObj;
   const idMunicipio = typeof municipioObj === 'object' ? (municipioObj as CatalogoMunicipioOrigen)?.idMunicipio : municipioObj;
 
   if (idMateria && idMunicipio) {
@@ -576,7 +592,7 @@ constructor(
       next: (response: any) => {
         if (response.success) {
           //console.log('Juzgados filtrados:', response.data);
-          this.listaJuzgadoOrigen = response.data;
+          this.listaJuzgadoOrigen.set(response.data);
         } else {
           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
         }
@@ -587,7 +603,7 @@ constructor(
     });
   } else {
     juzgadoControl?.disable();
-    this.listaJuzgadoOrigen = [];
+    this.listaJuzgadoOrigen.set([]);
   }
 }
 
@@ -596,7 +612,7 @@ constructor(
       next: (response: any) => {
         if (response.success) {
           //console.log('Datos recibidos del catálogo:', response);
-          this.listaMateria = response.data;
+          this.listaMateria.set(response.data);
         }
         else {
           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
@@ -686,6 +702,8 @@ constructor(
         estadoDestinoId: this.exhortosForm.value.estadoDestino?.idEstado ?? 0 //this.estadoDestinoSelect.idEstado
       };
       //console.log('Request a guardar:', request);
+      this.isLoading=true;
+      this.cd.detectChanges();
       this.ExhortosService.setGuardarExhortoEnviado(request).subscribe({
         next: (response:any) => {
           if(response.success)
@@ -709,10 +727,14 @@ constructor(
         error:(e)=>
         {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error});
+          this.isLoading=false;
+          this.cd.detectChanges();
         },
         complete:()=>{
             //console.log('FIN:');
             //this.router.navigate(['/inicio/exhortos/exhortos']);
+            this.isLoading=false;
+            this.cd.detectChanges();
           }
       });
       //this.confirmacionGuardarExhorto = false
@@ -731,14 +753,20 @@ constructor(
   //Metodo para obtener los municipios origen
   cargarCatalogoMunicipioOrigen() {
     return new Promise((resolve, reject) => {
+      this.isLoading=true;
+      this.cd.detectChanges();
       this.ExhortosService.getCatalogoMunicipioOrigen().subscribe(
         (response: any) => {
           //console.log('Datos recibidos del catálogo municipio origen:', response);
-          this.listaMunicipioOrigen = response.data;
+          this.listaMunicipioOrigen.set(response.data);
+          this.isLoading=false;
+          this.cd.detectChanges();
         },
         error => {
           //console.error('Error al cargar el catálogo de materias', error);
           //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
+          this.isLoading=false;
+          this.cd.detectChanges();
           reject(error);
         }
       );
@@ -760,7 +788,7 @@ constructor(
       this.ExhortosService.getCatalogoMunicipioDestino(estado).subscribe(
         (response: any) => {
           //console.log('📥 Catálogo de municipios recibidos:', response.data);
-          this.listaMunicipioDestino = response.data;
+          this.listaMunicipioDestino.set(response.data);
           resolve();
         },
         (error) => {
@@ -774,16 +802,22 @@ constructor(
 
   // Método para cargar el catálogo de órganos de destino
   cargarCatalogoEstadoDestino(): Promise<void> {
+      this.isLoading=true;
+      this.cd.detectChanges();
     return new Promise((resolve, reject) => {
       this.ExhortosService.getCatalogoEstadoDestino().subscribe(
         (response: any) => {
           //console.log('Datos recibidos del catálogo de estado destino:', response);
-          this.listaEstadoDestino = response.data;
+          this.listaEstadoDestino.set(response.data);
+          this.isLoading=false;
+          this.cd.detectChanges();
           resolve();
         },
         error => {
           //console.error('Error al cargar el catálogo de órganos', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de órganos' });
+          this.isLoading=false;
+          this.cd.detectChanges();
           reject(error);
         }
       );
@@ -796,7 +830,7 @@ constructor(
       this.ExhortosService.getCatalogoMateriasEstadoDestino(estado).subscribe(
         (response: any) => {
           //console.log('Datos recibidos del catálogo materias destino:', response);
-          this.listaMateriaEstadoDestino = response.data;
+          this.listaMateriaEstadoDestino.set(response.data);
           resolve(); // ✅ ¡NO debe faltar esto!
         },
         error => {
@@ -950,7 +984,8 @@ constructor(
 
     //console.log('Datos enviados para actualizar el exhorto:', request);
     //console.log('ID del exhorto editando:', this.idExhortoEditando);
-
+    this.isLoading=true;
+    this.cd.detectChanges();
     this.ExhortosService.actualizarExhortoEnviado(request).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -961,6 +996,12 @@ constructor(
       },
       error: (e) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error });
+        this.isLoading=false;
+        this.cd.detectChanges();
+      },
+      complete:()=>{
+        this.isLoading=false;
+        this.cd.detectChanges();
       }
     });
     //this.confirmacionGuardarExhorto = false
@@ -1024,12 +1065,13 @@ constructor(
     this.ExhortosService.getExhortosEnviadosDetalle(idExhortoEnviado).subscribe({
       next: (response) => {
         if (response.success && response.data.archivos.length > 0) {
-          this.listaDocumentos = response.data.archivos.map((archivo: any) => ({
+          this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
             ...archivo,
             tam: archivo.tamaño
-          }));
+          })));
+          console.log(this.listaDocumentos()[0].tipoDocumento);
         } else {
-          this.listaDocumentos = [];
+          this.listaDocumentos.set([]);
           this.messageService.add({
             severity: 'warn',
             summary: 'Advertencia',
@@ -1053,7 +1095,7 @@ constructor(
     this.ExhortosService.getCatalogojuzgadoOrigen().subscribe({
       next: (response: any) => {
         if (response.success) { //console.log('Datos recibidos del catálogo juzgados:', response);
-          this.listaJuzgadoOrigen = response.data;
+          this.listaJuzgadoOrigen.set(response.data);
         }
         else {
           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
@@ -1157,7 +1199,7 @@ constructor(
       next: (response: any) => {
         if (response.success) {
           //console.log('Datos recibidos del catálogo:', response);
-          this.listagenero = response.data;
+          this.listagenero.set(response.data);
         }
         else {
           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
@@ -1178,7 +1220,7 @@ constructor(
       next: (response: any) => {
         if (response.success) {
           //console.log('Datos recibidos del catálogo:', response);
-          this.listaTipoParte = response.data;
+          this.listaTipoParte.set(response.data);
         }
         else {
           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
@@ -1352,7 +1394,7 @@ constructor(
     this.ExhortosService.getCatalogoTipoDiligencia().subscribe({
       next: (response: any) => {
         if (response.success) {
-          this.listaTipoDiligencia = response.data;
+          this.listaTipoDiligencia.set(response.data);
         } else {
           this.messageService.add({
             severity: 'error',
@@ -1413,15 +1455,15 @@ constructor(
 
     //ponemos un señal para saber cuando se haya seleccionado al menos una fila para firmar
     //Verifica si al menos un archivo está seleccionado
-    const algunoSeleccionado = this.listaDocumentos.some(a => a.selecParaFirma);
+    const algunoSeleccionado = this.listaDocumentos().some(a => a.selecParaFirma);
     this.seleccionadosParaFirma.set(algunoSeleccionado);
   }
   getFile(documento: archivoExhortoEnviado, tipoDocumento: number): void {
     const FIVE_MB = 5 * 1024 * 1024; // menos a 5 megas se abren en modal... los mayores se descargan
     if(documento.idArchivo ==0) // son archivos que no se han guardado
     {
-      if(documento.tamanio<= FIVE_MB && documento.nombreArchivo.split('.')[1]==='pdf')
-        this.onVerDocumento(documento.file); // se visualiza en modal
+      if(documento.tamaño<= FIVE_MB && documento.nombreArchivo.split('.')[1]==='pdf')
+        this.onVerDocumentoFile(documento.file); // se visualiza en modal
       else
       { 
         downloadFile(documento.file); // se descarga
@@ -1430,14 +1472,16 @@ constructor(
       
     }
     else{ // aqui ya son archivos guardados
-    this.ExhortosService.getFile(documento.idArchivo,tipoDocumento).subscribe({
+      this.isLoading=true;
+      this.cd.detectChanges();
+      this.ExhortosService.getFile(documento.idArchivo,tipoDocumento).subscribe({
         next: (response:any) => {
 
         if (response.success) {
           const fileData = response.data.documento;
           //console.log(fileData);
-            if(documento.tamanio<= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
-              this.onVerDocumento(fileData); // se visualiza en modal
+            if(documento.tamaño<= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
+              this.onVerDocumentoBase64(fileData,documento.nombreArchivo, 'application/pdf'); // se visualiza en modal
             else{
               const nombre= response.data.fileName;
               this.dialogData.fileName=nombre;
@@ -1452,9 +1496,13 @@ constructor(
         error:(e)=>{
           //console.error('Error al recibir el archivo', e);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.isLoading=false;
+          this.cd.detectChanges();
         },
         complete:()=>{
           //console.log('FIN:');
+          this.isLoading=false;
+          this.cd.detectChanges();
         }
       
     });
@@ -1467,7 +1515,7 @@ constructor(
   }*/
  
   onEliminarIndex(index: number): void {
-    this.listaDocumentos.splice(index, 1);
+    this.listaDocumentos().splice(index, 1);
   } 
  eliminarDocumento(documento: archivoExhortoEnviado,tipoDocumento: number, index:number) {
   //tipoDocumento=2 que son archivos de exhortos enviados
@@ -1494,10 +1542,10 @@ constructor(
           //console.log('Tipo documento:', tipoDocumento);
           if (response.success) {
             // Encuentra el índice del documento que quieres eliminar
-            const index = this.listaDocumentos.findIndex(doc => doc.idArchivo === documento.idArchivo);
+            const index = this.listaDocumentos().findIndex(doc => doc.idArchivo === documento.idArchivo);
             if (index !== -1) {
               // Elimina el elemento del arreglo
-              this.listaDocumentos.splice(index, 1);
+              this.listaDocumentos().splice(index, 1);
             }
             //console.log("Documento eliminado");
             this.messageService.add({ severity: 'success', summary: 'Error', detail: 'Documento eliminado' });
@@ -1535,6 +1583,8 @@ constructor(
   }
   onEnviarGenerales() {
     if (this.idExhorto !== undefined) {
+      this.isLoading=true;
+      this.cd.detectChanges();
       this.ExhortosService.enviarGeneralesExhortoEnviado(this.idExhorto).subscribe({
         next: (response: GenericResponse<EnviadoConfirmacionDatosRecibidosResponse>) => {
           if (response.success) {
@@ -1551,9 +1601,13 @@ constructor(
         error: (e) => {
           //console.error('Error en la petición eliminar:', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.isLoading=false;
+          this.cd.detectChanges();
         },
         complete: () => {
           //console.log('FIN:');
+          this.isLoading=false;
+          this.cd.detectChanges();
         }
       });
     }
@@ -1582,6 +1636,8 @@ constructor(
   onEnviarArchivos() {
     //this.modalService.open('modal2');
     if (this.idExhorto !== undefined) {
+      this.isLoading=true;
+      this.cd.detectChanges();
       this.ExhortosService.enviarArchivosExhortosEnviados(this.idExhorto).subscribe({
         next: (response: GenericResponse<EnviadoArchivoRecibidoConAcuseResponse>) => {
           if (response.success) {
@@ -1609,11 +1665,15 @@ constructor(
         error: (e) => {
           //console.error('Error en la petición eliminar:', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.isLoading=false;
+          this.cd.detectChanges();
         },
         complete: () => {
           //cuando finaliza el proceso, redireccionamos a la busqueda principal
           // this.router.navigate(['/inicio/exhortos/exhortos-enviados']);
           //console.log('FIN:');
+          this.isLoading=false;
+          this.cd.detectChanges();
         }
       });
     }
@@ -1656,7 +1716,7 @@ constructor(
         next: (response: any) => {
           if (response.success) {
             //console.log('✅ Juzgados filtrados:', response.data);
-            this.listaJuzgadoOrigen = response.data;
+            this.listaJuzgadoOrigen.set(response.data);
             resolve();
           } else {
             //console.error('❌ Error en respuesta del backend:', response.message);
@@ -1717,7 +1777,7 @@ constructor(
         //if(this.archivo_pfx_valido){
         var userData = this.tokenService.getUserFromToken();
         const FormValues = this.formDocumentos.value;
-        const seleccionado = this.listaDocumentos.filter(item => item.selecParaFirma);
+        const seleccionado = this.listaDocumentos().filter(item => item.selecParaFirma);
         if (seleccionado.length > 0) {
           this.contador_firmas = seleccionado.length;
             for(let i = 0; i<seleccionado.length; i++){
@@ -1740,7 +1800,7 @@ constructor(
     }
     else {
       ValidateForm.validateAllFormFields(this.formularioFirma);
-      this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ingrese la información solicitada.' });
+      this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ingrese la contraseña.' });
     }
     this.isLoading = false;
   }
@@ -1952,40 +2012,44 @@ constructor(
         return localStorage.getItem(key);
       }
 
-      const idAreaSistemaUsuario = getStorageValue('idAreaSistemaUsuario');
-      const perfilSeleccionado = getStorageValue('perfilSeleccionado'); this.authService.GetSeccionesUsuario(idAreaSistemaUsuario, this.idPantalla.toString(), perfilSeleccionado)
+      const idAreaSistemaUsuario = this.authService.getAreaSistemaUsuario(); // Obtener perfil del servicio
+      const perfilSeleccionado = this.authService.getPerfilSeleccionado();
+
+      //const idAreaSistemaUsuario = getStorageValue('idAreaSistemaUsuario');
+      //const perfilSeleccionado = getStorageValue('perfilSeleccionado'); 
+      this.authService.GetSeccionesUsuario(idAreaSistemaUsuario, this.idPantalla.toString(), perfilSeleccionado)
         .subscribe({
           next: (res) => {
             if (res.success) {
               this.secciones = res.data;
               if (this.secciones === null || this.secciones === undefined) {
-                this.tienePermisoGuardar = false;
-                this.tienePermisoEnviarGenerales = false;
-                this.tienePermisoEnviarArchvios = false;
-                this.tienePermisoSeleccionarArchivo = false;
-                this.tienePermisoCargarArchivo = false;
-                this.tienePermisoFirmarArchivo = false;
-                this.tienePermisoEliminarArchivo = false;
+                this.tienePermisoGuardar.set(false);
+                this.tienePermisoEnviarGenerales.set(false);
+                this.tienePermisoEnviarArchvios.set(false);
+                this.tienePermisoSeleccionarArchivo.set(false);
+                this.tienePermisoCargarArchivo.set(false);
+                this.tienePermisoFirmarArchivo.set(false);
+                this.tienePermisoEliminarArchivo.set(false);
 
               }
               else if (this.secciones.length > 0) {
-                this.tienePermisoGuardar = this.secciones.some(s => s.descripcion === 'Guardar');
-                this.tienePermisoEnviarGenerales = this.secciones.some(s => s.descripcion === 'EnviarGenerales');
-                this.tienePermisoEnviarArchvios = this.secciones.some(s => s.descripcion === 'EnviarArchivos');
-                this.tienePermisoSeleccionarArchivo = this.secciones.some(s => s.descripcion === 'SeleccionarArchivo');
-                this.tienePermisoCargarArchivo = this.secciones.some(s => s.descripcion === 'CargarArchivo');
-                this.tienePermisoFirmarArchivo = this.secciones.some(s => s.descripcion === 'FirmarArchivo');
-                this.tienePermisoEliminarArchivo = this.secciones.some(s => s.descripcion === 'EliminarArchivo');
+                this.tienePermisoGuardar.set(this.secciones.some(s => s.descripcion === 'Guardar'));
+                this.tienePermisoEnviarGenerales.set(this.secciones.some(s => s.descripcion === 'EnviarGenerales'));
+                this.tienePermisoEnviarArchvios.set(this.secciones.some(s => s.descripcion === 'EnviarArchivos'));
+                this.tienePermisoSeleccionarArchivo.set(this.secciones.some(s => s.descripcion === 'SeleccionarArchivo'));
+                this.tienePermisoCargarArchivo.set(this.secciones.some(s => s.descripcion === 'CargarArchivo'));
+                this.tienePermisoFirmarArchivo.set(this.secciones.some(s => s.descripcion === 'FirmarArchivo'));
+                this.tienePermisoEliminarArchivo.set(this.secciones.some(s => s.descripcion === 'EliminarArchivo'));
 
               }
             } else {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor." });
             }
-            this.loading = false;
+            
           },
           error: (err) => {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
-            this.loading = false;
+            
           }
         });
     });
@@ -1995,12 +2059,12 @@ constructor(
       next: (response: any) => {
         if (response.success) {
           // Encuentra el índice del documento que quieres eliminar
-          const index = this.listaDocumentos.findIndex(doc => doc.idArchivo === idArchivo);
+          const index = this.listaDocumentos().findIndex(doc => doc.idArchivo === idArchivo);
           if (index !== -1) {
-            const indexFirmas = this.listaDocumentos[index].firmantes.findIndex(f => f.idFirmaTmp == idFirmaTmp);
+            const indexFirmas = this.listaDocumentos()[index].firmantes.findIndex(f => f.idFirmaTmp == idFirmaTmp);
             if (indexFirmas !== -1) {
               // Elimina el elemento del arreglo
-              this.listaDocumentos[index].firmantes.splice(indexFirmas, 1);
+              this.listaDocumentos()[index].firmantes.splice(indexFirmas, 1);
 
             }
           }
@@ -2073,16 +2137,27 @@ constructor(
     this.promoDialog=false;
     this.formSubmittedPromovente= false;
   }
-  onVerDocumento(file: File): void {
+  onVerDocumentoFile(file: File): void {
     if (file instanceof File) {
       const url = URL.createObjectURL(file);
       this.nombre = file.name;
       this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-      this.mostrarDocumento = true;
+      this.mostrarDocumento.set(true);
     } else {
       console.error('Documento inválido');
     }
   } 
+  onVerDocumentoBase64(fileBase64: string, nombre:string, mime:string): void {
+      const file = base64ToFile(fileBase64,nombre, mime);
+      if (file instanceof File) {
+        const url = URL.createObjectURL(file);
+        //this.nombre = file.name;
+        this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        this.mostrarDocumento.set(true);
+      } else {
+        console.error('Documento inválido');
+      } 
+    }
   
   onAnexosSelect(event: FileSelectEvent) {
     // Agregar archivos seleccionados a la lista local de documentos con valores por defecto
@@ -2103,7 +2178,7 @@ constructor(
         hashSha256: '',
         idTipoDocumento: 0,
         tipoDocumento: { idTipoDocumento: 0, nombre: '', activo: false },
-        tamanio: file.size ?? 0,
+        tamaño: file.size ?? 0,
         paginas: 0,
         recibido: false,
         idClasificacionArchivo: 0,
@@ -2120,7 +2195,7 @@ constructor(
       // @ts-ignore
       nuevo.tam = file.size ?? 0;
 
-      this.listaDocumentos.push(nuevo);
+      this.listaDocumentos().push(nuevo);
     }
   }
   hideDialogFirma(){

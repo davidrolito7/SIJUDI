@@ -4,7 +4,7 @@ import { Routes } from '@angular/router';
 //import { GenerarRespuestaComponent } from './views/generar-respuesta/generar-respuesta/generar-respuesta.component';
 //import { PromocionExhortosComponent } from './views/promocion-exhortos/promocion-exhortos/promocion-exhortos.component';
 import { ListaExhortosEnviados } from './enviados/listar/lista-exhorto-Enviado';
-//import { DetalleExhortosEnviadosComponent } from './views/detalle-exhortos-enviados/detalle-exhortos-enviados/detalle-exhortos-enviados.component';
+import { DetallesExhortoEnviado } from './enviados/detalles/detalles-exhorto-enviado'; 
 //import { RespuestaExhortoEnviadoComponent } from './views/respuesta-exhorto-enviado/respuesta-exhorto-enviado/respuesta-exhorto-enviado.component';
 import { CrearExhortoComponent } from './enviados/crear/crear-exhorto';
 //import { JuzgadoComponent } from './views/juzgado/juzgado.component';
@@ -22,7 +22,7 @@ export const EXHORTOS_ROUTES: Routes = [
   //{ path: 'detalle/promocion-exhorto', component: PromocionExhortosComponent, title: 'Promociones de exhorto', canActivate: [RedirectGuard] },
   //{ path: 'acuerdos', component: AcuerdoExhortosComponent, title: 'Acuerdos Exhortos' },
   //{ path: 'exhortos-enviados', component: ExhortosEnviadosComponent, title: 'Exhortos enviados', canActivate: [RedirectGuard] },
-  //{ path: 'exhortos-enviados/detalle', component: DetalleExhortosEnviadosComponent, title: 'Detalle', canActivate: [RedirectGuard] },
+  { path: 'detalles-exhorto-enviado', component: DetallesExhortoEnviado, title: 'Detalle'/*, canActivate: [RedirectGuard] */},
   { path: 'crear-exhorto', component: CrearExhortoComponent, title: 'Crear Exhorto para enviar'/*, canActivate: [redirectGuard]*/ },
   //{ path: 'exhortos-enviados/detalle/ver-respuesta', component: RespuestaExhortoEnviadoComponent, title: 'Crear Exhorto para enviar', canActivate: [RedirectGuard] },
   //{ path: 'exhortos-enviados/promocion-exhortos-enviados', component: PromocionExhortosEnviadosComponent, title: 'Promocionar Exhorto Enviado', canActivate: [RedirectGuard] },

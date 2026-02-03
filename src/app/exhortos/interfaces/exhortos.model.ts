@@ -332,6 +332,15 @@ export interface generalesExhortoEnviado{
     urlInfo: string;
     fechaHora:string;
     idEstatus:number;
+    idMateriaOrigen:number;
+    estadoOrigenId:number;
+    idMunicipioOrigen:number;
+    juzgadoOrigenId:number;
+    idCatTipoVia:number;
+    tipoDiligenciaId:string;
+    idUsuario:number;
+    materiaNombreOrigen:string;
+    
     //}
 }
 /*Clase para guardar datos generales de un exhorto envido en el endpoint
@@ -496,7 +505,7 @@ export interface archivoExhortoEnviado{
       nombre: string;
       activo: boolean;
     },
-    tamanio: number;
+    tamaño: number;
     paginas: number;
     recibido: boolean;
     idClasificacionArchivo: number;
@@ -913,4 +922,40 @@ export interface ListadoExhortosRecibidosI{
     juezExhortante:string;
     tipoDiligenciacionNombre:string;
     juzgadoDestino:string;
+}
+//Interfaz de la respuesta del exhorto enviado
+export interface respuestExhortoEnviado{
+    generales: generalesRespuestaExhortoEnviado;
+    archivos: archivoExhortoEnviado[];
+    videos: videosExhortosEnviadosrespuesta[];
+}
+export interface ConfirmacionDatosPromocionRecibida
+{
+    folioOrigenPromocion:string;
+    fechaHora:string;
+}
+export interface ArchivoRecibidoPromocionConAcuse{
+    archivo: ArchivoRecibidoResponse;
+    acuse: AcusePromocionRecibida;
+    restantes: ArchivosRestantesResponse[];
+}
+export interface actualizacionesExhortoEnviado{
+    actualizacionOrigenId:string;
+    idTipoActualizacion:number;
+    tipoActualizacionNombre:string;
+    fechaHora:string;
+    fechaHoraRecibido:string;
+    descripcion:string;
+}
+export interface VerMovimientosEnviadosResponse {
+    idExhortoEnviado:number;
+    cargoTurna:string,
+    idUsuarioTurna:number,
+    nombreUsuarioTurna:string,
+    fechaTurnado: Date;
+    idUsuarioRecibe: number;
+    nombreUsuarioRecibe: string;
+    fechaRecepcion: Date;
+    idMovimiento: number;
+    movimiento: string;
 }

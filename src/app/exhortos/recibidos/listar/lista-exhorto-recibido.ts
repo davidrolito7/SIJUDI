@@ -125,7 +125,7 @@ export class ListaExhortosRecibidos implements OnInit {
     }
 
     
-    const perfil = this.authService.getRolesUsuario(); // Obtener perfil del servicio
+    const perfil = this.authService.getRoleNameUsuario(); // Obtener perfil del servicio
     const area = this.authService.getAreaUsuario();
 
     const obj = {
@@ -155,7 +155,8 @@ export class ListaExhortosRecibidos implements OnInit {
       error: (err => {
         // Manejo de errores
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el listado de exhortos' });
-        //this.loading = false;
+        this.isLoading=false;
+        this.cdr.detectChanges();
       }),
       complete:()=>{
         this.isLoading=false;

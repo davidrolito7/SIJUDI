@@ -131,12 +131,16 @@ export class AuthService {
         })
       );
   }
-  getRolesUsuario(): string {
+  getRoleNameUsuario(): string {
     // Simulando los roles que el usuario tiene asignados
     //const rolesUsuario: string = 'Oficialia'; // Puedes cambiarlo para 'oficialia' u otros roles para ver otras vistas
     var rolesUsuario = null;
     if (this.isBrowser) {
-      rolesUsuario = localStorage.getItem("perfilSeleccionadoDesc");
+      const recordarUsuario = localStorage.getItem('recordarUsuario');
+      if(recordarUsuario=== 'true')
+        rolesUsuario = localStorage.getItem("perfilSeleccionadoDesc");
+      else
+        rolesUsuario = sessionStorage.getItem("perfilSeleccionadoDesc");
     }
     return rolesUsuario!;
   }
@@ -213,16 +217,49 @@ export class AuthService {
   getAreaUsuario(): string {
     var idAreaUsuario = null;
     if (this.isBrowser) {
-      idAreaUsuario = localStorage.getItem("AreaSeleccionado");
+      const recordarUsuario = localStorage.getItem('recordarUsuario');
+      if(recordarUsuario=== 'true')
+        idAreaUsuario = localStorage.getItem("areaSeleccionada");
+      else
+        idAreaUsuario = sessionStorage.getItem("areaSeleccionada");
     }
     return idAreaUsuario!;
   }
   getAreaName(): string {
     var areaName = null;
     if (this.isBrowser) {
-      areaName = localStorage.getItem('AreaName');
+      const recordarUsuario = localStorage.getItem('recordarUsuario');
+      if(recordarUsuario=== 'true')
+          areaName = localStorage.getItem('AreaName');
+      else{
+        areaName = sessionStorage.getItem('AreaName');
+      }
     }
     return areaName!;
+  }
+  getAreaSistemaUsuario(): string{
+    var areaName = null;
+        if (this.isBrowser) {
+          const recordarUsuario = localStorage.getItem('recordarUsuario');
+          if(recordarUsuario=== 'true')
+              areaName = localStorage.getItem('idAreaSistemaUsuario');
+          else{
+            areaName = sessionStorage.getItem('idAreaSistemaUsuario');
+          }
+        }
+        return areaName!;
+  }
+  getPerfilSeleccionado():string{
+    var areaName = null;
+        if (this.isBrowser) {
+          const recordarUsuario = localStorage.getItem('recordarUsuario');
+          if(recordarUsuario=== 'true')
+              areaName = localStorage.getItem('perfilSeleccionado');
+          else{
+            areaName = sessionStorage.getItem('perfilSeleccionado');
+          }
+        }
+        return areaName!;
   }
   GetSeccionesUsuario(idAreaSistemaUsuario: string | null, IdPantalla: string, idPerfil: string | null): Observable<any> {
     const url = `${this.constService.ruta}/api/Permisos/ObtenerSeccionesUsuario?IdAreaSistemaUsuario=${idAreaSistemaUsuario}&IdPantalla=${IdPantalla}&idPerfil=${idPerfil}`;

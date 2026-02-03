@@ -38,9 +38,10 @@ export class Perfil {
   listaAreas!: areasResponse[];
   idAreaSistemaUsuario : number = 0;
   perfil: responseCatalogoPerfiles[] = [];
-  idAreaSistemaSeleccionada!: number;
+  //idAreaSistemaSeleccionada!: number;
   areaSeleccionada = signal<number>(0);
   perfilSeleccionado = signal<number>(0);
+  perfilNombreSeleccionado =signal<string>('');
   recordar: boolean = false;
 
 
@@ -50,10 +51,12 @@ export class Perfil {
       const areaSeleccionada = Number(localStorage.getItem('areaSeleccionada'));
       const perfil = Number(localStorage.getItem('perfilSeleccionado'));
       const recordar = localStorage.getItem('recordarUsuario');
+      //const perfilNombre =  localStorage.getItem('perfilSeleccionadoDesc');
       this.recordar = recordar === 'true' ? true : false;
   
       this.areaSeleccionada.set(areaSeleccionada || 0);
       this.perfilSeleccionado.set(perfil || 0);
+     
 
     if(this.areaSeleccionada()!==0 && this.perfilSeleccionado()!==0){
         this.obtenerAreas(() => {
@@ -191,23 +194,38 @@ if (this.areaSeleccionada() <= 0 || this.perfilSeleccionado() <= 0) {
     return;
   }
 
+  //obtenemos la descripcion del perfil
+  const perfilSelec = this.perfil.find(f=>f.idSistemaPerfil === this.perfilSeleccionado());
+  if(perfilSelec !== undefined)
+    this.perfilNombreSeleccionado.set(perfilSelec.descripcion);
+
   if (this.recordar) {
     localStorage.setItem('recordarUsuario', 'true');
     localStorage.setItem('areaSeleccionada', this.areaSeleccionada().toString());
     localStorage.setItem('perfilSeleccionado', this.perfilSeleccionado().toString()); 
+    localStorage.setItem('perfilSeleccionadoDesc',this.perfilNombreSeleccionado().toString());
+    localStorage.setItem('idAreaSistemaUsuario',this.idAreaSistemaUsuario.toString());
+
     
     // Limpia sesión por seguridad
     sessionStorage.removeItem('areaSeleccionada');
     sessionStorage.removeItem('perfilSeleccionado');
+    sessionStorage.removeItem('perfilSeleccionadoDesc');
+    sessionStorage.removeItem('idAreaSistemaUsuario');
+
   } else {
     localStorage.setItem('recordarUsuario', 'false');
 
     sessionStorage.setItem('areaSeleccionada', this.areaSeleccionada().toString());
     sessionStorage.setItem('perfilSeleccionado', this.perfilSeleccionado().toString());
+    sessionStorage.setItem('perfilSeleccionadoDesc',this.perfilNombreSeleccionado().toString());
+    sessionStorage.setItem('idAreaSistemaUsuario',this.idAreaSistemaUsuario.toString())
 
     // Limpia localStorage para no dejar residuos
     localStorage.removeItem('areaSeleccionada');
     localStorage.removeItem('perfilSeleccionado');
+    localStorage.removeItem('perfilSeleccionadoDesc');
+    localStorage.removeItem('idAreaSistemaUsuario');
   }  
 
   this.messageService.add({
