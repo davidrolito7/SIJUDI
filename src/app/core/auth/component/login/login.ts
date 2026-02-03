@@ -115,11 +115,9 @@ export class Login implements OnInit {
     this.authService.login(this.usuario, this.contrasenia, this.idSistema, this.recordar).subscribe({
       next: (response) => {
         if (response.success) {
-
           this.authService.actualizaPerfilSeleccionado("");
           this.tokenService.setTwoFactorValidated(false);
           this.router.navigate(['login2fase']);
-
         } else {
           this.mensaje.add({
             severity: 'error',

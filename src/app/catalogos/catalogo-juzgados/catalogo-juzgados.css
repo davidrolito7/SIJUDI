@@ -1,0 +1,3 @@
+:host ::ng-deep .no-caption-divider .p-datatable-header {
+  border-top: 0 !important;
+}

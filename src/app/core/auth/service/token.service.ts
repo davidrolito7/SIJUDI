@@ -34,6 +34,8 @@ export class TokenService {
   }
 
   saveToken(token: string, remember: boolean) {
+    localStorage.removeItem(this.nameToken);
+    sessionStorage.removeItem(this.nameToken);
     if (remember) {
       localStorage.setItem(this.nameToken, token);
     } else {
@@ -43,7 +45,8 @@ export class TokenService {
 
   getToken() {
     if (this.isBrowser) {
-      return localStorage.getItem(this.nameToken) || sessionStorage.getItem(this.nameToken);
+      // da prioridad al token más reciente en sessionStorage
+      return sessionStorage.getItem(this.nameToken) || localStorage.getItem(this.nameToken);
     }
     return null;
   }
@@ -56,6 +59,8 @@ export class TokenService {
   }
 
   saveRefreshToken(refreshToken: string, remember: boolean) {
+    localStorage.removeItem(this.nameRefreshToken);
+    sessionStorage.removeItem(this.nameRefreshToken);
     if (remember) {
       localStorage.setItem(this.nameRefreshToken, refreshToken);
     } else {
@@ -64,12 +69,9 @@ export class TokenService {
   }
 
   getRefreshToken() {
-    //console.log('isBrowser in getRefreshToken', this.isBrowser);
-    //console.log('localStorage in getRefreshToken', localStorage);
     if (this.isBrowser) {
-      //console.log('Getting refresh token in localStorage',localStorage.getItem(this.nameRefreshToken));
-      //console.log('Getting refresh token in sessionStorage',sessionStorage.getItem(this.nameRefreshToken));
-      return localStorage.getItem(this.nameRefreshToken) || sessionStorage.getItem(this.nameRefreshToken);
+      // prioridad al de sessionStorage para no usar uno viejo de localStorage
+      return sessionStorage.getItem(this.nameRefreshToken) || localStorage.getItem(this.nameRefreshToken);
     }
     return null;
   }

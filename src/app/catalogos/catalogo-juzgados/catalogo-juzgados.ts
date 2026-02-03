@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, Input } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { Table, TableModule } from 'primeng/table';
@@ -9,11 +9,14 @@ import {CatalogoService} from '../services/catalogo.service';
 import {AuthService} from '../../core/auth/service/auth.service';
 import {CatJuzgado} from '../interface/catalogo.model';
 import { Spinner } from '../../shared/components/spinner/spinner';
+import { InputTextModule } from 'primeng/inputtext';
+import { TagModule } from 'primeng/tag';
+import { DrawerModule } from 'primeng/drawer';
 
 @Component({
   standalone:true,
   selector: 'app-catalogo-juzgados',
-  imports: [ToastModule,TableModule,ButtonModule,InputIconModule,IconFieldModule,Spinner],
+  imports: [ToastModule,TableModule,ButtonModule,InputIconModule,IconFieldModule,Spinner, InputTextModule, TagModule, DrawerModule],
   templateUrl: './catalogo-juzgados.html',
   styleUrl: './catalogo-juzgados.css',
   providers:[MessageService]
@@ -22,6 +25,7 @@ export class CatalogoJuzgados {
   listaJuzgado: CatJuzgado[] = [];
   searchValue: string | undefined;
   isLoading: boolean = false;
+  visibleDrawer: boolean = false;
 
   constructor(private catalogoService: CatalogoService, 
               private authService: AuthService,
