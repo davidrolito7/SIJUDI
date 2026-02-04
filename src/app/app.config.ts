@@ -1,4 +1,6 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
 import { provideRouter, withDebugTracing, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -10,6 +12,9 @@ import { Custom } from './theme/cj';
 
 import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { tokenInterceptor } from './core/auth/interceptor/token.interceptor';
+import es from 'primelocale/es.json';
+
+registerLocaleData(localeEs);
 
 
 export const appConfig: ApplicationConfig = {
@@ -17,7 +22,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(
       routes,
-     // withDebugTracing(),
+      // withDebugTracing(),
       withRouterConfig({
         urlUpdateStrategy: 'deferred',
         canceledNavigationResolution: 'computed',
@@ -25,6 +30,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideAnimationsAsync(),
     providePrimeNG({
+      translation: es.es,
       theme: {
         preset: Custom,
         options: {
