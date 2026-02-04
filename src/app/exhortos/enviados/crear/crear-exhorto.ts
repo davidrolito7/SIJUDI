@@ -934,7 +934,7 @@ constructor(
       materiaClave: this.exhortosForm.value.materiaEstadoDestino?.clave ?? '',//this.materiaEstadoDestinoSelect.clave,
       estadoOrigenId: 20, // Oaxaca
       municipioOrigenId: this.exhortosForm.value.municipioOrigen?.idMunicipio,// this.municipioOrigenSelect.idMunicipio,
-      juzgadoOrigenId: this.exhortosForm.value.juzgadoOrigen?.idJuzgado, //this.JuzgadoOrigenSelect.idJuzgado.toString(),
+      juzgadoOrigenId: this.exhortosForm.value.juzgadoOrigen?.idJuzgado.toString(), //this.JuzgadoOrigenSelect.idJuzgado.toString(),
       juzgadoOrigenNombre: this.exhortosForm.value.juzgadoOrigen?.juzgado,//this.JuzgadoOrigenSelect.juzgado,
       numeroExpedienteOrigen: this.exhortosForm.value.noExpediente,
       numeroOficioOrigen: this.exhortosForm.value.OficioOrigen,
@@ -2094,6 +2094,8 @@ constructor(
     });
   }
   onAplicarFirmas(idArchivo:number){
+    this.isLoading=true;
+    this.cd.detectChanges;
     this.ExhortosService.aplicarFirmasExhorto(idArchivo).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -2105,9 +2107,13 @@ constructor(
       },
       error: (e) => {
         this.messageService.add({ severity: 'error', summary: 'error', detail: e.message });
+        this.isLoading=false;
+        this.cd.detectChanges;
       },
       complete:()=>{
         //this.confirmacionAplicarFirmas=false;
+        this.isLoading=false;
+        this.cd.detectChanges;
       }
     });
   }

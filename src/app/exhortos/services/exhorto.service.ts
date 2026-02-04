@@ -10,7 +10,8 @@ import { ExhortoEnviadoGuardarGeneralesRequest, generalesExhortoEnviado, Enviado
          ListadoCatalogoTipoDocumento, ConfigMateriaJuzgado, detalleExhortosEnviados, CatalogoTipoParte, validaFirmaRequest, 
          guardaFirmaTmpRequest, AgregarJuzgadoMat, CatalogoRegion, CatJuzgado,UI_ParamlistadoExhortosRecibidosRequest,
          ListadoExhortosEnviados,ListadoEstatus,ListadoExhortosRecibidosI,respuestExhortoEnviado,ConfirmacionDatosPromocionRecibida,
-         ArchivoRecibidoPromocionConAcuse,actualizacionesExhortoEnviado,VerMovimientosEnviadosResponse} from '../interfaces/exhortos.model';
+         ArchivoRecibidoPromocionConAcuse,actualizacionesExhortoEnviado,VerMovimientosEnviadosResponse,IdArchivoPromcionesEnviada,
+        PromocionExhortoEnviado,folioPromocionExhortoEnviado} from '../interfaces/exhortos.model';
 
 @Injectable({
   providedIn: 'root'
@@ -227,4 +228,22 @@ export class ExhortosService {
     const url = `${this.turnos}/verMovimientosEnviados?idExhortoEnviado=${idExhortoEnviado}`;
     return this.http.get<GenericResponse<VerMovimientosEnviadosResponse[]>>(url,{context:checkToken()});
   }
+    postGuardarArchivosPromocionExhortoEnviado(formData: FormData): Observable<GenericResponse<IdArchivoPromcionesEnviada>>{
+    const url = `${this.exhortoEnviar}PromoverGuardarArchivos`;
+    return this.http.post<GenericResponse<IdArchivoPromcionesEnviada>>(url,formData,{context:checkToken()});
+  }
+   getDetallePromocionExhortoEnviado(idExhortoEnviado : number, idPromocionEnviado: number): Observable<GenericResponse<PromocionExhortoEnviado>>{
+    //const headers = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //construcción de la URL
+    return this.http.get<GenericResponse<PromocionExhortoEnviado>>(this.exhortoEnviar + "DetallePromocionExhortoEnviado?idExhortoEnviado="+idExhortoEnviado+"&idPromocion="+idPromocionEnviado, {context:checkToken()});
+  }
+   //Metodos de Promociones Exhortos Enviados
+  postGuardarPromocionExhortoEnviado(param: PromocionExhortoEnviado): Observable<GenericResponse<folioPromocionExhortoEnviado>>{
+    const url = `${this.exhortoEnviar}PromoverGuardarGenerales`;
+    return this.http.post<GenericResponse<folioPromocionExhortoEnviado>>(url,param,{context:checkToken()});
+  } 
+    postActualizarPromocion(param: PromocionExhortoEnviado): Observable<GenericResponse<PromocionExhortoEnviado>>{
+    const url = `${this.exhortoEnviar}actualizarPromocion`;
+    return this.http.post<GenericResponse<PromocionExhortoEnviado>>(url,param,{context:checkToken()});
+  } 
 }

@@ -132,7 +132,7 @@ export class DetallesExhortoEnviado {
   }
 
   promoverExhortoEnviado(){
-    this.router.navigate(['/inicio/exhortos/exhortos-enviados/promocion-exhortos-enviados'], {state: {idExhortoEnviado: this.idExhortoEnviado} });
+    this.router.navigate(['/exhortos/promocion-exhorto-enviado'], {state: {idExhortoEnviado: this.idExhortoEnviado} });
   }
 
   async loadDetalles(idExhortoEnviado: number){

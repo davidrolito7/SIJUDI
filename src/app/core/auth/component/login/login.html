@@ -1,7 +1,7 @@
 <div class="h-dvh overflow-hidden px-6 flex items-center justify-center backdrop-blur-3xl bg-cover! bg-center! bg-no-repeat!"
-    style="background-image: url('/img.png')">
+    style="background-image: url('/FondoSIJUDI2.png')">
     <div
-        class=" px-10 py-5 flex flex-col items-center gap-12 w-full backdrop-blur-2xl rounded-2xl bg-white/10 border border-white/10 max-w-md">
+        class="panel px-10 py-5 flex flex-col items-center gap-12 w-full backdrop-blur-2xl rounded-2xl bg-white/10 border border-white/10 max-w-md">
         <div class="flex flex-col items-center gap-4 w-full">
             <!-- Logo en imagen en lugar de SVG -->
             <svg id="Capa_1" data-name="Capa 1" class="w-30 h-40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 313.12 411.53">
@@ -12,7 +12,7 @@
                         }
 
                         .cls-2 {
-                            fill: #f3f1f1;
+                            fill: #487166;
                         }
 
                         .cls-3 {
@@ -114,7 +114,7 @@
                 </g>
             </svg>
             <div class="flex flex-col gap-2 w-full">
-                <div class="text-center uppercase text-lg md:text-xl font-semibold text-white leading-tight">
+                <div class="text-center uppercase text-lg md:text-xl font-semibold text-black leading-tight">
                     Bienvenido 
                 </div>
             </div>
@@ -122,33 +122,33 @@
         <div class="flex flex-col items-center gap-8 w-full">
             <div class="flex flex-col gap-6 w-full">
                 <p-iconfield icon-position="left">
-                    <p-inputicon class="pi pi-user text-white/70!"></p-inputicon>
+                    <p-inputicon class="pi pi-user text-black/70!"></p-inputicon>
                     <input pInputText type="text" [(ngModel)]="usuario" (keydown.enter)="passwordFocus()"
-                        class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-white! placeholder:text-white/70! rounded-3xl! shadow-sm!"
+                        class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-black! placeholder:text-black/70! rounded-3xl! shadow-sm!"
                         placeholder="Usuario" />
                 </p-iconfield>
                 <p-iconfield icon-position="left">
-                    <p-inputicon class="pi pi-lock text-white/70!"></p-inputicon>
+                    <p-inputicon class="pi pi-lock text-black/70!"></p-inputicon>
                     <input pInputText [type]="verPassword ? 'text' : 'password'" [(ngModel)]="contrasenia" (keydown.enter)="passwordEnter()" #passwordInput
-                        class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-white! placeholder:text-white/70! rounded-3xl! shadow-sm!"
+                        class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-black! placeholder:text-black/70! rounded-3xl! shadow-sm!"
                         placeholder="Contraseña" />
-                    <p-inputicon class="cursor-pointer text-white/70! hover:text-white!" (click)="togglePassword()">
+                    <p-inputicon class="cursor-pointer text-black/70! hover:text-black!" (click)="togglePassword()">
                         <i [class]="verPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
                     </p-inputicon>
                 </p-iconfield>
                 <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                    <div class="flex items-center text-white/80 ">
+                    <div class="flex items-center text-black/80 ">
                         <p-checkbox [(ngModel)]="recordar" id="rememberme" [binary]="true" class="mr-1"></p-checkbox>
                         <label for="rememberme">Recordarme</label>
                     </div>
                     <span
-                        class="font-medium no-underline ml-2 text-right  text-white/80 cursor-pointer hover:text-white/90"
+                        class="font-medium no-underline ml-2 text-right  text-black/80 cursor-pointer hover:text-black/90"
                         (click)="forgotPassword()">¿Olvidaste tu Contraseña?</span>
                 </div>
             </div>
 
             <button pButton (click)="validarUsuario()"
-                class="w-full! rounded-3xl! bg-surface-950! border! border-surface-950! text-white! hover:bg-surface-950/50!">
+                class="w-full! rounded-3xl! border! border-surface-950! text-white! ">
                 <span pButtonLabel>Continuar</span>
             </button>
         </div>

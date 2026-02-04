@@ -15,6 +15,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
 import { ToastModule } from 'primeng/toast';
+import { Spinner } from "../../../../shared/components/spinner/spinner";
 
 
 
@@ -26,7 +27,7 @@ interface City {
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, SelectModule, ButtonModule, InputMaskModule, CheckboxModule, FormsModule, ToastModule],
+  imports: [CommonModule, SelectModule, ButtonModule, InputMaskModule, CheckboxModule, FormsModule, ToastModule, Spinner],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',
   providers: [MessageService]
@@ -43,9 +44,13 @@ export class Perfil {
   perfilSeleccionado = signal<number>(0);
   perfilNombreSeleccionado =signal<string>('');
   recordar: boolean = false;
+  isLoading:boolean=false;
 
-
-  constructor(private router: Router, private tokenService: TokenService, private authService:AuthService, private messageService : MessageService,private cdr: ChangeDetectorRef) {}
+  constructor(private router: Router, 
+              private tokenService: TokenService, 
+              private authService:AuthService, 
+              private messageService : MessageService,
+              private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
       const areaSeleccionada = Number(localStorage.getItem('areaSeleccionada'));
@@ -77,10 +82,12 @@ onAreaChange(value: number) {
 }
 
 
-  obtenerAreas(callback?: () => void) {
+obtenerAreas(callback?: () => void) {
 const usuario = this.tokenService.getUserFromToken(); //localStorage.getItem('usuario') || sessionStorage.getItem('usuario');
       if(usuario !== null){
         if (usuario.Usr) {
+          //this.isLoading=true;
+          //this.cdr.detectChanges;
           this.authService.obtenerDatosUsuario(usuario.Usr).subscribe({
             next: (response) => {
               if (response.success && response.data?.pD_Abogados?.length > 0) {
@@ -92,15 +99,21 @@ const usuario = this.tokenService.getUserFromToken(); //localStorage.getItem('us
                 */
                 this.idGeneral= abogado.idGeneral;
                 this.cargarCatalogoAreas(4169)
-                if (callback) {
-                  callback();
-                }
+                //if (callback) {
+                //  callback();
+                //}
               } else {
                 //console.warn('No se encontraron datos de usuario en la API.');
               }
             },
             error: (error) => {
               //console.error('Error al obtener datos del usuario:', error);
+              //this.isLoading=false;
+              //this.cdr.detectChanges;
+            },
+            complete:()=>{
+              //this.isLoading=false;
+              //this.cdr.detectChanges;
             }
           });
         }
@@ -109,6 +122,8 @@ const usuario = this.tokenService.getUserFromToken(); //localStorage.getItem('us
 }
 
 cargarCatalogoAreas(idSistema: number): void {
+  //this.isLoading=true;
+  //this.cdr.detectChanges;
   this.authService.getAreas(idSistema, this.idGeneral).subscribe({
     next: (response) => {
       this.listaAreas = response.data as areasResponse[];
@@ -120,18 +135,27 @@ cargarCatalogoAreas(idSistema: number): void {
         this.listaAreas.some(a => a.idArea === areaGuardada)
       ) {
         this.areaSeleccionada.set(areaGuardada);
-        this.cdr.detectChanges();
+        //this.cdr.detectChanges();
       } else {
         this.areaSeleccionada.set(0);
         localStorage.setItem('areaSeleccionada', "0"); 
       }
+    },
+    error:(e)=>{
+      //this.isLoading=false;
+      //this.cdr.detectChanges;
+    },
+    complete:()=>{
+      //this.isLoading=false;
+      //this.cdr.detectChanges;
     }
   });
 }
 
 
 obtenerPerfiles(idAreaSistema: number){
-
+  //this.isLoading=true;
+  //this.cdr.detectChanges;
   this.areaSeleccionada.set(idAreaSistema);
   this.authService.obtenerIdAreaSistemaUsuario(this.idGeneral,4169,idAreaSistema).subscribe({
                 next: (responseAreaSistemaUsuario) => {
@@ -143,7 +167,12 @@ obtenerPerfiles(idAreaSistema: number){
                   this.cargarCatalogoPerfiles(); 
                 },
                 error: (error) => {
-                  
+                  this.isLoading=false;
+                  this.cdr.detectChanges;   
+                },
+                complete:()=>{
+                  this.isLoading=false;
+                  this.cdr.detectChanges;
                 }
               });
 }
@@ -151,31 +180,33 @@ obtenerPerfiles(idAreaSistema: number){
 
 
  async cargarCatalogoPerfiles(): Promise<void>{
+    //this.isLoading=true;
+    //this.cdr.detectChanges;
     this.authService.GetPerfiles(this.idAreaSistemaUsuario).subscribe({
       next: (response: GenericResponse<responseCatalogoPerfiles[]>) => {
-        const perfilGuardado = Number(localStorage.getItem('perfilSeleccionado'));
-        this.perfil = response.data;
+            const perfilGuardado = Number(localStorage.getItem('perfilSeleccionado'));
+            this.perfil = response.data;
+            if (perfilGuardado > 0 && this.perfil.some(p => p.idSistemaPerfil === perfilGuardado)) {
+              this.perfilSeleccionado.set(perfilGuardado);
+            } else {
+              this.perfilSeleccionado.set(0);
+                localStorage.setItem('perfilSeleccionado', "0"); 
+            }
 
-        
-
-      if (
-  perfilGuardado > 0 &&
-  this.perfil.some(p => p.idSistemaPerfil === perfilGuardado)
-) {
-  this.perfilSeleccionado.set(perfilGuardado);
-} else {
-  this.perfilSeleccionado.set(0);
-    localStorage.setItem('perfilSeleccionado', "0"); 
-}
-
-        this.cdr.detectChanges();
-      },
+            this.cdr.detectChanges();
+          },
       error: (error) => {
-        this.messageService?.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al cargar el catálogo de tipo de cuadernos'
-        });
+              this.messageService?.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Error al cargar el catálogo de tipo de cuadernos'
+              });
+              this.isLoading=false;
+              this.cdr.detectChanges;
+            },
+      complete:()=>{
+        this.isLoading=false;
+        this.cdr.detectChanges;
       }
     });
   }

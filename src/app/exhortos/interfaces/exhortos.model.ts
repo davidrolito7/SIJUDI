@@ -959,3 +959,25 @@ export interface VerMovimientosEnviadosResponse {
     idMovimiento: number;
     movimiento: string;
 }
+export interface IdArchivoPromcionesEnviada {
+    idArchivo: number;
+}
+export interface PromocionExhortoEnviado {
+    idPromocionEnviado:number;
+    idExhortoEnviado: number;
+    folioOrigenPromocion:string;
+    fojas: number;
+    fechaOrigen:string;
+    observaciones: string
+    fechaHora : string
+    fechaRecepcion : string;
+    folioPromocionRecibida:string;
+    promoventes: ProvomenteExhortoEnviado[]
+    archivos : archivoPromocionExhortoEnviado[]
+}
+//Objeto retornado por la api cuando se inserta los datos generales y los promoventes en una promocion del exhorto enviado
+//******************************************* */
+export interface folioPromocionExhortoEnviado{
+    folioOrigenPromocion: string;
+    idPromocionEnviada: number
+}
