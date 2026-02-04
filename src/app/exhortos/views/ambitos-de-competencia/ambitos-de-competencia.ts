@@ -15,6 +15,8 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { DrawerModule } from 'primeng/drawer';
 import { CatJuzgado } from '../../../catalogos/interface/catalogo.model';
+import {InputIconModule} from 'primeng/inputicon'
+
 @Component({
   selector: 'app-ambitos-de-competencia',
   imports: [
@@ -26,7 +28,8 @@ import { CatJuzgado } from '../../../catalogos/interface/catalogo.model';
     ToastModule,
     TableModule,
     ButtonModule,
-    DrawerModule
+    DrawerModule,
+    InputIconModule
 
   ], templateUrl: './ambitos-de-competencia.html',
   styleUrl: './ambitos-de-competencia.css',
@@ -51,7 +54,7 @@ export class AmbitosDeCompetencia {
   listaMateria: CatalogoMateria[] = [];
   listaMunicipiosOaxaca: CatalogoMunicipioDestino[] = [];
   listaMatJuz: ConfigMateriaJuzgado[] = [];
-  listaMatJuzAll: ConfigMateriaJuzgado[] = [];
+  listaConfiJuzgado: ConfigMateriaJuzgado[] = [];
   selectedMunicipio: CatalogoMunicipioDestino | null = null
   isHeightExpanded = false;
   visible: boolean = false;
@@ -85,12 +88,13 @@ export class AmbitosDeCompetencia {
   selectedJuzgado: CatJuzgado | null = null;
 
   selectedNuevoJuzgado: string | null = null;
-  accionPendiente: string | null = null; // Almacena la acción pendiente (form1 o form2)
-  mostrarDialogo: boolean = false; // Controla la visibilidad del diálogo
+  // accionPendiente: string | null = null; // Almacena la acción pendiente (form1 o form2)
+  // mostrarDialogo: boolean = false; // Controla la visibilidad del diálogo
   @Output() visibleChange: EventEmitter<boolean> = new EventEmitter<boolean>(); // Emite cambios al padre
   tienePermisoAgregarJuzgadoMateria = false;
 
   ngOnInit() {
+    this.getConfigMuncipioJuzgado();
     this.CatalogoMateria();
     this.CatalogoMunicipiosOaxaca();
     this.GetSeccionesUsuario();
@@ -98,37 +102,13 @@ export class AmbitosDeCompetencia {
     this.CatalogoRegion();
     this.perfilSeleccionado = signal(this.perfilSeleccionadoService.perfil_Seleccionado());
   }
-
+  private defer(fn: () => void): void {
+    Promise.resolve().then(fn); // microtask (no setTimeout)
+  }
   onMunicipioChange(event: any) {
     this.selectedMunicipio = event.value;
   }
 
-  onSubmit(form: NgForm) {
-    this.formSubmitted = true;
-    if (form.invalid) {
-      //console.log('Formulario incorrecto');
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Por favor rellene todos los campos.',
-        life: 3000
-      });
-      Object.keys(form.controls).forEach(field => {
-        const control = form.controls[field];
-        control.markAsTouched({ onlySelf: true });
-      }); // Marca todos los campos como tocados para mostrar errores
-      return;
-    }
-
-    // Obtén los valores del formulario
-    const materia = form.value.materia; // Valor del campo "Tipo de Materia"
-    const municipio = form.value.municipio; // Valor del campo "Municipio"
-
-    this.cargarConfig(municipio.idMunicipio, materia.clave);
-
-    // Imprime los valores en la consola
-    //console.log('Formulario enviado:', { materia, municipio });
-  }
 
   abrirConfirmacionEliminarJuzgado() {
     this.confirmacionEliminarJuzgado = true
@@ -190,78 +170,53 @@ export class AmbitosDeCompetencia {
       },
     });
   }
-  //se agrega esta funcion intermedia para usar await y detectChanges porque no refrescaba la vista
-  async cargarConfig(municipioId: number, idMateria: number) {
-    await this.ConfigMuncipioJuzgado(municipioId, idMateria);
-    this.cd.detectChanges();
-    // Aquí Angular sí detecta el cambio porque el flujo sigue dentro de su zona
-  }
+  getConfigMuncipioJuzgado(): void {
 
-  ConfigMuncipioJuzgado(idMunicipio: number, idMateria: number): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.ExhortosService.getConfigMunicipioMateriaJuzgado(idMunicipio, idMateria).subscribe({
+    this.ExhortosService.getConfigMunicipioMateriaJuzgado(0, 0)
+      .subscribe({
         next: (response: any) => {
           if (response.success) {
-            //setTimeout(() => {
-              if (idMunicipio === 0 && idMateria === 0) {
-                this.listaMatJuzAll = response.data ? [...response.data] : [];
-              } else {
-                this.listaMatJuz = response.data ? [...response.data] : [];
-              }
-              this.formSubmitted=false;
-              resolve();
-            //});
+            this.listaConfiJuzgado = response.data ? [...response.data] : []; // nueva referencia
           } else {
             this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
-            reject(response.message);
           }
         },
-        error: (e) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de configuraciones' });
-          reject(e);
+        error: () => {
+          this.cd.detectChanges();
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error al cargar el catálogo de configuraciones'
+          });
         }
       });
-    });
   }
 
   abrirModal() {
     this.visible = true;
   }
 
-  async descargarJSON() {
-    let jsonData = null;
-    // Paso 1: Convertir los datos a formato JSON
+  descargarJSON(): void {
+    let jsonData: string | null = null;
+
+    // Si no hay filtro, usa la lista completa ya cargada
     if (this.listaMatJuz.length === 0) {
-
-      // Esperar a que los datos se carguen
-      await this.ConfigMuncipioJuzgado(0, 0);
-
-      // Verificar si los datos se cargaron correctamente
-      if (!this.listaMatJuzAll || this.listaMatJuzAll.length === 0) {
+      if (!this.listaConfiJuzgado || this.listaConfiJuzgado.length === 0) {
         alert('No hay datos disponibles para descargar.');
         return;
       }
-
-      // Generar JSON con los datos completos
-      jsonData = JSON.stringify(this.listaMatJuzAll, null, 2);
-    }
-    else {
+      jsonData = JSON.stringify(this.listaConfiJuzgado, null, 2);
+    } else {
       jsonData = JSON.stringify(this.listaMatJuz, null, 2);
     }
 
-
-    // Paso 2: Crear un Blob con los datos
     const blob = new Blob([jsonData], { type: 'application/json' });
-
-    // Paso 3: Crear un enlace temporal para descargar el archivo
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'datos_juzgados.json'; // Nombre del archivo
+    a.download = 'datos_juzgados.json';
     document.body.appendChild(a);
     a.click();
-
-    // Paso 4: Limpiar el enlace temporal
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
   }
@@ -300,53 +255,91 @@ export class AmbitosDeCompetencia {
     });
   }
 
-  onSubmitGuardar(form: NgForm, formId: string) {
+  onSubmit(form: NgForm) {
+    console.log('SUBMIT value:', form.value, 'valid=', form.valid);
+
     this.formSubmitted = true;
+
     if (form.invalid) {
-      //console.log('Formulario incorrecto');
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
         detail: 'Por favor rellene todos los campos.',
         life: 3000
       });
+
       Object.keys(form.controls).forEach(field => {
-        const control = form.controls[field];
-        control.markAsTouched({ onlySelf: true });
-      }); // Marca todos los campos como tocados para mostrar errores
+        form.controls[field].markAsTouched({ onlySelf: true });
+      });
+
       return;
     }
 
-    // Muestra el diálogo de confirmación
-    this.accionPendiente = formId; // Guarda la acción pendiente
-    this.mostrarDialogo = true; // Muestra el diálogo
-
+    // ✅ DIRECTO: guardar sin confirmación
+    this.AgregarJuzgadoConf(form);
   }
 
-  confirmarAccion(confirmado: boolean) {
-    this.mostrarDialogo = false; // Oculta el diálogo
-
-    if (confirmado && this.accionPendiente === 'form1') {
-      this.AgregarJuzgadoConf();
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Éxito',
-        detail: 'El juzgado-Materia fue guardado correctamente.',
-        life: 3000
-      });
-      this.cerrarModal();
-    } else if (confirmado && this.accionPendiente === 'form2') {
-    } else if (!confirmado) {
+  AgregarJuzgadoConf(form?: NgForm) {
+    // Validación defensiva (por si algo viene null)
+    if (!this.selectedMunicipioRegion || !this.selectMateria || !this.selectedJuzgado || !this.selectRegion) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'Operación cancelada.',
+        detail: 'Faltan datos para guardar la relación.',
         life: 3000
       });
+      return;
     }
 
-    this.accionPendiente = null; // Limpia la acción pendiente
+    this.ExhortosService
+      .postAgregarJuzgadoMat(
+        this.selectedMunicipioRegion.idMunicipio,
+        this.selectMateria.clave,
+        this.selectedJuzgado.idJuzgado,
+        this.selectRegion.idRegion
+      )
+      .subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: 'El juzgado-materia fue guardado correctamente.',
+              life: 3000
+            });
+
+            // refresca tabla si aplica
+            this.getConfigMuncipioJuzgado();
+
+            // cierra y limpia
+            this.cerrarDrawer();
+            form?.resetForm();
+          } else {
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+          }
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error al añadir un juzgado Materia'
+          });
+        }
+      });
   }
+
+  private cerrarDrawer(): void {
+    this.visibleDrawer = false;
+
+    // Limpia selección del formulario del drawer
+    this.selectedMunicipioRegion = null;
+    this.selectedJuzgado = null;
+    this.selectMateria = null;
+    this.selectRegion = null;
+
+    this.formSubmitted = false;
+  }
+
   cerrarModal() {
     this.visible = false;
     this.visibleChange.emit(this.visible); // Notifica al padre
@@ -404,39 +397,24 @@ export class AmbitosDeCompetencia {
     });
   }
 
-  CatalogoRegion() {
+
+  CatalogoRegion(): void {
+
     this.ExhortosService.getCatalogoRegion().subscribe({
       next: (response: any) => {
         if (response.success) {
-          this.listaRegion = response.data;
-        }
-        else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.listaRegion = response.data ? [...response.data] : [];
+        } else {
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
         }
       },
       error: () => {
-        //console.error('Error al cargar el catálogo de materias', e);
+        this.cd.detectChanges();
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de Región' });
       },
+      complete: () => {
+        this.cd.detectChanges();
+      }
     });
   }
-
-  AgregarJuzgadoConf() {
-    this.ExhortosService.postAgregarJuzgadoMat(this.selectedMunicipioRegion?.idMunicipio,
-      this.selectMateria?.clave, this.selectedJuzgado?.idJuzgado, this.selectRegion?.idRegion).subscribe({
-        next: (response: any) => {
-          if (response.success) {
-
-          }
-          else {
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
-          }
-        },
-        error: () => {
-          //console.error('Error al cargar el catálogo de materias', e);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al añadir un juzgado Materia' });
-        },
-      });
-  }
-
 }

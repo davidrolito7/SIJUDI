@@ -39,7 +39,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([tokenInterceptor]),
       withInterceptorsFromDi(),
-      withFetch()
+      //withFetch()
     ),
 
   ]

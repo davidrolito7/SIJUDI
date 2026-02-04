@@ -2,9 +2,10 @@ import { CanMatchFn, CanActivateFn, Router, UrlSegment } from '@angular/router';
 import { inject } from '@angular/core';
 import { TokenService } from '../service/token.service';
 
-function checkAuth(targetUrl: string): true | ReturnType<Router['parseUrl']> {
-  const tokenService = inject(TokenService);
-  const router = inject(Router);
+function checkAuth(tokenService: TokenService,
+  router: Router,
+  targetUrl: string): true | ReturnType<Router['parseUrl']> {
+
 
   const isValidToken = tokenService.isValidRefreshToken();
   tokenService.setValidacionCompletada(true);
@@ -30,9 +31,17 @@ function checkAuth(targetUrl: string): true | ReturnType<Router['parseUrl']> {
 
 //  Guard para canMatch
 export const authMatchGuard: CanMatchFn = (_route, segments: UrlSegment[]) => {
+  const tokenService = inject(TokenService);
+  const router = inject(Router);
+
   const url = '/' + (segments.map(s => s.path).join('/') || '');
-  return checkAuth(url);
+  return checkAuth(tokenService, router, url);
 };
 
-//  Guard para canActivate 
-export const authActivateGuard: CanActivateFn = (_route, state) => checkAuth(state.url);
+// ✅ canActivate
+export const authActivateGuard: CanActivateFn = (_route, state) => {
+  const tokenService = inject(TokenService);
+  const router = inject(Router);
+
+  return checkAuth(tokenService, router, state.url);
+};

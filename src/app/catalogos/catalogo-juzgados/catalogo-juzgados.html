@@ -1,73 +1,140 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
 
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
-    <div class="card pt-4">
-        <p-table #dt1 [value]="listaJuzgado" dataKey="idJuzgado" [rows]="10"
-            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
-            [globalFilterFields]="['descripcion']">
-            <ng-template #caption>
-                <div class="flex">
-                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
-                    <p-iconfield iconPosition="left" class="ml-auto">
-                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-                        <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
-                            placeholder="Buscar una palabra" />
-                    </p-iconfield>
-                </div>
-            </ng-template>
+    <!-- HEADER -->
+    <!-- <header
+        class="border border-surface rounded-2xl bg-surface-50 dark:bg-surface-900 flex items-center justify-between overflow-hidden">
+        <p-breadcrumb class="hidden lg:block" styleClass="bg-surface-50 dark:bg-surface-900" [home]="home"
+            [model]="items" />
 
-            <ng-template #header>
-                <tr>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            idJuzgado
-                            <p-columnFilter type="text" field="idJuzgado" display="menu" />
-                        </div>
-                    </th>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Clave
-                            <p-columnFilter type="text" field="clave" display="menu"></p-columnFilter>
-                        </div>
-                    </th>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Descripción
-                            <p-columnFilter type="text" field="descripcion" display="menu"></p-columnFilter>
-                        </div>
-                    </th>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Activo
-                            <p-columnFilter type="text" field="activo" display="menu"></p-columnFilter>
-                        </div>
-                    </th>
-                    <th style="min-width:10rem">
-                        <div class="flex items-center justify-between">
-                            Acciones
-                        </div>
-                    </th>
-                </tr>
-            </ng-template>
+        <div class="ml-auto flex items-center gap-2 pr-4 pt-2 pb-2">
+            <span class="text-base font-medium text-surface-700 dark:text-surface-200">Abogado: Juan Pérez</span>
+            <p-avatar image="https://www.primefaces.org/cdn/primevue/images/landing/apps/main-avatar.png" size="large"
+                shape="circle" class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component">
+            </p-avatar>
+        </div>
+    </header> -->
 
-            <ng-template #body let-lista>
-                <tr>
-                    <td>{{ lista.idJuzgado }}</td>
-                    <td>{{ lista.clave  }}</td>
-                    <td>{{ lista.descripcion }}</td>
-                    <td>{{ lista.activo }}</td>
-                    <td> <p-button type="button" class="btn-secondary" >
-                                    <i class="pi pi-pencil"></i>
-                                </p-button></td>
-                </tr>
-            </ng-template>
+    <!-- HEADER -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
 
-            <ng-template #emptymessage>
-                <tr>
-                    <td colspan="7">No customers found.</td>
-                </tr>
-            </ng-template>
-        </p-table>
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <div>
+                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                    Listado de juzgados
+                </label>
+                <label class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                    Consulta, modifica o agrega nuevos juzgados al catálogo
+                </label>
+            </div>
+
+            <div class="mt-6 md:mt-0 flex items-center">
+                <button (click)="visibleDrawer = true" pButton class="whitespace-nowrap btn-secondary  ">
+                    <i pButtonIcon class="pi pi-plus color"></i>
+                    <span pButtonLabel>Agregar</span>
+                </button>
+
+            </div>
+
+
+        </div>
+
     </div>
 </div>
+
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+    <p-table #dt1 class="no-caption-divider" [value]="listaJuzgado" dataKey="idJuzgado" [rows]="10"
+        [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" [globalFilterFields]="['descripcion']">
+        <ng-template #caption>
+            <div class="flex ">
+                <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+                <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                        placeholder="Buscar una palabra" />
+                </p-iconfield>
+            </div>
+        </ng-template>
+
+        <ng-template #header>
+            <tr>
+                <th style="min-width:15rem">
+                    <div class="flex items-center justify-between">
+                        idJuzgado
+                        <p-columnFilter type="text" field="idJuzgado" display="menu" />
+                    </div>
+                </th>
+                <th style="min-width:15rem">
+                    <div class="flex items-center justify-between">
+                        Clave
+                        <p-columnFilter type="text" field="clave" display="menu"></p-columnFilter>
+                    </div>
+                </th>
+                <th style="min-width:15rem">
+                    <div class="flex items-center justify-between">
+                        Descripción
+                        <p-columnFilter type="text" field="descripcion" display="menu"></p-columnFilter>
+                    </div>
+                </th>
+                <th style="min-width:15rem">
+                    <div class="flex items-center justify-between">
+                        Activo
+                        <p-columnFilter type="text" field="activo" display="menu"></p-columnFilter>
+                    </div>
+                </th>
+                <th style="min-width:10rem">
+                    <div class="flex items-center justify-between">
+                        Acciones
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+
+        <ng-template #body let-lista>
+            <tr>
+                <td>{{ lista.idJuzgado }}</td>
+                <td>{{ lista.clave }}</td>
+                <td>{{ lista.descripcion }}</td>
+                <td>
+                    <p-tag [value]="lista.activo ? 'Activo' : 'Inactivo'" [severity]="lista.activo ? 'info' : 'danger'"
+                        [rounded]="true">
+                    </p-tag>
+                </td>
+                <td> <p-button type="button" class="btn-secondary">
+                        <i class="pi pi-pencil"></i>
+                    </p-button></td>
+            </tr>
+        </ng-template>
+
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="7">No customers found.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+
+<p-drawer header="Agregar juzgado" [(visible)]="visibleDrawer" position="right" styleClass="!w-full sm:!w-[30rem] ">
+    <form class="flex flex-col">
+        <div class="grid grid-cols-6 gap-4 w-full items-end">
+            <!-- Región -->
+            <div class="col-span-6">
+                <label class="block mb-2 text-sm font-medium">Nombre</label>
+
+                <input pInputText type="text" formControlName="region" name="region" id="region" class="w-full"
+                    placeholder="Ingrese el nombre del juzgado" />
+            </div>
+
+
+            <div class="col-span-6 flex justify-center">
+                <button pButton type="submit">
+                    <i pButtonIcon class="pi pi-save"></i>
+                    <span pButtonLabel>Guardar</span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+</p-drawer>

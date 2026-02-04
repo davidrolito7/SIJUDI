@@ -15,67 +15,31 @@
         </div>
     </header> -->
 
-    <!-- BUSQUEDA -->
+    <!-- TITULO -->
     <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
-        <form class="flex flex-col" #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
 
-            <div class="flex items-start flex-col md:flex-row justify-between">
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <div>
                 <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
                     Búsqueda de juzgados
                 </label>
-                <div class="mt-6 md:mt-0 flex items-center">
-                    <!-- <button pButton [outlined]="true" class="mr-3">
-                        <i pButtonIcon class="pi pi-user-plus"></i>
-                        <span pButtonLabel>Add</span>
-                    </button> -->
-                    @if(tienePermisoAnadirJuzgadoMateria){
-                    <button (click)="visibleDrawer = true" pButton class="whitespace-nowrap btn-secondary  ">
-                        <i pButtonIcon class="pi pi-plus color"></i>
-                        <span pButtonLabel>Agregar</span>
-                    </button>
-                    }
-                </div>
-
-
+                <label class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                    Filtre cada una de las opciones para buscar el ámbito de competencia deseado.
+                </label>
             </div>
 
-            <div class="overflow-x-auto"
-                [ngStyle]="isHeightExpanded ? { 'min-height': '300px', 'max-height': '500px' } : {}">
-
-                <div class="grid grid-cols-6 gap-4 w-full items-end mt-4" [ngClass]="{ 'submitted': formSubmitted }">
-
-                    <!-- Tipo de Materia (SELECT NUEVO) -->
-                    <div class="col-span-6 sm:col-span-2">
-                        <label class="block mb-2 text-sm font-medium">Tipo de Materia</label>
-
-                        <p-select id="materia" name="materia" inputId="materia-dropdown" [options]="listaMateria"
-                            [(ngModel)]="materiaSelect" optionLabel="nombre" #materiaSelectModel="ngModel" required
-                            appendTo="body" [filter]="true" filterPlaceholder="Buscar materia..." class="w-full"
-                            [ngClass]="{ 'p-invalid': formSubmitted && materiaSelectModel.invalid }"></p-select>
-                    </div>
-
-                    <!-- Municipio (SELECT NUEVO) -->
-                    <div class="col-span-6 sm:col-span-2">
-                        <label class="block mb-2 text-sm font-medium">Municipio</label>
-
-                        <p-select id="municipio" name="municipio" inputId="municipio-dropdown"
-                            [options]="listaMunicipiosOaxaca" [(ngModel)]="selectedMunicipio"
-                            (onChange)="onMunicipioChange($event)" optionLabel="descripcion"
-                            #municipioSelectModel="ngModel" required appendTo="body" [filter]="true"
-                            filterPlaceholder="Buscar municipio..." class="w-full"
-                            [ngClass]="{ 'p-invalid': formSubmitted && municipioSelectModel.invalid }"></p-select>
-                    </div>
-                    <div class="col-span-6 sm:col-span-1">
-                        <p-button type="submit">
-                            <i pButtonIcon class="pi pi-search"></i>
-                            <span pButtonLabel>Buscar</span>
-                        </p-button>
-                    </div>
-
-                </div>
+            <div class="mt-6 md:mt-0 flex items-center">
+                @if(!tienePermisoAgregarJuzgadoMateria) {
+                <button (click)="visibleDrawer = true" pButton class="whitespace-nowrap btn-secondary  ">
+                    <i pButtonIcon class="pi pi-plus color"></i>
+                    <span pButtonLabel>Agregar</span>
+                </button>
+                }
             </div>
 
-        </form>
+
+        </div>
+
     </div>
 </div>
 
@@ -88,68 +52,84 @@
 
             <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
                 <div class="flex items-center gap-2">
-                    <i class="pi pi-building text-base! leading-normal!"></i>
-                    <span>{{ listaMatJuz.length || 0 }} Registros</span>
+                    <i class="pi pi-briefcase text-base! leading-normal!"></i>
+                    <span>{{ listaConfiJuzgado.length }} Registros</span>
                 </div>
             </div>
         </div>
 
-        <div class="md:ml-auto">
+        <div class="md:ml-auto flex gap-4  ">
             <p-button [outlined]="true" (click)="descargarJSON()" class="whitespace-nowrap ">
                 <i pButtonIcon class="pi pi-file-excel color"></i>
                 <span pButtonLabel>Exportar</span>
             </p-button>
+
         </div>
     </div>
 
-
     <div class="card pt-4">
-        <p-table #dt1 [value]="listaMatJuz" dataKey="idMatJuz" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
-            [paginator]="true" [globalFilterFields]="['juzgado']">
+        <p-table #dt1 [value]="listaConfiJuzgado" dataKey="idConfiguracion" [rows]="10"
+            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [globalFilterFields]="['region','municipio','materia','juzgado']">
 
             <ng-template #header>
                 <tr>
-                    <th style="min-width: 15rem">
+                    <th style="min-width:15rem">
                         <div class="flex items-center justify-between">
-                            Juzgado
+                            Región
+                            <p-columnFilter type="text" field="region" display="menu" />
                         </div>
                     </th>
+                    <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
 
-                    <th style="min-width: 10rem">
-                        <div class="flex items-center justify-between">Activo</div>
+                            Municipio
+                            <p-columnFilter type="text" field="municipio" display="menu" />
+                        </div>
                     </th>
-
-                    @if(tienePermisoEliminarAsignacion){
-                    <th style="min-width: 12rem">
-                        <div class="flex items-center justify-between">Acciones</div>
+                    <th style="min-width:10rem">
+                        <div class="flex items-center justify-between">
+                            Materia
+                            <p-columnFilter type="text" field="materia" display="menu" />
+                        </div>
                     </th>
-                    }
+                    <th style="min-width:15rem">
+                        <div class="flex items-center justify-between">
+                            Juzgado
+                            <p-columnFilter type="text" field="juzgado" display="menu" />
+                        </div>
+                    </th>
+                    <th style="min-width:10rem">
+                        <div class="flex items-center justify-between">
+                            Acciones
+                        </div>
+                    </th>
                 </tr>
             </ng-template>
 
-            <ng-template #body let-item>
+            <ng-template #body let-juzgado>
                 <tr>
-                    <td>{{ item.juzgado }}</td>
-
+                    <td>{{ juzgado.region }}</td>
+                    <td>{{ juzgado.municipio }}</td>
+                    <td>{{ juzgado.materia }}</td>
+                    <td>{{ juzgado.juzgado }}</td>
+                    @if (tienePermisoEliminarAsignacion) {
                     <td>
-                        <i class="pi pi-check text-green-500"></i>
-                    </td>
-
-                    <td>
-                        @if (tienePermisoEliminarAsignacion) {
                         <p-button type="button" severity="danger" label="Eliminar" icon="pi pi-trash"
                             (click)="abrirConfirmacionEliminarJuzgado()"></p-button>
-                        }
+
                     </td>
+                    }
                 </tr>
             </ng-template>
 
             <ng-template #emptymessage>
                 <tr>
-                    <td colspan="3">No hay registros.</td>
+                    <td colspan="7">No hay registros.</td>
                 </tr>
             </ng-template>
         </p-table>
+
     </div>
 </div>
 
@@ -299,51 +279,84 @@
 </section> -->
 
 <p-drawer header="Relacionar" [(visible)]="visibleDrawer" position="right" styleClass="!w-full sm:!w-[30rem] ">
-    <form class="flex flex-col" #myForm="ngForm" (ngSubmit)="onSubmitGuardar(myForm, 'form1')">
+       <form class="flex flex-col" #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
         <div class="grid grid-cols-6 gap-4 w-full items-end">
             <!-- Región -->
             <div class="col-span-6">
                 <label class="block mb-2 text-sm font-medium">Región</label>
-                <p-select id="region" name="region" class="w-full" [options]="listaRegion" [(ngModel)]="selectRegion"
-                    optionLabel="descripcion" appendTo="body" [filter]="true" filterPlaceholder="Buscar región..."
-                    inputId="region-dropdown" (onChange)="onRegionChange($event)" fluid></p-select>
+                <p-select id="region" name="region" class="w-full"
+                    [options]="listaRegion"
+                    [(ngModel)]="selectRegion"
+                    optionLabel="descripcion"
+                    appendTo="body"
+                    [filter]="true"
+                    filterPlaceholder="Buscar región..."
+                    inputId="region-dropdown"
+                    (onChange)="onRegionChange($event)"
+                    required
+                    fluid>
+                </p-select>
             </div>
-
+    
             <!-- Municipio -->
             <div class="col-span-6">
                 <label class="block mb-2 text-sm font-medium">Municipio</label>
-                <p-select id="municipio" name="municipio" class="w-full" [options]="listaMunicipiosRegion"
-                    [(ngModel)]="selectedMunicipioRegion" optionLabel="descripcion" [editable]="true" appendTo="body"
-                    [filter]="true" filterPlaceholder="Buscar municipio..." inputId="municipio-dropdown"
-                    (onChange)="onMunicipioChange($event)" fluid></p-select>
+                <p-select id="municipio" name="municipioRegion" class="w-full"
+                    [options]="listaMunicipiosRegion"
+                    [(ngModel)]="selectedMunicipioRegion"
+                    optionLabel="descripcion"
+                    [editable]="true"
+                    appendTo="body"
+                    [filter]="true"
+                    filterPlaceholder="Buscar municipio..."
+                    inputId="municipio-dropdown"
+                    (onChange)="onMunicipioChange($event)"
+                    required
+                    fluid>
+                </p-select>
             </div>
-
+    
             <!-- Juzgado -->
             <div class="col-span-6">
                 <label class="block mb-2 text-sm font-medium">Juzgado</label>
-                <p-select id="juzgado" name="juzgado" class="w-full" [options]="listaJuzgado"
-                    [(ngModel)]="selectedJuzgado" optionLabel="descripcion" [editable]="true" appendTo="body"
-                    [filter]="true" filterPlaceholder="Buscar juzgado..." inputId="juzgado-dropdown"
-                    (onChange)="onJuzgadoChange($event)" fluid></p-select>
+                <p-select id="juzgado" name="juzgadoRegion" class="w-full"
+                    [options]="listaJuzgado"
+                    [(ngModel)]="selectedJuzgado"
+                    optionLabel="descripcion"
+                    [editable]="true"
+                    appendTo="body"
+                    [filter]="true"
+                    filterPlaceholder="Buscar juzgado..."
+                    inputId="juzgado-dropdown"
+                    (onChange)="onJuzgadoChange($event)"
+                    required
+                    fluid>
+                </p-select>
             </div>
-
+    
             <!-- Tipo de Materia -->
             <div class="col-span-6">
                 <label class="block mb-2 text-sm font-medium">Tipo de Materia</label>
-                <p-select id="materia" name="materia" class="w-full" [options]="listaMateria"
-                    [(ngModel)]="selectMateria" optionLabel="nombre" appendTo="body" [filter]="true"
-                    filterPlaceholder="Buscar materia..." inputId="materia-dropdown" fluid></p-select>
+                <p-select id="materia" name="materiaRegion" class="w-full"
+                    [options]="listaMateria"
+                    [(ngModel)]="selectMateria"
+                    optionLabel="nombre"
+                    appendTo="body"
+                    [filter]="true"
+                    filterPlaceholder="Buscar materia..."
+                    inputId="materia-dropdown"
+                    required
+                    fluid>
+                </p-select>
             </div>
         </div>
-
-        @if (!tienePermisoAgregarJuzgadoMateria) {
-        <div class="mt-4 flex  justify-center gap-2">
-            <p-button type="submit">
+    
+        <div class="mt-4 flex justify-center gap-2">
+            <button pButton type="submit">
                 <i pButtonIcon class="pi pi-save"></i>
                 <span pButtonLabel>Guardar</span>
-            </p-button>
+            </button>
         </div>
-        }
     </form>
 
 </p-drawer>
