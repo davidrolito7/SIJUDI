@@ -24,7 +24,7 @@ export interface boton {
   Descripcion : string;
 }
 export interface ModulosUsuario{
-  idSistemaModulo : string;
+  idSistemaModulo : number;
   nombre : string;
   descripcion : string;
   ejecutable : string;
@@ -43,7 +43,7 @@ export interface Pantallas {
    Exe  : string;
   Imagen  : string;
    Acceso  : string;
-  Orden  : string;
+  orden: number ; // para que (a.orden ?? 0) no truene si viene string
   visibleMenu : boolean;
   //FechaProduccion  : string;
 }

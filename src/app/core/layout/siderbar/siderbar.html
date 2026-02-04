@@ -1,49 +1,49 @@
-<div class="h-screen overflow-hidden flex bg-surface-50 dark:bg-surface-900 p-4 gap-4">
-    <!-- ASIDE -->
+<!-- <div class="h-screen overflow-hidden flex bg-surface-50 dark:bg-surface-900 p-4 gap-4">        
     <aside
     class="sticky top-4 z-50 h-[calc(100vh-2rem)] overflow-auto bg-primary-50 p-4 dark:bg-surface-900 flex flex-col justify-between w-auto border border-surface rounded-2xl">
         <div class="w-12 flex flex-col items-center">
             <div class="flex items-center gap-3">
-                <div (click)="visible=true"
+                <div           (click)="showMenu.set(!showMenu())"
+
                     class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
                     pc133=""><i class="pi pi-bars"></i><span class="hidden">・</span><span class="hidden">Overview</span>
-                </div><!---->
+                </div>
                 <div class="text-surface-950 dark:text-surface-0 font-normal text-3xl hidden"> Prime </div>
             </div>
             <div class="mt-10 flex flex-col gap-2">
-                <div (click)="showMailMenu = !showMailMenu" pTooltip="Exhortos" tooltipPosition="right"
+                <div  pTooltip="Exhortos" tooltipPosition="right"
                     class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
                     pc133=""><i class="pi pi-home"></i><span class="hidden">・</span><span class="hidden">Overview</span>
-                </div><!---->
+                </div>
                 <div pTooltip="Amparos" tooltipPosition="right"
                     class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
                     pc134=""><i class="pi pi-comment"></i><span class="hidden">・</span><span class="hidden">Chat</span>
-                </div><!---->
+                </div>
                 <div pTooltip="Oficialia Virtual" tooltipPosition="right"
                     class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
                     pc135=""><i class="pi pi-inbox"></i><span class="hidden">・</span><span class="hidden">Inbox</span>
                 </div>
-                <!---->
+                
                 <div pTooltip="Proyecto 1" tooltipPosition="right"
                     class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
                     pc136=""><i class="pi pi-th-large"></i><span class="hidden">・</span><span
                         class="hidden">Cards</span>
-                </div><!---->
+                </div>
                 <div pTooltip="Notificación electrónica" tooltipPosition="right"
                     class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast "
                     pc137=""><i class="pi pi-user"></i><span class="hidden">・</span><span
                         class="hidden">Customers</span>
-                </div><!---->
+                </div>
                 <div class="px-4  flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-secondary-500 hover:bg-secondary-500 hover:text-secondary-contrast "
                     pc138=""><i class="pi pi-video"></i><span class="hidden">・</span><span class="hidden">Movies</span>
-                </div><!----><!---->
+                </div>
             </div>
         </div>
         <div class="w-12 flex flex-col items-center ">
-            <div class=" flex flex-col gap-3"><!---->
+            <div class=" flex flex-col gap-3">
                 <div class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
                     pc139=""><i class="pi pi-cog"></i><span class="hidden">・</span><span class="hidden">Settings</span>
-                </div><!----><!---->
+                </div>
             </div><p-divider role="separator" aria-orientation="horizontal" data-p="horizontal solid"
                 class="p-component p-divider p-divider-horizontal p-divider-left p-divider-solid" pc108=""
                 data-pc-section="root" data-pc-name="t" style="justify-content: center;">
@@ -64,7 +64,6 @@
 
     </aside>
 
-    <!-- MENU DESPLEGABLE -->
     <div *ngIf="showMailMenu"   class="transition-all duration-300 h-[calc(100vh-2rem)] sticky top-4 overflow-auto"
 >
 
@@ -98,7 +97,7 @@
                                 class="pi pi-info-circle"></i><span class="font-medium">Otro</span></button>
                         <button
                             class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-muted-color bg-transparent"><i
-                                class="pi pi-trash"></i><span class="font-medium">Ejemplo</span></button><!---->
+                                class="pi pi-trash"></i><span class="font-medium">Ejemplo</span></button>
                     </div>
                     <div class="flex flex-col gap-2">
                         <div class="text-sm font-medium leading-5 text-surface-400 dark:text-surface-500"> Otros </div>
@@ -107,7 +106,7 @@
                                 class="pi pi-tag"></i><span class="font-medium">Ejemplo 1</span></button><button
                             class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-muted-color bg-transparent"><i
                                 class="pi pi-tag"></i><span class="font-medium">Ejemplo 2</span></button>
-                    </div><!---->
+                    </div>
                 </div>
 
             </div>
@@ -115,7 +114,6 @@
 
     </div>
 
-    <!-- MAIN -->
   <main class="flex-1 min-w-0 h-[calc(100vh-2rem)] overflow-hidden">
     <div class="h-full  overflow-auto">
       <router-outlet></router-outlet>
@@ -124,4 +122,86 @@
 
 
 
+</div> -->
+
+<div class="h-screen overflow-hidden flex bg-surface-50 dark:bg-surface-900 p-4 gap-4">
+    <aside
+        class="sticky top-4 z-50 h-[calc(100vh-2rem)] overflow-auto bg-primary-50 p-4 dark:bg-surface-900 flex flex-col justify-between w-auto border border-surface rounded-2xl">
+        <div class="w-12 flex flex-col items-center">
+            <div class="flex items-center gap-3">
+                <button type="button"
+                    class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
+                    (click)="showMenu.set(!showMenu())" aria-label="Abrir o cerrar menú">
+                    <i class="pi pi-bars" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="mt-10 flex flex-col gap-2">
+                @for (mod of modulos(); track mod.idSistemaModulo) {
+                <button type="button" [pTooltip]="mod.nombre" tooltipPosition="right"
+                    class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast"
+                    (click)="toggleModulo(mod)" [attr.aria-pressed]="selectedModuloId() === mod.idSistemaModulo"
+                    [attr.aria-label]="'Abrir módulo ' + mod.nombre">
+                    <i [class]="moduleIcon(mod)" aria-hidden="true"></i>
+                    <span class="sr-only">{{ mod.nombre }}</span>
+                </button>
+                }
+            </div>
+        </div>
+
+        <div class="w-12 flex flex-col items-center">
+            <div class="flex flex-col gap-3">
+                <button type="button"
+                    class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
+                    aria-label="Configuración">
+                    <i class="pi pi-cog" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <p-divider></p-divider>
+
+            <div class="flex items-center justify-center">
+                <p-avatar image="https://www.primefaces.org/cdn/primevue/images/landing/apps/main-avatar.png"
+                    size="large" shape="circle"></p-avatar>
+            </div>
+        </div>
+    </aside>
+
+    @if (showMenu() && selectedModulo(); as modulo) {
+    <div class="transition-all duration-300 h-[calc(100vh-2rem)] sticky top-4 overflow-auto">
+        <div class="h-full w-64 overflow-hidden border border-surface rounded-2xl flex flex-col">
+            <div class="flex items-center justify-between gap-2 p-4 border-b border-surface">
+                <div class="text-lg font-medium leading-7 text-color">{{ modulo.nombre }}</div>
+
+                <button type="button" class="p-2 rounded-lg hover:bg-emphasis" (click)="closeMenu()"
+                    aria-label="Cerrar menú">
+                    <i class="pi pi-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="flex-1 flex flex-col overflow-auto gap-2 pt-4 pb-4 px-4">
+                <div class="text-sm font-medium leading-5 text-surface-400 dark:text-surface-500">
+                    Navegación
+                </div>
+
+                @for (p of pantallasVisibles(); track p.IdPantalla) {
+                <a class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-color bg-transparent"
+                    [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis" (click)="showMenu.set(false)">
+                    <i class="pi pi-inbox" aria-hidden="true"></i>
+                    <span class="font-medium">{{ p.nombre }}</span>
+                </a>
+                }
+
+                @if (pantallasVisibles().length === 0) {
+                <p class="text-sm text-muted-color">No hay pantallas visibles para este módulo.</p>
+                }
+            </div>
+        </div>
+    </div>
+    }
+
+    <main class="flex-1 min-w-0 h-[calc(100vh-2rem)] overflow-hidden">
+        <div class="h-full overflow-auto">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
 </div>
