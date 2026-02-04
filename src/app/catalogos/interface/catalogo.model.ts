@@ -4,3 +4,10 @@ export interface CatJuzgado{
     descripcion: string;
     activo: boolean;
 }
+export interface AgregarJuzgado{
+    idCatJuzgado: number;
+    cveJuzgado: string;
+    descripcion: string;
+    tipo: string;
+    activo: boolean;
+}

@@ -2,7 +2,7 @@ import { Component, CreateEffectOptions, effect, inject, Output, signal, Signal,
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CatalogoMateria, CatalogoMunicipioDestino, CatalogoRegion, ConfigMateriaJuzgado } from '../../interfaces/exhortos.model';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { SelectModule } from 'primeng/select';
 import { DialogModule } from 'primeng/dialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -15,7 +15,8 @@ import { ButtonModule } from 'primeng/button';
 import { Table, TableModule } from 'primeng/table';
 import { DrawerModule } from 'primeng/drawer';
 import { CatJuzgado } from '../../../catalogos/interface/catalogo.model';
-import {InputIconModule} from 'primeng/inputicon'
+import { InputIconModule } from 'primeng/inputicon'
+import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-ambitos-de-competencia',
@@ -29,11 +30,12 @@ import {InputIconModule} from 'primeng/inputicon'
     TableModule,
     ButtonModule,
     DrawerModule,
-    InputIconModule
+    InputIconModule,
+    ConfirmDialog
 
   ], templateUrl: './ambitos-de-competencia.html',
   styleUrl: './ambitos-de-competencia.css',
-  providers: [MessageService]
+  providers: [MessageService, ConfirmationService]
 
 })
 export class AmbitosDeCompetencia {
@@ -41,14 +43,15 @@ export class AmbitosDeCompetencia {
     private messageService: MessageService,
     private ExhortosService: ExhortosService,
     public authService: AuthService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private confirmationService: ConfirmationService
   ) {
     //Detecta si el perfil seleccionado ha cambiado y actualiza las secciones
     this.perfilSeleccionado = signal(this.perfilSeleccionadoService.perfil_Seleccionado());
-   effect(() => {
-     this.perfilSeleccionado = signal(this.perfilSeleccionadoService.perfil_Seleccionado());
-     this.GetSeccionesUsuario();
-   });
+    effect(() => {
+      this.perfilSeleccionado = signal(this.perfilSeleccionadoService.perfil_Seleccionado());
+      this.GetSeccionesUsuario();
+    });
   }
 
   listaMateria: CatalogoMateria[] = [];
@@ -197,7 +200,7 @@ export class AmbitosDeCompetencia {
     this.visible = true;
   }
 
-exportarCSV(dt?: Table): void {
+  exportarCSV(dt?: Table): void {
     // Si hay filtros activos, PrimeNG llena filteredValue con los registros visibles
     const tieneFiltrosActivos = this.tieneFiltrosActivos(dt);
     const data: any[] = (tieneFiltrosActivos && dt?.filteredValue?.length)
@@ -291,6 +294,12 @@ exportarCSV(dt?: Table): void {
     });
   }
 
+  onGuardarNuevaAsignacion(form: NgForm) {
+    this.confirmationService.confirm({
+      key: 'confirmAgregarConfig',
+      accept: () => this.AgregarJuzgadoConf(form),
+    });
+  }
   onSubmit(form: NgForm) {
     console.log('SUBMIT value:', form.value, 'valid=', form.valid);
 
@@ -311,7 +320,7 @@ exportarCSV(dt?: Table): void {
       return;
     }
 
-    this.AgregarJuzgadoConf(form);
+    this.onGuardarNuevaAsignacion(form);
   }
 
   AgregarJuzgadoConf(form?: NgForm) {
@@ -452,10 +461,9 @@ exportarCSV(dt?: Table): void {
       }
     });
   }
-    get totalRegistros(): number {
+  get totalRegistros(): number {
     const dt = this.dt1;
 
-    // si hay filtros activos y hay filteredValue, usa eso
     if (this.tieneFiltrosActivos(dt) && dt?.filteredValue) {
       return dt.filteredValue.length;
     }
@@ -463,4 +471,6 @@ exportarCSV(dt?: Table): void {
     // si no hay filtros, usa el total de la lista completa
     return (this.listaConfiJuzgado?.length ?? 0);
   }
+
+
 }

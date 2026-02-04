@@ -20,7 +20,7 @@
 
         <div class="flex items-start flex-col md:flex-row justify-between">
             <div>
-                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 ">
                     Búsqueda de juzgados
                 </label>
                 <label class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
@@ -44,33 +44,35 @@
 </div>
 
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
-    <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">
-                Resultado
-            </div>
 
-            <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-briefcase text-base! leading-normal!"></i>
-                    <span>{{ totalRegistros }} Registros</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="md:ml-auto flex gap-4  ">
-            <p-button [outlined]="true" (click)="exportarCSV(dt1)" class="whitespace-nowrap ">
-                <i pButtonIcon class="pi pi-file-excel color"></i>
-                <span pButtonLabel>Exportar</span>
-            </p-button>
-
-        </div>
-    </div>
-
-    <div class="card pt-4">
-        <p-table #dt1 [value]="listaConfiJuzgado" dataKey="idConfiguracion" [rows]="10"
+        <p-table #dt1  [value]="listaConfiJuzgado" dataKey="idConfiguracion" [rows]="10"
             [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="['region','municipio','materia','juzgado']">
+            <ng-template #caption>
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div>
+                        <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-1">
+                            Resultado
+                        </div>
+
+                        <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                            <div class="flex items-center gap-2">
+                                <i class="pi pi-briefcase text-base! leading-normal!"></i>
+                                <span>{{ totalRegistros }} Registros</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:ml-auto flex gap-4  ">
+                        <p-button [outlined]="true" (click)="exportarCSV(dt1)" class="whitespace-nowrap ">
+                            <i pButtonIcon class="pi pi-file-excel color"></i>
+                            <span pButtonLabel>Exportar</span>
+                        </p-button>
+
+                    </div>
+                </div>
+
+            </ng-template>
 
             <ng-template #header>
                 <tr>
@@ -138,7 +140,6 @@
             </ng-template>
         </p-table>
 
-    </div>
 </div>
 
 
@@ -337,7 +338,7 @@
     </form>
 
 </p-drawer>
-<!-- Modal -->
-<!-- <app-agregar-juzgado
-  [(visible)]="visible">
-</app-agregar-juzgado> -->
+
+<app-confirm-dialog key="confirmAgregarConfig" title="Confirmación" message="¿Desea agregar esta configuración?"
+    icon="pi pi-check" circleClass="bg-primary" acceptStyleClass="bg-primary">
+</app-confirm-dialog>

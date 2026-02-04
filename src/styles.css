@@ -57,3 +57,7 @@
     text-white
     border-0;
 }
+
+.p-datatable-header{
+  @apply border-t-0 p-0! pb-4!;
+}
