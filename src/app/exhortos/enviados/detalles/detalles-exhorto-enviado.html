@@ -481,62 +481,115 @@
             <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
                 <div class="relative overflow-x-auto">
 
-                    <p-table [value]="detallesExhortosPromocion" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
-                        <ng-template #caption>
+                    <p-table #dt [value]="detallesExhortosPromocion()" dataKey="idActoReclamado">
+                        <ng-template pTemplate="caption">
                             <div class="flex uppercase justify-center items-center font-bold text-lg">
                                 Promociones
                             </div>
                         </ng-template>
 
-                        <ng-template #header>
+                        <ng-template pTemplate="header">
                             <tr class="uppercase text-xs">
                                 <th></th>
-                                <th><div class="flex items-center justify-between">ID Promoción</div></th>
-                                <th><div class="flex items-center justify-between">ID Exhorto</div></th>
-                                <th><div class="flex items-center justify-between">Folio Origen</div></th>         
+                                <th><div class="flex items-center justify-between">Folio origen</div></th>    
+                                <th><div class="flex items-center justify-between">Folio destino</div></th>       
                                 <th><div class="flex items-center justify-between">Fojas</div></th>
+                                <th><div class="flex items-center justify-between">Fecha origen</div></th>
                                 <th><div class="flex items-center justify-between">Fecha Recepción</div></th>
                                 <th><div class="flex items-center justify-between">Observaciones</div></th>
-                                <th><div class="flex items-center justify-between">Acciones</div></th>
+                                <th style="min-width: 5rem">
+                                    <div class="flex items-center justify-between">Acciones</div>
+                                </th>
   
                             </tr>
                         </ng-template>
 
-                        <ng-template #body let-item >
+                        <ng-template pTemplate="body" let-item let-expanded="expanded" >
                             <tr>
-                                <td><button type="button" pButton pRowToggler 
-                                                [pRowToggler]="detallesExhortosPromocion" 
-                                                icon="pi pi-chevron-down">
-                                        </button>
+                                <td><button 
+                                    type="button" 
+                                    pButton 
+                                    pRipple 
+                                    [icon]="filaExpandidaId === item.idPromocionEnviado ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" 
+                                    (click)="toggleFilaExpandida(item.idPromocionEnviado)">
+                                    </button>
+
                                 </td>
-                                <td style="font-size: small;">{{item?.actualizacionOrigenId }}</td>
-                                <td style="font-size: small;">{{ item?.tipoActualizacionNombre }}</td>
-                                <td style="font-size: small;">{{item?.fechaHora | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                                <td style="font-size: small;">{{ item?.fechaHoraRecibido | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                <td class="text-center"> {{item?.descripcion }}</td>
-                                <td></td>
-                                <td></td>
+                                <td style="font-size: small;">{{item?.folioOrigenPromocion}}</td>
+                                <td style="font-size: small;">{{item?.folioPromocionRecibida}}</td>
+                                <td style="font-size: small;">{{item?.fojas}}</td>
+                                <td style="font-size: small;">{{item?.fechaOrigen}}</td>
+                                <td style="font-size: small;">{{ item?.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td style="font-size: small;"> {{item?.observaciones }}</td>
+                               
+                                <td class="text-center">
+                                    @if(item.fechaHora == null){
+                                          @if(tienePermisoPromocionEditar()){
+                                            <p-button (onClick)="redirectToPromocion(idExhortoEnviado, item.idPromocionEnviado)" severity="success"
+                                              >Editar
+                                            </p-button>
+                                          }
+                                          @if(tienePermisoPromocionEnviarGenerales()){
+                                            <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
+                                            <p-button (onClick)="enviarPromocionGenerales( item.idPromocionEnviado)" icon="pi pi-send" severity="success"
+                                              > Enviar generales
+                                            </p-button>
+                                            
+                                          }
+                                        }
+                                        @if(item.fechaRecepcion == null && item.fechaHora != null){
+                                          @if(tienePermisoPromocionEnviarArchivos()){
+                                            <p-button type="button" (click)="enviarPromocionArchivos(item.idPromocionEnviado)" icon="pi pi-send" severity="success"
+                                              > Enviar archivos
+                                            </p-button>
+
+                                          }
+                                        }
+                                </td>
                             </tr>
-                        </ng-template>
-                        <!-- Expansión: hijos -->
-                        <ng-template pTemplate="rowexpansion" let-promo>
-                            @if(promo?.promoventes?.length){
-                            <p-table [value]="promo?.promoventes">
-                                <ng-template pTemplate="header">
-                                <tr>
-                                    <th>Nombre hijo</th>
-                                </tr>
-                                </ng-template>
-                                <ng-template pTemplate="body" let-hijo>
-                                <tr>
-                                    <td>{{ hijo?.nombre }}</td>
-                                </tr>
-                                </ng-template>
-                            </p-table>
+                            <!-- Expanded row details -->
+                            @if (filaExpandidaId === item.idPromocionEnviado) {
+                                <tr >
+                                <td colspan="12" class="px-4 py-4">
+                                    <p class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Promoventes:</p>
+                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                        <thead class="uppercase text-xs">
+                                            <tr class="">
+                                            <th class="px-4 py-2">NOMBRE</th>
+                                            <th class="px-4 py-2">GÉNERO</th>
+                                            <th class="px-4 py-2">PERSONA MORAL</th>
+                                            <th class="px-4 py-2">TIPO DE PARTE</th>
+                                            <th class="px-4 py-2">CORREO ELECTRÓNICO</th>
+                                            <th class="px-4 py-2">TELÉFONO</th>
+                                            </tr>
+                                        </thead>
+                                        @for (promoventes of item.promoventes; track promoventes) {
+                                            <tbody>
+                                            <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                                <td class="px-4 py-2">{{ promoventes.nombre}} {{ promoventes.apellidoPaterno}} {{ promoventes.apellidoMaterno}}</td>
+                                                <td class="px-4 py-2">{{ promoventes.genero }}</td>
+                                                <td class="px-4 py-2">
+                                                @if(promoventes.esPersonaMoral){
+                                                    <p>Si</p>
+                                                }
+                                                @else{
+                                                <p>No</p>
+                                                }
+                                            </td>
+                                            <td class="px-4 py-2">{{ promoventes.tipoParteNombre }}</td>
+                                            <td class="px-4 py-2">{{ promoventes.correoElectronico }}</td>
+                                            <td class="px-4 py-2">{{ promoventes.telefono }}</td>
+                                            </tr>
+                                        </tbody>
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
                             }
                         </ng-template>
+                        
 
-                        <ng-template #emptymessage>
+                        <ng-template pTemplate="emptymessage">
                             <tr>
                                 <td colspan="8">Sin promociones</td>
                             </tr>
@@ -613,5 +666,8 @@
 <app-confirm-dialog key="enviarPromocionArchivos" title="Confirmación" message="¿Está seguro de enviar los archivos de la promoción?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
+
+
+
 <!--<p-confirmdialog [style]="{ width: '600px' }" />-->
 <p-toast></p-toast>

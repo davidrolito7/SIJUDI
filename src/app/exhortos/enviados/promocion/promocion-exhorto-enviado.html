@@ -1,523 +1,311 @@
 <p-toast></p-toast>
-<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 mt-5">
-    
-    
-        <section class="flex items-center mb-3 bg-gray-50 dark:bg-gray-900 md:sticky top-16 z-20 p-3">
-            <div class="w-full max-w-screen-xl px-0 mx-auto ">
-                <!-- Start coding here -->
-                    <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-                        <div class="flex-row items-center justify-between p-4 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
-                            <div>
-                                <p class="mr-3 text-3xl font-semibold dark:text-white">Promover exhorto</p>
-                                <p class="text-gray-500 dark:text-gray-400">Promover exhortos</p>
-                            </div>
-                            <div class="flex items-center">
-                                @if(fechaHora == null){
-                                    @if(tienePermisoGuardar){
-                                        <p-button (onClick)="guardarPromocion(myForm)" icon="pi pi-save">
-                                            Guardar
-                                        </p-button>
-                                    
-                                }
-                                @if(!hayCambiosSinGuardar){
 
-                                   @if(fechaHora == null){
-                                        @if(tienePermisoEnviarGenerales){
-                                            <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                                            <p-button (onClick)="enviarPromocionGenerales(idExhortoEnviado)" icon="pi pi-send">
-                                                Enviar
-                                            </p-button>
-                                        }
-                                        
-                                    }   
-                                    @if(tienePermisoEnviarArchvios){
-                                        @if(fechaRecepcion == null && fechaHora != null){
-                                            <p-button  (onClick)="enviarPromocionArchivos(idPromocionEnviado,idExhortoEnviado)"
-                                                icon="pi pi-send"> Enviar archivos
-                                            </p-button>
-                                        }
-                                    }
-                                }
-                            }
-                            </div>
-                        </div>
-                    </div>
+<div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4 sticky-header">
+    <!-- Start coding here -->
+        <div class="flex items-start flex-col md:justify-between md:flex-row">
+            <div>
+                <p class="mr-3 text-3xl font-semibold dark:text-white">Promover exhorto</p>
+                <p class="text-gray-500 dark:text-gray-400">Promover exhortos</p>
             </div>
-        </section>
-        
-    <form #myForm="ngForm" >
-
-    <section class="bg-gray-50 dark:bg-gray-900 mt-10 " >
-        <div class="w-full max-w-screen-xl px-0 mx-auto">
-                <div class="bg-white dark:bg-gray-800 relative shadow-md overflow-hidden sm:rounded-lg">
-
+            <div class="flex items-center">
+                @if(fechaHora == null){
+                    @if(tienePermisoGuardar()){
+                        <p-button (onClick)="guardarPromocion(myForm)" icon="">
+                            Guardar
+                        </p-button>
                     
+                }
+                @if(!hayCambiosSinGuardar){
 
-                    <div class="overflow-x-auto">
-                        <div class="p-4 grid gap-4 sm:grid-cols-4 sm:gap-6" >
-
-                            <!-- <p-floatLabel div class="w-full mb-4">
-                                <input id="folioOrigen"
-                                       type="text"
-                                       pInputText
-                                       name="folioOrigen"
-                                       [style]="{'width': '100%','max-height': '250px'}"/>
-                                <label for="folioOrigen" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de Origen</label>
-                            </p-floatLabel>-->
-
-                                <div class="w-full">
-                                    <div class="p-float-label mt-4" [ngClass]="{
-                                        'error-border': formSubmittedPromocion && fojas === null
-                                      }">
-                                            <p-inputNumber
-                                            name="fojas"
-                                            [(ngModel)]="fojas"
-                                            required
-                                            inputId="fojas"
-                                            [showButtons]="true"
-                                            [min]="0"
-                                            [useGrouping]="false"
-                                            class="w-full"
-                                            (ngModelChange)="marcarCambios()">
-                                            </p-inputNumber>
-                                        <label for="fojasControl">Número de fojas</label>
-                                      </div>
-                                </div>
-
-                                <div class="w-full sm:col-span-4">
-                                    <div class="p-float-label mt-4">
-                                        <textarea
-                                            id="observaciones"
-                                            name="observaciones"
-                                            [(ngModel)]="observaciones"
-                                            rows="4"
-                                            pInputTextarea
-                                            class="w-full"
-                                            (ngModelChange)="marcarCambios()"
-                                            [ngClass]="{ 'p-filled': observaciones && observaciones.trim() !== '' }">
-                                        </textarea>
-                                      <label for="observaciones">Observaciones</label>
-                                    </div>
-                                </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </form>
-    <section class="bg-gray-50 dark:bg-gray-900 mt-10">
-        <div class="w-full max-w-screen-xl px-0 mx-auto">
-            <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-
-                <div class="relative overflow-hidden bg-white dark:bg-gray-800 sm:rounded-lg mt-0 mb-4">
-                    <div class="flex-row items-center justify-between p-4 pb-0 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
-                        <div>
-                            <h5 class="mr-3 font-semibold dark:text-white">Promoventes</h5>
-                            <p class="text-gray-500 dark:text-gray-400">Promoventes del Exhorto</p>
-                        </div>
-
-                        <div class="flex items-center">
-                            <div class="relative">
-                                <p-button (onClick)="limpiarPromovente()">
-                                    Limpiar
-                                </p-button>
-                                <p-button (onClick)="AgregarPromovente()">
-                                    Agregar promovente
-                                </p-button>
-
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <form [formGroup]="promotoresForm" [ngClass]="{ 'submitted2': formSubmitted2 }">
-                        <div class="overflow-x-auto">
-                            <div class="p-4 grid gap-4 sm:grid-cols-4 sm:gap-6">
-
-                                <div class="w-full">
-                                    <div class="p-float-label mt-4">
-                                        <p-input
-                                          id="nombre"
-                                          pInputText
-                                          type="text"
-                                          formControlName="nombre"
-                                          class="w-full"
-                                          (ngModelChange)="marcarCambiosPromovente()"
-                                        />
-                                        <label for="nombre">Nombre del promovente</label>
-                                      </div>
-                                </div>
-
-                                <div class="w-full">
-                                    <div class="p-float-label mt-4">
-                                        <input
-                                          id="paterno"
-                                          pInputText
-                                          type="text"
-                                          formControlName="paterno"
-                                          class="w-full"
-                                          (ngModelChange)="marcarCambiosPromovente()"
-                                        />
-                                        <label for="paterno">Apellido paterno</label>
-                                      </div>
-                                </div>
-                                <div class="w-full">
-                                    <div class="p-float-label mt-4">
-                                        <input
-                                          id="materno"
-                                          pInputText
-                                          type="text"
-                                          formControlName="materno"
-                                          class="w-full"
-                                          (ngModelChange)="marcarCambiosPromovente()"
-                                        />
-                                        <label for="materno">Apellido materno</label>
-                                      </div>
-                                </div>
-                                <div class="w-full">
-                                    <div class="p-float-label mt-4">
-                                        <p-select
-                                          id="genero"
-                                          [options]="listaGenero"
-                                          formControlName="genero"
-                                          optionLabel="descripcion"
-                                          [style]="{ 'width': '100%' }"
-                                          appendTo="body"
-                                          inputId="genero"
-                                          (ngModelChange)="marcarCambiosPromovente()"
-                                        ></p-select>
-                                        <label for="genero">Género</label>
-                                      </div>
-                                </div>
-                                <div class="w-full">
-                                    <div class="flex items-center gap-3">
-                                        <input
-                                          id="moral"
-                                          type="checkbox"
-                                          formControlName="moral"
-                                          class="rounded border-gray-300 text-violet-600 shadow-sm focus:ring-violet-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-violet-600"
-                                        />
-                                        <label for="moral" class="text-sm font-medium text-gray-700 dark:text-white" >
-                                          ¿Es persona moral?
-                                        </label>
-                                      </div>
-                                </div>
-                                <div class="w-full">
-                                    <div class="p-float-label mt-4" [ngClass]="{
-                                        'error-border': formSubmitted2 && promotoresForm.controls['tipoParte'].invalid
-                                      }">
-                                        <p-select
-                                          id="tipoParte"
-                                          [options]="listaTipoParte"
-                                          formControlName="tipoParte"
-                                          optionLabel="descripcion"
-                                          [style]="{ 'width': '100%' }"
-                                          appendTo="body"
-                                          inputId="tipoParte"
-                                          (ngModelChange)="marcarCambiosPromovente()"
-                                        ></p-select>
-                                        <label for="tipoParte">Tipo de parte</label>
-                                      </div>
-                                </div>
-                                <div class="w-full">
-                                    <div class="p-float-label mt-4">
-                                        <input
-                                          id="correo"
-                                          pInputText
-                                          type="text"
-                                          formControlName="correo"
-                                          [(ngModel)]="promotoresForm.value.correo"
-                                          (ngModelChange)="marcarCambiosPromovente()"
-                                          class="w-full"
-                                        />
-                                        <label for="correo">Correo electrónico</label>
-                                      </div>
-                                </div>
-                                <div class="w-full">
-                                    <div class="p-float-label mt-4">
-                                        <input
-                                          id="telefono"
-                                          pInputText
-                                          type="text"
-                                          formControlName="telefono"
-                                          class="w-full"
-                                          (ngModelChange)="marcarCambiosPromovente()"
-                                        />
-                                        <label for="telefono">Teléfono</label>
-                                      </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </form>
-            </div>
-        </div>
-    </section>
-
-    <section class="bg-gray-50 dark:bg-gray-900 mt-10">
-        <div class="w-full max-w-screen-xl px-0 mx-auto lg:px-0">
-            <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-                <div class="relative overflow-hidden bg-white  dark:bg-gray-800 sm:rounded-lg">
-                    <div
-                        class="flex-row items-center justify-between p-4 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
-                        <div>
-                            <h5 class="mr-3 font-semibold dark:text-white">Promoventes</h5>
-                            <p class="text-gray-500 dark:text-gray-400">Listado de promoventes</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="px-4 py-3">Nombre</th>
-                                <th scope="col" class="px-4 py-3">Apellido paterno</th>
-                                <th scope="col" class="px-4 py-3">Apellido materno</th>
-                                <th scope="col" class="px-4 py-3">Género</th>
-                                <th scope="col" class="px-4 py-3">¿Es persona moral?</th>
-                                <th scope="col" class="px-4 py-3">Tipo parte</th>
-                                <th scope="col" class="px-4 py-3">Teléfono</th>
-                                <th scope="col" class="px-4 py-3">Correo Electrónico</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for(partes of provomenteExhortoEnviado; track $index){
-                            @if(partes.activo){
-                                <tr
-                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <th scope="row"
-                                    class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    {{ partes.nombre }}
-                                </th>
-                                <td class="px-6 py-3">
-                                    {{ partes.apellidoPaterno }}
-                                </td>
-                                <td class="px-6 py-3">
-                                    {{ partes.apellidoMaterno }}
-                                </td>
-                                <td class="px-6 py-3">
-                                    {{ partes.genero }}
-                                </td>
-                                <td class="px-6 py-3">
-                                    {{ partes.esPersonaMoral }}
-                                </td>
-                                <td class="px-6 py-3">
-                                    {{ partes.tipoParteNombre }}
-                                </td>
-                                <td class="px-6 py-3">
-                                    {{ partes.telefono }}
-                                </td>
-                                <td class="px-6 py-3">
-                                    {{ partes.correoElectronico }}
-                                </td>
-                                <td>
-                                    <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="eliminarParte(partes)"></p-button>
-                                </td>
-                            </tr>
+                    @if(fechaHora == null){
+                        @if(tienePermisoEnviarGenerales()){
+                            <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
+                            <p-button (onClick)="enviarPromocionGenerales(idExhortoEnviado)" icon="">
+                                Enviar
+                            </p-button>
                         }
+                        
+                    }   
+                    @if(tienePermisoEnviarArchvios()){
+                        @if(fechaRecepcion == null && fechaHora != null){
+                            <p-button  (onClick)="enviarPromocionArchivos(idPromocionEnviado,idExhortoEnviado)"
+                                icon="pi pi-send"> Enviar archivos
+                            </p-button>
                         }
-                        </tbody>
-                    </table>
-
-                </div>
-            </div>
-        </div>
-    </section>
-        @if(tienePermisoCargarArchivo){
-            <section class="bg-gray-50 dark:bg-gray-900 mt-10" >
-                <div class="w-full max-w-screen-xl px-0 mx-auto lg:px-0">
-                    <form [formGroup]="doctosForm">
-                        <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden" *ngIf="idPromocionEnviado !== 0">
-
-                            <div class=" relative overflow-hidden bg-white dark:bg-gray-800 sm:rounded-lg mt-0" >
-                                <div class="flex-row items-center justify-between p-4 pb-0 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
-                                    <div>
-                                        <h5 class="mr-3 font-semibold dark:text-white">Cargar documento</h5>
-                                        <p class="text-gray-500 dark:text-gray-400">Suelta o selecciona un documento </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="overflow-x-auto">
-                                <div class="p-4 flex items-center justify-center w-full">
-                                    <div class="file-upload-container w-full grid gap-5">
-                                        <!--<p-fileUpload #fileUpload name="demo[]" url="https://www.primefaces.org/cdn/api/upload.php"
-                                            [multiple]="false"
-                                            accept=".pdf"
-                                            cancelLabel="cancelar"
-                                            (onSelect)="onSelect($event)"
-                                            (onUpload)="onUpload($event)"
-                                            (onRemove)="onRemove($event)"
-                                            chooseLabel="Selecionar"
-                                            uploadLabel="Cargar"
-                                            cancelLabel="Cancelar">
-                                            <ng-template pTemplate="content">
-                                                <ul *ngIf="uploadedFiles.length">
-                                                    <li *ngFor="let file of uploadedFiles">
-                                                        {{ file.name }} - {{ file.size }} bytes
-                                                    </li>
-                                                </ul>
-
-                                                <p-progressBar [value]="progressValue" [showValue]="true"
-                                                    styleClass="md:w-35rem h-1rem w-full md:ml-auto">
-                                                </p-progressBar>
-
-                                            </ng-template>
-                                        </p-fileUpload>-->
-                                    </div>
-                                </div>
-
-                                <div class="p-4 grid gap-4 sm:grid-cols-3 sm:gap-6">
-                                    <div class="sm:col-span-2">
-                                        <div class="w-full">
-                                            <label for="tipoDocumento"
-                                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipo documento</label>
-                                                <select id="tipoDocumento"
-                                                        [(ngModel)]="selectedTipoDocumento"
-                                                        formControlName="tipoDocumento"
-                                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 cursor-pointer">
-                                                    <option disabled>Selecciona un tipo de documento</option>
-                                                    <option *ngFor="let item of listadoTipoDocumento" [ngValue]="item">{{ item.nombre }}
-                                                    </option>
-                                                </select>
-
-                                                <p *ngIf="doctosForm.controls['tipoDocumento'].dirty && doctosForm.hasError('required', 'tipoDocumento')"
-                                                id="outlined_error_help" class="mt-2 text-xs text-red-600 dark:text-red-400">
-                                                <span class="font-medium">¡Obligatorio!</span> Rellena el campo.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                            @if(!promocionGuardada){
-                                <p-message severity="warn">
-                                <ng-template pTemplate>
-                                    <div class="ml-2">
-                                    Debe guardar los cambios para poder subir los documentos
-                                    </div>
-                                </ng-template>
-                                </p-message>
-                            }
-                    </form>
-
-                </div>
-            </section>
-        }
-    @if(idPromocionEnviado!=0){
-    <section  class="bg-gray-50 dark:bg-gray-900 mt-10" >
-        <div class="w-full max-w-screen-xl px-0 mx-auto lg:px-12">
-          <!-- Start coding here -->
-          <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-            <div class="relative overflow-hidden bg-white  dark:bg-gray-800 sm:rounded-lg">
-              <div class="flex-row items-center justify-between p-4 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
-                <div>
-                  <h5 class="mr-3 font-semibold dark:text-white">Documento</h5>
-                  <p class="text-gray-500 dark:text-gray-400">Documentos a firmar</p>
-                </div>
-                <div class="flex items-center">
-                  <div class="relative mr-4">
-                    <!--
-                    <button type="button"
-                      class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">Firmar
-                    </button>-->
-                    @if(tienePermisoFirmarArchivo && seleccionadosParaFirma()){
-                        <button type="button"
-                        (click)="openModal()"
-                            class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">Firmar
-                        </button>
                     }
-                    
-                  </div>
-                </div>
-              </div>
+                }
+            }
             </div>
+    </div>
+</div>
 
-            <div class="overflow-x-auto" *ngIf="idPromocionEnviado !== 0; else elseBlock1">
-              <form [formGroup]="formDocumentos" >
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead
-                        class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                          <th scope="col" class="px-4 py-3"> Para firmar</th>
-                            <th scope="col" class="px-4 py-3"> Documento</th>
-                            <th scope="col" class="px-4 py-3">Tipo</th>
-                            <th scope="col" class="px-4 py-3">¿Firma aplicado?</th>
-                            <th scope="col" class="px-4 py-3">Fecha firmado</th>
-                            <th scope="col" class="px-4 py-3">Firmantes</th>
-                            <th scope="col" class="px-4 py-3">
-                                <span>Acciones</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let archivo of listaDocumentos">
-                          <td scope="col" class="px-4 py-3">
-                            <input  *ngIf="!archivo.firmado" (change)="archivo_seleccionado(archivo)"
+<div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4 mt-4">       
+    <form #myForm="ngForm" class="grid grid-cols-12 gap-4 w-full items-end" >
 
-                            [id]="archivo.selecParaFirma"
-                            type="checkbox" [checked]="archivo.selecParaFirma" [value]="archivo.selecParaFirma"/>
-                          </td>
-                            <td scope="col" class="px-4 py-3"> {{archivo.nombreArchivo }}</td>
-                            <td scope="col" class="px-4 py-3">{{archivo.tipoDocumento.nombre }}</td>
-                            <td scope="col" class="px-4 py-3">{{ archivo.firmado ? 'Sí' : 'No' }}</td>
-                            <td scope="col" class="px-4 py-3">{{archivo.fechaFirmado }}</td>
-                            <td scope="col" class="px-4 py-3">
+                <!-- Número de fojas -->
+                <div class="col-span-12 sm:col-span-3">
+                    <label class="block mb-2 text-sm font-medium">Número de fojas*</label>
+                    <p-inputNumber 
+                            inputId="fojas" 
+                            name="fojas"
+                            [(ngModel)]="fojas" 
+                            [showButtons]="true" 
+                            mode="decimal" [min]="0"
+                            [max]="5000" 
+                            [useGrouping]="false" 
+                            class="w-full" fluid 
+                            (ngModelChange)="marcarCambios()">
+                        </p-inputNumber>
+                </div>
+                <!-- Observaciones -->
+                <div class="col-span-12">
+                    <label class="block mb-2 text-sm font-medium">Observaciones</label>
+                        <textarea id="observaciones"  
+                                [(ngModel)]="observaciones"
+                                name="observaciones" 
+                                rows="4" 
+                                pInputTextarea 
+                                class="w-full"
+                                (ngModelChange)="marcarCambios()" 
+                                maxlength="1000">
+                        </textarea>
+                </div>                
+    </form>
+</div>
+<!--LISTA PROMOVENTES-->
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+  <div class="flex items-start flex-col md:justify-between md:flex-row">
+    <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Promoventes</div>
+
+    <div class="flex items-center">
+
+      <!-- <p-button routerLink="/form" [outlined]="true" class="mr-3">
+                <i pButtonIcon class="pi pi-user-plus"></i>
+                <span pButtonLabel>Agregar</span>
+            </p-button> -->
+      <p-button class="whitespace-nowrap" (onClick)="openNewPromovente()">
+        <i pButtonIcon class="pi pi-plus"></i>
+        <span pButtonLabel>Agregar Promovente </span>
+      </p-button>
+    </div>
+  </div>
+
+  <div class="w-full">
+    <div class="grid grid-cols-6 gap-4 w-full items-end">
+      @if (provomenteExhortoEnviado.length > 0) {
+      <div class="col-span-6 sm:col-span-6 ">
+
+        <p-table [value]="provomenteExhortoEnviado" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+          <ng-template #header>
+            <tr class="uppercase text-xs">
+              <th>Nombre</th>
+              <th>Apellido paterno</th>
+              <th>Apellido materno</th>
+              <th>Género</th>
+              <th>Tipo persona</th>
+              <th>Tipo parte</th>
+              <th>Correo</th>
+              <th>Teléfono</th>
+              <!--@if(idEstatus == 1) {
+              <th>Acciones</th>
+            }-->
+            </tr>
+          </ng-template>
+          <ng-template #body let-promo let-i="index">
+            <tr>
+              <td style="font-size: small;">
+                {{ promo.nombre }}
+              </td>
+              <td style="font-size: small;">
+                {{ promo.apellidoPaterno }}
+              </td>
+              <td style="font-size: small;">
+                {{ promo.apellidoMaterno }}
+              </td>
+              <td style="font-size: small;">
+                {{ promo.genero }}
+              </td>
+              <td style="font-size: small;">
+                {{ promo.esPersonaMoral ? "Moral" : "Física" }}
+              </td>
+              <td style="font-size: small;">
+                {{ promo.tipoParteNombre }}
+              </td>
+              <td style="font-size: small;">
+                {{ promo.correoElectronico }}
+              </td>
+              <td style="font-size: small;">
+                {{ promo.telefono }}
+              </td>
+              <!--@if(idEstatus <= 1) {
+              <td class="px-6 py-3">
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                  (click)="eliminarParte(promo)"></p-button>
+              </td>
+              }-->
+            </tr>
+          </ng-template>
+        </p-table>
+
+
+      </div>
+      }
+
+      <!-- <div class="col-span-6 sm:col-span-1 flex justify-end">
+                <p-button routerLink="/form">
+                    <i pButtonIcon class="pi pi-user-plus"></i>
+                    <span pButtonLabel>Agregar</span>
+                </p-button>
+            </div> -->
+    </div>
+
+  </div>
+</div>    
+@if(idPromocionEnviado !== 0)
+{
+  @if(tienePermisoCargarArchivo()){
+      <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+        <div class="flex items-start flex-col md:justify-between md:flex-row">
+            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
+
+            <div class="flex items-center">
+              @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
+                  <p-button 
+                    (click)="openNewFirma()"
+                    severity="warn">Firmar
+                  </p-button>
+                }
+                <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
+                    accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
+                    chooseLabel="Agregar documento" />
+
+                <!-- <p-button routerLink="/form" [outlined]="true" class="mr-3">
+                    <i pButtonIcon class="pi pi-user-plus"></i>
+                    <span pButtonLabel>Agregar</span>
+                </p-button>
+                <p-button class="whitespace-nowrap">
+                    <i pButtonIcon class="pi pi-check"></i>
+                    <span pButtonLabel>Guardar </span>
+                </p-button> -->
+              
+            </div>
+        </div>
+
+        <div class="w-full">
+            <div class="grid grid-cols-6 gap-4 w-full items-end">
+                @if (listaDocumentos().length > 0) {
+                <div class="col-span-6 sm:col-span-6 ">
+
+                    <p-table [value]="listaDocumentos()" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+                        <ng-template #header>
+                            <tr class="uppercase text-xs">
+                                <th>para firmar</th>
+                                <th>Documento</th>
+                                <th>Tipo documento</th>
+                                <th>¿Firma aplicado?</th>
+                                <th>Fecha firmado</th>
+                                <th>Firmantes</th>
+                                <th>Peso</th>
+                                <th style="min-width: 10rem">Acciones</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-documento let-i="rowIndex">
+                            <tr>
+                                <td>@if(!documento.firmado && documento.idArchivo !==0){
+                                  <input  (change)="archivo_seleccionado(documento)"
+                                          [id]="documento.selecParaFirma"
+                                          type="checkbox" [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma"/>
+                                }
+                                </td>
+                                <td style="font-size: small;">{{ documento.nombreArchivo }}</td>
+                                <td style="font-size: small;">
+                                  @if(documento.idArchivo === 0){
+                                    <form [formGroup]="doctosForm">
+                                      <p-select id="tipoDocumento" inputId="tipoDocumento-dropdown"
+                                        formControlName="tipoDocumento"
+                                        [options]="listadoTipoDocumento"
+                                        optionLabel="nombre"
+                                        placeholder="seleccione" 
+                                        appendTo="body"
+                                        filterPlaceholder="Buscar tipo..."
+                                        class="w-full md:w-56"
+                                        fluid>
+                                      </p-select>
+                                    </form>
+                                  }
+                                  @else{
+                                    <span>
+                                      {{ documento.tipoDocumento.nombre }}
+                                    </span>
+                                  }
+                                </td>
+                                <td style="font-size: small;">{{ documento.firmado ? 'Sí' : 'No' }}</td>
+                                <td style="font-size: small;">{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <td>
                                   <table>
-                                    <tr *ngFor="let firmante of archivo.firmantes">
-                                      @if(firmante != undefined)
-                                      {
-                                        <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
-                                        @if(!archivo.firmado){
-                                          <td class="px-4">
-                                            <!--<a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">Eliminar</a>-->
-                                            <p-button  (click)="eliminarFirma(firmante.idFirmaTmp, archivo.idArchivo)" [rounded]="true" icon="pi pi-times" title="Eliminar firma" ></p-button>
-                                          </td>
-                                        }
+                                      @for (firmante of documento.firmantes; track firmante) {
+                                        <tr>
+                                          @if(firmante != undefined)
+                                            {
+                                            <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
+                                            @if(!documento.firmado){
+                                              <td class="px-4">
+                                                <!--<a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">Eliminar</a>-->
+                                                <p-button  (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true" icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>
+                                              </td>
+                                            }
+                                          }
+                                        </tr>
                                       }
-                                      </tr>
                                   </table>
                                 </td>
-                            <td scope="col" class="px-4 py-3">
-                                 @if(!archivo.firmado && archivo.firmantes.length>0 ){
-                                      <p-button (click)="AplicarFirmas(archivo.idArchivo)" severity="success" [rounded]="true"
-                                          icon="pi pi-key" class="mr-2" title="Aplicar firmas">
+                                <td style="font-size: small;">{{ ((documento.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
+                              
+                                <td class="text-center">
+                                  @if(documento.idArchivo === 0 && idPromocionEnviado!==0){
+                                    <p-button (click)="onUpload(documento.file)" severity="success" [rounded]="true"
+                                          icon="pi pi-upload" class="mr-2" title="cargar documento">
+                                    </p-button>
+                                  }
+                                    <!--APLICAR FIRMAS-->
+                                  @if(!documento.firmado && documento.firmantes.length>0 ){
+                                      <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
+                                        icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                                       </p-button>
-                                    
+                                                              
+                                  }
+                                  <!--VER O DESCARGAR DOCUMENTO-->
+                                  <p-button (click)="getFile(documento,2)" severity="success" [rounded]="true"
+                                                            icon="pi pi-file-pdf" class="mr-2" title="Descargar PDF"></p-button>
+
+                                  <!--ELIMINAR DOCUMENTO-->
+                                  @if(idEstatus == 1 || idEstatus==0 ){ <!--//Pendiente de enviar-->
+                                    @if(tienePermisoEliminarArchivo()){
+                                      <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                                      (click)="eliminarDocumento(documento,i)" ></p-button>
+                                      
                                     }
-                                <p-button (click)="showDialog(archivo.idArchivo)" severity="success" [rounded]="true"
-                                            icon="pi pi-file-pdf" class="mr-2"></p-button>
-                                @if(tienePermisoEliminarArchivo){ 
-                                    
-                                    <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
-                                            (click)="EliminarArchivo(archivo.idArchivo)"></p-button>
-                                            <!-- Confirmacion -->
-                                  
-                                }
-                                
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-              </form>
+                                  }
+
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                    @if(mostrarDocumento()){
+                      <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                      </app-pdf-dialog>
+                    }
+                </div>
+                }
+                
             </div>
-            <ng-template #elseBlock1>
-                <p-message severity="warn">
-                    <ng-template pTemplate>
-                        <div class="ml-2">
-                            Debe guardar los cambios para poder visualizar y firmar los documentos guardados
-                        </div>
-                    </ng-template>
-                </p-message>
-            </ng-template>
-
-
-          </div>
+            <div>
+            </div>
         </div>
-      </section>
-    }
-</section>
+    </div>
+  }
+}
+
 <!--    
 <SECTION >
   <div>
@@ -595,3 +383,71 @@
 <app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro de eliminar el documento?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
+
+
+<!--*DIALOG PARA AGREGAR PROMOVENTES-->
+<p-dialog [(visible)]="promoDialog" [style]="{ width: '600px' }" header="Agregra promovente" [modal]="true">
+  <form [formGroup]="promoventesForm">
+    <div class="grid grid-cols-6 gap-4 w-full items-end">
+
+      <!-- Nombre del promovente -->
+      <div class="col-span-6 sm:col-span-3 w-full">
+        <label class="block mb-2 text-sm font-medium">Nombre del promovente*</label>
+        <input id="nombre" name="nombre" pInputText type="text" formControlName="nombre" class="w-full" maxlength="200" />
+      </div>
+
+      <!-- ¿Es persona moral? -->
+      <div class="col-span-6 sm:col-span-3 w-full flex items-center justify-center gap-2 h-full">
+        <div class="flex items-center justify-center w-full h-full">
+          <p-checkbox inputId="moral" name="moral" binary="true" formControlName="moral"></p-checkbox>
+          <label for="moral" class="ml-2 text-sm font-medium mb-0">¿Es persona moral?</label>
+        </div>
+      </div>
+
+      <!-- Apellido paterno -->
+      <div class="col-span-6 sm:col-span-3 w-full">
+        <label class="block mb-2 text-sm font-medium">Apellido paterno</label>
+        <input id="paterno" name="paterno" pInputText type="text" formControlName="paterno" class="w-full" maxlength="50" />
+      </div>
+
+      <!-- Apellido materno -->
+      <div class="col-span-6 sm:col-span-3 w-full">
+        <label class="block mb-2 text-sm font-medium">Apellido materno</label>
+        <input id="materno" name="materno" pInputText type="text" formControlName="materno" class="w-full" maxlength="50" />
+      </div>
+
+      <!-- Género -->
+      <div class="col-span-6 sm:col-span-3 w-full">
+        <label class="block mb-2 text-sm font-medium">Género</label>
+        <p-select id="genero" name="genero" [options]="listaGenero()" formControlName="genero" optionLabel="descripcion"
+          appendTo="body" inputId="genero-dropdown" class="w-full" fluid></p-select>
+      </div>
+
+      <!-- Tipo de parte -->
+      <div class="col-span-6 sm:col-span-3 w-full">
+        <label class="block mb-2 text-sm font-medium">Tipo de parte*</label>
+        <p-select id="tipoParte" name="tipoParte" [options]="listaTipoParte()" formControlName="tipoParte"
+          optionLabel="descripcion" appendTo="body" inputId="tipoParte-dropdown" class="w-full" fluid></p-select>
+      </div>
+
+      <!-- Correo electrónico -->
+      <div class="col-span-6 sm:col-span-3 w-full">
+        <label class="block mb-2 text-sm font-medium">Correo electrónico</label>
+        <input id="correo" name="correo" pInputText type="text" formControlName="correo"
+          class="w-full" maxlength="50" />
+      </div>
+
+      <!-- Teléfono -->
+      <div class="col-span-6 sm:col-span-3 w-full">
+        <label class="block mb-2 text-sm font-medium">Teléfono</label>
+        <p-inputmask id="telefono" name="telefono" mask="(999) 999-9999" [unmask]="true" formControlName="telefono" class="w-full"
+          placeholder="(999) 999-9999"></p-inputmask>
+      </div>
+    </div>
+  </form>
+
+  <ng-template #footer>
+    <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogPromovente()" />
+    <p-button label="Agregar" icon="pi pi-check" (click)="AgregarPromovente()" />
+  </ng-template>
+</p-dialog>

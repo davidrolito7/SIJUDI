@@ -38,15 +38,16 @@ export class DetallesExhortoEnviado {
   visible: boolean = false;
   detallesExhortos = signal<detalleExhortosEnviados | null>(null);
 
-  detallesExhortosPromocion:  PromocionExhortoEnviado[] | any;
+  detallesExhortosPromocion= signal<PromocionExhortoEnviado[]>([]);
 
   tieneRespuesta: boolean = false; //Para deshabilitar el botón de "ver respuesta"
   idExhortoEnviado: number | undefined;
-  expandedRows: { [key: number]: boolean } = {};
 
-  generalesPromocionEnviado : boolean = false;
+
+
+  //generalesPromocionEnviado : boolean = false;
   listaActualizaciones:actualizacionesExhortoEnviado[]=[];
-  archivosPromocionEnviado : boolean = false;
+  //archivosPromocionEnviado : boolean = false;
   respuesta: respuestExhortoEnviado[]=[];
   indice: number = 0
 
@@ -151,14 +152,17 @@ export class DetallesExhortoEnviado {
           setTimeout(() => {
             this.detallesExhortos.set(response.data); // Almacena los datos recibidos en la variable
           
-            this.detallesExhortosPromocion = response.data.promociones;
+            
+
+            this.detallesExhortosPromocion.set(response.data.promociones);
+            
             //console.log('detallesExhortoPromocion: ',this.detallesExhortosPromocion)
-            if(this.detallesExhortosPromocion.fechaHora == null){
+            /*if(this.detallesExhortosPromocion()[0].fechaHora == null){
               this.generalesPromocionEnviado=true;
             }
             if(this.detallesExhortosPromocion.fechaRecepcion == null){
               this.archivosPromocionEnviado=true;
-            }
+            }*/
           });
           //this.cd.detectChanges();
         },
@@ -304,7 +308,7 @@ export class DetallesExhortoEnviado {
    // Método para redirigir a la vista de promoción
    redirectToPromocion(idExhortoEnviado: number | undefined, idPromocionEnviado: number) {
 //    console.log('Navegando a promoción con idNotificacion:', idNotificacion, 'y idRespuesta:', idRespuesta);
-    this.router.navigate(['/inicio/exhortos/exhortos-enviados/promocion-exhortos-enviados'], {
+    this.router.navigate(['/exhortos/promocion-exhorto-enviado'], {
       state: { idExhortoEnviado, idPromocionEnviado }
     }); 
   }
@@ -313,7 +317,7 @@ export class DetallesExhortoEnviado {
     this.idPromocionEnviadoSeleccionado = idPromocionEnviado;
     this.mostrarConfirmacionEnvioGenerales = true;
   }*/
-  EnviarPromocionGenerales(idPromocionEnviado: number) {
+  enviarPromocionGenerales(idPromocionEnviado: number) {
     this.confirmationService.confirm({
       key: 'enviarPromocionGenerales',
       accept: () => this.onEnviarPromocionGenerales(idPromocionEnviado),
