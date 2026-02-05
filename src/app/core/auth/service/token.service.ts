@@ -208,11 +208,11 @@ export class TokenService {
     this.clearTwoFactorValidated();
     this.clearPerfilCompleted();
 
-    this.removeAppSelections();
+   // this.removeAppSelections();
 
     //  borrar usuario recordado también
-    localStorage.removeItem('recordarUsuario');
-    sessionStorage.removeItem('recordarUsuario');
+    // localStorage.removeItem('recordarUsuario');
+    // sessionStorage.removeItem('recordarUsuario');
 
     // limpia banderas 
     this.setValidacionCompletada(false);
@@ -227,5 +227,34 @@ export class TokenService {
 
     this.clearPerfilCompleted();
    // this.removeAppSelections();
+  }
+
+  private readRemembered(key: string): string {
+    if (!this.isBrowser) return '';
+    const recordar = localStorage.getItem('recordarUsuario') === 'true';
+    const primary = recordar ? localStorage : sessionStorage;
+    const fallback = recordar ? sessionStorage : localStorage;
+    return primary.getItem(key) ?? fallback.getItem(key) ?? '';
+  }
+
+  getAbogadoNombre(): string {
+    return this.readRemembered('AbogadoNombre');
+  }
+
+  getAreaNombre(): string {
+    return this.readRemembered('AreaName');
+  }
+
+  getPerfilNombre(): string {
+    return this.readRemembered('perfilSeleccionadoDesc');
+  }
+
+  getAbogadoFotoUrl(): string {
+    if (!this.isBrowser) return '';
+    // foto la guardamos en sessionStorage
+    const b64 = sessionStorage.getItem('AbogadoFotoBase64') ?? '';
+    if (!b64) return '';
+    // viene como JPEG base64
+    return `data:image/jpeg;base64,${b64}`;
   }
 }

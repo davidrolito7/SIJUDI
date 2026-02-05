@@ -1,112 +1,112 @@
-export interface responseLogin{
-    access_token:string;
-    refresh_token:string
+export interface responseLogin {
+  access_token: string;
+  refresh_token: string
 }
 
-export interface responseCatalogoPerfiles{
-  idSistemaPerfil : number;
-  descripcion : string
+export interface responseCatalogoPerfiles {
+  idSistemaPerfil: number;
+  descripcion: string
 }
-export interface areasResponse{
-  idAreaSistema:number; 
-	area:string; 
-	idArea:number; 
-	//nombreConexionBd:string;
+export interface areasResponse {
+  idAreaSistema: number;
+  area: string;
+  idArea: number;
+  //nombreConexionBd:string;
 }
 
 export interface secciones {
-  IdSeccion : number;
-  descripcion : string;
+  IdSeccion: number;
+  descripcion: string;
   //Pantallas : boton[];
 }
 export interface boton {
-  Idboton : number;
-  Descripcion : string;
+  Idboton: number;
+  Descripcion: string;
 }
-export interface ModulosUsuario{
-  idSistemaModulo : number;
-  nombre : string;
-  descripcion : string;
-  ejecutable : string;
-  pantallas : Pantallas[];
+export interface ModulosUsuario {
+  idSistemaModulo: number;
+  nombre: string;
+  descripcion: string;
+  ejecutable: string;
+  pantallas: Pantallas[];
 }
 
 export interface Pantallas {
-  IdPantalla : string;
-  nombre  : string;
-  descripcion  : string;
-  IdSistemaModulo   : string;
-  TipoCatalogo  : string;
-  IdCatalogo  : string;
-  Ejecutable  : string;
-  Valores  : string;
-   Exe  : string;
-  Imagen  : string;
-   Acceso  : string;
-  orden: number ; // para que (a.orden ?? 0) no truene si viene string
-  visibleMenu : boolean;
+  IdPantalla: string;
+  nombre: string;
+  descripcion: string;
+  IdSistemaModulo: string;
+  TipoCatalogo: string;
+  IdCatalogo: string;
+  Ejecutable: string;
+  Valores: string;
+  Exe: string;
+  imagen: string;
+  Acceso: string;
+  orden: number; // para que (a.orden ?? 0) no truene si viene string
+  visibleMenu: boolean;
   //FechaProduccion  : string;
 }
 
 
-export interface UsrProfile{
+export interface UsrProfile {
   userId: number,
-        userName: string,
-        idGeneral: number,
-        creationDate: Date,
-        isActive: boolean,
-        isAdmin: boolean,
-        isRoot: boolean,
-        token: string,
-        password:string,
-        passwordQuestion: string,
-        passwordAnswer: string,
-        isApproved: boolean,
-        digitalCert: boolean,
-        use2FAToken: boolean
-}
-
-export interface UsrAbogado{
+  userName: string,
   idGeneral: number,
-        folio: string ,
-        nombre: string,
-        idTitulo: number,
-        curp: string,
-        direccion: string,
-        direccionPart: string,
-        correo: string,
-        correoAlterno: string,
-        celular: string,
-        telefono: string,
-        idBarra: number,
-        idEstatus: number,
-        observaciones: string,
-        idTipoPersona: number,
-        fechaAlta: Date,
-        noEmpleado: number,
-        correoVerificado: true,
-        direccionNoExt: string,
-        direccionNoInt: string,
-        direccionCP: string,
-        direccionColonia: string,
-        direccionMunicipio: string,
-        direccionEstado: string,
-        direccionPartNoExt: string,
-        direccionPartNoInt:string,
-        direccionPartCP: string,
-        direccionPartColonia:string,
-        direccionPartMunicipio: string,
-        direccionPartEstado: string,
-        activo: boolean,
-        foto: string
+  creationDate: Date,
+  isActive: boolean,
+  isAdmin: boolean,
+  isRoot: boolean,
+  token: string,
+  password: string,
+  passwordQuestion: string,
+  passwordAnswer: string,
+  isApproved: boolean,
+  digitalCert: boolean,
+  use2FAToken: boolean
+}
+
+export interface UsrAbogado {
+  idGeneral: number,
+  folio: string,
+  nombre: string,
+  idTitulo: number,
+  curp: string,
+  direccion: string,
+  direccionPart: string,
+  correo: string,
+  correoAlterno: string,
+  celular: string,
+  telefono: string,
+  idBarra: number,
+  idEstatus: number,
+  observaciones: string,
+  idTipoPersona: number,
+  fechaAlta: Date,
+  noEmpleado: number,
+  correoVerificado: true,
+  direccionNoExt: string,
+  direccionNoInt: string,
+  direccionCP: string,
+  direccionColonia: string,
+  direccionMunicipio: string,
+  direccionEstado: string,
+  direccionPartNoExt: string,
+  direccionPartNoInt: string,
+  direccionPartCP: string,
+  direccionPartColonia: string,
+  direccionPartMunicipio: string,
+  direccionPartEstado: string,
+  activo: boolean,
+  foto: string
 }
 
 
 
 
-export interface twoAccess{
-    activo: boolean,
-    encodedSecret: string ,
-    user: string,
-    lastLoginUTC :Date
+export interface twoAccess {
+  activo: boolean,
+  encodedSecret: string,
+  user: string,
+  lastLoginUTC: Date
 }

@@ -36,11 +36,11 @@
                                 </p>
                             </div>
 
-                            <!-- ✅ 2 columnas: izquierda QR, derecha form -->
                             <div
                                 class="flex flex-col sm:flex-row gap-6 items-center justify-center mt-4 lg:items-start lg:justify-start">
                                 <div class="w-full sm:w-1/2 flex flex-col items-center lg:items-start gap-3">
-                                    <qrcode [qrdata]="qrData" [allowEmptyString]="true"  [width]="150" [margin]="0" [errorCorrectionLevel]="'M'">
+                                    <qrcode [qrdata]="qrData" [allowEmptyString]="true" [width]="150" [margin]="0"
+                                        [errorCorrectionLevel]="'M'">
                                     </qrcode>
                                     <p class="text-surface-600 dark:text-surface-200 text-sm">
                                         Código para capturar manualmente : <b>{{objectTwoAccess.encodedSecret}}</b>
@@ -50,7 +50,7 @@
                                 <div class="w-full sm:w-1/2 ">
                                     <div class="flex flex-col gap-6">
                                         <p-inputmask #codigoinput mask="999-999" placeholder="123-456" [unmask]="true"
-                                            [(ngModel)]="codigo" (keydown.enter)="codigoEnter()"  />
+                                            [(ngModel)]="codigo" (keydown.enter)="codigoEnter()" />
 
                                         <div
                                             class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
@@ -59,7 +59,7 @@
                                                 <span pButtonLabel>Continuar</span>
                                             </p-button>
 
-                                            <p-button (onClick)="salir()" type="button" outlined>
+                                            <p-button (onClick)="onLogout()"  type="button" outlined>
                                                 <span pButtonLabel>Salir</span>
                                             </p-button>
                                         </div>
@@ -72,9 +72,9 @@
                             Ingrese a su aplicación de Google Authenticator para obtener el código de 6 dígitos.
                         </p>
 
-                        <!-- ✅ En el ELSE sí necesitas el form (porque no hay QR) -->
                         <div class="flex flex-col gap-6">
-                            <p-inputmask mask="999-999" placeholder="123-456" [unmask]="true" [(ngModel)]="codigo" (keydown.enter)="codigoEnter()" />
+                            <p-inputmask mask="999-999" placeholder="123-456" [unmask]="true" [(ngModel)]="codigo"
+                                (keydown.enter)="codigoEnter()" />
 
                             <div
                                 class="flex flex-col  sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
@@ -83,7 +83,7 @@
                                     <span pButtonLabel>Continuar</span>
                                 </p-button>
 
-                                <p-button (onClick)="salir()" type="button" outlined>
+                                <p-button (onClick)="onLogout()"  type="button" outlined>
                                     <span pButtonLabel>Salir</span>
                                 </p-button>
                             </div>
@@ -131,14 +131,16 @@
                             <label
                                 class="text-sm font-medium text-surface-700 dark:text-surface-200 ">Contraseña</label>
 
-                            <p-password formControlName="password" [feedback]="false" [toggleMask]="true" styleClass="cursor-pointer" (keydown.enter)="contraseniaEnter()"></p-password>
+                            <p-password formControlName="password" [feedback]="false" [toggleMask]="true"
+                                styleClass="cursor-pointer" (keydown.enter)="contraseniaEnter()"></p-password>
 
                             <div
                                 class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center lg:justify-start">
                                 <p-button (onClick)="onValidarLlavePrivada()" type="button">
+                                    <span pButtonIcon class="pi pi-key mr-1"></span>
                                     <span pButtonLabel>Continuar</span>
                                 </p-button>
-                                <p-button (onClick)="salir()" type="button" outlined>
+                                <p-button (onClick)="onLogout()"  type="button" outlined>
                                     <span pButtonLabel>Salir</span>
                                 </p-button>
                             </div>

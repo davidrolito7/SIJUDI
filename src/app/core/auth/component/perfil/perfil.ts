@@ -10,8 +10,8 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, finalize, map, of, switchMap, tap } from 'rxjs';
-import type { Observable } from 'rxjs';
+import { catchError, finalize, map, Observable, of, switchMap, tap } from 'rxjs';
+import { UserMenuStore } from '../../../layout/siderbar/user-menu.store';
 
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -56,6 +56,7 @@ export class Perfil {
   private readonly authService = inject(AuthService);
   private readonly messageService = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly menuStore = inject(UserMenuStore);
 
   readonly isLoading = signal(false);
 
@@ -70,6 +71,9 @@ export class Perfil {
   readonly perfilNombreSeleccionado = signal('');
 
   recordar = false;
+  // Datos para mostrar (abogado)
+  readonly abogadoNombre = signal<string>('');
+  readonly abogadoFotoBase64 = signal<string>(''); // viene como "/9j/...." (JPEG base64)
 
   readonly canContinue = computed(
     () => this.areaSeleccionada() > 0 && this.perfilSeleccionado() > 0
@@ -120,7 +124,6 @@ export class Perfil {
     const store = this.recordar ? localStorage : sessionStorage;
     const other = this.recordar ? sessionStorage : localStorage;
 
-    // “recordarUsuario” siempre en local para sobrevivir reinicios del navegador
     localStorage.setItem('recordarUsuario', this.recordar ? 'true' : 'false');
 
     store.setItem('areaSeleccionada', String(this.areaSeleccionada()));
@@ -128,11 +131,26 @@ export class Perfil {
     store.setItem('perfilSeleccionadoDesc', this.perfilNombreSeleccionado());
     store.setItem('idAreaSistemaUsuario', String(this.idAreaSistemaUsuario()));
 
-    // Limpia la otra storage
+    // === NUEVO: guardar texto del área (AreaUsuarioSistema) ===
+    const areaObj = this.listaAreas().find(a => a.idArea === this.areaSeleccionada());
+    store.setItem('AreaName', areaObj?.area ?? '');
+
+    // === NUEVO: guardar nombre del abogado ===
+    store.setItem('AbogadoNombre', this.abogadoNombre());
+
+    // === NUEVO: foto (mejor en sessionStorage por tamaño) ===
+    sessionStorage.setItem('AbogadoFotoBase64', this.abogadoFotoBase64());
+
     other.removeItem('areaSeleccionada');
     other.removeItem('perfilSeleccionado');
     other.removeItem('perfilSeleccionadoDesc');
     other.removeItem('idAreaSistemaUsuario');
+    other.removeItem('AreaName');
+    other.removeItem('AreaBd');
+    other.removeItem('AbogadoNombre');
+
+    // foto también se limpia del otro storage (por si acaso)
+    localStorage.removeItem('AbogadoFotoBase64');
 
     this.messageService.add({
       severity: 'success',
@@ -141,7 +159,16 @@ export class Perfil {
     });
 
     this.tokenService.setPerfilCompleted(true);
-    this.router.navigate(['/tramites-juicio-oral'], { replaceUrl: true });
+
+    // Fuerza recarga de módulos/pantallas con el perfil nuevo
+    this.menuStore.refresh()
+      .pipe(
+        catchError(() => of([])),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => {
+        this.router.navigate(['/tramites-juicio-oral'], { replaceUrl: true });
+      });
   }
 
   // --------------------
@@ -164,6 +191,11 @@ export class Perfil {
     this.authService
       .obtenerDatosUsuario(user.Usr)
       .pipe(
+        tap(resp => {
+          const abogado = resp.data?.pD_Abogados?.[0];
+          this.abogadoNombre.set((abogado?.nombre ?? '').toString().trim());
+          this.abogadoFotoBase64.set((abogado?.foto ?? '').toString().trim());
+        }),
         map(resp => resp.data?.pD_Abogados?.[0]?.idGeneral ?? 0),
         tap(idG => this.idGeneral.set(idG)),
         switchMap(idG => {
@@ -293,5 +325,11 @@ export class Perfil {
     if (!raw) return 0;
     const n = Number(raw);
     return Number.isFinite(n) ? n : 0;
+  }
+
+  onLogout(): void {
+    this.tokenService.logout();
+
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 }

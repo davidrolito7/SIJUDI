@@ -10,22 +10,24 @@
                 </button>
             </div>
 
+            <!-- ...existing code... -->
             <div class="mt-10 flex flex-col gap-2">
                 @for (mod of modulos(); track mod.idSistemaModulo) {
                 <button type="button" [pTooltip]="mod.nombre" tooltipPosition="right"
-                    class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast"
+                    class="w-12 h-12 p-0 inline-flex items-center justify-center rounded-lg transition-all select-none text-primary hover:bg-emphasis bg-transparent"
                     (click)="toggleModulo(mod)" [attr.aria-pressed]="selectedModuloId() === mod.idSistemaModulo"
                     [attr.aria-label]="'Abrir módulo ' + mod.nombre">
-                    <img class="w-5 h-5" [src]="svgSrcForModulo(mod)" alt="" aria-hidden="true" />
+                    <img class="w-7 h-7 block" [src]="svgSrcForModulo(mod)" alt="" aria-hidden="true" />
                     <span class="sr-only">{{ mod.nombre }}</span>
                 </button>
                 }
             </div>
+            <!-- ...existing code... -->
         </div>
 
         <div class="w-12 flex flex-col items-center">
             <div class="flex flex-col gap-3">
-                <button type="button" (click)="visibleDrawer = true" 
+                <button type="button" (click)="visibleDrawer = true"
                     class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
                     aria-label="Configuración">
                     <i class="pi pi-cog" aria-hidden="true"></i>
@@ -39,10 +41,13 @@
 
                 <button type="button" (click)="visibleDrawer = true" class="rounded-xl cursor-pointer"
                     aria-label="Abrir menú de usuario">
-                    <p-avatar image="https://www.primefaces.org/cdn/primevue/images/landing/apps/avatar11.jpg"
+                    <!-- <p-avatar [image]="abogadoFotoUrl"
                         size="large" class="rounded-xl overflow-hidden p-avatar p-avatar-image p-avatar-lg p-component"
                         data-p="square large" pc1573="" data-pc-section="root" data-pc-name="avatar">
-                    </p-avatar>
+                    </p-avatar> -->
+                    <p-avatar [image]="abogadoFotoUrl" size="large" shape="circle"
+                        class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component"></p-avatar>
+
                 </button>
             </div>
         </div>
@@ -52,7 +57,7 @@
     <div class="transition-all duration-300 h-[calc(100vh-2rem)] sticky top-4 overflow-auto">
         <div class="h-full w-64 overflow-hidden border border-surface rounded-2xl flex flex-col">
             <div class="flex items-center justify-between gap-2 p-4 border-b border-surface">
-                <div class="text-lg font-medium leading-7 text-color">{{ modulo.nombre }}</div>
+                <div class="text-md font-medium leading-7 text-color uppercase">{{ modulo.nombre }}</div>
 
                 <button type="button" class="p-2 rounded-lg hover:bg-emphasis" (click)="closeMenu()"
                     aria-label="Cerrar menú">
@@ -67,8 +72,8 @@
                 @for (p of pantallasVisibles(); track p.IdPantalla) {
                 <a class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-color bg-transparent"
                     [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis" (click)="showMenu.set(false)">
-                    <i class="pi pi-inbox" aria-hidden="true"></i>
-                    <span class="font-medium">{{ p.nombre }}</span>
+                    <img class="w-5 h-5" [src]="svgSrcForPantalla(p)" alt="" aria-hidden="true" />
+                    <span class="font-medium text-sm uppercase">{{ p.nombre }}</span>
                 </a>
                 }
 
@@ -92,16 +97,18 @@
         <form class="flex flex-col">
 
             <div class="flex align-items-center gap-3 p-6">
-                <p-avatar image="https://www.primefaces.org/cdn/primevue/images/landing/apps/avatar11.jpg" size="large"
+                <p-avatar [image]="abogadoFotoUrl" size="large"
                     class="rounded-xl overflow-hidden p-avatar p-avatar-image p-avatar-lg p-component"
                     data-p="square large" pc1573="" data-pc-section="root" data-pc-name="avatar">
                 </p-avatar>
                 <div class="flex-1">
-                    <div class="leading-6 text-color font-medium">Brook Simmons</div>
-                    <div class="mt-1 leading-5 text-muted-color text-sm">Sales Executive</div>
+                    <div class="leading-6 text-color font-medium">{{abogadoNombre}}</div>
+                    <div class="mt-1 leading-5 text-muted-color text-sm">{{ areaNombre ? ('Área: ' + areaNombre) : '' }}
+                    {{ areaNombre && perfilNombre ? ' · ' : '' }}
+                    {{ perfilNombre ? ('Perfil: ' + perfilNombre) : '' }}</div>
                 </div>
-                <p-button pTooltip="Cerrar Sesión" tooltipPosition="left" icon="pi pi-sign-out" text="" rounded="" severity="secondary" pc1574=""
-                    data-pc-section="host"></p-button>
+                <p-button (onClick)="onLogout()" pTooltip="Cerrar Sesión" tooltipPosition="left" icon="pi pi-sign-out"
+                    text="" rounded="" severity="secondary" pc1574="" data-pc-section="host"></p-button>
             </div>
             <div class="bg-surface-50 border border-surface-0 m-6 rounded-lg  flex items-center justify-between p-1 ">
                 <label class="text-sm font-medium text-color pl-2">Perfil</label>
