@@ -20,12 +20,13 @@ import { AuthService } from '../../../core/auth/service/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { ToastModule } from "primeng/toast";
 import { Spinner } from '../../../shared/components/spinner/spinner';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 
 @Component({
   selector: 'app-ListaExhortosEnviados',
-  imports: [Button, TableModule, IconField, InputIcon, DatePicker, SelectModule , Avatar, Breadcrumb,  
-    ToastModule,CardModule,PaginatorModule,FormsModule,CommonModule,InputTextModule,Spinner],
+  imports: [Button, TableModule, IconField, InputIcon, DatePicker, SelectModule, Avatar, Breadcrumb,
+    ToastModule, CardModule, PaginatorModule, FormsModule, CommonModule, InputTextModule, Spinner, Breadcrub],
   templateUrl: './lista-exhorto-Enviado.html',
   styleUrl: './lista-exhorto-Enviado.css',
   providers: [MessageService]

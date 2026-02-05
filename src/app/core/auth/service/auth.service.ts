@@ -168,6 +168,7 @@ export class AuthService {
     const url = `${this.constService.ruta}/api/Permisos/AreaSistemaUsuario?idSistema=${idSistema}&idGeneral=${idGeneral}`;
     return this.http.post(url, null, { context: checkToken() });
   }
+  
   GetModulosUsuario(idAreaSistemaUsuario: string, IdPerfilUsuario: string): Observable<any> {
     const url = `${this.constService.ruta}/api/Permisos/ObtenerModulosPantasUsuario?IdAreaSistemaUsuario=${idAreaSistemaUsuario}&IdPerfilUsuario=${IdPerfilUsuario}`;
     return this.http.post(url, null, { context: checkToken() });

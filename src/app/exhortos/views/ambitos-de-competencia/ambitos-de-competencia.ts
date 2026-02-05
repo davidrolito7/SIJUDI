@@ -1,8 +1,8 @@
-import { Component, CreateEffectOptions, effect, inject, Output, signal, Signal, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, CreateEffectOptions, effect, inject, Output, signal, Signal, EventEmitter, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CatalogoMateria, CatalogoMunicipioDestino, CatalogoRegion, ConfigMateriaJuzgado } from '../../interfaces/exhortos.model';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { SelectModule } from 'primeng/select';
 import { DialogModule } from 'primeng/dialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -12,10 +12,11 @@ import { AuthService } from '../../../core/auth/service/auth.service';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
 import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { DrawerModule } from 'primeng/drawer';
 import { CatJuzgado } from '../../../catalogos/interface/catalogo.model';
-import {InputIconModule} from 'primeng/inputicon'
+import { InputIconModule } from 'primeng/inputicon'
+import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-ambitos-de-competencia',
@@ -29,11 +30,12 @@ import {InputIconModule} from 'primeng/inputicon'
     TableModule,
     ButtonModule,
     DrawerModule,
-    InputIconModule
+    InputIconModule,
+    ConfirmDialog
 
   ], templateUrl: './ambitos-de-competencia.html',
   styleUrl: './ambitos-de-competencia.css',
-  providers: [MessageService]
+  providers: [MessageService, ConfirmationService]
 
 })
 export class AmbitosDeCompetencia {
@@ -41,14 +43,15 @@ export class AmbitosDeCompetencia {
     private messageService: MessageService,
     private ExhortosService: ExhortosService,
     public authService: AuthService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private confirmationService: ConfirmationService
   ) {
     //Detecta si el perfil seleccionado ha cambiado y actualiza las secciones
     this.perfilSeleccionado = signal(this.perfilSeleccionadoService.perfil_Seleccionado());
     effect(() => {
       this.perfilSeleccionado = signal(this.perfilSeleccionadoService.perfil_Seleccionado());
       this.GetSeccionesUsuario();
-    }, { allowSignalWrites: true } as CreateEffectOptions);
+    });
   }
 
   listaMateria: CatalogoMateria[] = [];
@@ -92,6 +95,7 @@ export class AmbitosDeCompetencia {
   // mostrarDialogo: boolean = false; // Controla la visibilidad del diálogo
   @Output() visibleChange: EventEmitter<boolean> = new EventEmitter<boolean>(); // Emite cambios al padre
   tienePermisoAgregarJuzgadoMateria = false;
+  @ViewChild('dt1') dt1?: Table;
 
   ngOnInit() {
     this.getConfigMuncipioJuzgado();
@@ -196,29 +200,64 @@ export class AmbitosDeCompetencia {
     this.visible = true;
   }
 
-  descargarJSON(): void {
-    let jsonData: string | null = null;
+  exportarCSV(dt?: Table): void {
+    // Si hay filtros activos, PrimeNG llena filteredValue con los registros visibles
+    const tieneFiltrosActivos = this.tieneFiltrosActivos(dt);
+    const data: any[] = (tieneFiltrosActivos && dt?.filteredValue?.length)
+      ? dt.filteredValue
+      : (this.listaConfiJuzgado ?? []);
 
-    // Si no hay filtro, usa la lista completa ya cargada
-    if (this.listaMatJuz.length === 0) {
-      if (!this.listaConfiJuzgado || this.listaConfiJuzgado.length === 0) {
-        alert('No hay datos disponibles para descargar.');
-        return;
-      }
-      jsonData = JSON.stringify(this.listaConfiJuzgado, null, 2);
-    } else {
-      jsonData = JSON.stringify(this.listaMatJuz, null, 2);
+    if (!data.length) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Sin datos',
+        detail: 'No hay datos para exportar.',
+        life: 3000
+      });
+      return;
     }
 
-    const blob = new Blob([jsonData], { type: 'application/json' });
+    // Columnas que ves en la tabla
+    const headers = ['Región', 'Municipio', 'Materia', 'Juzgado'];
+
+    const lines = data.map(row => ([
+      row.region ?? '',
+      row.municipio ?? '',
+      row.materia ?? '',
+      row.juzgado ?? ''
+    ]).map(this.csvEscape).join(','));
+
+    // BOM para que Excel respete acentos/UTF-8
+    const csv = '\uFEFF' + headers.map(this.csvEscape).join(',') + '\r\n' + lines.join('\r\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
+
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'datos_juzgados.json';
+    a.download = 'ambitos_competencia.csv';
     document.body.appendChild(a);
     a.click();
+
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
+  }
+
+  private tieneFiltrosActivos(dt?: Table): boolean {
+    const filters = dt?.filters;
+    if (!filters) return false;
+
+    return Object.values(filters).some((f: any) => {
+      if (Array.isArray(f)) return f.some(m => m?.value !== null && m?.value !== undefined && String(m.value).trim() !== '');
+      return f?.value !== null && f?.value !== undefined && String(f.value).trim() !== '';
+    });
+  }
+
+  private csvEscape(value: any): string {
+    const s = String(value ?? '');
+    // Escapa comillas y envuelve en comillas si hay separadores/saltos
+    const escaped = s.replace(/"/g, '""');
+    return /[",\r\n]/.test(escaped) ? `"${escaped}"` : escaped;
   }
 
   GetSeccionesUsuario(): Promise<void> {
@@ -255,6 +294,12 @@ export class AmbitosDeCompetencia {
     });
   }
 
+  onGuardarNuevaAsignacion(form: NgForm) {
+    this.confirmationService.confirm({
+      key: 'confirmAgregarConfig',
+      accept: () => this.AgregarJuzgadoConf(form),
+    });
+  }
   onSubmit(form: NgForm) {
     console.log('SUBMIT value:', form.value, 'valid=', form.valid);
 
@@ -275,8 +320,7 @@ export class AmbitosDeCompetencia {
       return;
     }
 
-    // ✅ DIRECTO: guardar sin confirmación
-    this.AgregarJuzgadoConf(form);
+    this.onGuardarNuevaAsignacion(form);
   }
 
   AgregarJuzgadoConf(form?: NgForm) {
@@ -417,4 +461,16 @@ export class AmbitosDeCompetencia {
       }
     });
   }
+  get totalRegistros(): number {
+    const dt = this.dt1;
+
+    if (this.tieneFiltrosActivos(dt) && dt?.filteredValue) {
+      return dt.filteredValue.length;
+    }
+
+    // si no hay filtros, usa el total de la lista completa
+    return (this.listaConfiJuzgado?.length ?? 0);
+  }
+
+
 }

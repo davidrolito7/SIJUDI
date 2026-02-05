@@ -20,10 +20,11 @@ import { downloadBase64,base64ToFile } from '../../../shared/functions/utils';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import generateExEnviadosPDF from '../../reportes/rptExhortoEnviado';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-DetallesExhortoEnviado',
-  imports: [Breadcrumb, Avatar, Spinner, ToastModule,  CommonModule, ButtonModule, TableModule, ConfirmDialog,DialogModule,PdfDialog],
+  imports: [Breadcrumb, Avatar, Spinner, ToastModule, CommonModule, ButtonModule, TableModule, ConfirmDialog, DialogModule, PdfDialog, Breadcrub],
   templateUrl: './detalles-exhorto-enviado.html',
   styleUrl: './detalles-exhorto-enviado.css',
   providers: [MessageService,ConfirmationService]

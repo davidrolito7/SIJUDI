@@ -3,7 +3,7 @@ import { Observable,  } from 'rxjs';
 import { HttpClient} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {GenericResponse} from '../../shared/interface/shared.interface';
-import {CatJuzgado} from '../interface/catalogo.model';
+import {AgregarJuzgado, CatJuzgado} from '../interface/catalogo.model';
 import {checkToken} from '../../core/auth/interceptor/token.interceptor'
 
 @Injectable({
@@ -17,4 +17,7 @@ export class CatalogoService {
     getCatalogoJuzgado(): Observable<GenericResponse<CatJuzgado[]>>{
         return this.http.get<GenericResponse<CatJuzgado[]>>(this.Juz,{context:checkToken()});
     }
+      postAgregarJzdo(juzgado: string): Observable<GenericResponse<AgregarJuzgado>>{
+    return this.http.post<GenericResponse<AgregarJuzgado>>(this.Juz+"?Nombre="+juzgado,null,{context: checkToken()})
+  }
 }

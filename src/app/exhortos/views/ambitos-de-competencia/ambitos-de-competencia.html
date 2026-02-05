@@ -20,7 +20,7 @@
 
         <div class="flex items-start flex-col md:flex-row justify-between">
             <div>
-                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 ">
                     Búsqueda de juzgados
                 </label>
                 <label class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
@@ -44,33 +44,35 @@
 </div>
 
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
-    <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">
-                Resultado
-            </div>
 
-            <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-briefcase text-base! leading-normal!"></i>
-                    <span>{{ listaConfiJuzgado.length }} Registros</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="md:ml-auto flex gap-4  ">
-            <p-button [outlined]="true" (click)="descargarJSON()" class="whitespace-nowrap ">
-                <i pButtonIcon class="pi pi-file-excel color"></i>
-                <span pButtonLabel>Exportar</span>
-            </p-button>
-
-        </div>
-    </div>
-
-    <div class="card pt-4">
-        <p-table #dt1 [value]="listaConfiJuzgado" dataKey="idConfiguracion" [rows]="10"
+        <p-table #dt1  [value]="listaConfiJuzgado" dataKey="idConfiguracion" [rows]="10"
             [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="['region','municipio','materia','juzgado']">
+            <ng-template #caption>
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div>
+                        <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-1">
+                            Resultado
+                        </div>
+
+                        <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                            <div class="flex items-center gap-2">
+                                <i class="pi pi-briefcase text-base! leading-normal!"></i>
+                                <span>{{ totalRegistros }} Registros</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:ml-auto flex gap-4  ">
+                        <p-button [outlined]="true" (click)="exportarCSV(dt1)" class="whitespace-nowrap ">
+                            <i pButtonIcon class="pi pi-file-excel color"></i>
+                            <span pButtonLabel>Exportar</span>
+                        </p-button>
+
+                    </div>
+                </div>
+
+            </ng-template>
 
             <ng-template #header>
                 <tr>
@@ -90,7 +92,15 @@
                     <th style="min-width:10rem">
                         <div class="flex items-center justify-between">
                             Materia
-                            <p-columnFilter type="text" field="materia" display="menu" />
+                            <p-columnFilter field="materia" display="menu" [showMatchModes]="false"
+                                [showOperator]="false" [showAddButton]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-select [ngModel]="value" [options]="listaMateria" optionLabel="nombre"
+                                        optionValue="nombre" placeholder="Selecciona una materia" [showClear]="true"
+                                        (onChange)="filter($event.value)">
+                                    </p-select>
+                                </ng-template>
+                            </p-columnFilter>
                         </div>
                     </th>
                     <th style="min-width:15rem">
@@ -130,7 +140,6 @@
             </ng-template>
         </p-table>
 
-    </div>
 </div>
 
 
@@ -279,78 +288,47 @@
 </section> -->
 
 <p-drawer header="Relacionar" [(visible)]="visibleDrawer" position="right" styleClass="!w-full sm:!w-[30rem] ">
-       <form class="flex flex-col" #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
+    <form class="flex flex-col" #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
         <div class="grid grid-cols-6 gap-4 w-full items-end">
             <!-- Región -->
             <div class="col-span-6">
                 <label class="block mb-2 text-sm font-medium">Región</label>
-                <p-select id="region" name="region" class="w-full"
-                    [options]="listaRegion"
-                    [(ngModel)]="selectRegion"
-                    optionLabel="descripcion"
-                    appendTo="body"
-                    [filter]="true"
-                    filterPlaceholder="Buscar región..."
-                    inputId="region-dropdown"
-                    (onChange)="onRegionChange($event)"
-                    required
-                    fluid>
+                <p-select id="region" name="region" class="w-full" [options]="listaRegion" [(ngModel)]="selectRegion"
+                    optionLabel="descripcion" appendTo="body" [filter]="true" filterPlaceholder="Buscar región..."
+                    inputId="region-dropdown" (onChange)="onRegionChange($event)" required fluid>
                 </p-select>
             </div>
-    
+
             <!-- Municipio -->
             <div class="col-span-6">
                 <label class="block mb-2 text-sm font-medium">Municipio</label>
-                <p-select id="municipio" name="municipioRegion" class="w-full"
-                    [options]="listaMunicipiosRegion"
-                    [(ngModel)]="selectedMunicipioRegion"
-                    optionLabel="descripcion"
-                    [editable]="true"
-                    appendTo="body"
-                    [filter]="true"
-                    filterPlaceholder="Buscar municipio..."
-                    inputId="municipio-dropdown"
-                    (onChange)="onMunicipioChange($event)"
-                    required
-                    fluid>
+                <p-select id="municipio" name="municipioRegion" class="w-full" [options]="listaMunicipiosRegion"
+                    [(ngModel)]="selectedMunicipioRegion" optionLabel="descripcion" [editable]="true" appendTo="body"
+                    [filter]="true" filterPlaceholder="Buscar municipio..." inputId="municipio-dropdown"
+                    (onChange)="onMunicipioChange($event)" required fluid>
                 </p-select>
             </div>
-    
+
             <!-- Juzgado -->
             <div class="col-span-6">
                 <label class="block mb-2 text-sm font-medium">Juzgado</label>
-                <p-select id="juzgado" name="juzgadoRegion" class="w-full"
-                    [options]="listaJuzgado"
-                    [(ngModel)]="selectedJuzgado"
-                    optionLabel="descripcion"
-                    [editable]="true"
-                    appendTo="body"
-                    [filter]="true"
-                    filterPlaceholder="Buscar juzgado..."
-                    inputId="juzgado-dropdown"
-                    (onChange)="onJuzgadoChange($event)"
-                    required
-                    fluid>
+                <p-select id="juzgado" name="juzgadoRegion" class="w-full" [options]="listaJuzgado"
+                    [(ngModel)]="selectedJuzgado" optionLabel="descripcion" [editable]="true" appendTo="body"
+                    [filter]="true" filterPlaceholder="Buscar juzgado..." inputId="juzgado-dropdown"
+                    (onChange)="onJuzgadoChange($event)" required fluid>
                 </p-select>
             </div>
-    
+
             <!-- Tipo de Materia -->
             <div class="col-span-6">
                 <label class="block mb-2 text-sm font-medium">Tipo de Materia</label>
-                <p-select id="materia" name="materiaRegion" class="w-full"
-                    [options]="listaMateria"
-                    [(ngModel)]="selectMateria"
-                    optionLabel="nombre"
-                    appendTo="body"
-                    [filter]="true"
-                    filterPlaceholder="Buscar materia..."
-                    inputId="materia-dropdown"
-                    required
-                    fluid>
+                <p-select id="materia" name="materiaRegion" class="w-full" [options]="listaMateria"
+                    [(ngModel)]="selectMateria" optionLabel="nombre" appendTo="body" [filter]="true"
+                    filterPlaceholder="Buscar materia..." inputId="materia-dropdown" required fluid>
                 </p-select>
             </div>
         </div>
-    
+
         <div class="mt-4 flex justify-center gap-2">
             <button pButton type="submit">
                 <i pButtonIcon class="pi pi-save"></i>
@@ -360,7 +338,7 @@
     </form>
 
 </p-drawer>
-<!-- Modal -->
-<!-- <app-agregar-juzgado
-  [(visible)]="visible">
-</app-agregar-juzgado> -->
+
+<app-confirm-dialog key="confirmAgregarConfig" title="Confirmación" message="¿Desea agregar esta configuración?"
+    icon="pi pi-check" circleClass="bg-primary" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
