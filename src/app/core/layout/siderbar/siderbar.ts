@@ -5,7 +5,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DividerModule } from 'primeng/divider';
 import { AvatarModule } from 'primeng/avatar';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { iconForPantalla, svgSrcForModulo } from './icon/menu-icons.map';
+import { svgSrcForPantalla, svgSrcForModulo } from './icon/menu-icons.map';
 
 import { UserMenuStore } from './user-menu.store';
 import { ModulosUsuario } from '../../auth/interface/login.interfaces';
@@ -38,7 +38,7 @@ export class Siderbar {
   private readonly authService = inject(AuthService);
   private readonly menuStore = inject(UserMenuStore);
 
-  readonly iconForPantalla = iconForPantalla;
+  readonly svgSrcForPantalla = svgSrcForPantalla;
   readonly svgSrcForModulo = svgSrcForModulo;
 
   visibleDrawer: boolean = false;
@@ -107,5 +107,22 @@ export class Siderbar {
   closeMenu(): void {
     this.showMenu.set(false);
     this.selectedModuloId.set(null);
+  }
+
+  
+  get abogadoNombre(): string {
+    return this.tokenService.getAbogadoNombre() || 'Abogado';
+  }
+
+  get abogadoFotoUrl(): string {
+    return this.tokenService.getAbogadoFotoUrl();
+  }
+
+  get areaNombre(): string {
+    return this.tokenService.getAreaNombre();
+  }
+
+  get perfilNombre(): string {
+    return this.tokenService.getPerfilNombre();
   }
 }
