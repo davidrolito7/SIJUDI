@@ -1,6 +1,6 @@
-import { Component, inject, ViewChild, signal, Signal } from '@angular/core';
+import { Component, inject, ViewChild, signal, Signal, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { FileRemoveEvent, FileUpload, FileUploadEvent } from 'primeng/fileupload';
+import { FileRemoveEvent, FileSelectEvent, FileUpload, FileUploadEvent } from 'primeng/fileupload';
 import { FormControl, FormGroup, NgForm, Validators,FormsModule ,ReactiveFormsModule} from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Toast } from "primeng/toast";
@@ -12,21 +12,29 @@ import { AuthService } from '../../../core/auth/service/auth.service';
 import { archivoPromocionExhortoEnviado, ArchivoRecibidoPromocionConAcuse, CatalogoGenero, CatalogoTipoParte, ListadoCatalogoTipoDocumento, PromocionExhortoEnviado, ProvomenteExhortoEnviado } from '../../interfaces/exhortos.model';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
-import { downloadBase64, validaPdf } from '../../../shared/functions/utils';
+import { base64ToFile, downloadBase64, downloadFile, validaPdf } from '../../../shared/functions/utils';
 import ValidateForm from '../../../helpers/validateform';
 
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
-import { InputNumber } from "primeng/inputnumber";
+import { InputTextModule } from 'primeng/inputtext'
+import { InputNumberModule } from 'primeng/inputnumber';
 import {CommonModule} from '@angular/common';
 import { ProgressBar } from "primeng/progressbar";
 import { Message } from "primeng/message";
+import { TextareaModule} from 'primeng/textarea';
+import { TableModule } from "primeng/table";
+import { Dialog } from "primeng/dialog";
+import { InputMaskModule } from 'primeng/inputmask';
+import { CheckboxModule } from 'primeng/checkbox';
+import { SafeResourceUrl,DomSanitizer } from '@angular/platform-browser';
+import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 
 
 
 
 @Component({
   selector: 'app-PromocionExhortoEnviadoComponent',
-  imports: [Toast, ConfirmDialog, ButtonModule, InputNumber, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, ProgressBar, Message],
+  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, ProgressBar, Message, TextareaModule, TableModule, Dialog, InputMaskModule, PdfDialog],
   templateUrl: './promocion-exhorto-enviado.html',
   styleUrl: './promocion-exhorto-enviado.css',
   providers:[MessageService,ConfirmationService]
@@ -40,6 +48,8 @@ export class PromocionExhortoEnviadoComponent {
     private tokenService : TokenService,        
     //public modalService: ModalService,
     public authService: AuthService,
+    private cd: ChangeDetectorRef,
+    private sanitizer: DomSanitizer,
   ) { 
 /*
     this.router.events.pipe(
@@ -64,9 +74,17 @@ export class PromocionExhortoEnviadoComponent {
   provomenteExhortoEnviado : ProvomenteExhortoEnviado[] =[];
   archivoPromocionExhortoEnviado : archivoPromocionExhortoEnviado[]=[];
   formSubmittedPromocion: boolean = false;
-  formSubmitted2: boolean = false;
+  formSubmittedPromoventes: boolean = false;
   formSubmitted3: boolean = false;
   promocionGuardada: boolean = false;
+  promoDialog: boolean=false;
+  firmaDialog: boolean=false;
+  dialogData: any = {}; // Para almacenar la información del archivo del diálogo
+  nombre = '';
+  documentoUrl: SafeResourceUrl | null = null;
+  mostrarDocumento = signal<boolean>(false);
+   idEstatus: number = 0;
+  
   //idPromocionEnviada: number = 0;
   errorMessage: string = ''; //Eloy
     file_pfx : any | null = null; //Eloy
@@ -82,15 +100,7 @@ export class PromocionExhortoEnviadoComponent {
     archivos_firmados : any = ""; //Eloy
     uploadedFiles: any[] = [];
 
-    //boolean modal de confirmacion
-    /*confirmacionGuardarPromocionExhorto:boolean = false
-    confirmacionAgregarPromovente: boolean = false
-    confirmacionEliminar: boolean = false
-    confirmacionEnvioPromociones: boolean = false
-    mostrarConfirmacionEnvioGenerales: boolean = false
-    confirmacionAplicarFirmas:boolean=false;
-    */
-
+ 
     fechaHora: string | undefined 
     fechaRecepcion: string | undefined
     
@@ -102,6 +112,10 @@ export class PromocionExhortoEnviadoComponent {
     file_pfx : new FormControl(''),
 
   });
+  formPromo= new FormGroup({
+    fojas: new FormControl(0),
+    observaciones: new FormControl('')
+  });
 
   formDocumentos = new FormGroup({
     firmado_checkbox  : new FormControl(''),
@@ -112,7 +126,7 @@ export class PromocionExhortoEnviadoComponent {
     Validators.email
   ]);
 
-  promotoresForm = new FormGroup({
+  promoventesForm = new FormGroup({
     nombre: new FormControl('', Validators.required),
     paterno: new FormControl('', Validators.required),
     materno: new FormControl(''),
@@ -124,7 +138,7 @@ export class PromocionExhortoEnviadoComponent {
   });
 
   doctosForm= new FormGroup({
-    tipoDocumento: new FormControl(0,Validators.required),
+    tipoDocumento: new FormControl(null as ListadoCatalogoTipoDocumento | null,Validators.required),
   })
 
   //Asignar el id de la pantalla, para poder obtener las secciones(permisos) de esta pantalla
@@ -138,18 +152,20 @@ export class PromocionExhortoEnviadoComponent {
   idArchivo:number | null = null;
 
   //Se declaran las variables para la visualizacion de las secciones
-  tienePermisoGuardar = false;
-  tienePermisoEnviarGenerales = false;
-  tienePermisoEnviarArchvios = false;
-  tienePermisoSeleccionarArchivo = false;
-  tienePermisoCargarArchivo = false;
-  tienePermisoFirmarArchivo = false;
-  tienePermisoEliminarArchivo = false;
+  tienePermisoGuardar = signal<boolean>(false);
+  tienePermisoEnviarGenerales = signal<boolean>(false);
+  tienePermisoEnviarArchvios = signal<boolean>(false);
+  tienePermisoSeleccionarArchivo = signal<boolean>(false);
+  tienePermisoCargarArchivo = signal<boolean>(false);
+  tienePermisoFirmarArchivo = signal<boolean>(false);
+  tienePermisoEliminarArchivo = signal<boolean>(false);
+
+  listaDocumentos=signal<archivoPromocionExhortoEnviado[]>([]);
   
   loading = false;
   seleccionadosParaFirma= signal(false);
   showPassword: boolean = false;
-formatEmail() {
+/*formatEmail() {
     let value = this.emailControl.value || '';
 
     // Auto-completar dominio común si no tiene @
@@ -162,22 +178,22 @@ formatEmail() {
     if (value !== value.toLowerCase()) {
       this.emailControl.setValue(value.toLowerCase());
     }
-  }
+  }*/
 
   get paterno() {
-    return this.promotoresForm.get('paterno');
+    return this.promoventesForm.get('paterno');
   }
 
   get materno() {
-    return this.promotoresForm.get('materno');
+    return this.promoventesForm.get('materno');
   }
 
   get genero() {
-    return this.promotoresForm.get('genero');
+    return this.promoventesForm.get('genero');
   }
 
-  listaDocumentos : archivoPromocionExhortoEnviado[]=[];
-  documento!:archivoPromocionExhortoEnviado;
+  //listaDocumentos : archivoPromocionExhortoEnviado[]=[];
+  //documento!:archivoPromocionExhortoEnviado;
 
   ngOnInit() {
     const state = window.history.state as { idExhortoEnviado: number , idPromocionEnviado: number};
@@ -199,11 +215,11 @@ formatEmail() {
 
     } else {
       // Si no hay state, redirigir a la lista de amparos
-      this.router.navigate(['/inicio/exhortos-enviados']);
+      this.router.navigate(['/exhortos/detalles-exhorto-enviado']);
     }
 
     // Obtén el control 'moral' y verifica que no sea null
-    const moralControl = this.promotoresForm.get('moral');
+    const moralControl = this.promoventesForm.get('moral');
     if (moralControl) {
       moralControl.valueChanges.subscribe((isMoral) => {
         if (isMoral) {
@@ -211,21 +227,21 @@ formatEmail() {
           this.paterno?.disable();
           this.materno?.disable();
           this.genero?.disable();
-          this.promotoresForm.get('paterno')?.clearValidators();
-          this.promotoresForm.get('genero')?.clearValidators();
+          this.promoventesForm.get('paterno')?.clearValidators();
+          this.promoventesForm.get('genero')?.clearValidators();
         } else {
           // Habilita campos cuando no es moral
           this.paterno?.enable();
           this.materno?.enable();
           this.genero?.enable();
 
-          this.promotoresForm.get('paterno')?.setValidators(Validators.required);
-          this.promotoresForm.get('genero')?.setValidators(Validators.required);
+          this.promoventesForm.get('paterno')?.setValidators(Validators.required);
+          this.promoventesForm.get('genero')?.setValidators(Validators.required);
         }
 
         // Actualiza el estado de validación de los campos afectados
-        this.promotoresForm.get('paterno')?.updateValueAndValidity();
-        this.promotoresForm.get('genero')?.updateValueAndValidity();
+        this.promoventesForm.get('paterno')?.updateValueAndValidity();
+        this.promoventesForm.get('genero')?.updateValueAndValidity();
       });
     }
     
@@ -242,9 +258,9 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
   nombreDocumento: string = '';
   fojas: number | null = null;
 
-  listaGenero: CatalogoGenero[]=[];
+  listaGenero= signal<CatalogoGenero[]>([]);
   generoSelect!: CatalogoGenero;
-  listaTipoParte:CatalogoTipoParte[]=[];
+  listaTipoParte= signal<CatalogoTipoParte[]>([]);
   tipoParteSelect!:CatalogoTipoParte;
 
   selectedTipoDocumento!: ListadoCatalogoTipoDocumento;
@@ -259,9 +275,9 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
     this.hayCambiosSinGuardar = true;
   }
 
-  marcarCambiosPromovente(){
+  /*marcarCambiosPromovente(){
     this.promoventeSinGuardar = true;
-  }
+  }*/
 
   guardarPromocion(form: NgForm) {
     if(this.promoventeSinGuardar){
@@ -436,67 +452,56 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
     });
   }
   onAgregarPromovente(){
-    const telefono =(this.promotoresForm.value.telefono as string).replace(/[\(\)#\$-]/g, '');
-    if (this.promotoresForm.invalid) {
-      this.formSubmitted2 = true;
+    if (!this.promoventesForm.valid) {
+          ValidateForm.validateAllFormFields(this.promoventesForm);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
+          return;
+        }
+    const telefono =(this.promoventesForm.value.telefono as string).replace(/[\(\)#\$-]/g, '');
+    if (this.promoventesForm.invalid) {
+      this.formSubmittedPromoventes = true;
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Rellena el formulario del promovente' });
       //console.log('Promotor incorrecto', this.formSubmitted2);
       return;
     } else {
-      this.formSubmitted2 = false;
+      this.formSubmittedPromoventes = false;
     }
     var genero={} as CatalogoGenero;
-    genero=this.promotoresForm.value.genero as any;
+    genero=this.promoventesForm.value.genero as any;
 
     var tipoParte={} as CatalogoTipoParte;
-    tipoParte=this.promotoresForm.value.tipoParte as any;
+    tipoParte=this.promoventesForm.value.tipoParte as any;
 
     const promovente: ProvomenteExhortoEnviado = {
-      nombre:this.promotoresForm.value.nombre as string,
-      apellidoPaterno:this.promotoresForm.value.paterno as string,
-      apellidoMaterno:this.promotoresForm.value.materno as string,
+      nombre:this.promoventesForm.value.nombre as string,
+      apellidoPaterno:this.promoventesForm.value.paterno as string,
+      apellidoMaterno:this.promoventesForm.value.materno as string,
       genero: (genero == undefined ? '' : genero.clave as string),
-      esPersonaMoral: !!this.promotoresForm.value.moral,
+      esPersonaMoral: !!this.promoventesForm.value.moral,
       tipoParteNombre:tipoParte.descripcion,
       idTipoParte:tipoParte.idTipoParte,
       idPromoventeExhortoEnviado:0,
       idPromocionEnviado:0,
-      correoElectronico:this.promotoresForm.value.correo as string,
+      correoElectronico:this.promoventesForm.value.correo as string,
      // telefono:this.promotoresForm.value.telefono as string,
      telefono : telefono,
       activo:true
     };
 
     this.provomenteExhortoEnviado.push(promovente);
-    this.promotoresForm.reset();
+    this.promoventesForm.reset();
     this.promoventeSinGuardar = false
 
   }
 
-  limpiarPromovente(){
-    this.promoventeSinGuardar = false
-
-    this.promotoresForm = new FormGroup({
-    nombre: new FormControl('', Validators.required),
-    paterno: new FormControl('', Validators.required),
-    materno: new FormControl(''),
-    genero: new FormControl(''),
-    moral: new FormControl(false),
-    tipoParte: new FormControl('',Validators.required),
-    telefono: new FormControl(''),
-    correo: new FormControl('')
-  });
-
-  }
-
-
+ 
   catalogoGenero(){
     this.ExhortosService.getCatalogoGenero().subscribe({
       next: (response:any) => {
         if(response.success)
         {
           //console.log('Datos recibidos del catálogo:', response);
-          this.listaGenero = response.data;
+          this.listaGenero.set(response.data);
         }
         else
         {
@@ -520,7 +525,7 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
         if(response.success)
         {
           //console.log('Datos recibidos del catálogo:', response);
-          this.listaTipoParte = response.data;
+          this.listaTipoParte.set(response.data);
         }
         else
         {
@@ -539,7 +544,7 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
     });
   }
 
-  onSelect(event: FileUploadEvent) {
+  /*onSelect(event: FileUploadEvent) {
     const file = event.files[0];
 
     if (event.files.length > 0) {
@@ -558,37 +563,49 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
       return;
     }
     
-  }
+  }*/
 
-  onUpload(event: FileUploadEvent) {
+  onUpload(file: File) {
     if(this.doctosForm.valid){
 
-        for (let file of event.files) {
         this.uploadedFiles.push(file);
         this.nombreDocumento = file.name;  // Establece el nombre del documento
         this.guardarDocumento(file);  // Llama a guardarDocumento para cada archivo subido
-        this.progressValue = 0; // Restablece el progreso al final de la carga
+        //this.progressValue = 0; // Restablece el progreso al final de la carga
       // this.messageService.add({ severity: 'info', summary: 'Archivo cargado', detail: '' });
-      }
+      
     }
     else
     {
       ValidateForm.validateAllFormFields(this.doctosForm);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Tipo documento requerido' });
-      return;
     }
-    this.doctosForm.reset(); // Restablece el formulario después de la carga
-    this.nombreDocumento = ''; // Limpia el nombre del documento
-    this.fileUpload.clear(); // Limpia el archivo seleccionado
-
+    
   }
 
   guardarDocumento(file: File){
+    const tipoDocId = Number(this.doctosForm.value.tipoDocumento?.idTipoDocumento);
 
+    if (!tipoDocId || tipoDocId === 0) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Seleccione un tipo de documento' });
+      return;
+    }
+
+    const tipoSeleccionado = this.listadoTipoDocumento.find(doc => doc.idTipoDocumento === tipoDocId);
+    if (!tipoSeleccionado) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Tipo de documento inválido' });
+      return;
+    }
+
+    //this.selectedTipoDocumento = tipoSeleccionado;
+    if (!this.idPromocionEnviado) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se existe promoción' });
+      return;
+    }
 
     const formData = new FormData();
     formData.append('nombreArchivo',this.nombreDocumento);
-    formData.append('tipoDocumento',this.selectedTipoDocumento.idTipoDocumento.toString());
+    formData.append('tipoDocumento',tipoSeleccionado.idTipoDocumento.toString());
     formData.append('idExhortoEnviado', this.idExhortoEnviado.toString());
     formData.append('idPromocionEnviada', this.idPromocionEnviado.toString());
     formData.append('archivo', file, file.name);
@@ -616,9 +633,9 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
 
   }
 
-  onRemove(event: FileRemoveEvent) {
+  /*onRemove(event: FileRemoveEvent) {
     this.nombreDocumento = '';
-  }
+  }*/
 
 
 
@@ -642,7 +659,7 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
         this.observaciones=responsePromocion.data.observaciones;
         this.fojas = responsePromocion.data.fojas;
         this.provomenteExhortoEnviado=responsePromocion.data.promoventes;
-        this.listaDocumentos = responsePromocion.data.archivos;
+        this.listaDocumentos.set(responsePromocion.data.archivos);
         this.fechaHora = responsePromocion.data.fechaHora
         this.fechaRecepcion = responsePromocion.data.fechaRecepcion
         //console.log('Respuesta de promocion'+responsePromocion)
@@ -727,7 +744,7 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
 
     //ponemos un señal para saber cuando se haya seleccionado al menos una fila para firmar
     //Verifica si al menos un archivo está seleccionado
-    const algunoSeleccionado = this.listaDocumentos.some(a => a.selecParaFirma);
+    const algunoSeleccionado = this.listaDocumentos().some(a => a.selecParaFirma);
     this.seleccionadosParaFirma.set(algunoSeleccionado);
   }
 
@@ -816,7 +833,7 @@ async iniciarFirmaDocumentos(){
       if(esvalido){
         var userData = this.tokenService.getUserFromToken();
         const FormValues = this.formDocumentos.value;
-        const seleccionado = this.listaDocumentos.filter(item => item.selecParaFirma); //Obtenemos los checkbox seleccinados para firmar
+        const seleccionado = this.listaDocumentos().filter(item => item.selecParaFirma); //Obtenemos los checkbox seleccinados para firmar
         if(seleccionado.length >0 ){
           this.contador_firmas = seleccionado.length;
             for(let i = 0; i<seleccionado.length; i++){
@@ -887,7 +904,7 @@ resetForm() {
   this.nombreDocumento = '';
   //this.catalogoSelect = null;
 }
-
+/*
 showDialog(idArchivo: number): void {
     this.ExhortosService.getFile(idArchivo,4).subscribe({
       next: (response:any) => {
@@ -912,30 +929,39 @@ showDialog(idArchivo: number): void {
       }
     });
   }
-
+*/
   /*abrirConfirmacionEliminar(idArchivo: number){
     this.idArchivo = idArchivo;
 
   }*/
-  EliminarArchivo(idArchivo: number){
-    if(idArchivo === null)
+ onEliminarIndex(index: number): void {
+    this.listaDocumentos().splice(index, 1);
+  } 
+  eliminarDocumento(documento: archivoPromocionExhortoEnviado, index:number){
+    if(documento === null)
       return;
 
     this.confirmationService.confirm({
       key: 'eliminarArchivo',
-      accept: () => this.onEliminarArchivo(idArchivo),
+      accept: () => this.onEliminarDocumento(documento,index),
       reject: () => { }
     });
   }
 
-  onEliminarArchivo( idArchivo: number) {
-    
+  onEliminarDocumento(documento: archivoPromocionExhortoEnviado,index:number) {
+    //validamos si idArchivo no trae nada, quiere decir que son archivos nuevos que no se han guardado y se 
+    //eliminan solo en el array, sin llamar la api
+    if(documento.idArchivo == 0)
+    {
+      this.onEliminarIndex(index);
+    }
+    else{
         const tipo = 4; // Puedes cambiar este valor según sea necesario
-        this.ExhortosService.eliminarArchivo(idArchivo, tipo).subscribe({
+        this.ExhortosService.eliminarArchivo(documento.idArchivo, tipo).subscribe({
           next: (response) => {
             if(response.success){
               this.uploadedFiles = this.uploadedFiles.filter(archivo => {
-                (archivo.idArchivo !== idArchivo);
+                (archivo.idArchivo !== documento.idArchivo);
               });
               this.messageService.add({ severity: 'info', summary: 'Eliminado', detail: 'Documento eliminado exitosamente' });
               // Aquí podrías actualizar la lista de documentos si es necesario
@@ -952,7 +978,7 @@ showDialog(idArchivo: number): void {
             this.idArchivo=null;
           }
         }); 
-
+    }
       
   }
 
@@ -972,30 +998,32 @@ showDialog(idArchivo: number): void {
 
   GetSeccionesUsuario(): Promise<void>{
     return new Promise((resolve, reject) => {
-    const idAreaSistemaUsuario = localStorage.getItem('idAreaSistemaUsuario');
-    const perfilSeleccionado = localStorage.getItem('perfilSeleccionado');
+    const idAreaSistemaUsuario = this.authService.getAreaSistemaUsuario(); // Obtener perfil del servicio
+    const perfilSeleccionado = this.authService.getPerfilSeleccionado();
+      //const idAreaSistemaUsuario = localStorage.getItem('idAreaSistemaUsuario');
+    //const perfilSeleccionado = localStorage.getItem('perfilSeleccionado');
     this.authService.GetSeccionesUsuario(idAreaSistemaUsuario,this.idPantalla.toString(),perfilSeleccionado)
       .subscribe({
         next: (res) => {
           if (res.success) {
             this.secciones = res.data;
                 if(this.secciones === null || this.secciones === undefined){
-                    this.tienePermisoGuardar = false;
-                    this.tienePermisoEnviarGenerales = false;
-                    this.tienePermisoEnviarArchvios = false;
-                    this.tienePermisoSeleccionarArchivo = false;
-                    this.tienePermisoCargarArchivo = false;
-                    this.tienePermisoFirmarArchivo = false;
-                    this.tienePermisoEliminarArchivo = false;
+                    this.tienePermisoGuardar.set(false);
+                    this.tienePermisoEnviarGenerales.set(false);
+                    this.tienePermisoEnviarArchvios.set(false);
+                    this.tienePermisoSeleccionarArchivo.set(false);
+                    this.tienePermisoCargarArchivo.set(false);
+                    this.tienePermisoFirmarArchivo.set(false);
+                    this.tienePermisoEliminarArchivo.set(false);
                 }
                 else if(this.secciones.length > 0 ){
-                  this.tienePermisoGuardar = this.secciones.some(s => s.descripcion === 'Guardar');
-                  this.tienePermisoEnviarGenerales = this.secciones.some(s => s.descripcion === 'EnviarGenerales');
-                  this.tienePermisoEnviarArchvios = this.secciones.some(s => s.descripcion === 'EnviarArchivos');
-                  this.tienePermisoSeleccionarArchivo = this.secciones.some(s => s.descripcion === 'SeleccionarArchivo');
-                  this.tienePermisoCargarArchivo = this.secciones.some(s => s.descripcion === 'CargarArchivo');
-                  this.tienePermisoFirmarArchivo = this.secciones.some(s => s.descripcion === 'FirmarArchivo');
-                  this.tienePermisoEliminarArchivo = this.secciones.some(s => s.descripcion === 'EliminarArchivo');  
+                  this.tienePermisoGuardar.set(this.secciones.some(s => s.descripcion === 'Guardar'));
+                  this.tienePermisoEnviarGenerales.set(this.secciones.some(s => s.descripcion === 'EnviarGenerales'));
+                  this.tienePermisoEnviarArchvios.set(this.secciones.some(s => s.descripcion === 'EnviarArchivos'));
+                  this.tienePermisoSeleccionarArchivo.set(this.secciones.some(s => s.descripcion === 'SeleccionarArchivo'));
+                  this.tienePermisoCargarArchivo.set(this.secciones.some(s => s.descripcion === 'CargarArchivo'));
+                  this.tienePermisoFirmarArchivo.set(this.secciones.some(s => s.descripcion === 'FirmarArchivo'));
+                  this.tienePermisoEliminarArchivo.set(this.secciones.some(s => s.descripcion === 'EliminarArchivo'));  
                 }
           } else {
             this.messageService.add({ severity: 'error', summary: res.message, detail: res.errors });
@@ -1015,13 +1043,13 @@ showDialog(idArchivo: number): void {
           if(response.success)
           {
             // Encuentra el índice del documento que quieres eliminar
-            const index = this.listaDocumentos.findIndex(doc => doc.idArchivo === idArchivo);
+            const index = this.listaDocumentos().findIndex(doc => doc.idArchivo === idArchivo);
             if (index !== -1) {
-              const indexFirmas = this.listaDocumentos[index].firmantes.findIndex(f=>f.idFirmaTmp==idFirmaTmp);
+              const indexFirmas = this.listaDocumentos()[index].firmantes.findIndex(f=>f.idFirmaTmp==idFirmaTmp);
               if(indexFirmas !== -1)
               {
                 // Elimina el elemento del arreglo
-                this.listaDocumentos[index].firmantes.splice(indexFirmas, 1);
+                this.listaDocumentos()[index].firmantes.splice(indexFirmas, 1);
 
               }
             }
@@ -1043,7 +1071,14 @@ showDialog(idArchivo: number): void {
     this.idArchivo=idArchivo;
 
   }*/
-  AplicarFirmas(idArchivo:number){
+ aplicarFirmas(idArchivo:number) {
+    this.confirmationService.confirm({
+      key: 'aplicarFirmas',
+      accept: () => this.onAplicarFirmas(idArchivo),
+      reject: () => { }
+    });
+  }
+  onaplicarFirmas(idArchivo:number){
     if(idArchivo ===null)
       return;
 
@@ -1074,4 +1109,129 @@ showDialog(idArchivo: number): void {
   togglePasswordVisibility(){
     this.showPassword = !this.showPassword;
   }
+  openNewPromovente() {
+    this.formSubmittedPromoventes = false;
+    this.promoDialog = true;
+  }
+  hideDialogPromovente(){
+    this.promoDialog=false;
+    this.formSubmittedPromoventes= false;
+  }
+  hideDialogFirma(){
+    this.firmaDialog=false;
+
+  }
+  openNewFirma(){
+    this.firmaDialog = true;
+  }
+  onAnexosSelect(event: FileSelectEvent) {
+      // Agregar archivos seleccionados a la lista local de documentos con valores por defecto
+      if (!event || !event.files || event.files.length === 0) return;
+  
+      for (const file of event.files) {
+        if(!validaPdf(file))
+        {
+            this.messageService.add({ severity: 'warn', summary: 'error', detail: "El archivo no es un pdf"});
+            return;
+        }
+  
+        const nuevo: archivoPromocionExhortoEnviado = {
+          idArchivo: 0,
+          idPromocionEnviada: this.idPromocionEnviado ?? 0,
+          nombreArchivo: file.name,
+          hashSha1: '',
+          hashSha256: '',
+          idTipoDocumento: 0,
+          tipoDocumento: { idTipoDocumento: 0, nombre: '', activo: false },
+          tamaño: file.size ?? 0,
+          paginas: 0,
+          enviado: false,
+          idClasificacionArchivo: 0,
+          ruta: '',
+          firmado: false,
+          fechaFirmado: null as any,
+          activo: true,
+          selecParaFirma: false,
+          firmantes: [],
+          file:file
+        };
+  
+        // Añadir campo auxiliar `tam` que se usa en otras partes del componente
+        // @ts-ignore
+        nuevo.tam = file.size ?? 0;
+  
+        this.listaDocumentos().push(nuevo);
+      }
+    }
+    getFile(documento: archivoPromocionExhortoEnviado, tipoDocumento: number): void {
+        const FIVE_MB = 5 * 1024 * 1024; // menos a 5 megas se abren en modal... los mayores se descargan
+        if(documento.idArchivo ==0) // son archivos que no se han guardado
+        {
+          if(documento.tamaño<= FIVE_MB && documento.nombreArchivo.split('.')[1]==='pdf')
+            this.onVerDocumentoFile(documento.file); // se visualiza en modal
+          else
+          { 
+            downloadFile(documento.file); // se descarga
+          }
+             
+          
+        }
+        else{ // aqui ya son archivos guardados
+          this.isLoading=true;
+          this.cd.detectChanges();
+          this.ExhortosService.getFile(documento.idArchivo,tipoDocumento).subscribe({
+            next: (response:any) => {
+    
+            if (response.success) {
+              const fileData = response.data.documento;
+              //console.log(fileData);
+                if(documento.tamaño<= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
+                  this.onVerDocumentoBase64(fileData,documento.nombreArchivo, 'application/pdf'); // se visualiza en modal
+                else{
+                  const nombre= response.data.fileName;
+                  this.dialogData.fileName=nombre;
+                  const ext= nombre.split('.')[1];
+                  downloadBase64(fileData, nombre,ext );
+                }
+              }
+              else{
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: response.error });
+              }
+            },
+            error:(e)=>{
+              //console.error('Error al recibir el archivo', e);
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+              this.isLoading=false;
+              this.cd.detectChanges();
+            },
+            complete:()=>{
+              //console.log('FIN:');
+              this.isLoading=false;
+              this.cd.detectChanges();
+            }
+          
+        });
+      }
+    }
+    onVerDocumentoFile(file: File): void {
+        if (file instanceof File) {
+          const url = URL.createObjectURL(file);
+          this.nombre = file.name;
+          this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+          this.mostrarDocumento.set(true);
+        } else {
+          console.error('Documento inválido');
+        }
+      } 
+      onVerDocumentoBase64(fileBase64: string, nombre:string, mime:string): void {
+          const file = base64ToFile(fileBase64,nombre, mime);
+          if (file instanceof File) {
+            const url = URL.createObjectURL(file);
+            //this.nombre = file.name;
+            this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+            this.mostrarDocumento.set(true);
+          } else {
+            console.error('Documento inválido');
+          } 
+        }
 }

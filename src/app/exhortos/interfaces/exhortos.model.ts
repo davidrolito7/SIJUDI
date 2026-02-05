@@ -729,7 +729,8 @@ export interface archivoPromocionExhortoEnviado{
     fechaFirmado: string
     activo: boolean
     selecParaFirma: boolean
-    firmantes:Firmantes[]
+    firmantes:Firmantes[],
+    file:File
 }
 export interface videosExhortosEnviadosrespuesta
 {
