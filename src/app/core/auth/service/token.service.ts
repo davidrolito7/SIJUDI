@@ -208,11 +208,11 @@ export class TokenService {
     this.clearTwoFactorValidated();
     this.clearPerfilCompleted();
 
-    this.removeAppSelections();
+   // this.removeAppSelections();
 
     //  borrar usuario recordado también
-    localStorage.removeItem('recordarUsuario');
-    sessionStorage.removeItem('recordarUsuario');
+    // localStorage.removeItem('recordarUsuario');
+    // sessionStorage.removeItem('recordarUsuario');
 
     // limpia banderas 
     this.setValidacionCompletada(false);

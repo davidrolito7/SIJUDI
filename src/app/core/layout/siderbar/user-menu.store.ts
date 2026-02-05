@@ -51,13 +51,21 @@ export class UserMenuStore {
             map((mods) =>
                 mods.map((m) => ({
                     ...m,
-                    pantallas: (m.pantallas ?? []).slice().sort((a, b) => (a.orden) - (b.orden ?? 0)),
+                    pantallas: (m.pantallas ?? []).slice().sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0)),
                 })),
             ),
         );
     }
 
     private readStorage(key: string): string {
-        return this.isBrowser ? (localStorage.getItem(key) ?? '') : '';
+        if (!this.isBrowser) return '';
+
+        // recordarUsuario SIEMPRE lo guardas en localStorage
+        const recordar = localStorage.getItem('recordarUsuario') === 'true';
+
+        const primary = recordar ? localStorage : sessionStorage;
+        const fallback = recordar ? sessionStorage : localStorage;
+
+        return primary.getItem(key) ?? fallback.getItem(key) ?? '';
     }
 }

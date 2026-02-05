@@ -10,8 +10,8 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, finalize, map, of, switchMap, tap } from 'rxjs';
-import type { Observable } from 'rxjs';
+import { catchError, finalize, map, Observable, of, switchMap, tap } from 'rxjs';
+import { UserMenuStore } from '../../../layout/siderbar/user-menu.store';
 
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -56,6 +56,7 @@ export class Perfil {
   private readonly authService = inject(AuthService);
   private readonly messageService = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly menuStore = inject(UserMenuStore);
 
   readonly isLoading = signal(false);
 
@@ -120,7 +121,6 @@ export class Perfil {
     const store = this.recordar ? localStorage : sessionStorage;
     const other = this.recordar ? sessionStorage : localStorage;
 
-    // “recordarUsuario” siempre en local para sobrevivir reinicios del navegador
     localStorage.setItem('recordarUsuario', this.recordar ? 'true' : 'false');
 
     store.setItem('areaSeleccionada', String(this.areaSeleccionada()));
@@ -128,7 +128,6 @@ export class Perfil {
     store.setItem('perfilSeleccionadoDesc', this.perfilNombreSeleccionado());
     store.setItem('idAreaSistemaUsuario', String(this.idAreaSistemaUsuario()));
 
-    // Limpia la otra storage
     other.removeItem('areaSeleccionada');
     other.removeItem('perfilSeleccionado');
     other.removeItem('perfilSeleccionadoDesc');
@@ -141,7 +140,16 @@ export class Perfil {
     });
 
     this.tokenService.setPerfilCompleted(true);
-    this.router.navigate(['/tramites-juicio-oral'], { replaceUrl: true });
+
+    // Fuerza recarga de módulos/pantallas con el perfil nuevo
+    this.menuStore.refresh()
+      .pipe(
+        catchError(() => of([])),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => {
+        this.router.navigate(['/tramites-juicio-oral'], { replaceUrl: true });
+      });
   }
 
   // --------------------
@@ -293,5 +301,11 @@ export class Perfil {
     if (!raw) return 0;
     const n = Number(raw);
     return Number.isFinite(n) ? n : 0;
+  }
+
+  onLogout(): void {
+    this.tokenService.logout();
+
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 }

@@ -10,22 +10,24 @@
                 </button>
             </div>
 
+            <!-- ...existing code... -->
             <div class="mt-10 flex flex-col gap-2">
                 @for (mod of modulos(); track mod.idSistemaModulo) {
                 <button type="button" [pTooltip]="mod.nombre" tooltipPosition="right"
-                    class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-primary hover:bg-primary hover:text-primary-contrast"
+                    class="w-12 h-12 p-0 inline-flex items-center justify-center rounded-lg transition-all select-none text-primary hover:bg-emphasis bg-transparent"
                     (click)="toggleModulo(mod)" [attr.aria-pressed]="selectedModuloId() === mod.idSistemaModulo"
                     [attr.aria-label]="'Abrir módulo ' + mod.nombre">
-                    <img class="w-5 h-5" [src]="svgSrcForModulo(mod)" alt="" aria-hidden="true" />
+                    <img class="w-7 h-7 block" [src]="svgSrcForModulo(mod)" alt="" aria-hidden="true" />
                     <span class="sr-only">{{ mod.nombre }}</span>
                 </button>
                 }
             </div>
+            <!-- ...existing code... -->
         </div>
 
         <div class="w-12 flex flex-col items-center">
             <div class="flex flex-col gap-3">
-                <button type="button" (click)="visibleDrawer = true" 
+                <button type="button" (click)="visibleDrawer = true"
                     class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
                     aria-label="Configuración">
                     <i class="pi pi-cog" aria-hidden="true"></i>
@@ -100,8 +102,8 @@
                     <div class="leading-6 text-color font-medium">Brook Simmons</div>
                     <div class="mt-1 leading-5 text-muted-color text-sm">Sales Executive</div>
                 </div>
-                <p-button pTooltip="Cerrar Sesión" tooltipPosition="left" icon="pi pi-sign-out" text="" rounded="" severity="secondary" pc1574=""
-                    data-pc-section="host"></p-button>
+                <p-button (onClick)="onLogout()" pTooltip="Cerrar Sesión" tooltipPosition="left" icon="pi pi-sign-out"
+                    text="" rounded="" severity="secondary" pc1574="" data-pc-section="host"></p-button>
             </div>
             <div class="bg-surface-50 border border-surface-0 m-6 rounded-lg  flex items-center justify-between p-1 ">
                 <label class="text-sm font-medium text-color pl-2">Perfil</label>

@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <svg
-      class="inline-block w-16 h-16"
+      class="inline-block "
       focusable="false"
       aria-hidden="true"
     >

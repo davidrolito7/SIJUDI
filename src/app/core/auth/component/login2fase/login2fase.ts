@@ -230,9 +230,7 @@ objectTwoAccess: twoAccess | null = null;
     });
   }
 
-  salir() {
-    this.router.navigate(['/login']);
-  }
+ 
   codigoEnter(){
     if(!this.codigo || this.codigo.trim()==='' || this.codigo === undefined)
     {
@@ -260,6 +258,12 @@ objectTwoAccess: twoAccess | null = null;
     }
     else
       this.onValidarLlavePrivada();
+  }
+
+     onLogout(): void {
+    this.tokenService.logout();
+
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 }
 
