@@ -22,11 +22,12 @@ import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm
 import { AvatarModule } from 'primeng/avatar';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { InputMaskModule } from 'primeng/inputmask';
+import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
 @Component({
   selector: 'app-crear-tramite',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, TextareaModule, FileUploadModule, PdfDialog, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule
+    Spinner, TextareaModule, FileUploadModule, PdfDialog, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Breadcrub
   ],
   templateUrl: './crear-tramite.html',
   styleUrl: './crear-tramite.css',

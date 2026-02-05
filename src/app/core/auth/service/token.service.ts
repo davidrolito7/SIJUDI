@@ -108,19 +108,16 @@ export class TokenService {
 
     const token = this.getRefreshToken() ?? '';
 
-    // ✅ No token = no sesión, NO es “expiró”
     if (!token) return false;
 
     try {
       const decodeToken = jwtDecode<JwtPayload>(token);
 
-      // ✅ Token inválido/corrupto: aquí sí puedes limpiar, pero evita navegar
       if (!decodeToken?.exp) return false;
 
       const tokenDate = new Date(0);
       tokenDate.setUTCSeconds(decodeToken.exp);
 
-      // ✅ Solo aquí es realmente “expiró”
       if (tokenDate.getTime() <= Date.now()) {
         this.notifySessionExpired();
         return false;
@@ -181,5 +178,54 @@ export class TokenService {
   clearPerfilCompleted(): void {
     if (!this.isBrowser) return;
     sessionStorage.removeItem(this.PERFIL_COMPLETED_KEY);
+  }
+
+  private removeAppSelections(): void {
+    if (!this.isBrowser) return;
+
+    const keys = [
+      'areaSeleccionada',
+      'perfilSeleccionado',
+      'perfilSeleccionadoDesc',
+      'idAreaSistemaUsuario',
+    ];
+
+    for (const k of keys) {
+      localStorage.removeItem(k);
+      sessionStorage.removeItem(k);
+    }
+  }
+
+  /**
+   * Cierra sesión completamente (borra tokens y selección).
+   */
+  logout(): void {
+    if (!this.isBrowser) return;
+
+    this.removeToken();
+    this.removeRefreshToken();
+
+    this.clearTwoFactorValidated();
+    this.clearPerfilCompleted();
+
+    this.removeAppSelections();
+
+    //  borrar usuario recordado también
+    localStorage.removeItem('recordarUsuario');
+    sessionStorage.removeItem('recordarUsuario');
+
+    // limpia banderas 
+    this.setValidacionCompletada(false);
+    this.notifySessionExpired();
+  }
+
+  /**
+   * Cambiar perfil: mantiene la sesión (tokens), pero obliga a completar perfil otra vez.
+   */
+  startProfileChange(): void {
+    if (!this.isBrowser) return;
+
+    this.clearPerfilCompleted();
+   // this.removeAppSelections();
   }
 }

@@ -1,281 +1,297 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchError, finalize, map, of, switchMap, tap } from 'rxjs';
+import type { Observable } from 'rxjs';
 
 import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
 import { SelectModule } from 'primeng/select';
-import { InputMaskModule } from 'primeng/inputmask';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 import { TokenService } from '../../service/token.service';
 import { AuthService } from '../../service/auth.service';
 import { areasResponse, responseCatalogoPerfiles } from '../../interface/login.interfaces';
-import { MessageService } from 'primeng/api';
 import { GenericResponse } from '../../../../shared/interface/shared.interface';
-import { CheckboxModule } from 'primeng/checkbox';
-import { FormsModule } from '@angular/forms';
-import { ChangeDetectorRef } from '@angular/core';
-import { ToastModule } from 'primeng/toast';
-import { Spinner } from "../../../../shared/components/spinner/spinner";
+import { Spinner } from '../../../../shared/components/spinner/spinner';
 
+const SISTEMA_ID = 4169;
 
-
-interface City {
-  name: string;
-  code: string;
+interface PersistedSelection {
+  recordar: boolean;
+  areaId: number;
+  perfilId: number;
+  perfilDesc: string;
 }
 
 @Component({
   selector: 'app-perfil',
-  standalone: true,
-  imports: [CommonModule, SelectModule, ButtonModule, InputMaskModule, CheckboxModule, FormsModule, ToastModule, Spinner],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SelectModule,
+    ButtonModule,
+    CheckboxModule,
+    ToastModule,
+    Spinner,
+  ],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',
-  providers: [MessageService]
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [MessageService],
 })
 export class Perfil {
-  cities: City[] | undefined;
-  selectedCity: City | undefined;
-  idGeneral : number = 0;
-  listaAreas!: areasResponse[];
-  idAreaSistemaUsuario : number = 0;
-  perfil: responseCatalogoPerfiles[] = [];
-  //idAreaSistemaSeleccionada!: number;
-  areaSeleccionada = signal<number>(0);
-  perfilSeleccionado = signal<number>(0);
-  perfilNombreSeleccionado =signal<string>('');
-  recordar: boolean = false;
-  isLoading:boolean=false;
+  private readonly router = inject(Router);
+  private readonly tokenService = inject(TokenService);
+  private readonly authService = inject(AuthService);
+  private readonly messageService = inject(MessageService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  constructor(private router: Router, 
-              private tokenService: TokenService, 
-              private authService:AuthService, 
-              private messageService : MessageService,
-              private cdr: ChangeDetectorRef) {}
+  readonly isLoading = signal(false);
 
-  ngOnInit() {
-      const areaSeleccionada = Number(localStorage.getItem('areaSeleccionada'));
-      const perfil = Number(localStorage.getItem('perfilSeleccionado'));
-      const recordar = localStorage.getItem('recordarUsuario');
-      //const perfilNombre =  localStorage.getItem('perfilSeleccionadoDesc');
-      this.recordar = recordar === 'true' ? true : false;
-  
-      this.areaSeleccionada.set(areaSeleccionada || 0);
-      this.perfilSeleccionado.set(perfil || 0);
-     
+  readonly listaAreas = signal<areasResponse[]>([]);
+  readonly perfiles = signal<responseCatalogoPerfiles[]>([]);
 
-    if(this.areaSeleccionada()!==0 && this.perfilSeleccionado()!==0){
-        this.obtenerAreas(() => {
-        this.obtenerPerfiles(areaSeleccionada);
-      });
-      
-    }else{
-      this.obtenerAreas();
-    }
-    
-    
-    
+  readonly idGeneral = signal(0);
+  readonly idAreaSistemaUsuario = signal(0);
+
+  readonly areaSeleccionada = signal(0);
+  readonly perfilSeleccionado = signal(0);
+  readonly perfilNombreSeleccionado = signal('');
+
+  recordar = false;
+
+  readonly canContinue = computed(
+    () => this.areaSeleccionada() > 0 && this.perfilSeleccionado() > 0
+  );
+
+  ngOnInit(): void {
+    const persisted = this.readPersistedSelection();
+
+    this.recordar = persisted.recordar;
+    this.areaSeleccionada.set(persisted.areaId);
+    this.perfilSeleccionado.set(persisted.perfilId);
+    this.perfilNombreSeleccionado.set(persisted.perfilDesc);
+
+    this.loadUserAndAreas(persisted.areaId, persisted.perfilId);
   }
 
-onAreaChange(value: number) {
-  this.areaSeleccionada.set(value);
-  this.obtenerPerfiles(value);
-}
+  onAreaChange(areaId: number): void {
+    this.areaSeleccionada.set(areaId);
 
+    // Cambio manual de área => reset de perfil
+    this.perfilSeleccionado.set(0);
+    this.perfilNombreSeleccionado.set('');
+    this.perfiles.set([]);
+    this.idAreaSistemaUsuario.set(0);
 
-obtenerAreas(callback?: () => void) {
-const usuario = this.tokenService.getUserFromToken(); //localStorage.getItem('usuario') || sessionStorage.getItem('usuario');
-      if(usuario !== null){
-        if (usuario.Usr) {
-          //this.isLoading=true;
-          //this.cdr.detectChanges;
-          this.authService.obtenerDatosUsuario(usuario.Usr).subscribe({
-            next: (response) => {
-              if (response.success && response.data?.pD_Abogados?.length > 0) {
-                const abogado = response.data.pD_Abogados[0];
-    /*
-                this.nombre = abogado.nombre;
-                this.correo = abogado.correo;
-                this.foto = abogado.foto;
-                */
-                this.idGeneral= abogado.idGeneral;
-                this.cargarCatalogoAreas(4169)
-                //if (callback) {
-                //  callback();
-                //}
-              } else {
-                //console.warn('No se encontraron datos de usuario en la API.');
-              }
-            },
-            error: (error) => {
-              //console.error('Error al obtener datos del usuario:', error);
-              //this.isLoading=false;
-              //this.cdr.detectChanges;
-            },
-            complete:()=>{
-              //this.isLoading=false;
-              //this.cdr.detectChanges;
-            }
-          });
-        }
-      }
+    if (areaId <= 0) return;
 
-}
-
-cargarCatalogoAreas(idSistema: number): void {
-  //this.isLoading=true;
-  //this.cdr.detectChanges;
-  this.authService.getAreas(idSistema, this.idGeneral).subscribe({
-    next: (response) => {
-      this.listaAreas = response.data as areasResponse[];
-
-      const areaGuardada = Number(localStorage.getItem('areaSeleccionada'));
-
-      if (
-        areaGuardada &&
-        this.listaAreas.some(a => a.idArea === areaGuardada)
-      ) {
-        this.areaSeleccionada.set(areaGuardada);
-        //this.cdr.detectChanges();
-      } else {
-        this.areaSeleccionada.set(0);
-        localStorage.setItem('areaSeleccionada', "0"); 
-      }
-    },
-    error:(e)=>{
-      //this.isLoading=false;
-      //this.cdr.detectChanges;
-    },
-    complete:()=>{
-      //this.isLoading=false;
-      //this.cdr.detectChanges;
-    }
-  });
-}
-
-
-obtenerPerfiles(idAreaSistema: number){
-  //this.isLoading=true;
-  //this.cdr.detectChanges;
-  this.areaSeleccionada.set(idAreaSistema);
-  this.authService.obtenerIdAreaSistemaUsuario(this.idGeneral,4169,idAreaSistema).subscribe({
-                next: (responseAreaSistemaUsuario) => {
-                  const AreaSistemaUsuario = responseAreaSistemaUsuario.data.idAreaSistemaUsuario;
-                  this.idAreaSistemaUsuario= AreaSistemaUsuario;
-                  
-                  localStorage.setItem('idAreaSistemaUsuario', AreaSistemaUsuario);
-                  this.perfilSeleccionado.set(0);
-                  this.cargarCatalogoPerfiles(); 
-                },
-                error: (error) => {
-                  this.isLoading=false;
-                  this.cdr.detectChanges;   
-                },
-                complete:()=>{
-                  this.isLoading=false;
-                  this.cdr.detectChanges;
-                }
-              });
-}
-
-
-
- async cargarCatalogoPerfiles(): Promise<void>{
-    //this.isLoading=true;
-    //this.cdr.detectChanges;
-    this.authService.GetPerfiles(this.idAreaSistemaUsuario).subscribe({
-      next: (response: GenericResponse<responseCatalogoPerfiles[]>) => {
-            const perfilGuardado = Number(localStorage.getItem('perfilSeleccionado'));
-            this.perfil = response.data;
-            if (perfilGuardado > 0 && this.perfil.some(p => p.idSistemaPerfil === perfilGuardado)) {
-              this.perfilSeleccionado.set(perfilGuardado);
-            } else {
-              this.perfilSeleccionado.set(0);
-                localStorage.setItem('perfilSeleccionado', "0"); 
-            }
-
-            this.cdr.detectChanges();
-          },
-      error: (error) => {
-              this.messageService?.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Error al cargar el catálogo de tipo de cuadernos'
-              });
-              this.isLoading=false;
-              this.cdr.detectChanges;
-            },
-      complete:()=>{
-        this.isLoading=false;
-        this.cdr.detectChanges;
-      }
-    });
+    this.loadPerfilesForArea(areaId, 0);
   }
 
+  onPerfilChange(perfilId: number): void {
+    this.perfilSeleccionado.set(perfilId);
 
-
+    const selected = this.perfiles().find(p => p.idSistemaPerfil === perfilId);
+    this.perfilNombreSeleccionado.set(selected?.descripcion ?? '');
+  }
 
   continuar(): void {
+    if (!this.canContinue()) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Campos requeridos',
+        detail: 'Debes seleccionar un área y un perfil',
+      });
+      return;
+    }
 
-if (this.areaSeleccionada() <= 0 || this.perfilSeleccionado() <= 0) {
+    const store = this.recordar ? localStorage : sessionStorage;
+    const other = this.recordar ? sessionStorage : localStorage;
+
+    // “recordarUsuario” siempre en local para sobrevivir reinicios del navegador
+    localStorage.setItem('recordarUsuario', this.recordar ? 'true' : 'false');
+
+    store.setItem('areaSeleccionada', String(this.areaSeleccionada()));
+    store.setItem('perfilSeleccionado', String(this.perfilSeleccionado()));
+    store.setItem('perfilSeleccionadoDesc', this.perfilNombreSeleccionado());
+    store.setItem('idAreaSistemaUsuario', String(this.idAreaSistemaUsuario()));
+
+    // Limpia la otra storage
+    other.removeItem('areaSeleccionada');
+    other.removeItem('perfilSeleccionado');
+    other.removeItem('perfilSeleccionadoDesc');
+    other.removeItem('idAreaSistemaUsuario');
+
     this.messageService.add({
-      severity: 'error',
-      summary: 'Campos requeridos',
-      detail: 'Debes seleccionar un área y un perfil'
+      severity: 'success',
+      summary: 'Operación exitosa',
+      detail: 'Área y perfil seleccionados correctamente',
     });
-    return;
-  }
-
-  //obtenemos la descripcion del perfil
-  const perfilSelec = this.perfil.find(f=>f.idSistemaPerfil === this.perfilSeleccionado());
-  if(perfilSelec !== undefined)
-    this.perfilNombreSeleccionado.set(perfilSelec.descripcion);
-
-  if (this.recordar) {
-    localStorage.setItem('recordarUsuario', 'true');
-    localStorage.setItem('areaSeleccionada', this.areaSeleccionada().toString());
-    localStorage.setItem('perfilSeleccionado', this.perfilSeleccionado().toString()); 
-    localStorage.setItem('perfilSeleccionadoDesc',this.perfilNombreSeleccionado().toString());
-    localStorage.setItem('idAreaSistemaUsuario',this.idAreaSistemaUsuario.toString());
-
-    
-    // Limpia sesión por seguridad
-    sessionStorage.removeItem('areaSeleccionada');
-    sessionStorage.removeItem('perfilSeleccionado');
-    sessionStorage.removeItem('perfilSeleccionadoDesc');
-    sessionStorage.removeItem('idAreaSistemaUsuario');
-
-  } else {
-    localStorage.setItem('recordarUsuario', 'false');
-
-    sessionStorage.setItem('areaSeleccionada', this.areaSeleccionada().toString());
-    sessionStorage.setItem('perfilSeleccionado', this.perfilSeleccionado().toString());
-    sessionStorage.setItem('perfilSeleccionadoDesc',this.perfilNombreSeleccionado().toString());
-    sessionStorage.setItem('idAreaSistemaUsuario',this.idAreaSistemaUsuario.toString())
-
-    // Limpia localStorage para no dejar residuos
-    localStorage.removeItem('areaSeleccionada');
-    localStorage.removeItem('perfilSeleccionado');
-    localStorage.removeItem('perfilSeleccionadoDesc');
-    localStorage.removeItem('idAreaSistemaUsuario');
-  }  
-
-  this.messageService.add({
-  severity: 'success',
-  summary: 'Operación exitosa',
-  detail: 'Área y perfil seleccionados correctamente'
-});
 
     this.tokenService.setPerfilCompleted(true);
     this.router.navigate(['/tramites-juicio-oral'], { replaceUrl: true });
-    return;
   }
 
-  
+  // --------------------
+  // Carga de datos
+  // --------------------
 
+  private loadUserAndAreas(restoreAreaId: number, restorePerfilId: number): void {
+    const user = this.tokenService.getUserFromToken();
+    if (!user?.Usr) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Sesión inválida',
+        detail: 'No se pudo obtener el usuario desde el token.',
+      });
+      return;
+    }
+
+    this.isLoading.set(true);
+
+    this.authService
+      .obtenerDatosUsuario(user.Usr)
+      .pipe(
+        map(resp => resp.data?.pD_Abogados?.[0]?.idGeneral ?? 0),
+        tap(idG => this.idGeneral.set(idG)),
+        switchMap(idG => {
+          if (!idG) return of<areasResponse[]>([]);
+          return this.authService.getAreas(SISTEMA_ID, idG).pipe(
+            map(r => (r.data ?? []) as areasResponse[])
+          );
+        }),
+        tap(areas => {
+          this.listaAreas.set(areas);
+
+          const validArea =
+            restoreAreaId > 0 && areas.some(a => a.idArea === restoreAreaId);
+
+          this.areaSeleccionada.set(validArea ? restoreAreaId : 0);
+
+          if (!validArea) {
+            this.perfilSeleccionado.set(0);
+            this.perfilNombreSeleccionado.set('');
+            this.perfiles.set([]);
+          }
+        }),
+        switchMap(() => {
+          const areaId = this.areaSeleccionada();
+          if (areaId > 0) return this.loadPerfilesForArea$(areaId, restorePerfilId);
+          return of(null);
+        }),
+        catchError(() => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudieron cargar áreas/perfiles.',
+          });
+          return of(null);
+        }),
+        finalize(() => this.isLoading.set(false)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe();
+  }
+
+  private loadPerfilesForArea(areaId: number, restorePerfilId: number): void {
+    this.isLoading.set(true);
+
+    this.loadPerfilesForArea$(areaId, restorePerfilId)
+      .pipe(
+        catchError(() => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error al cargar el catálogo de perfiles.',
+          });
+          return of(null);
+        }),
+        finalize(() => this.isLoading.set(false)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe();
+  }
+
+  private loadPerfilesForArea$(areaId: number, restorePerfilId: number): Observable<responseCatalogoPerfiles[] | null> {
+    const idG = this.idGeneral();
+    if (!idG) return of(null);
+
+    return this.authService
+      .obtenerIdAreaSistemaUsuario(idG, SISTEMA_ID, areaId)
+      .pipe(
+        map(r => r.data?.idAreaSistemaUsuario ?? 0),
+        tap(idAreaSysUsr => this.idAreaSistemaUsuario.set(idAreaSysUsr)),
+        switchMap(idAreaSysUsr => {
+          if (!idAreaSysUsr) return of<responseCatalogoPerfiles[]>([]);
+          return this.authService.GetPerfiles(idAreaSysUsr).pipe(
+            map((r: GenericResponse<responseCatalogoPerfiles[]>) => r.data ?? [])
+          );
+        }),
+        tap(perfiles => {
+          this.perfiles.set(perfiles);
+
+          const validPerfil =
+            restorePerfilId > 0 &&
+            perfiles.some(p => p.idSistemaPerfil === restorePerfilId);
+
+          const perfilId = validPerfil ? restorePerfilId : 0;
+
+          this.perfilSeleccionado.set(perfilId);
+
+          const sel = perfiles.find(p => p.idSistemaPerfil === perfilId);
+          this.perfilNombreSeleccionado.set(sel?.descripcion ?? '');
+        }),
+        map(perfiles => perfiles)
+      );
+  }
+
+  // --------------------
+  // Persistencia
+  // --------------------
+
+  private readPersistedSelection(): PersistedSelection {
+    const recordar = localStorage.getItem('recordarUsuario') === 'true';
+
+    const primary = recordar ? localStorage : sessionStorage;
+    const fallback = recordar ? sessionStorage : localStorage;
+
+    const areaId =
+      this.readNumber(primary, 'areaSeleccionada') ||
+      this.readNumber(fallback, 'areaSeleccionada');
+
+    const perfilId =
+      this.readNumber(primary, 'perfilSeleccionado') ||
+      this.readNumber(fallback, 'perfilSeleccionado');
+
+    const perfilDesc =
+      primary.getItem('perfilSeleccionadoDesc') ??
+      fallback.getItem('perfilSeleccionadoDesc') ??
+      '';
+
+    return {
+      recordar,
+      areaId,
+      perfilId,
+      perfilDesc,
+    };
+  }
+
+  private readNumber(storage: Storage, key: string): number {
+    const raw = storage.getItem(key);
+    if (!raw) return 0;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : 0;
+  }
 }
-
-
-function getUserFromToken() {
-  throw new Error('Function not implemented.');
-}
-

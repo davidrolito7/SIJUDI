@@ -4,7 +4,7 @@
 @import "primeicons/primeicons.css";
 
 @theme {
-  --color-secondary-100: #f3eadc;
+  --color-pry-100: #f3eadc;
   --color-secondary-200: #eadcc4;
   --color-secondary-300: #ddc8a4;
   --color-secondary-400: #c5a875;
@@ -60,4 +60,8 @@
 
 .p-datatable-header{
   @apply border-t-0 p-0! pb-4!;
+}
+
+.p-menu.p-menu-overlay {
+  z-index: 9999 !important;
 }

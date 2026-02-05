@@ -18,13 +18,15 @@ import { AvatarModule } from 'primeng/avatar';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { InputMaskModule } from 'primeng/inputmask';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-tramites-juicio-oral',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, BreadcrumbModule, AvatarModule, InputMaskModule, ConfirmDialog
-  ],
+    Spinner, BreadcrumbModule, AvatarModule, InputMaskModule, ConfirmDialog,
+    Breadcrub
+],
   templateUrl: './tramites-juicio-oral.html',
   styleUrl: './tramites-juicio-oral.css',
   providers: [ConfirmationService]
