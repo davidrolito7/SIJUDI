@@ -129,7 +129,7 @@ export class DetallesExhortoEnviado {
   }*/
   verRespuestasExhorto(){
     //console.log('Navegando hacia respuesta de exhortos enviados', this.idExhortoEnviado)
-    this.router.navigate(['/inicio/exhortos/exhortos-enviados/detalle/ver-respuesta'], {state: {idExhortoEnviado: this.idExhortoEnviado} });
+    this.router.navigate(['/exhortos/respuesta-exhorto-enviado'], {state: {idExhortoEnviado: this.idExhortoEnviado} });
 
   }
 
