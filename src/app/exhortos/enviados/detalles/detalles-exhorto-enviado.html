@@ -585,6 +585,44 @@
                                     </table>
                                 </td>
                             </tr>
+                            <tr >
+                                <td colspan="12" class="px-4 py-4">
+                                    <p class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Documentos:</p>
+                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                        <thead class="uppercase text-xs">
+                                            <tr class="">
+                                            <th class="px-4 py-2">NOMBRE</th>
+                                            <th class="px-4 py-2">TIPO DOCUMENTO</th>
+                                            <th class="px-4 py-2">FIRMADO</th>
+                                            <th class="px-4 py-2">FECHA FIRMADO</th>
+                                            <th class="px-4 py-2"></th>
+                                            </tr>
+                                        </thead>
+                                        @for (archivos of item.archivos; track archivos) {
+                                            <tbody>
+                                            <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                                <td class="px-4 py-2">{{ archivos.nombreArchivo}}</td>
+                                                <td class="px-4 py-2">{{ archivos.tipoDocumento.nombre }}</td>
+                                                <td class="px-4 py-2">
+                                                @if(archivos.firmado){
+                                                    <p>Si</p>
+                                                }
+                                                @else{
+                                                <p>No</p>
+                                                }
+                                            </td>
+                                            <td class="px-4 py-2">{{ archivos.fechaFirmado }}</td>
+                                            <td class="text-center">
+                                                <p-button (click)="mostrarArchivo(archivos,4)" severity="success" [rounded]="true"
+                                                        icon="pi pi-file-pdf" class="mr-2" title="descargar">
+                                                </p-button>
+                                            </td>
+                                            </tr>
+                                        </tbody>
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
                             }
                         </ng-template>
                         
