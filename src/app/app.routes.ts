@@ -41,7 +41,11 @@ export const routes: Routes = [
         path:'catalogos',loadChildren:() =>
           import('./catalogos/catalogos.route')
             .then(m=>m.CATALOGOS_ROUTES)
-      }
+      },
+        {path: 'juicioenlinea', loadChildren: () =>
+          import('./juicio-oral/jucio-oral.routes')
+            .then(m => m.JUICIO_ORAL_ROUTES)
+        },
     ],
   },
 
