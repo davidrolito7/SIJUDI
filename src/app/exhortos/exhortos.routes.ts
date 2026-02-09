@@ -16,15 +16,16 @@ import { ListaExhortosRecibidos } from './recibidos/listar/lista-exhorto-recibid
 import { AmbitosDeCompetencia } from './views/ambitos-de-competencia/ambitos-de-competencia';
 import { PromocionExhortoEnviadoComponent } from './enviados/promocion/promocion-exhorto-enviado';
 import { RespuestaExhortoEnviado } from './enviados/respuesta/respuesta-exhorto-enviado';
+import { DetallesExhortoRecibido } from './recibidos/detalles/detalles-exhorto-recibido';
 
 export const EXHORTOS_ROUTES: Routes = [
   { path: 'lista-exhortos-enviados', component: ListaExhortosEnviados, title: 'Exhortos enviados'/*, canActivate: [RedirectGuard]*/ },
-  //{ path: 'detalle', component: DetalleExhortosComponent, title: 'Detalle'/*, canActivate: [RedirectGuard] */},
+  { path: 'detalles-exhorto-recibido', component: DetallesExhortoRecibido, title: 'Detalles exhortos recibidos'/*, canActivate: [RedirectGuard] */},
   //{ path: 'detalle/generar-respuesta', component: GenerarRespuestaComponent, title: 'Generar respuesta', canActivate: [RedirectGuard] },
   //{ path: 'detalle/promocion-exhorto', component: PromocionExhortosComponent, title: 'Promociones de exhorto', canActivate: [RedirectGuard] },
   //{ path: 'acuerdos', component: AcuerdoExhortosComponent, title: 'Acuerdos Exhortos' },
   //{ path: 'exhortos-enviados', component: ExhortosEnviadosComponent, title: 'Exhortos enviados', canActivate: [RedirectGuard] },
-  { path: 'detalles-exhorto-enviado', component: DetallesExhortoEnviado, title: 'Detalle'/*, canActivate: [RedirectGuard] */},
+  { path: 'detalles-exhorto-enviado', component: DetallesExhortoEnviado, title: 'Detalles exhortos enviados'/*, canActivate: [RedirectGuard] */},
   { path: 'crear-exhorto', component: CrearExhortoComponent, title: 'Crear Exhorto para enviar'/*, canActivate: [redirectGuard]*/ },
   { path: 'respuesta-exhorto-enviado', component: RespuestaExhortoEnviado, title: 'Crear Exhorto para enviar'/*, canActivate: [RedirectGuard]*/ },
   { path: 'promocion-exhorto-enviado', component: PromocionExhortoEnviadoComponent, title: 'Promocionar Exhorto Enviado'/*, canActivate: [RedirectGuard] */},

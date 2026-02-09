@@ -982,3 +982,43 @@ export interface folioPromocionExhortoEnviado{
     folioOrigenPromocion: string;
     idPromocionEnviada: number
 }
+ export interface IncompetenciaRequest{
+  idExhortoRecibido: number;
+  justificacion: string;
+ }
+ export interface turnosResponse{
+    resultado: boolean;
+    msg:string;
+}
+export interface VerMovimientosResponse {
+    idExhortoRecibido:number;
+    cargoTurna:string,
+    idUsuarioTurna:number,
+    nombreUsuarioTurna:string,
+    fechaTurnado: Date;
+    idUsuarioRecibe: number;
+    nombreUsuarioRecibe: string;
+    fechaRecepcion: Date;
+    idMovimiento: number;
+    radica: string;
+    cargoOrigen: string;
+    cargoDestino: string;
+}
+export interface DetalleExhortoRecibidoResponseI {
+    archivos: CONATRIB_ExhortosRecibidosArchivos[];
+    partes: CONATRIB_ExhortosRecibidosPartes[];
+    generales: ListadoExhortosRecibidosI;
+    promoventes: CONATRIB_ExhortoRecibidoPromoventes[];
+    actualizaciones: actualizacionesExhortoRecibido[];
+}
+//Interfaz para respuesta de exhortos
+export interface respuestaExhorto{
+    generales: generales;
+    archivos: archivos[];
+}
+//Interfaz de las promociones de exhortos recibidos
+export interface promocionExhortos{
+    promo: promo;
+    archivos: archivoPromocion[];
+    promoventes:promoventes[];
+}

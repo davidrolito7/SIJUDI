@@ -11,7 +11,8 @@ import { ExhortoEnviadoGuardarGeneralesRequest, generalesExhortoEnviado, Enviado
          guardaFirmaTmpRequest, AgregarJuzgadoMat, CatalogoRegion, CatJuzgado,UI_ParamlistadoExhortosRecibidosRequest,
          ListadoExhortosEnviados,ListadoEstatus,ListadoExhortosRecibidosI,respuestExhortoEnviado,ConfirmacionDatosPromocionRecibida,
          ArchivoRecibidoPromocionConAcuse,actualizacionesExhortoEnviado,VerMovimientosEnviadosResponse,IdArchivoPromcionesEnviada,
-        PromocionExhortoEnviado,folioPromocionExhortoEnviado} from '../interfaces/exhortos.model';
+         PromocionExhortoEnviado,folioPromocionExhortoEnviado,IncompetenciaRequest,turnosResponse,VerMovimientosResponse,
+         DetalleExhortoRecibidoResponseI,respuestaExhorto,promocionExhortos} from '../interfaces/exhortos.model';
 
 @Injectable({
   providedIn: 'root'
@@ -246,4 +247,44 @@ export class ExhortosService {
     const url = `${this.exhortoEnviar}actualizarPromocion`;
     return this.http.post<GenericResponse<PromocionExhortoEnviado>>(url,param,{context:checkToken()});
   } 
+   setIncompetencia(request:IncompetenciaRequest):Observable<GenericResponse<object>>{
+    return this.http.post<GenericResponse<object>>(this.turnos+"/DeclararIncompetencia",request,{context:checkToken()});
+  }
+  recibir(idExhortoRecibido: number, perfil:string):Observable<any>{
+    const url = this.turnos+"/Recibir?idExhortoRecibido="+idExhortoRecibido+"&cargo="+perfil;
+    return this.http.post(url,null, {context:checkToken()});
+  }
+  Turnar(idExhortoRecibido: number, perfil:string): Observable<GenericResponse<turnosResponse>>{
+    const url = this.turnos+"/TurnarRecibidos?idExhortoRecibido="+idExhortoRecibido+"&cargo="+perfil;
+    return this.http.post<GenericResponse<turnosResponse>>(url, null,{context:checkToken()});
+  }
+  revocar(idNot: number):Observable<any>{
+    const url = `${this.turnos}/Revocar?idExhortoRecibido=${idNot}`;
+    return this.http.post(url, null, {context:checkToken()});
+  }
+  // Método para obtener los movimientos de un exhorto recibido
+  getMovimientos(idExhortoRecibido: number): Observable<GenericResponse<VerMovimientosResponse[]>> {
+    const url = `${this.turnos}/verMovimientosRecibidos?idExhortoRecibido=${idExhortoRecibido}`;
+    return this.http.get<GenericResponse<VerMovimientosResponse[]>>(url,{context:checkToken()});
+  }
+  enviarActualizacion(idActualizacion: number):Observable<any>{
+    const url = `${this.apiAcuerdo}EntregarActualizacionExhortoRec?idActualizacion=${idActualizacion}`;
+    return this.http.post(url,null, {context:checkToken()});
+  }
+   // obtenemos el detalle de un exhorto
+  getExhortosRecibidosDetalle(idExhortoRecibido: any):Observable<GenericResponse<DetalleExhortoRecibidoResponseI>>{
+    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+     return this.http.get<GenericResponse<DetalleExhortoRecibidoResponseI>>(this.baseUrl + "DetalleExhortoRecibido?idExhortoRecibido="+idExhortoRecibido,{context:checkToken()});
+  }
+  // Método para obtener respuesta de exhortos
+  getRespuestaExhortoRecibido(idExhortoRecibido: number): Observable<GenericResponse<respuestaExhorto>>{
+    const url = `${this.apiAcuerdo}verRespuestaExhortoRecibido?idExhortoRecibido=${idExhortoRecibido}`;
+    return this.http.get<GenericResponse<respuestaExhorto>>(url,{context:checkToken()});
+  }
+    //Ver promoción de exhortos
+  getPromocionExhorto(idExhortoRecibido: number): Observable<GenericResponse<promocionExhortos[]>>{
+    //const headers = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    const url = `${this.baseUrl}verPromocion?idExhortoRecibido=${idExhortoRecibido}`;
+    return this.http.get<GenericResponse<promocionExhortos[]>>(url,{context:checkToken()});
+  }
 }

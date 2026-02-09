@@ -70,6 +70,7 @@
                 </div>
 
                 @for (p of pantallasVisibles(); track p.IdPantalla) {
+
                 <a class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-color bg-transparent"
                     [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis" (click)="showMenu.set(false)">
                     <img class="w-5 h-5" [src]="svgSrcForPantalla(p)" alt="" aria-hidden="true" />
