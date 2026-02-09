@@ -96,7 +96,7 @@ export class ListaExhortosRecibidos implements OnInit {
   // Método para navegar al componente de detalle-notificacion
   verDetalleNotificacion(idExhortoRecibido: number) {
     //console.log('Naavegando a detalle-exhorto con idExhortoRecibido:', idExhortoRecibido);
-    this.router.navigate(['/inicio/exhortos/detalle'], { state: { idExhortoRecibido } });
+    this.router.navigate(['/exhortos/detalles-exhorto-recibido'], { state: { idExhortoRecibido } });
 
   }
 

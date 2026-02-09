@@ -1,0 +1,707 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
+<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+    <!-- HEADER -->
+    <app-breadcrub></app-breadcrub>
+    <!-- BUSQUEDA -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                    Búsqueda 
+            </label>
+             @if (tienePermisoReasignarExhorto()) {
+                <div class="relative">
+                  @if (!existeacuerdo() && (detallesExhortos() !== undefined ? detallesExhortos()?.generales?.estatus=='Incompetencia': false)) {
+                    <p-button type="button"
+                      (click)="reasignarExhorto()"
+                      >
+                      Reasignar Exhorto
+                    </p-button>
+                  }
+                </div>
+              }
+              @if (tienePermisoRecibir() && tienePermisoDeclararIncompetencia()) {
+                <div  class="relative">
+                  @if (detallesExhortos() !== undefined ? detallesExhortos()?.generales?.estatus=='Recibido': false) {
+                    <p-button 
+                      (onClick)="dialogIncomp.open(idExhortoRecibido)"
+                      >
+                      Declarar incompetencia
+                    </p-button>
+                    <app-incompetencia-dialog #dialogIncomp></app-incompetencia-dialog>
+                  }
+                </div>
+              }
+              <div class="relative">
+                @if(puedeRecibir()){
+                  <p-button type="button" (click)="recibir()">
+                  Recibir</p-button>
+                  
+                }
+              </div>
+              @if(puedeTurnar()){
+                @if (tienePermisoTurnar()) {
+                  <div class="relative">
+                    <p-button type="button" (click)="turnar()"
+                      >
+                    Turnar</p-button>
+                    
+                  </div>
+                }
+              }
+              @if (tienePermisoRevocar()) {
+                <div  class="relative">
+                  @if (puedeRevocar()) {
+                    <p-button type="button" (click)="revocar()"
+                      >
+                    Revocar</p-button>
+                  }
+                  
+                </div>
+              }
+              @if (tienePermisoGenerarAcuerdo()) {
+                <div class="relative">
+                  <!-- Botón para generar respuesta si no existe una respuesta -->
+                  @if (habilitarparaacordar()) {
+                    <p-button type="button" (click)="generarRespuesta()"
+                      >
+                      Generar acuerdo
+                    </p-button>
+                  }
+                </div>
+              }
+              @if (tienePermisoVerAcuerdo()) {
+                <div class="relative">
+                  <!-- Botón para ver respuesta si ya existe una respuesta -->
+                  @if (existeacuerdo()) {
+                    <p-button type="button" (click)="verAcuerdos()"
+                      >
+                      Ver acuerdo
+                    </p-button>
+                  }
+                </div>
+              }
+        </div>
+    </div>
+</div>
+
+  <!-- Start coding here -->
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+     <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div>
+            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
+            <div class="p-1 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- empieza panel izquierdo -->
+                    <div class="overflow-x-auto p-4">
+                        <div class="panel border bg-white">
+                            <div class="panel-heading btn-secondary rounded-lg">
+                                <h3 class="pt-3 font-weight-bold">Información de origen</h3>
+                            </div>
+                            <div class="panel-body p-3">
+                                <div class="flex flex-col space-y-2">
+                                    <div class="overflow-x-auto"> <!-- Contenedor responsivo -->
+                                        <table class="table-auto md:table-fixed w-full">
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Estado: </b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.estadoOrigen }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Municipio: </b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.municipioOrigen }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Juzgado: </b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.juzgadoOrigenNombre }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Juez exhortante: </b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.juezExhortante }}</td>
+                                            </tr>
+                                            <tr>
+                                                <!--<td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Tipo juicio/asunto/delito: </b></p></td>-->
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Vía: </b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.tipoJuicioAsuntoDelitos }}</td>
+                                            </tr>
+                                            <tr>
+                                                <!--<td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Tipo diligenciación: </b></p></td>-->
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Diligencia: </b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.tipoDiligenciacionNombre }}</td>
+                                            </tr>
+                                            <tr class="relative">
+                                                <td class="col1 flex justify-end items-center space-x-2">
+                                                <div class="relative group">
+                                                    <svg class="w-4 h-4 ml-1 text-blue-500 cursor-pointer" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+                                                    </svg>
+                                                    <div class="absolute left-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-700 text-white text-xs px-2 py-1 rounded -translate-x-1/2">
+                                                    Fecha y hora local del estado origen
+                                                    </div>
+                                                </div>
+                                                <p class="text-gray-700 dark:text-gray-300"><b>Fecha  de envío: </b></p>
+                                                </td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.fechaOrigen | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Expediente: </b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.numeroExpedienteOrigen }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Oficio: </b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.numeroOficioOrigen }}</td>
+                                            </tr>
+                                            <tr class="relative">
+                                                <!--<td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Días/responder: </b></p></td>-->
+                                                <td class="col1 flex justify-end items-center space-x-2">
+                                                <div class="relative group">
+                                                    <svg class="w-4 h-4 ml-1 text-blue-500 cursor-pointer" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+                                                    </svg>
+                                                    <div class="absolute left-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-700 text-white text-xs px-2 py-1 rounded -translate-x-1/2">
+                                                    Especificado en número de días para responder
+                                                    </div>
+                                                </div>
+                                                <p class="text-gray-700 dark:text-gray-300"><b>Término: </b></p>
+                                                </td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.diasResponder }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Fojas: </b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.fojas }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Observaciones: </b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.observaciones }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--fin panel izquierdo-->
+                    <!--comienza panel derecho-->
+                    <div class="overflow-x-auto p-4">
+                        <div class="panel border bg-white">
+                            <div class="panel-heading btn-secondary rounded-lg">
+                                <h3 class="pt-3 font-weight-bold">Información destino</h3>
+                            </div>
+                            <div class="panel-body p-3">
+                                <div class="flex flex-col space-y-2">
+                                    <div class="overflow-x-auto"> <!-- Contenedor responsivo -->
+                                        <table class="table-auto md:table-fixed w-full">
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Juzgado Destino:</b></p></td>
+                                                <td class="col2"> {{ detallesExhortos()?.generales?.juzgadoDestino }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>No. exhorto:</b></p></td>
+                                                <td class="col2"> <span class="text-red-500 font-bold">{{ detallesExhortos()?.generales?.numeroExhorto }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Municipio:</b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.municipioDestino }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Materia:</b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.materiaNombre }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Fecha recepción:</b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.fechaHoraRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Folio seguimiento:</b></p></td>
+                                                <td class="col2">{{ detallesExhortos()?.generales?.folioSeguimiento }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Estatus:</b></p></td>
+                                                <td class="col2">
+                                                <span class="text-white p-1" [ngClass]="selectClass(detallesExhortos()?.generales?.estatus)">
+                                                    {{ detallesExhortos()?.generales?.estatus }}
+                                                </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--fin panel derecho-->
+                </div>
+            </div>
+             <div style="display: flex;justify-content: flex-end;">
+                <p-button  (click)="pdf()" severity="success" [rounded]="true"
+                        icon="pi pi-file-pdf" class="mr-2" title="descargar">
+                </p-button>
+            </div>
+            <!--PARTES-->
+            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                <div class="relative overflow-x-auto">
+                    
+                    <p-table [value]="detallesExhortos()?.partes || []" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
+                        <ng-template #caption>
+                            <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                Partes
+                            </div>
+                        </ng-template>
+
+                        <ng-template #header>
+                            <tr class="uppercase text-xs">
+                                <th>
+                                    <div class="flex items-center justify-between">NOMBRE</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">GÉNERO</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Tipo Persona</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Tipo parte</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">CORREO ELECTRÓNICO</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">TELÉFONO</div>
+                                </th>
+                                
+                                
+                            </tr>
+                        </ng-template>
+
+                        <ng-template #body let-partes >
+                            <tr>
+                                <td style="font-size: small;">{{ partes?.nombre }} {{ partes?.apellidoPaterno }} {{ partes?.apellidoMaterno }}</td>
+                                <td style="font-size: small;">{{ partes?.genero}}</td>
+                                <td style="font-size: small;">
+                                    @if (partes?.esPersonaMoral) {
+                                            <span>Moral</span>
+                                        }
+                                        @else {
+                                            <span>Física</span>
+                                        }
+                                </td>
+                                <td style="font-size: small;">{{ partes?.tipoParteNombre }}</td>
+                                <td style="font-size: small;">{{ partes?.correoElectronico }}</td>
+                                <td style="font-size: small;">{{ partes?.telefono  }}</td>
+                                
+                            </tr>
+                        </ng-template>
+
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="6">Sin partes</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                  
+                </div>
+
+            </div>
+            <!--PROMOVENTES-->
+            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                <div class="relative overflow-x-auto">
+
+                    <p-table [value]="detallesExhortos()?.promoventes || []" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
+                        <ng-template #caption>
+                            <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                Promoventes
+                            </div>
+                        </ng-template>
+
+                        <ng-template #header>
+                            <tr class="uppercase text-xs">
+                                <th>
+                                    <div class="flex items-center justify-between">NOMBRE</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">GÉNERO</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Tipo Persona</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Tipo parte</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">CORREO ELECTRÓNICO</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">TELÉFONO</div>
+                                </th>
+                                
+                                
+                            </tr>
+                        </ng-template>
+
+                        <ng-template #body let-promoventes >
+                            <tr>
+                                <td style="font-size: small;">{{ promoventes?.nombre }} {{ promoventes?.apellidoPaterno }} {{ promoventes?.apellidoMaterno }}</td>
+                                <td style="font-size: small;">{{ promoventes?.genero}}</td>
+                                <td style="font-size: small;">
+                                    @if (promoventes?.esPersonaMoral) {
+                                            <span>Moral</span>
+                                        }
+                                        @else {
+                                            <span>Física</span>
+                                        }
+                                </td>
+                                <td style="font-size: small;">{{ promoventes?.tipoParteNombre }}</td>
+                                <td style="font-size: small;">{{ promoventes?.correoElectronico }}</td>
+                                <td style="font-size: small;">{{ promoventes?.telefono  }}</td>
+                                
+                            </tr>
+                        </ng-template>
+
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="6">Sin promoventes</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                  
+                </div>
+
+            </div>
+            <!--DOCUMENTOS-->
+            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                <div class="relative overflow-x-auto">
+
+                    <p-table [value]="detallesExhortos()?.archivos || []" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
+                        <ng-template #caption>
+                            <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                Documentos
+                            </div>
+                        </ng-template>
+
+                        <ng-template #header>
+                            <tr class="uppercase text-xs">
+                                <th>
+                                    <div class="flex items-center justify-between">Nombre del documento</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Tipo de documento</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Firmado</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Fecha firmado</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Acciones</div>
+                                </th>
+  
+                            </tr>
+                        </ng-template>
+
+                        <ng-template #body let-archivo >
+                            <tr>
+                                <td style="font-size: small;">{{ archivo?.nombreArchivo }}</td>
+                                <td style="font-size: small;">{{ archivo?.tipoDocumento.nombre }}</td>
+                                <td style="font-size: small;">
+                                    @if (archivo.firmado) {
+                                            <span>Sí</span>
+                                        }
+                                        @else  {
+                                            <span>No</span>
+                                        }
+                                </td>
+                                <td style="font-size: small;">{{ archivo?.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td class="text-center"> 
+                                    <p-button (click)="mostrarArchivo(archivo,1)" severity="success" [rounded]="true"
+                                            icon="pi pi-file-pdf" class="mr-2" title="descargar">
+                                    </p-button>
+                                </td>
+
+                            </tr>
+                        </ng-template>
+
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="5">Sin documentos</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                    @if(mostrarDocumento()){
+                        <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                        </app-pdf-dialog>
+                    }
+                </div>
+            </div>
+            <!--ACTUALIZACIONES-->
+            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                <div class="relative overflow-x-auto">
+
+                    <p-table [value]="detallesExhortos()?.actualizaciones || []" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
+                        <ng-template #caption>
+                            <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                Actualizaciones
+                            </div>
+                        </ng-template>
+
+                        <ng-template #header>
+                            <tr class="uppercase text-xs">
+                                <th>
+                                    <div class="flex items-center justify-between">Fecha</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Actualización</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Descripcion</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Usuario Actualizo</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Enviada</div>
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    <span class="sr-only">Acciones</span>
+                                </th>
+  
+                            </tr>
+                        </ng-template>
+
+                        <ng-template #body let-item >
+                            <tr>
+                                <td style="font-size: small;">{{item?.fechaActualizacion | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <td style="font-size: small;">{{ item?.tipoActualizacion }}</td>
+                                <td style="font-size: small;">{{item?.descripcion}}</td>
+                                <td style="font-size: small;">{{ item?.nombreUsuarioActualizo }}</td>
+                                <td style="font-size: small;"> {{item?.enviado }}</td>
+                                <td class="text-center">
+                                    @if(item.enviado == 'No'){
+                                        <p-button  type="button" (click)="enviarActualizacion(item.idActualizacion)" icon="pi pi-send"
+                                        >Enviar Actualización</p-button>
+                                    }
+                                </td>
+                                
+                            </tr>
+                        </ng-template>
+
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="5">Sin actualizaciones</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                  
+                </div>
+
+            </div>
+            <!--PROMOCIONES-->
+            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                <div class="relative overflow-x-auto">
+
+                    <p-table #dt [value]="promociones" dataKey="idActoReclamado" [expandedRowKeys]="expandedRows"
+                        (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
+                        <ng-template pTemplate="caption">
+                            <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                Promociones
+                            </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="header">
+                            <tr class="uppercase text-xs">
+                                <th></th>
+                                <th><div class="flex items-center justify-between">Folio origen</div></th>    
+                                <th><div class="flex items-center justify-between">Folio destino</div></th>       
+                                <th><div class="flex items-center justify-between">Fojas</div></th>
+                                <th><div class="flex items-center justify-between">Fecha origen</div></th>
+                                <th><div class="flex items-center justify-between">Fecha Recepción</div></th>
+                                <th><div class="flex items-center justify-between">Observaciones</div></th>
+  
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-item let-expanded="expanded" >
+                            <tr>
+                                <td><button 
+                                    type="button" 
+                                    pButton 
+                                    pRipple 
+                                    [icon]="filaExpandidaId === item.promo.idPromocionRecibida ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" 
+                                    (click)="toggleFilaExpandida(item.promo.idPromocionRecibida)">
+                                    </button>
+
+                                </td>
+                                <td style="font-size: small;">{{item?.promo.folioOrigenPromocion}}</td>
+                                <td style="font-size: small;">{{item?.promo.folioPromocionRecibida}}</td>
+                                <td style="font-size: small;">{{item?.promo.fojas}}</td>
+                                <td style="font-size: small;">{{item?.promo.fechaOrigen | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td style="font-size: small;">{{ item?.promo.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td style="font-size: small;"> {{item?.promo.observaciones }}</td>
+                            </tr>
+                            <!-- Expanded row details -->
+                            @if (filaExpandidaId === item.promo.idPromocionRecibida) {
+                                <tr >
+                                <td colspan="12" class="px-4 py-4">
+                                    <p class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Promoventes:</p>
+                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                        <thead class="uppercase text-xs">
+                                            <tr class="">
+                                            <th class="px-4 py-2">NOMBRE</th>
+                                            <th class="px-4 py-2">GÉNERO</th>
+                                            <th class="px-4 py-2">PERSONA MORAL</th>
+                                            <th class="px-4 py-2">TIPO DE PARTE</th>
+                                            <th class="px-4 py-2">CORREO ELECTRÓNICO</th>
+                                            <th class="px-4 py-2">TELÉFONO</th>
+                                            </tr>
+                                        </thead>
+                                        @for (promoventes of item.promoventes; track promoventes) {
+                                            <tbody>
+                                            <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                                <td class="px-4 py-2">{{ promoventes.nombre}} {{ promoventes.apellidoPaterno}} {{ promoventes.apellidoMaterno}}</td>
+                                                <td class="px-4 py-2">{{ promoventes.genero }}</td>
+                                                <td class="px-4 py-2">
+                                                @if(promoventes.esPersonaMoral){
+                                                    <p>Si</p>
+                                                }
+                                                @else{
+                                                <p>No</p>
+                                                }
+                                            </td>
+                                            <td class="px-4 py-2">{{ promoventes.tipoParteNombre }}</td>
+                                            <td class="px-4 py-2">{{ promoventes.correoElectronico }}</td>
+                                            <td class="px-4 py-2">{{ promoventes.telefono }}</td>
+                                            </tr>
+                                        </tbody>
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr >
+                                <td colspan="12" class="px-4 py-4">
+                                    <p class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Documentos:</p>
+                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                        <thead class="uppercase text-xs">
+                                            <tr class="">
+                                            <th class="px-4 py-2">NOMBRE</th>
+                                            <th class="px-4 py-2">TIPO DOCUMENTO</th>
+                                            <th class="px-4 py-2">FIRMADO</th>
+                                            <th class="px-4 py-2">FECHA FIRMADO</th>
+                                            <th class="px-4 py-2"></th>
+                                            </tr>
+                                        </thead>
+                                        @for (archivos of item.archivos; track archivos) {
+                                            <tbody>
+                                            <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                                <td class="px-4 py-2">{{ archivos.nombreArchivo}}</td>
+                                                <td class="px-4 py-2">{{ archivos.tipoDocumento.nombre }}</td>
+                                                <td class="px-4 py-2">
+                                                @if(archivos.firmado){
+                                                    <p>Si</p>
+                                                }
+                                                @else{
+                                                <p>No</p>
+                                                }
+                                            </td>
+                                            <td class="px-4 py-2">{{ archivos.fechaFirmado }}</td>
+                                            <td class="text-center">
+                                                <p-button (click)="mostrarArchivo(archivos,3)" severity="success" [rounded]="true"
+                                                        icon="pi pi-file-pdf" class="mr-2" title="descargar">
+                                                </p-button>
+                                            </td>
+                                            </tr>
+                                        </tbody>
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                            }
+                        </ng-template>
+                        
+
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="8">Sin promociones</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                  
+                </div>
+
+            </div>
+            <!--MOVIMIENTOS-->
+            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                <div class="relative overflow-x-auto">
+
+                    <p-table [value]="movimientos()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
+                        <ng-template #caption>
+                            <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                Movimientos
+                            </div>
+                        </ng-template>
+
+                        <ng-template #header>
+                            <tr class="uppercase text-xs">
+                                <th>
+                                    <div class="flex items-center justify-between">Usuario Turna</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Fecha de turno</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Usuario Recibe</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Fecha de Recepción</div>
+                                </th>
+                                <th>
+                                    <div class="flex items-center justify-between">Movimiento</div>
+                                </th>
+  
+                            </tr>
+                        </ng-template>
+
+                        <ng-template #body let-item >
+                            <tr>
+                                <td style="font-size: small;">{{item?.nombreUsuarioTurna }}</td>
+                                <td style="font-size: small;">{{ item?.fechaTurnado | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td style="font-size: small;">{{item?.nombreUsuarioRecibe }}</td>
+                                <td style="font-size: small;">{{ item?.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td class="text-center"> {{item?.movimiento }}</td>
+                                
+                            </tr>
+                        </ng-template>
+
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="5">Sin movimientos</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                  
+                </div>
+
+            </div>
+        </div>
+     </div>
+</div>
+
+
+<!--* MODAL DE CONFIRMACION PARA RECIBIR EL EXHORTO -->
+<app-confirm-dialog key="recibirExhorto" title="Confirmación" message="¿Está seguro de que desea recibir el exhorto?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA TURNAR UN EXHORTO -->
+<app-confirm-dialog key="turnarExhorto" title="Confirmación" message="¿Está seguro de que desea turnar el exhorto?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA REVOCAR UN TURNO -->
+<app-confirm-dialog key="revocarTurno" title="Confirmación" message="¿Está seguro de que desea revocar el turno?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA ENVIAR ACTUALIZACION -->
+<app-confirm-dialog key="enviarActualizacion" title="Confirmación" message="¿Está seguro de que desea enviar la actualización?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+
+
+
+<p-toast></p-toast>

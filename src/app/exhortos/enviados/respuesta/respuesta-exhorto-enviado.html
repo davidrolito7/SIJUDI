@@ -1,0 +1,164 @@
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+            <div class="flex items-start flex-col md:flex-row justify-between">
+                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                    Respuesta del exhorto 
+                </label>
+            </div>
+    </div>
+</div>
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+     <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div>
+            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Generales</div>
+        
+            @if (responseRespuestaExhortos()?.generales) {
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex flex-col space-y-2">
+                            <p class="text-gray-700 dark:text-gray-300"><b>Respuesta origen:</b> {{
+                            responseRespuestaExhortos()?.generales?.respuestaOrigenId }}</p>
+                            <p class="text-gray-700 dark:text-gray-300"><b>Área turnado:</b> {{
+                            responseRespuestaExhortos()?.generales?.areaTurnadoNombre }}</p>
+                            <p class="text-gray-700 dark:text-gray-300"><b>Municipio turnado:</b> {{
+                            responseRespuestaExhortos()?.generales?.municipioTurnado?.descripcion }}</p>
+                            <p class="text-gray-700 dark:text-gray-300"><b>Tipo diligenciado:</b> {{
+                            responseRespuestaExhortos()?.generales?.tipoDiligenciado?.descripcion }}</p>
+                    </div>
+                    <!-- Columna Derecha -->
+                    <div class="flex flex-col space-y-2">
+                            <p class="text-gray-700 dark:text-gray-300"><b>Número de exhorto:</b> {{
+                            responseRespuestaExhortos()?.generales?.numeroExhorto }}</p>
+                            <p class="text-gray-700 dark:text-gray-300"><b>Observaciones:</b> {{
+                        responseRespuestaExhortos()?.generales?.observaciones }}</p>
+                        <p class="text-gray-700 dark:text-gray-300"><b>Fecha recepción:</b> {{
+                        responseRespuestaExhortos()?.generales?.fechaHoraRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</p>
+                    </div>
+                    @if (!responseRespuestaExhortos()?.generales) {
+                        <div>
+                        <p class="text-gray-700 dark:text-gray-300">No hay datos generales disponibles.</p>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<!--documentos-->
+<div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+    <div class="relative overflow-x-auto">
+
+        <p-table [value]="responseRespuestaExhortos()?.archivos || []" >
+            <ng-template #caption>
+                <div class="flex uppercase justify-center items-center font-bold text-lg">
+                    Documentos
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <tr class="uppercase text-xs">
+                    <th>
+                        <div class="flex items-center justify-between">Nombre del documento</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Tipo de documento</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Firmado</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Fecha firmado</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Acciones</div>
+                    </th>
+
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-archivo >
+                <tr>
+                    <td style="font-size: small;">{{ archivo?.nombreArchivo }}</td>
+                    <td style="font-size: small;">{{ archivo?.tipoDocumento.nombre }}</td>
+                    <td style="font-size: small;">
+                        @if (archivo.firmado) {
+                                <span>Sí</span>
+                            }
+                            @else  {
+                                <span>No</span>
+                            }
+                    </td>
+                    <td style="font-size: small;">{{ archivo?.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                    <td class="text-center"> 
+                        <p-button (click)="mostrarArchivo(archivo,2)" severity="success" [rounded]="true"
+                                icon="pi pi-file-pdf" class="mr-2" title="descargar">
+                        </p-button>
+                    </td>
+
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="5">Sin documentos</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        @if(mostrarDocumento()){
+            <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+            </app-pdf-dialog>
+        }
+    </div>
+</div>
+
+<!--videos-->
+<div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+    <div class="relative overflow-x-auto">
+        <p-table [value]="responseRespuestaExhortos()?.videos || []" >
+            <ng-template #caption>
+                <div class="flex uppercase justify-center items-center font-bold text-lg">
+                    Videos
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <tr class="uppercase text-xs">
+                    <th>
+                        <div class="flex items-center justify-between">TÍTULO</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">DESCRIPCION</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">FECHA</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">URL</div>
+                    </th>
+                    
+
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-video >
+                <tr>
+                    <td style="font-size: small;">{{ video.titulo }}</td>
+                    <td style="font-size: small;">{{ video.descripcion  }}</td>
+                    <td style="font-size: small;">{{ video.fecha | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                    <td class="font-size: small;"> {{video.urlAcceso}}
+                       
+                    </td>
+
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="5">Sin videos</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+
+
