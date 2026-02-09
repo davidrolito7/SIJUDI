@@ -1,0 +1,66 @@
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+
+    <!-- HEADER -->
+    <app-breadcrub></app-breadcrub>
+
+  <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                Búsqueda
+            </label>
+
+
+        </div>
+
+        <div class="flex flex-wrap gap-4">
+            <div class="mx-4 py-4 flex flex-wrap items-center gap-4">
+          <p class="inline-flex items-center">Mostrar:</p>
+
+          <div class="flex items-center">
+                    <p-radiobutton name="filtro" value="0"   inputId="size_small" />
+                    <label for="0" class="ml-2">Todo</label>
+                </div>
+
+                 <div class="flex items-center">
+                    <p-radiobutton name="filtro" value="1"   inputId="size_small"/>
+                    <label for="1" class="ml-2">Pendiente</label>
+                </div>
+
+                 <div class="flex items-center">
+                    <p-radiobutton name="filtro" value="2"   inputId="size_small"/>
+                    <label for="2" class="ml-2">Expirado</label>
+                </div>
+
+                 <div class="flex items-center">
+                    <p-radiobutton name="filtro" value="3"  inputId="size_small"/>
+                    <label for="3" class="ml-2">Entregados</label>
+                </div>
+
+                 <div class="flex items-center">
+                    <p-radiobutton name="filtro" value="4" inputId="size_small"/>
+                    <label for="4" class="ml-2">Aceptado</label>
+                </div>
+
+                 <div class="flex items-center">
+                    <p-radiobutton name="filtro" value="5"  inputId="size_small"/>
+                    <label for="5"  class="ml-2">Rechazados</label>
+                </div>
+
+          
+                    </div>
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+</div>
