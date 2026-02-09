@@ -56,6 +56,81 @@
     </div>
 
 
+    <!-- CONTENIDO  -->
+
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+    <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div>
+            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
+            <!-- <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-users text-base! leading-normal!"></i>
+                    <span>332 Registros</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-globe text-base! leading-normal!"></i>
+                    <span>9.402 Sesiones</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-clock text-base! leading-normal!"></i>
+                    <span>2.32m Promedio</span>
+                </div>
+            </div> -->
+        </div>
+    </div>
+
+    <div class="card">
+        <p-table  [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [globalFilterFields]="['estadoOrigen','juzgadoOrigenNombre','numeroExpedienteOrigen','municipioDestino']">
+            <ng-template #caption>
+                <div class="flex">
+                    <!-- <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Buscar una palabra" />
+                    </p-iconfield> -->
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <tr>
+                    <th>
+                        <div class="flex items-center justify-between">Expediente</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Juzgado</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Fecha Limite</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Tiempo restante</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Estado</div>
+                    </th>
+                    
+                    <th style="min-width: 9rem">
+                        <div class="flex items-center justify-between">Acciones</div>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-listado>
+                <tr>
+                    <td></td>
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="8">Sin requerimientos.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
 
 
 
