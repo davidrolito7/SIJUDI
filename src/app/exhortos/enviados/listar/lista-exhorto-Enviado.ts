@@ -21,12 +21,12 @@ import { Router, RouterModule } from '@angular/router';
 import { ToastModule } from "primeng/toast";
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
-
-
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 @Component({
   selector: 'app-ListaExhortosEnviados',
   imports: [Button, TableModule, IconField, InputIcon, DatePicker, SelectModule, Avatar, Breadcrumb,
-    ToastModule, CardModule, PaginatorModule, FormsModule, CommonModule, InputTextModule, Spinner, Breadcrub],
+    ToastModule, CardModule, PaginatorModule, FormsModule, CommonModule, InputTextModule, Spinner, Breadcrub, TagModule, TooltipModule],
   templateUrl: './lista-exhorto-Enviado.html',
   styleUrl: './lista-exhorto-Enviado.css',
   providers: [MessageService]
@@ -228,17 +228,17 @@ export class ListaExhortosEnviados implements OnInit {
   }
 
  
-  selectClass(estatus: string){
-    if(estatus === 'Respondido'){
-      return 'bg-lime-600/50'
-    }else if(estatus === "Pendiente de enviar"){
-      return 'bg-orange-400/50'
-    }else if(estatus === "Enviado"){
-      return 'bg-lime-300/50'
-    }else{
-      return 'bg-blue-300/50'
+  getTagConfig(estatus: string): { icon: string; severity: 'success' | 'warn' | 'info' | 'secondary' } {
+    switch (estatus) {
+      case 'Respondido':
+        return { icon: 'pi pi-check', severity: 'success' };
+      case 'Pendiente de enviar':
+        return { icon: 'pi pi-exclamation-triangle', severity: 'warn' };
+      case 'Enviado':
+        return { icon: 'pi pi-send', severity: 'success' };
+      default:
+        return { icon: 'pi pi-info-circle', severity: 'info' };
     }
-
   }
   async catalogoEstatus(){
     await this.getlistadoEstatus();

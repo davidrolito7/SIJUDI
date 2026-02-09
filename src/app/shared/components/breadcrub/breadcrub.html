@@ -1,26 +1,60 @@
 <header
-        class="border border-surface rounded-2xl bg-surface-50 dark:bg-surface-900 flex items-center justify-between overflow-hidden">
-        <p-breadcrumb class="hidden lg:block" styleClass="bg-surface-50 dark:bg-surface-900" [home]="home"
-            [model]="items" />
+    class="border border-surface rounded-2xl bg-surface-50 dark:bg-surface-900 flex items-center justify-between overflow-hidden">
+    <p-breadcrumb class="hidden lg:block" styleClass="bg-surface-50 dark:bg-surface-900" [home]="home"
+        [model]="items" />
 
-        <div class="ml-auto flex items-center gap-3 pr-4 pt-2 pb-2">
-            <div class="flex flex-col leading-tight text-right">
-                <span class="text-base font-semibold text-surface-700 dark:text-surface-200">
-                     {{ abogadoNombre }}
-                </span>
+    <div class="ml-auto flex items-center gap-3 pr-4 pt-2 pb-2">
+        <div class="flex flex-col leading-tight text-right">
+            <span class="text-base font-semibold text-surface-700 dark:text-surface-200">
+                {{ abogadoNombre }}
+            </span>
 
-                <span class="text-xs text-surface-500 dark:text-surface-400">
-                    {{ areaNombre ? ('Área: ' + areaNombre) : '' }}
-                    {{ areaNombre && perfilNombre ? ' · ' : '' }}
-                    {{ perfilNombre ? ('Perfil: ' + perfilNombre) : '' }}
-                </span>
-            </div>
-
-            <p-avatar
-                [image]="abogadoFotoUrl"
-                size="large"
-                shape="circle"
-                class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component"
-            ></p-avatar>
+            <span class="text-xs text-surface-500 dark:text-surface-400">
+                {{ areaNombre ? ('Área: ' + areaNombre) : '' }}
+                {{ areaNombre && perfilNombre ? ' · ' : '' }}
+                {{ perfilNombre ? ('Perfil: ' + perfilNombre) : '' }}
+            </span>
         </div>
-    </header>
+
+        <button type="button" (click)="visibleDrawer = true" class="rounded-xl cursor-pointer"
+            aria-label="Abrir menú de usuario">
+
+            <p-avatar [image]="abogadoFotoUrl" size="large" shape="circle"
+                class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component"></p-avatar>
+
+        </button>
+    </div>
+</header>
+
+<p-drawer [(visible)]="visibleDrawer" position="right" styleClass="!w-full sm:!w-[30rem]">
+    <ng-template #headless>
+        <form class="flex flex-col">
+
+            <div class="flex align-items-center gap-3 p-6">
+                <p-avatar [image]="abogadoFotoUrl" size="large"
+                    class="rounded-xl overflow-hidden p-avatar p-avatar-image p-avatar-lg p-component"
+                    data-p="square large" pc1573="" data-pc-section="root" data-pc-name="avatar">
+                </p-avatar>
+                <div class="flex-1">
+                    <div class="leading-6 text-color font-medium">{{abogadoNombre}}</div>
+                    <div class="mt-1 leading-5 text-muted-color text-sm">{{ areaNombre ? ('Área: ' + areaNombre) : '' }}
+                        {{ areaNombre && perfilNombre ? ' · ' : '' }}
+                        {{ perfilNombre ? ('Perfil: ' + perfilNombre) : '' }}</div>
+                </div>
+                <p-button (onClick)="onLogout()" pTooltip="Cerrar Sesión" tooltipPosition="left" icon="pi pi-sign-out"
+                    text="" rounded="" severity="secondary" pc1574="" data-pc-section="host"></p-button>
+            </div>
+            <div class="bg-surface-50 border border-surface-0 m-6 rounded-lg  flex items-center justify-between p-1 ">
+                <label class="text-sm font-medium text-color pl-2">Perfil</label>
+
+                <button type="button"
+                    class="px-3 py-2 cursor-pointer rounded-lg bg-primary-400 hover:bg-primary text-surface-0 dark:text-surface-200 text-sm font-normal transition-all"
+                    (click)="onChangeProfile()">
+                    Cambiar de perfil
+                </button>
+            </div>
+        </form>
+    </ng-template>
+
+
+</p-drawer>

@@ -1,4 +1,4 @@
-import { Component, OnInit,ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ButtonModule } from "primeng/button";
 import { SelectModule } from 'primeng/select';
 import { Router, RouterLink } from "@angular/router";
@@ -28,9 +28,9 @@ import { After } from 'node:v8';
   templateUrl: './login2fase.html',
   styleUrl: './login2fase.css',
 })
-export class Login2 implements OnInit  {
+export class Login2 implements OnInit {
 
-  
+
 
 
   //* === FORMULARIOS ===
@@ -45,7 +45,7 @@ export class Login2 implements OnInit  {
   //       user: '',
   //       lastLoginUTC: new Date() };
 
-objectTwoAccess: twoAccess | null = null;
+  objectTwoAccess: twoAccess | null = null;
 
 
   codigo: string = '';
@@ -63,6 +63,8 @@ objectTwoAccess: twoAccess | null = null;
     private mensaje: MessageService,
     private fb: FormBuilder,
     private el: ElementRef,
+    private cdr: ChangeDetectorRef
+
 
   ) { }
 
@@ -71,7 +73,7 @@ objectTwoAccess: twoAccess | null = null;
     this.getGoogle();
     this.llavePrivadaForm = this.fb.group({
       password: ['', Validators.required]
-    });    
+    });
   }
 
   step: 1 | 2 = 1;
@@ -131,16 +133,17 @@ objectTwoAccess: twoAccess | null = null;
 
           this.objectTwoAccess = response.data;
 
-          
-          this.objectTwoAccess.encodedSecret=(this.objectTwoAccess.encodedSecret === null?'':this.objectTwoAccess.encodedSecret);
-         
+
+          this.objectTwoAccess.encodedSecret = (this.objectTwoAccess.encodedSecret === null ? '' : this.objectTwoAccess.encodedSecret);
+
           this.qrData = 'otpauth://totp/Oaxaca-TV-' + this.objectTwoAccess.user + '?secret=' + this.objectTwoAccess.encodedSecret;
-         // 
-    // refresca el tap para el uso del  QR
-      this.step=2;
-      this.step=1;
-         
-            
+          // 
+          // refresca el tap para el uso del  QR
+          this.step = 2;
+          this.step = 1;
+          this.cdr.detectChanges();  // <-- agregar: fuerza la actualización de la vista
+
+
 
 
         }
@@ -230,10 +233,9 @@ objectTwoAccess: twoAccess | null = null;
     });
   }
 
- 
-  codigoEnter(){
-    if(!this.codigo || this.codigo.trim()==='' || this.codigo === undefined)
-    {
+
+  codigoEnter() {
+    if (!this.codigo || this.codigo.trim() === '' || this.codigo === undefined) {
       this.mensaje.add({
         severity: 'error',
         summary: 'Error',
@@ -245,10 +247,9 @@ objectTwoAccess: twoAccess | null = null;
     else
       this.onValidarCodeAthenticator();
   }
-  contraseniaEnter(){
-    const pass =  this.llavePrivadaForm.get('password')!.value;
-    if(!pass || pass.trim()==='' || pass === undefined)
-    {
+  contraseniaEnter() {
+    const pass = this.llavePrivadaForm.get('password')!.value;
+    if (!pass || pass.trim() === '' || pass === undefined) {
       this.mensaje.add({
         severity: 'error',
         summary: 'Error',
@@ -260,7 +261,7 @@ objectTwoAccess: twoAccess | null = null;
       this.onValidarLlavePrivada();
   }
 
-     onLogout(): void {
+  onLogout(): void {
     this.tokenService.logout();
 
     this.router.navigate(['/login'], { replaceUrl: true });

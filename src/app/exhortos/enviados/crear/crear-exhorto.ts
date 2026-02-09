@@ -35,13 +35,14 @@ import { TableModule } from 'primeng/table';
 import { CheckboxModule } from 'primeng/checkbox';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { Spinner } from "../../../shared/components/spinner/spinner";
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 interface FileUploadSelectEvent {
   files: File[];
 }
 
 @Component({
   selector: 'app-crear',
-  imports: [FloatLabelModule, TableModule, CheckboxModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule, ConfirmDialogModule, InputMaskModule, ToastModule, MessageModule, FileUploadModule, PdfDialog, InputIconModule, Spinner],
+  imports: [FloatLabelModule, TableModule, CheckboxModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule, ConfirmDialogModule, InputMaskModule, ToastModule, MessageModule, FileUploadModule, PdfDialog, InputIconModule, Spinner, Breadcrub],
   templateUrl: './crear-exhorto.html',
   styleUrl: './crear-exhorto.css',
   providers: [MessageService, ConfirmationService]

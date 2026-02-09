@@ -21,10 +21,11 @@ import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm
 import generateExEnviadosPDF from '../../reportes/rptExhortoEnviado';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { TagModule } from "primeng/tag";
 
 @Component({
   selector: 'app-DetallesExhortoEnviado',
-  imports: [Breadcrumb, Avatar, Spinner, ToastModule, CommonModule, ButtonModule, TableModule, ConfirmDialog, DialogModule, PdfDialog, Breadcrub],
+  imports: [Breadcrumb, Avatar, Spinner, ToastModule, CommonModule, ButtonModule, TableModule, ConfirmDialog, DialogModule, PdfDialog, Breadcrub, TagModule],
   templateUrl: './detalles-exhorto-enviado.html',
   styleUrl: './detalles-exhorto-enviado.css',
   providers: [MessageService,ConfirmationService]
@@ -447,17 +448,17 @@ cargarActualizacionesDelExhorto()
     generateExEnviadosPDF(newObject as detalleExhortosEnviados, this.respuesta, this.listaActualizaciones);
   }
 
-  selectClass(estatus: string | undefined){
-    if(estatus === 'Respondido'){
-      return 'bg-lime-600/50'
-    }else if(estatus === "Pendiente de enviar"){
-      return 'bg-orange-400/50'
-    }else if(estatus === "Enviado"){
-      return 'bg-violeta/50'
-    }else{
-      return 'bg-blue-300/50'
+  getTagConfig(estatus: string): { icon: string; severity: 'success' | 'warn' | 'info' | 'secondary' } {
+    switch (estatus) {
+      case 'Respondido':
+        return { icon: 'pi pi-check', severity: 'success' };
+      case 'Pendiente de enviar':
+        return { icon: 'pi pi-exclamation-triangle', severity: 'warn' };
+      case 'Enviado':
+        return { icon: 'pi pi-send', severity: 'success' };
+      default:
+        return { icon: 'pi pi-info-circle', severity: 'info' };
     }
-
   }
 
   GetSeccionesUsuario(): Promise<void>{

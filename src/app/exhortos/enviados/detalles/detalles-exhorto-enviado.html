@@ -4,670 +4,740 @@
 
     <!-- HEADER -->
 
-<app-breadcrub></app-breadcrub>
+    <app-breadcrub></app-breadcrub>
 
-    <!-- BUSQUEDA -->
-    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
-            <div class="flex items-start flex-col md:flex-row justify-between">
-                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-                    Búsqueda 
-                </label>
-                @if(tienePermisoPromover()){
-                    @if ((detallesExhortos()?.generales?.estatus  === 'Enviado')) {
-                    <div class="relative">
-                        <p-button 
-                        (click)="promoverExhortoEnviado()"
-                                            class="text-white bg-morado hover:bg-morado_hover focus:outline-none focus:ring-4
-                                                focus:ring-blue-300 font-medium rounded-full text-sm px-8 py-2.5
-                                                    text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Promover
-                        </p-button>
+
+    <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+        <div class="flex items-start flex-col md:justify-between md:flex-row">
+            <div>
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+                    <div class="font-bold text-2xl text-surface-900 dark:text-surface-0">Detalle de exhorto enviado
                     </div>
-                    }
-                }
-               <!--@if(tieneRespuesta){
-                <div class="relative">
-                    <p-button (click)="verRespuestasExhorto()" 
-                    class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
-                    Ver respuestas</p-button>
+
+                    <div class="flex flex-wrap gap-2">
+                        @if(tienePermisoPromover()){
+                        @if (detallesExhortos()?.generales?.estatus === 'Enviado') {
+                        <p-button (click)="promoverExhortoEnviado()" label="Promover"
+                            class="text-white bg-morado hover:bg-morado_hover focus:outline-none focus:ring-2 focus:ring-morado/50 font-medium rounded-full text-sm  " />
+                        }
+                        }
+                        @if(tienePermisoVerRespuesta()){
+                        @if (detallesExhortos()?.generales?.estatus === 'Respondido') {
+                        <p-button (click)="verRespuestasExhorto()" label="Ver respuestas"
+                            class="text-white bg-violeta hover:bg-morado focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-6 py-2.5" />
+                        }
+                        }
+                        @if(tienePermisoEditarExhorto()){
+                        @if (detallesExhortos()?.generales?.estatus === 'Pendiente de enviar' ||
+                        detallesExhortos()?.generales?.estatus === 'En proceso de envío') {
+                        <p-button (click)="editarExhorto()" label="Editar"
+                            class="text-white bg-violeta hover:bg-morado focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-6 py-2.5" />
+                        }
+                        }
+                    </div>
                 </div>
-                }-->
-                @if(tienePermisoVerRespuesta()){
-                    @if (detallesExhortos()?.generales?.estatus === 'Respondido') {
-                    <div class="relative">
-                        <p-button (click)="verRespuestasExhorto()"
-                        class="text-white bg-violeta hover:bg-morado focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Ver respuestas</p-button>
-                    </div>
-                    }
-                }
-                @if(tienePermisoEditarExhorto()){
-                    @if (detallesExhortos()?.generales?.estatus === 'Pendiente de enviar' || detallesExhortos()?.generales?.estatus === 'En proceso de envío') {
-                    <div class="relative">
-                        <p-button  (click)="editarExhorto()"
-                        class="text-white bg-violeta hover:bg-morado focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
-                        Editar</p-button>
-                    </div>
-                    }
-                }
-            </div>
-            <div id="date-range-picker" date-rangepicker class="flex items-center">
 
-                
-                
-              
-             
-              
-              
-            </div>
-            
-    </div>
-
-</div>
-
-<!-- CONTENIDO (ya no se mete "debajo" visualmente) -->
-
-
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
-     <div class="flex items-start flex-col md:justify-between md:flex-row">
-        <div>
-            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
-            <!-- <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-users text-base! leading-normal!"></i>
-                    <span>332 Registros</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-globe text-base! leading-normal!"></i>
-                    <span>9.402 Sesiones</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-clock text-base! leading-normal!"></i>
-                    <span>2.32m Promedio</span>
-                </div>
-            </div> -->
-            <div class="p-1 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
-            
-            
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Mostrar datos generales si están disponibles -->
-                <div class="overflow-x-auto p-4">
-                  <div class="panel border bg-white">
-                    <div class="panel-heading btn-secondary rounded-lg">
-                      <h3 class="pt-3 font-weight-bold">Información de origen</h3>
-                    </div>
-                    <div class="panel-body p-3">
-                      <div class="flex flex-col space-y-2">
-                        <div class="overflow-x-auto"> <!-- Contenedor responsivo -->
-                          <table class="table-auto md:table-fixed w-full">
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>ExhortoOrigenId: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.idExhortoEnviado }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Num Exhorto: </b></p></td>
-                              <td class="col2"><span class="text-red-500 font-bold">{{ detallesExhortos()?.generales?.numeroExhorto }}</span></td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Municipio: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.municipioOrigen }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Juzgado: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.juzgadoOrigenNombre }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Expediente: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.numeroExpedienteOrigen }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Oficio: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.numeroOficioOrigen }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Fecha envío: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.fechaOrigen | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Juez: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.juezExhortante }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Fojas: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.fojas }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Tipo de juicio: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.tipoJuicioAsuntoDelitos }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Tipo diligenciación: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.tipoDiligenciacionNombre }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Observaciones: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.observaciones }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300" ><b>Estatus: </b></p></td>
-                              <td class="col2" >
-                                <span [ngClass]="selectClass(detallesExhortos()?.generales?.estatus)">
-                                  {{ detallesExhortos()?.generales?.estatus }}
-                                </span>
-                              </td>
-                            </tr>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="overflow-x-auto p-4">
-                  <div class="panel border bg-white">
-                    <div class="panel-heading btn-secondary rounded-lg">
-                      <h3 class="pt-3 font-weight-bold">Información destino</h3>
-                    </div>
-                    <div class="panel-body p-3">
-                      <div class="flex flex-col space-y-2">
-                        <div class="overflow-x-auto"> <!-- Contenedor responsivo -->
-                          <table class="table-auto md:table-fixed w-full">
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Fecha recepción: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.fechaHoraRecepcion | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Folio seguimiento: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.folioSeguimiento }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Materia: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.materiaNombre }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Estado: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.estadoDestino }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Municipio: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.municipioDestino }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Municipio turnado: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.municipioTurnado }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Area turnado: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.areaTurnadoNombre }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Días/responder: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.diasResponder }}</td>
-                            </tr>
-                            <tr>
-                              <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Url: </b></p></td>
-                              <td class="col2">{{ detallesExhortos()?.generales?.urlInfo }}</td>
-                            </tr>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                @if (!detallesExhortos()?.generales) {
-                  <div>
-                    <p class="text-gray-700 dark:text-gray-300">No hay datos generales disponibles.</p>
-                  </div>
-                }
-              </div>
-            
-
-            </div>
-            <!-- BOTON PARA IMPRIMIR REPORTE pdf -->
-            <div style="display: flex;justify-content: flex-end;">
-                <p-button  (click)="pdf()" severity="success" [rounded]="true"
-                        icon="pi pi-file-pdf" class="mr-2" title="descargar">
-                </p-button>
-            </div>
-            <!--PARTES-->
-            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
-                <div class="relative overflow-x-auto">
-                    
-                    <p-table [value]="detallesExhortos()?.partes || []" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
-                        <ng-template #caption>
-                            <div class="flex uppercase justify-center items-center font-bold text-lg">
-                                Partes
+               
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div class="overflow-x-auto">
+                        <div class="border border-surface rounded-2xl overflow-hidden bg-surface-0 dark:bg-surface-800">
+                            <div class="bg-secondary dark:bg-surface-700 px-4 py-3">
+                                <h3 class="text-lg font-medium text-surface-0 ">
+                                    Información de origen
+                                </h3>
                             </div>
-                        </ng-template>
+                            <div class="p-4">
+                                <div class="overflow-x-auto">
+                                    <table
+                                        class="table-auto md:table-fixed w-full text-surface-700 dark:text-surface-200">
 
-                        <ng-template #header>
-                            <tr class="uppercase text-xs">
-                                <th>
-                                    <div class="flex items-center justify-between">NOMBRE</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">GÉNERO</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Tipo Persona</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Tipo parte</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">CORREO ELECTRÓNICO</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">TELÉFONO</div>
-                                </th>
-                                
-                                
-                            </tr>
-                        </ng-template>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>ExhortoOrigenId:
+                                                    </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.idExhortoEnviado }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Num Exhorto: </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200"><span
+                                                    class="text-red-500 font-bold">{{
+                                                    detallesExhortos()?.generales?.numeroExhorto }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Municipio: </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.municipioOrigen }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Juzgado: </b></p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.juzgadoOrigenNombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Expediente: </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.numeroExpedienteOrigen }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Oficio: </b></p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.numeroOficioOrigen }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Fecha envío: </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.fechaOrigen |
+                                                date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Juez: </b></p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.juezExhortante }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Fojas: </b></p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.fojas }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Tipo de juicio:
+                                                    </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.tipoJuicioAsuntoDelitos }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Tipo
+                                                        diligenciación:
+                                                    </b></p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.tipoDiligenciacionNombre }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Observaciones:
+                                                    </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesExhortos()?.generales?.observaciones }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Estatus: </b></p>
+                                            </td>
+                                            <td class="col2">
+                                                <p-tag
+                                                    [icon]="getTagConfig(detallesExhortos()?.generales?.estatus || '').icon"
+                                                    [severity]="getTagConfig(detallesExhortos()?.generales?.estatus || '').severity"
+                                                    [value]="detallesExhortos()?.generales?.estatus || ''" />
 
-                        <ng-template #body let-partes >
-                            <tr>
-                                <td style="font-size: small;">{{ partes?.nombre }} {{ partes?.apellidoPaterno }} {{ partes?.apellidoMaterno }}</td>
-                                <td style="font-size: small;">{{ partes?.genero}}</td>
-                                <td style="font-size: small;">
-                                    @if (partes?.esPersonaMoral) {
-                                            <span>Moral</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <div class="border border-surface rounded-2xl overflow-hidden bg-surface-0 dark:bg-surface-800">
+                            <div class="bg-secondary dark:bg-surface-700 px-4 py-3">
+                                <h3 class="font-medium text-lg text-surface-0">Información de origen
+                                </h3>
+                            </div>
+                            <div class="p-4">
+                                <div class="overflow-x-auto">
+                                    <table
+                                        class="table-auto md:table-fixed w-full text-surface-700 dark:text-surface-200">
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Fecha recepción:
+                                                    </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2">{{ detallesExhortos()?.generales?.fechaHoraRecepcion |
+                                                date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Folio seguimiento:
+                                                    </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2">{{ detallesExhortos()?.generales?.folioSeguimiento }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Materia: </b></p>
+                                            </td>
+                                            <td class="col2">{{ detallesExhortos()?.generales?.materiaNombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Estado: </b></p>
+                                            </td>
+                                            <td class="col2">{{ detallesExhortos()?.generales?.estadoDestino }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Municipio: </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2">{{ detallesExhortos()?.generales?.municipioDestino }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Municipio turnado:
+                                                    </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2">{{ detallesExhortos()?.generales?.municipioTurnado }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Area turnado: </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2">{{ detallesExhortos()?.generales?.areaTurnadoNombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Días/responder:
+                                                    </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2">{{ detallesExhortos()?.generales?.diasResponder }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Url: </b></p>
+                                            </td>
+                                            <td class="col2">{{ detallesExhortos()?.generales?.urlInfo }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (!detallesExhortos()?.generales) {
+                    <div>
+                        <p class="text-surface-600  dark:text-surface-300">No hay datos generales disponibles.</p>
+                    </div>
+                    }
+                </div>
+
+
+
+                <!-- BOTON PARA IMPRIMIR REPORTE pdf -->
+                <div style="display: flex;justify-content: flex-end;">
+                    <p-button (click)="pdf()" severity="success" [rounded]="true" icon="pi pi-file-pdf" class="mr-2"
+                        title="descargar">
+                    </p-button>
+                </div>
+                <!--PARTES-->
+                <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                    <div class="relative overflow-x-auto">
+
+                        <p-table [value]="detallesExhortos()?.partes || []" [rows]="10"
+                            [rowsPerPageOptions]="[10, 25, 50]">
+                            <ng-template #caption>
+                                <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                    Partes
+                                </div>
+                            </ng-template>
+
+                            <ng-template #header>
+                                <tr class="uppercase text-xs">
+                                    <th>
+                                        <div class="flex items-center justify-between">NOMBRE</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">GÉNERO</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Tipo Persona</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Tipo parte</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">CORREO ELECTRÓNICO</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">TELÉFONO</div>
+                                    </th>
+
+
+                                </tr>
+                            </ng-template>
+
+                            <ng-template #body let-partes>
+                                <tr>
+                                    <td style="font-size: small;">{{ partes?.nombre }} {{ partes?.apellidoPaterno }} {{
+                                        partes?.apellidoMaterno }}</td>
+                                    <td style="font-size: small;">{{ partes?.genero}}</td>
+                                    <td style="font-size: small;">
+                                        @if (partes?.esPersonaMoral) {
+                                        <span>Moral</span>
                                         }
                                         @else {
-                                            <span>Física</span>
+                                        <span>Física</span>
                                         }
-                                </td>
-                                <td style="font-size: small;">{{ partes?.tipoParteNombre }}</td>
-                                <td style="font-size: small;">{{ partes?.correoElectronico }}</td>
-                                <td style="font-size: small;">{{ partes?.telefono  }}</td>
-                                
-                            </tr>
-                        </ng-template>
+                                    </td>
+                                    <td style="font-size: small;">{{ partes?.tipoParteNombre }}</td>
+                                    <td style="font-size: small;">{{ partes?.correoElectronico }}</td>
+                                    <td style="font-size: small;">{{ partes?.telefono }}</td>
 
-                        <ng-template #emptymessage>
-                            <tr>
-                                <td colspan="6">Sin partes</td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                  
+                                </tr>
+                            </ng-template>
+
+                            <ng-template #emptymessage>
+                                <tr>
+                                    <td colspan="6">Sin partes</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+
+                    </div>
+
                 </div>
+                <!--PROMOVENTES-->
+                <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                    <div class="relative overflow-x-auto">
 
-            </div>
-            <!--PROMOVENTES-->
-            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
-                <div class="relative overflow-x-auto">
+                        <p-table [value]="detallesExhortos()?.promoventes || []" [rows]="10"
+                            [rowsPerPageOptions]="[10, 25, 50]">
+                            <ng-template #caption>
+                                <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                    Promoventes
+                                </div>
+                            </ng-template>
 
-                    <p-table [value]="detallesExhortos()?.promoventes || []" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
-                        <ng-template #caption>
-                            <div class="flex uppercase justify-center items-center font-bold text-lg">
-                                Promoventes
-                            </div>
-                        </ng-template>
+                            <ng-template #header>
+                                <tr class="uppercase text-xs">
+                                    <th>
+                                        <div class="flex items-center justify-between">NOMBRE</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">GÉNERO</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Tipo Persona</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Tipo parte</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">CORREO ELECTRÓNICO</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">TELÉFONO</div>
+                                    </th>
 
-                        <ng-template #header>
-                            <tr class="uppercase text-xs">
-                                <th>
-                                    <div class="flex items-center justify-between">NOMBRE</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">GÉNERO</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Tipo Persona</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Tipo parte</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">CORREO ELECTRÓNICO</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">TELÉFONO</div>
-                                </th>
-                                
-                                
-                            </tr>
-                        </ng-template>
 
-                        <ng-template #body let-promoventes >
-                            <tr>
-                                <td style="font-size: small;">{{ promoventes?.nombre }} {{ promoventes?.apellidoPaterno }} {{ promoventes?.apellidoMaterno }}</td>
-                                <td style="font-size: small;">{{ promoventes?.genero}}</td>
-                                <td style="font-size: small;">
-                                    @if (promoventes?.esPersonaMoral) {
-                                            <span>Moral</span>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template #body let-promoventes>
+                                <tr>
+                                    <td style="font-size: small;">{{ promoventes?.nombre }} {{
+                                        promoventes?.apellidoPaterno
+                                        }}
+                                        {{ promoventes?.apellidoMaterno }}</td>
+                                    <td style="font-size: small;">{{ promoventes?.genero}}</td>
+                                    <td style="font-size: small;">
+                                        @if (promoventes?.esPersonaMoral) {
+                                        <span>Moral</span>
                                         }
                                         @else {
-                                            <span>Física</span>
+                                        <span>Física</span>
                                         }
-                                </td>
-                                <td style="font-size: small;">{{ promoventes?.tipoParteNombre }}</td>
-                                <td style="font-size: small;">{{ promoventes?.correoElectronico }}</td>
-                                <td style="font-size: small;">{{ promoventes?.telefono  }}</td>
-                                
-                            </tr>
-                        </ng-template>
+                                    </td>
+                                    <td style="font-size: small;">{{ promoventes?.tipoParteNombre }}</td>
+                                    <td style="font-size: small;">{{ promoventes?.correoElectronico }}</td>
+                                    <td style="font-size: small;">{{ promoventes?.telefono }}</td>
 
-                        <ng-template #emptymessage>
-                            <tr>
-                                <td colspan="6">Sin promoventes</td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                  
+                                </tr>
+                            </ng-template>
+
+                            <ng-template #emptymessage>
+                                <tr>
+                                    <td colspan="6">Sin promoventes</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+
+                    </div>
+
                 </div>
+                <!--DOCUMENTOS-->
+                <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                    <div class="relative overflow-x-auto">
 
-            </div>
-            <!--DOCUMENTOS-->
-            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
-                <div class="relative overflow-x-auto">
+                        <p-table [value]="detallesExhortos()?.archivos || []" [rows]="10"
+                            [rowsPerPageOptions]="[10, 25, 50]">
+                            <ng-template #caption>
+                                <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                    Documentos
+                                </div>
+                            </ng-template>
 
-                    <p-table [value]="detallesExhortos()?.archivos || []" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
-                        <ng-template #caption>
-                            <div class="flex uppercase justify-center items-center font-bold text-lg">
-                                Documentos
-                            </div>
-                        </ng-template>
+                            <ng-template #header>
+                                <tr class="uppercase text-xs">
+                                    <th>
+                                        <div class="flex items-center justify-between">Nombre del documento</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Tipo de documento</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Firmado</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Fecha firmado</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Acciones</div>
+                                    </th>
 
-                        <ng-template #header>
-                            <tr class="uppercase text-xs">
-                                <th>
-                                    <div class="flex items-center justify-between">Nombre del documento</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Tipo de documento</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Firmado</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Fecha firmado</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Acciones</div>
-                                </th>
-  
-                            </tr>
-                        </ng-template>
+                                </tr>
+                            </ng-template>
 
-                        <ng-template #body let-archivo >
-                            <tr>
-                                <td style="font-size: small;">{{ archivo?.nombreArchivo }}</td>
-                                <td style="font-size: small;">{{ archivo?.tipoDocumento.nombre }}</td>
-                                <td style="font-size: small;">
-                                    @if (archivo.firmado) {
-                                            <span>Sí</span>
+                            <ng-template #body let-archivo>
+                                <tr>
+                                    <td style="font-size: small;">{{ archivo?.nombreArchivo }}</td>
+                                    <td style="font-size: small;">{{ archivo?.tipoDocumento.nombre }}</td>
+                                    <td style="font-size: small;">
+                                        @if (archivo.firmado) {
+                                        <span>Sí</span>
                                         }
-                                        @else  {
-                                            <span>No</span>
+                                        @else {
+                                        <span>No</span>
                                         }
-                                </td>
-                                <td style="font-size: small;">{{ archivo?.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                <td class="text-center"> 
-                                    <p-button (click)="mostrarArchivo(archivo,2)" severity="success" [rounded]="true"
-                                            icon="pi pi-file-pdf" class="mr-2" title="descargar">
-                                    </p-button>
-                                </td>
+                                    </td>
+                                    <td style="font-size: small;">{{ archivo?.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss'
+                                        }}
+                                    </td>
+                                    <td class="text-center">
+                                        <p-button (click)="mostrarArchivo(archivo,2)" severity="success"
+                                            [rounded]="true" icon="pi pi-file-pdf" class="mr-2" title="descargar">
+                                        </p-button>
+                                    </td>
 
-                            </tr>
-                        </ng-template>
+                                </tr>
+                            </ng-template>
 
-                        <ng-template #emptymessage>
-                            <tr>
-                                <td colspan="5">Sin documentos</td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                    @if(mostrarDocumento()){
+                            <ng-template #emptymessage>
+                                <tr>
+                                    <td colspan="5">Sin documentos</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        @if(mostrarDocumento()){
                         <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
                         </app-pdf-dialog>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
-            <!--ACTUALIZACIONES-->
-            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
-                <div class="relative overflow-x-auto">
+                <!--ACTUALIZACIONES-->
+                <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                    <div class="relative overflow-x-auto">
 
-                    <p-table [value]="listaActualizaciones" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
-                        <ng-template #caption>
-                            <div class="flex uppercase justify-center items-center font-bold text-lg">
-                                Actualizaciones
-                            </div>
-                        </ng-template>
+                        <p-table [value]="listaActualizaciones" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
+                            <ng-template #caption>
+                                <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                    Actualizaciones
+                                </div>
+                            </ng-template>
 
-                        <ng-template #header>
-                            <tr class="uppercase text-xs">
-                                <th>
-                                    <div class="flex items-center justify-between">Id Origen</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Tipo actualización</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Fecha y hora</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Fecha y hora de recepción</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Descripción</div>
-                                </th>
-  
-                            </tr>
-                        </ng-template>
+                            <ng-template #header>
+                                <tr class="uppercase text-xs">
+                                    <th>
+                                        <div class="flex items-center justify-between">Id Origen</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Tipo actualización</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Fecha y hora</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Fecha y hora de recepción</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Descripción</div>
+                                    </th>
 
-                        <ng-template #body let-item >
-                            <tr>
-                                <td style="font-size: small;">{{item?.actualizacionOrigenId }}</td>
-                                <td style="font-size: small;">{{ item?.tipoActualizacionNombre }}</td>
-                                <td style="font-size: small;">{{item?.fechaHora | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                                <td style="font-size: small;">{{ item?.fechaHoraRecibido | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                <td class="text-center"> {{item?.descripcion }}</td>
-                                
-                            </tr>
-                        </ng-template>
+                                </tr>
+                            </ng-template>
 
-                        <ng-template #emptymessage>
-                            <tr>
-                                <td colspan="5">Sin actualizaciones</td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                  
+                            <ng-template #body let-item>
+                                <tr>
+                                    <td style="font-size: small;">{{item?.actualizacionOrigenId }}</td>
+                                    <td style="font-size: small;">{{ item?.tipoActualizacionNombre }}</td>
+                                    <td style="font-size: small;">{{item?.fechaHora | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                    <td style="font-size: small;">{{ item?.fechaHoraRecibido | date:'yyyy-MM-dd
+                                        HH:mm:ss' }}
+                                    </td>
+                                    <td class="text-center"> {{item?.descripcion }}</td>
+
+                                </tr>
+                            </ng-template>
+
+                            <ng-template #emptymessage>
+                                <tr>
+                                    <td colspan="5">Sin actualizaciones</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+
+                    </div>
+
                 </div>
+                <!--PROMOCIONES-->
+                <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                    <div class="relative overflow-x-auto">
 
-            </div>
-            <!--PROMOCIONES-->
-            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
-                <div class="relative overflow-x-auto">
+                        <p-table #dt [value]="detallesExhortosPromocion()" dataKey="idActoReclamado">
+                            <ng-template pTemplate="caption">
+                                <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                    Promociones
+                                </div>
+                            </ng-template>
 
-                    <p-table #dt [value]="detallesExhortosPromocion()" dataKey="idActoReclamado">
-                        <ng-template pTemplate="caption">
-                            <div class="flex uppercase justify-center items-center font-bold text-lg">
-                                Promociones
-                            </div>
-                        </ng-template>
+                            <ng-template pTemplate="header">
+                                <tr class="uppercase text-xs">
+                                    <th></th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Folio origen</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Folio destino</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Fojas</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Fecha origen</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Fecha Recepción</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Observaciones</div>
+                                    </th>
+                                    <th style="min-width: 5rem">
+                                        <div class="flex items-center justify-between">Acciones</div>
+                                    </th>
 
-                        <ng-template pTemplate="header">
-                            <tr class="uppercase text-xs">
-                                <th></th>
-                                <th><div class="flex items-center justify-between">Folio origen</div></th>    
-                                <th><div class="flex items-center justify-between">Folio destino</div></th>       
-                                <th><div class="flex items-center justify-between">Fojas</div></th>
-                                <th><div class="flex items-center justify-between">Fecha origen</div></th>
-                                <th><div class="flex items-center justify-between">Fecha Recepción</div></th>
-                                <th><div class="flex items-center justify-between">Observaciones</div></th>
-                                <th style="min-width: 5rem">
-                                    <div class="flex items-center justify-between">Acciones</div>
-                                </th>
-  
-                            </tr>
-                        </ng-template>
+                                </tr>
+                            </ng-template>
 
-                        <ng-template pTemplate="body" let-item let-expanded="expanded" >
-                            <tr>
-                                <td><button 
-                                    type="button" 
-                                    pButton 
-                                    pRipple 
-                                    [icon]="filaExpandidaId === item.idPromocionEnviado ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" 
-                                    (click)="toggleFilaExpandida(item.idPromocionEnviado)">
-                                    </button>
+                            <ng-template pTemplate="body" let-item let-expanded="expanded">
+                                <tr>
+                                    <td><button type="button" pButton pRipple
+                                            [icon]="filaExpandidaId === item.idPromocionEnviado ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                                            (click)="toggleFilaExpandida(item.idPromocionEnviado)">
+                                        </button>
 
-                                </td>
-                                <td style="font-size: small;">{{item?.folioOrigenPromocion}}</td>
-                                <td style="font-size: small;">{{item?.folioPromocionRecibida}}</td>
-                                <td style="font-size: small;">{{item?.fojas}}</td>
-                                <td style="font-size: small;">{{item?.fechaOrigen}}</td>
-                                <td style="font-size: small;">{{ item?.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                <td style="font-size: small;"> {{item?.observaciones }}</td>
-                               
-                                <td class="text-center">
-                                    @if(item.fechaHora == null){
-                                          @if(tienePermisoPromocionEditar()){
-                                            <p-button (onClick)="redirectToPromocion(idExhortoEnviado, item.idPromocionEnviado)" severity="success"
-                                              >Editar
-                                            </p-button>
-                                          }
-                                          @if(tienePermisoPromocionEnviarGenerales()){
-                                            <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                                            <p-button (onClick)="enviarPromocionGenerales( item.idPromocionEnviado)" icon="pi pi-send" severity="success"
-                                              > Enviar generales
-                                            </p-button>
-                                            
-                                          }
+                                    </td>
+                                    <td style="font-size: small;">{{item?.folioOrigenPromocion}}</td>
+                                    <td style="font-size: small;">{{item?.folioPromocionRecibida}}</td>
+                                    <td style="font-size: small;">{{item?.fojas}}</td>
+                                    <td style="font-size: small;">{{item?.fechaOrigen}}</td>
+                                    <td style="font-size: small;">{{ item?.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss'
+                                        }}
+                                    </td>
+                                    <td style="font-size: small;"> {{item?.observaciones }}</td>
+
+                                    <td class="text-center">
+                                        @if(item.fechaHora == null){
+                                        @if(tienePermisoPromocionEditar()){
+                                        <p-button
+                                            (onClick)="redirectToPromocion(idExhortoEnviado, item.idPromocionEnviado)"
+                                            severity="success">Editar
+                                        </p-button>
+                                        }
+                                        @if(tienePermisoPromocionEnviarGenerales()){
+                                        <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
+                                        <p-button (onClick)="enviarPromocionGenerales( item.idPromocionEnviado)"
+                                            icon="pi pi-send" severity="success"> Enviar generales
+                                        </p-button>
+
+                                        }
                                         }
                                         @if(item.fechaRecepcion == null && item.fechaHora != null){
-                                          @if(tienePermisoPromocionEnviarArchivos()){
-                                            <p-button type="button" (click)="enviarPromocionArchivos(item.idPromocionEnviado)" icon="pi pi-send" severity="success"
-                                              > Enviar archivos
-                                            </p-button>
+                                        @if(tienePermisoPromocionEnviarArchivos()){
+                                        <p-button type="button"
+                                            (click)="enviarPromocionArchivos(item.idPromocionEnviado)" icon="pi pi-send"
+                                            severity="success"> Enviar archivos
+                                        </p-button>
 
-                                          }
                                         }
-                                </td>
-                            </tr>
-                            <!-- Expanded row details -->
-                            @if (filaExpandidaId === item.idPromocionEnviado) {
-                                <tr >
-                                <td colspan="12" class="px-4 py-4">
-                                    <p class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Promoventes:</p>
-                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                        <thead class="uppercase text-xs">
-                                            <tr class="">
-                                            <th class="px-4 py-2">NOMBRE</th>
-                                            <th class="px-4 py-2">GÉNERO</th>
-                                            <th class="px-4 py-2">PERSONA MORAL</th>
-                                            <th class="px-4 py-2">TIPO DE PARTE</th>
-                                            <th class="px-4 py-2">CORREO ELECTRÓNICO</th>
-                                            <th class="px-4 py-2">TELÉFONO</th>
-                                            </tr>
-                                        </thead>
-                                        @for (promoventes of item.promoventes; track promoventes) {
+                                        }
+                                    </td>
+                                </tr>
+                                <!-- Expanded row details -->
+                                @if (filaExpandidaId === item.idPromocionEnviado) {
+                                <tr>
+                                    <td colspan="12" class="px-4 py-4">
+                                        <p class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Promoventes:</p>
+                                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                            <thead class="uppercase text-xs">
+                                                <tr class="">
+                                                    <th class="px-4 py-2">NOMBRE</th>
+                                                    <th class="px-4 py-2">GÉNERO</th>
+                                                    <th class="px-4 py-2">PERSONA MORAL</th>
+                                                    <th class="px-4 py-2">TIPO DE PARTE</th>
+                                                    <th class="px-4 py-2">CORREO ELECTRÓNICO</th>
+                                                    <th class="px-4 py-2">TELÉFONO</th>
+                                                </tr>
+                                            </thead>
+                                            @for (promoventes of item.promoventes; track promoventes) {
                                             <tbody>
-                                            <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
-                                                <td class="px-4 py-2">{{ promoventes.nombre}} {{ promoventes.apellidoPaterno}} {{ promoventes.apellidoMaterno}}</td>
-                                                <td class="px-4 py-2">{{ promoventes.genero }}</td>
-                                                <td class="px-4 py-2">
-                                                @if(promoventes.esPersonaMoral){
-                                                    <p>Si</p>
-                                                }
-                                                @else{
-                                                <p>No</p>
-                                                }
-                                            </td>
-                                            <td class="px-4 py-2">{{ promoventes.tipoParteNombre }}</td>
-                                            <td class="px-4 py-2">{{ promoventes.correoElectronico }}</td>
-                                            <td class="px-4 py-2">{{ promoventes.telefono }}</td>
-                                            </tr>
-                                        </tbody>
-                                        }
-                                    </table>
-                                </td>
-                            </tr>
-                            }
-                        </ng-template>
-                        
+                                                <tr
+                                                    class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                                    <td class="px-4 py-2">{{ promoventes.nombre}} {{
+                                                        promoventes.apellidoPaterno}} {{ promoventes.apellidoMaterno}}
+                                                    </td>
+                                                    <td class="px-4 py-2">{{ promoventes.genero }}</td>
+                                                    <td class="px-4 py-2">
+                                                        @if(promoventes.esPersonaMoral){
+                                                        <p>Si</p>
+                                                        }
+                                                        @else{
+                                                        <p>No</p>
+                                                        }
+                                                    </td>
+                                                    <td class="px-4 py-2">{{ promoventes.tipoParteNombre }}</td>
+                                                    <td class="px-4 py-2">{{ promoventes.correoElectronico }}</td>
+                                                    <td class="px-4 py-2">{{ promoventes.telefono }}</td>
+                                                </tr>
+                                            </tbody>
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                                }
+                            </ng-template>
 
-                        <ng-template pTemplate="emptymessage">
-                            <tr>
-                                <td colspan="8">Sin promociones</td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                  
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="8">Sin promociones</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+
+                    </div>
+
                 </div>
+                <!--MOVIMIENTOS-->
+                <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                    <div class="relative overflow-x-auto">
 
-            </div>
-            <!--MOVIMIENTOS-->
-            <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
-                <div class="relative overflow-x-auto">
+                        <p-table [value]="movimientos()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
+                            <ng-template #caption>
+                                <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                    Movimientos
+                                </div>
+                            </ng-template>
 
-                    <p-table [value]="movimientos()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
-                        <ng-template #caption>
-                            <div class="flex uppercase justify-center items-center font-bold text-lg">
-                                Movimientos
-                            </div>
-                        </ng-template>
+                            <ng-template #header>
+                                <tr class="uppercase text-xs">
+                                    <th>
+                                        <div class="flex items-center justify-between">Usuario Turna</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Fecha de turno</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Usuario Recibe</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Fecha de Recepción</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Movimiento</div>
+                                    </th>
 
-                        <ng-template #header>
-                            <tr class="uppercase text-xs">
-                                <th>
-                                    <div class="flex items-center justify-between">Usuario Turna</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Fecha de turno</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Usuario Recibe</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Fecha de Recepción</div>
-                                </th>
-                                <th>
-                                    <div class="flex items-center justify-between">Movimiento</div>
-                                </th>
-  
-                            </tr>
-                        </ng-template>
+                                </tr>
+                            </ng-template>
 
-                        <ng-template #body let-item >
-                            <tr>
-                                <td style="font-size: small;">{{item?.nombreUsuarioTurna }}</td>
-                                <td style="font-size: small;">{{ item?.fechaTurnado | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                <td style="font-size: small;">{{item?.nombreUsuarioRecibe }}</td>
-                                <td style="font-size: small;">{{ item?.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                <td class="text-center"> {{item?.movimiento }}</td>
-                                
-                            </tr>
-                        </ng-template>
+                            <ng-template #body let-item>
+                                <tr>
+                                    <td style="font-size: small;">{{item?.nombreUsuarioTurna }}</td>
+                                    <td style="font-size: small;">{{ item?.fechaTurnado | date:'yyyy-MM-dd HH:mm:ss' }}
+                                    </td>
+                                    <td style="font-size: small;">{{item?.nombreUsuarioRecibe }}</td>
+                                    <td style="font-size: small;">{{ item?.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss'
+                                        }}
+                                    </td>
+                                    <td class="text-center"> {{item?.movimiento }}</td>
 
-                        <ng-template #emptymessage>
-                            <tr>
-                                <td colspan="5">Sin movimientos</td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                  
+                                </tr>
+                            </ng-template>
+
+                            <ng-template #emptymessage>
+                                <tr>
+                                    <td colspan="5">Sin movimientos</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+
+                    </div>
+
                 </div>
-
             </div>
         </div>
-    </div> 
-   
-</div>
+
+    </div>
 
 
-<!--* MODAL DE CONFIRMACION ENVIAR PROMOCION GENERALES -->
-<app-confirm-dialog key="enviarPromocionGenerales" title="Confirmación" message="¿Está seguro de enviar los datos generales de la promoción?"
-  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
-</app-confirm-dialog>
-<!--* MODAL DE CONFIRMACION ENVIAR PROMOCION ARCHIVOS -->
-<app-confirm-dialog key="enviarPromocionArchivos" title="Confirmación" message="¿Está seguro de enviar los archivos de la promoción?"
-  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
-</app-confirm-dialog>
+    <!--* MODAL DE CONFIRMACION ENVIAR PROMOCION GENERALES -->
+    <app-confirm-dialog key="enviarPromocionGenerales" title="Confirmación"
+        message="¿Está seguro de enviar los datos generales de la promoción?" icon="pi pi-question"
+        circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+    </app-confirm-dialog>
+    <!--* MODAL DE CONFIRMACION ENVIAR PROMOCION ARCHIVOS -->
+    <app-confirm-dialog key="enviarPromocionArchivos" title="Confirmación"
+        message="¿Está seguro de enviar los archivos de la promoción?" icon="pi pi-question" circleClass="bg-primary"
+        acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+    </app-confirm-dialog>
 
 
 
-<!--<p-confirmdialog [style]="{ width: '600px' }" />-->
-<p-toast></p-toast>
+    <!--<p-confirmdialog [style]="{ width: '600px' }" />-->
+    <p-toast></p-toast>

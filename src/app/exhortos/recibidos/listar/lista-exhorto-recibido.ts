@@ -22,12 +22,13 @@ import {AuthService} from '../../../core/auth/service/auth.service';
 import {ExhortosService} from '../../services/exhorto.service';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-ListaExhortosRecibidos',
    standalone: true,
   imports: [DatePicker, TableModule, InputTextModule, TagModule, SelectModule, ButtonModule, IconFieldModule, InputIconModule,
-    BreadcrumbModule, AvatarModule, InputMaskModule, FloatLabelModule, ToastModule, CommonModule, FormsModule, Spinner, Breadcrub],
+    BreadcrumbModule, AvatarModule, InputMaskModule, FloatLabelModule, ToastModule, CommonModule, FormsModule, Spinner, Breadcrub, TooltipModule],
   templateUrl: './lista-exhorto-recibido.html',
   styleUrl: './lista-exhorto-recibido.css',
   providers:[MessageService]
@@ -231,23 +232,23 @@ export class ListaExhortosRecibidos implements OnInit {
     window.open(pdfUrl, '_blank', 'noopener,noreferrer');
   }
 
-  selectClass(estatus: string){
-    if(estatus === "Recibido"){
-      return 'bg-orange-400/50'
-    }else if(estatus === "Pendiente de recibir"){
-      return 'bg-orange-400/50'
-    }else if(estatus === "En proceso de diligencia"){
-      return 'bg-violeta/50'
-    }else if(estatus === "Acordado"){
-       return 'bg-lime-300/50'
-    }else if(estatus === "Respondido"){
-      return 'bg-lime-600/50'
-    }else{
-      return 'bg-blue-300/50'
+  getTagConfig(estatus: string): { icon: string; severity: 'success' | 'warn' | 'info' | 'secondary' | 'danger' | 'contrast' } {
+    switch (estatus) {
+      case 'Respondido':
+        return { icon: 'pi pi-reply', severity: 'info' };          // Azul - respondido
+      case 'Acordado':
+        return { icon: 'pi pi-check-circle', severity: 'success' };// Verde - completado
+      case 'Recibido':
+        return { icon: 'pi pi-inbox', severity: 'contrast' };      // Oscuro - recibido (marcado/registrado)
+      case 'Pendiente de recibir':
+        return { icon: 'pi pi-clock', severity: 'warn' };          // Naranja - pendiente
+      case 'En proceso de diligencia':
+        return { icon: 'pi pi-spinner', severity: 'secondary' };   // Gris - en curso
+      default:
+        return { icon: 'pi pi-question-circle', severity: 'secondary' };
     }
-
   }
-
+  
   async catalogoEstatus(){
     await this.getlistadoEstatus();
     

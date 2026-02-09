@@ -30,7 +30,13 @@
     text-secondary-contrast
     border-0;
 }
+.bg-secondary {
+  background-color: var(--color-secondary-500);
+}
 
+.dark .bg-secondary {
+  background-color: var(--color-secondary-500);
+}
 /* Botón eliminar (rojo) */
 .btn-rojo {
   --p-button-primary-background: #ef4444;
