@@ -1,0 +1,235 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
+<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+    <!-- HEADER -->
+    <app-breadcrub></app-breadcrub>
+    <!-- BUSQUEDA -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                    Acuerdos 
+            </label>
+        </div>
+    </div>
+</div>
+<!-- Start coding here -->
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+    <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div>
+            <div class="w-full max-w-screen-xl px-0 mx-auto ">
+                <!-- Start coding here -->
+                <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                    <div class="relative overflow-hidden bg-white  dark:bg-gray-800 sm:rounded-lg">
+                        <div class="flex-row items-center justify-between p-4 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
+                            <div>
+                            <h5 class="mr-3 font-semibold dark:text-white">Generales</h5>
+                            <!--<p class="text-gray-500 dark:text-gray-400">Detalle de notificación</p>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto" >
+                    @if (detallesAcuerdo) {
+                        <p-table [value]="[detallesAcuerdo]"
+                            class="w-full text-sm text-left text-gray-500 dark:text-gray-400" [expandedRowKeys]="expandedRows"
+                            (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
+                            <ng-template pTemplate="header">
+                                <tr class="bg-gray-50 dark:bg-gray-700 text-gray-700 uppercase text-xs">
+                                <th class="px-3 py-2"></th>
+                                <th class="px-4 py-2">Folio</th>
+                                <th class="px-4 py-2">Tipo de Diligencia </th>
+                                <th class="px-4 py-2">Fecha envío </th>
+                                <th class="px-4 py-2">Fecha recepción </th>
+                                <th class="px-4 py-2">Observaciones</th>
+                                <th class="px-4 py-2"></th>
+                                <th class="px-4 py-2"></th>
+                                <!--<th class="px-2 py-2">Acciones</th>-->
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body"     let-Acuerdo let-expanded="expanded">
+                                <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                    <td class="px-3 py-2">
+                                        <button type="button"
+                                        value="{{Acuerdo.generales.idRespuesta}}"
+                                        (click)="expandedRows[Acuerdo.generales.idRespuesta] = !expandedRows[Acuerdo.generales.idRespuesta]"
+                                        class="flex items-center justify-center w-8 h-8 rounded-full text-gray-500 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-400">
+                                        <i [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                                        </button>
+                                    </td>
+                                    <td class="px-4 py-2 text-gray-900 dark:text-gray-100">{{ Acuerdo.generales.folio }}</td>
+                                    <td class="px-4 py-2">{{ Acuerdo.generales.tipoDiligencia }}</td>
+                                    <td class="px-4 py-2">{{ Acuerdo.generales.fechaEnvio | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                    <td class="px-4 py-2">{{ Acuerdo.generales.fechaHoraRecepcion | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                    <td class="px-4 py-2">{{ Acuerdo.generales.observaciones }}</td>
+                                    <td class="px-2 py-2" >
+                                    @if(tienePermisoEditar()){
+                                        @if(!generalesEnviado){
+                                            <button type="button" (click)="redirectToPromocion(idNotificacion, Acuerdo.generales.idRespuesta)"
+                                            class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-3 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">Editar</button>
+                                        }
+                                    }
+                                    </td>
+                                    <td class="px-2 py-2">
+                                    @if(!generalesEnviado){
+                                        <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
+                                        @if (tienePermisoEnviarGenerales()) {
+                                            <button type="button" (click)="enviarAcuerdoGenerales(this.idNotificacion)"
+                                            class="text-white bg-morado hover:bg-morado_hover focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-3 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><i class="bi bi-send"></i> Enviar</button>
+                                            }
+
+                                        }
+                                        @else
+                                        {
+                                            @if(!archivosEnviado)
+                                                {
+                                                @if (tienePermisoEnviarArchivos()) {
+                                                <button type="button" (click)="enviarAcuerdoArchivos(this.idNotificacion)"
+                                                    class="text-white bg-morado hover:bg-morado_hover fo700 focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-3 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><i class="bi bi-send"></i> Enviar archivos</button>
+                                                }
+
+                                                }
+                                            }
+                                    </td>
+                                </tr>
+                                <!-- Expanded row details -->
+                                @if (expandedRows[Acuerdo.generales.idRespuesta]) {
+                                    <tr class="bg-gray-50 dark:bg-gray-800">
+                                    <td colspan="8" class="px-4 py-4">
+                                        <p class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Documentos:</p>
+                                        @if (Acuerdo.generales) {
+                                        <p-table [value]="Acuerdo.archivos" dataKey="idDetalleActo"
+                                            class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                            <ng-template pTemplate="header">
+                                            <tr class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-600 dark:text-gray-400">
+                                                <th class="px-4 py-2">Nombre del documento</th>
+                                                <th class="px-4 py-2">Tipo de documento</th>
+                                                <th class="px-4 py-2">Firmado</th>
+                                                <th class="px-4 py-2">Fecha</th>
+                                                <th class="px-4 py-2">Acciones</th>
+                                            </tr>
+                                            </ng-template>
+                                            <ng-template pTemplate="body" let-Archivos>
+                                            <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                                <td class="px-4 py-2">{{ Archivos.nombreArchivo }}</td>
+                                                <td class="px-4 py-2">{{ Archivos.tipoDocumento.nombre }}</td>
+                                                <td class="px-4 py-2">
+                                                @if(Archivos.firmado){
+                                                    <p>Si</p>
+                                                }
+                                                @else{
+                                                <p>No</p>
+                                                }
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                {{ Archivos.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss'}}
+                                            </td>
+                                            <td>
+                                                <p-button (onClick)="mostrarArchivo(Archivos,1)" severity="success" [rounded]="true"
+                                                    icon="pi pi-file-pdf" class="mr-2" title="descargar">
+                                                </p-button>
+                                                @if(!generalesEnviado)
+                                                    {
+                                                    <p-button (onClick)="confirmEliminar( Acuerdo.archivos.idArchivo)" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true">
+                                                    </p-button>
+
+                                                    }
+                                                </td>
+                                                </tr>
+                                            </ng-template>
+                                            <ng-template pTemplate="emptymessage">
+                                                <tr>
+                                                <td colspan="5" class="px-4 py-2 text-gray-500 dark:text-gray-400">No hay
+                                                detalles disponibles para esta promoción.</td>
+                                                </tr>
+                                            </ng-template>
+                                        </p-table>
+                                        @if(mostrarDocumento()){
+                                            <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                                            </app-pdf-dialog>
+                                        }
+                                        }
+                                        </td>
+                                    </tr>
+                                }
+                            </ng-template>
+                        </p-table>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--* MODAL DE CONFIRMACION PARA ENVIAR LOS DATOS GENERALES DEL ACUERDO -->
+<app-confirm-dialog key="enviarGenerales" title="Confirmación" message="¿Está seguro que desea enviar los datos generales del acuerdo?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA ENVIAR LOS ARCHIVOS DEL ACUERDO -->
+<app-confirm-dialog key="enviarArchivos" title="Confirmación" message="¿Está seguro que desea enviar los archivos del acuerdo?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA ENVIAR LOS ARCHIVOS DEL ACUERDO -->
+<app-confirm-dialog key="eliminarArchivos" title="Confirmación" message="¿Está seguro que desea eliminar este documento?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+
+      <!--<script>
+        // Flowbite usa toggles para mostrar y ocultar elementos.
+        document.querySelectorAll('[data-collapse-toggle]').forEach(button => {
+        button.addEventListener('click', function () {
+        const targetId = button.getAttribute('data-collapse-toggle');
+        const targetElement = document.getElementById(targetId);
+        targetElement.classList.toggle('hidden');
+        });
+        });
+      </script>-->
+
+
+<!--
+
+      <p-toast></p-toast>
+      <p-confirmpopup />
+
+      <div>
+        @if (enviadoRespuestaArchivosResponse) {
+          <app-modal id="modal2">
+            <div class="relative p-4 w-full max-w-md max-h-full">
+              <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                
+                <div class="panel-heading bg-morado  hover:bg-morado_hover rounded-lg">
+                  <h3 class="pt-3 font-weight-bold text-center text-white">Información de la promoción</h3>
+                </div>
+                <div class="panel-body p-3">
+                  <div class="flex flex-col space-y-2">
+                    <div class="overflow-x-auto"> 
+                      @if (enviadoRespuestaArchivosResponse) {
+                        <table class="table-auto md:table-fixed w-full">
+                          <tr>
+                            <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Exhorto Origen:</b></p></td>
+                            <td class="col2">{{ enviadoRespuestaArchivosResponse.acuse.exhortoId || 'No disponible' }}</td>
+                          </tr>
+                          <tr>
+                            <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Respuesta Origen:</b></p></td>
+                            <td class="col2">{{ enviadoRespuestaArchivosResponse.acuse.respuestaOrigenId || 'No disponible' }}</td>
+                          </tr>
+                          <tr>
+                            <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Fecha hora recepción:</b></p></td>
+                            <td class="col2">{{ enviadoRespuestaArchivosResponse.acuse.fechaHoraRecepcion || 'No disponible' }}</td>
+                          </tr>
+                        </table>
+                      }
+                    </div>
+                  </div>
+                </div>
+                @if (!enviadoRespuestaArchivosResponse) {
+                  <div  class="text-center py-8 text-gray-500">
+                    No hay información de acuse disponible
+                  </div>
+                }
+              </div>
+            </div>
+          </app-modal>
+        }
+      </div>
+    -->
+

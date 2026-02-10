@@ -1022,3 +1022,18 @@ export interface promocionExhortos{
     archivos: archivoPromocion[];
     promoventes:promoventes[];
 }
+//objeto que la api retorna cuando se envia los datos generales de la respuesta de un exhorto al estado exhortante
+export interface EnviadoRespuestaGeneralesResponse
+{
+    exhortoId:string;
+    respuestaOrigenId:string;
+    fechaHora:string;
+}
+//objetos que la api retorna cuando se envian los archivos del exhorto al estado exhortante
+//******************************************* */
+export interface EnviadoRespuestaArchivosResponse
+{
+    archivo: ArchivoRecibidoResponse;
+    acuse: AcuseRespuestaExhortoRecibido;
+    restantes: ArchivosRestantesResponse[];
+}

@@ -12,7 +12,8 @@ import { ExhortoEnviadoGuardarGeneralesRequest, generalesExhortoEnviado, Enviado
          ListadoExhortosEnviados,ListadoEstatus,ListadoExhortosRecibidosI,respuestExhortoEnviado,ConfirmacionDatosPromocionRecibida,
          ArchivoRecibidoPromocionConAcuse,actualizacionesExhortoEnviado,VerMovimientosEnviadosResponse,IdArchivoPromcionesEnviada,
          PromocionExhortoEnviado,folioPromocionExhortoEnviado,IncompetenciaRequest,turnosResponse,VerMovimientosResponse,
-         DetalleExhortoRecibidoResponseI,respuestaExhorto,promocionExhortos} from '../interfaces/exhortos.model';
+         DetalleExhortoRecibidoResponseI,respuestaExhorto,promocionExhortos,EnviadoRespuestaGeneralesResponse,
+        EnviadoRespuestaArchivosResponse} from '../interfaces/exhortos.model';
 
 @Injectable({
   providedIn: 'root'
@@ -286,5 +287,14 @@ export class ExhortosService {
     //const headers = new HttpHeaders({'X-Api-Key': this.APIKEY});
     const url = `${this.baseUrl}verPromocion?idExhortoRecibido=${idExhortoRecibido}`;
     return this.http.get<GenericResponse<promocionExhortos[]>>(url,{context:checkToken()});
+  }
+  //anviar respuesta datos generales
+  enviarRespuestaGenerales(idExhortoRecibido: number):Observable<GenericResponse<EnviadoRespuestaGeneralesResponse>>{
+    const url = `${this.apiAcuerdo}EntregarRespuestaExhortoRecibidoGenerales?idExhortoRecibido=${idExhortoRecibido}`;
+    return this.http.post<GenericResponse<EnviadoRespuestaGeneralesResponse>>(url,null,{context:checkToken()});
+  }
+  enviarRespuestaArchivos(idExhortoRecibido: number):Observable<GenericResponse<EnviadoRespuestaArchivosResponse>>{
+    const url = `${this.apiAcuerdo}EntregarRespuestaExhortoRecibidoArchivos?idExhortoRecibido=${idExhortoRecibido}`;
+    return this.http.post<GenericResponse<EnviadoRespuestaArchivosResponse>>(url,null,{context:checkToken()});
   }
 }
