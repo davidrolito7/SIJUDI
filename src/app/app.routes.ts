@@ -45,7 +45,11 @@ export const routes: Routes = [
         {path: 'juicioenlinea', loadChildren: () =>
           import('./juicio-oral/jucio-oral.routes')
             .then(m => m.JUICIO_ORAL_ROUTES)
-        },
+        },        
+        {path: 'requerimientos', loadChildren: () =>
+          import('./requerimientos-juicio-oral/requerimientos-juicio-oral.routes')
+            .then(m => m.REQUERIMIENTOS_JUICIO_ORAL_ROUTES)
+        }
     ],
   },
 
