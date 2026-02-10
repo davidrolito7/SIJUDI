@@ -9,5 +9,6 @@ export const JUICIO_ORAL_ROUTES: Routes = [
           /// { path: 'detalle', component: DetalleInicioComponent },
            /// { path: 'crear', component: CrearInicioComponent }
         ]
+        
     }
 ]
