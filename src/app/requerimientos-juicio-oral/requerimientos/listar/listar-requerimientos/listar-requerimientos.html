@@ -18,32 +18,32 @@
           <p class="inline-flex items-center">Mostrar:</p>
 
           <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="0"   inputId="size_small" />
+                    <p-radiobutton name="filtro" value="0" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small" />
                     <label for="0" class="ml-2">Todo</label>
                 </div>
 
                  <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="1"   inputId="size_small"/>
+                    <p-radiobutton name="filtro" value="1" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()"  inputId="size_small"/>
                     <label for="1" class="ml-2">Pendiente</label>
                 </div>
 
                  <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="2"   inputId="size_small"/>
+                    <p-radiobutton name="filtro" value="2"  [(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small"/>
                     <label for="2" class="ml-2">Expirado</label>
                 </div>
 
                  <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="3"  inputId="size_small"/>
+                    <p-radiobutton name="filtro" value="3" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small"/>
                     <label for="3" class="ml-2">Entregados</label>
                 </div>
 
                  <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="4" inputId="size_small"/>
+                    <p-radiobutton name="filtro" value="4"[(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small"/>
                     <label for="4" class="ml-2">Aceptado</label>
                 </div>
 
                  <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="5"  inputId="size_small"/>
+                    <p-radiobutton name="filtro" value="5" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small"/>
                     <label for="5"  class="ml-2">Rechazados</label>
                 </div>
 
@@ -76,6 +76,8 @@
                     <span>2.32m Promedio</span>
                 </div>
             </div> -->
+
+        
         </div>
     </div>
 
@@ -117,8 +119,13 @@
                 </tr>
             </ng-template>
 
-            <ng-template #body let-listado>
+            <ng-template #body >
                 <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td></td>
                 </tr>
             </ng-template>
@@ -129,6 +136,8 @@
                 </tr>
             </ng-template>
         </p-table>
+
+        
     </div>
 </div>
 
