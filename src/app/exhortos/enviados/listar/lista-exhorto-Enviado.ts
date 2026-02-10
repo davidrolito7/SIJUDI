@@ -25,7 +25,7 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 @Component({
   selector: 'app-ListaExhortosEnviados',
-  imports: [Button, TableModule, IconField, InputIcon, DatePicker, SelectModule, Avatar, Breadcrumb,
+  imports: [Button, TableModule, IconField, InputIcon, DatePicker, SelectModule,
     ToastModule, CardModule, PaginatorModule, FormsModule, CommonModule, InputTextModule, Spinner, Breadcrub, TagModule, TooltipModule],
   templateUrl: './lista-exhorto-Enviado.html',
   styleUrl: './lista-exhorto-Enviado.css',
