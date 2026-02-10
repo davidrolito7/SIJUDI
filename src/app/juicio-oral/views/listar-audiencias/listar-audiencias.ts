@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AudienciasResponse } from '../../interfaces/juicioenlinea.model';
 //import { FlowbiteService } from '../../services/flowbite.service';
 import { JuicioService } from '../../services/juicioenlinea.service';
 //import { initFlowbite } from 'flowbite';
 import { DatePicker, DatePickerModule } from 'primeng/datepicker';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule, formatDate } from '@angular/common'; // Asegúrate de importar esto
 import { Spinner } from "../../../shared/components/spinner/spinner";
  
@@ -13,32 +13,55 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { Table,TableModule } from 'primeng/table';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputMaskModule } from 'primeng/inputmask';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { TagModule } from 'primeng/tag';
+import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
+import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { MessageService } from 'primeng/api';
 
 
 @Component({
   selector: 'app-listar-audiencias',
  imports: [
       CommonModule,
-  
-    DatePickerModule,
+    RouterModule,
     FormsModule,
-    ReactiveFormsModule,
+
+    // PrimeNG
+    DatePickerModule,
     DialogModule,
     ButtonModule,
-    RadioButtonModule,
-    Spinner
+    ToastModule,
+    TagModule,
+    IconFieldModule,
+    InputIconModule,
+    TableModule,
+    SelectModule,
+    InputTextModule,
+    InputMaskModule,
+    TooltipModule,
+
+    // Shared components
+    Breadcrub,
  ],
   templateUrl: './listar-audiencias.html',
   styleUrl: './listar-audiencias.css',
+    providers: [MessageService],
 })
 export class ListarAudiencias implements OnInit {
   audiencias: AudienciasResponse[] = [];
   isLoading: boolean = false;
 
-  filtro: { folio: string; rangeDates: Date[] | '', estado: string } = {
+  filtro: { folio: string; rangeDates: Date[] | '', estado: number } = {
     folio: '',
     rangeDates: '',
-    estado: '',
+    estado: 0,
   };
 
   //Paginacion
@@ -52,62 +75,64 @@ export class ListarAudiencias implements OnInit {
   Math = Math;
 
   constructor(
-  //  private flowbiteService: FlowbiteService,
+
     private juicioService: JuicioService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+     private cdr: ChangeDetectorRef
   ) { }
 
+ngOnInit(): void {
+    const params = this.route.snapshot.queryParams;
+    this.sincronizarFiltrosDesdeURL(params);
+    const page = params['page'] ? +params['page'] : 1;
+    this.cargarDatos(page);
+  }
 
-  ngOnInit(): void {
- //   initFlowbite();
- //   this.flowbiteService.loadFlowbite(() => initFlowbite());
+  private sincronizarFiltrosDesdeURL(params: Record<string, string>): void {
+    const estadoNum = params['estado'] ? Number(params['estado']) : 0;
+    this.filtro.estado = Number.isFinite(estadoNum) ? estadoNum : 0;
+    this.filtro.folio = params['folio'] || '';
+    this.filtro.rangeDates =
+      params['fechaInicio'] && params['fechaFinal']
+        ? [
+            this.parseDateFromString(params['fechaInicio']),
+            this.parseDateFromString(params['fechaFinal']),
+          ]
+        : '';
+  }
+  private cargarDatos(page: number): void {
+    this.isLoading = true;
 
-    this.route.queryParams.subscribe(params => {
-      this.filtro.estado = params['estado']|| '';
-       this.filtro.folio = params['folio'] || '';
+    const requestParams: Record<string, string | number> = {
+      page,
+      per_page: 5,
+    };
 
-      if (params['fechaInicio'] && params['fechaFinal']) {
-        this.filtro.rangeDates = [
-          this.parseDateFromString(params['fechaInicio']),
-          this.parseDateFromString(params['fechaFinal'])
-        ];
-      } else {
-        this.filtro.rangeDates = '';
-      }
+    if (this.filtro.folio) requestParams['folio'] = this.filtro.folio;
 
-      const currentPage = params['page'] ? +params['page'] : 1;
-      if (!params['page'] || params['page'] !== currentPage.toString()) {
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: { ...params, page: currentPage },
-          queryParamsHandling: 'merge',
-          replaceUrl: true
-        });
-        return;
-      }
+    if (Array.isArray(this.filtro.rangeDates) && this.filtro.rangeDates.length === 2) {
+      requestParams['fechaInicio'] = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
+      requestParams['fechaFinal'] = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
+    }
 
-      const requestParams = {
-        page: currentPage,
-        per_page: 2,
-        ...(params['estado'] && { estado: params['estado'] }),
-        ...(params['fechaInicio'] && { fechaInicio: params['fechaInicio'] }),
-        ...(params['fechaFinal'] && { fechaFinal: params['fechaFinal'] }),
-        ...(params['folio'] && { folio: params['folio'] })
-      };
+    if (this.filtro.estado > 0) requestParams['estado'] = this.filtro.estado;
 
-      this.juicioService.getAudiencias(requestParams).subscribe({
+       this.juicioService.getAudiencias(requestParams).subscribe({
         next: (response) => {
-          this.audiencias = response.data;
-          this.pagination = response.pagination;
-
-        },
-        error: (error) => {
-          console.error('Error:', error);
-        }
-      });
+        this.isLoading = false;
+        this.audiencias = response?.data ?? [];
+        this.pagination = response.pagination;
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Error:', error);
+        this.cdr.markForCheck();
+      },
     });
   }
+
 
 
   getListarAudiencias(): void {
@@ -183,141 +208,93 @@ export class ListarAudiencias implements OnInit {
     return new Date(year, month - 1, day);
   }
 
-  aplicarFiltros(): void {
-    const queryParams: any = {
-      folio: this.filtro.folio || undefined,
-      estado: null,
-      fechaInicio: undefined,
-      fechaFinal: undefined,
-      page: 1 // Resetear a página 1
+
+ aplicarFiltros(): void {
+    const queryParams: Record<string, string | number | null> = {
+      page: 1,
+      estado: this.filtro.estado > 0 ? this.filtro.estado : null,
+      folio: this.filtro.folio || null,
+      fechaInicio: null,
+      fechaFinal: null,
     };
 
-    if (this.filtro.rangeDates?.length === 2) {
-      queryParams.fechaInicio = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
-      queryParams.fechaFinal = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
+    if (Array.isArray(this.filtro.rangeDates) && this.filtro.rangeDates.length === 2) {
+      queryParams['fechaInicio'] = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
+      queryParams['fechaFinal'] = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
     }
 
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
     });
 
-    // Cierra el dropdown si está abierto
-    this.mostrarDropdown = false;
-    const dropdown = document.getElementById('dropdownTimepicker');
-    if (dropdown) {
-      dropdown.classList.remove('show');
-      dropdown.classList.add('hidden');
-    }
+    this.cargarDatos(1);
   }
 
+
+
+
   limpiarFiltros(): void {
-    this.filtro = {
-      estado: '',
-      rangeDates: '',
-      folio: ''
-    };
+    this.filtro = { estado: 0, rangeDates: '', folio: '' };
 
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: {
-        estado: null,
-        folio: null,
-        fechaInicio: null,
-        fechaFinal: null,
-        page: null
-      },
-      queryParamsHandling: 'merge'
+      queryParams: { estado: null, folio: null, fechaInicio: null, fechaFinal: null, page: 1 },
+      queryParamsHandling: 'merge',
     });
 
-    // Cierra el dropdown si está abierto
-    this.mostrarDropdown = false;
-    const dropdown = document.getElementById('dropdownTimepicker');
-    if (dropdown) {
-      dropdown.classList.remove('show');
-      dropdown.classList.add('hidden');
-    }
+    this.cargarDatos(1);
   }
 
   cambiarPagina(page: number): void {
-
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: page },
+      queryParams: { page },
       queryParamsHandling: 'merge',
-      replaceUrl: true
-    }).then(() => {
-      console.log('URL actualizada a:', this.route.snapshot.queryParams);
+      replaceUrl: true,
     });
+
+    this.cargarDatos(page);
   }
 
-  mostrarDropdown = false;
-  etiquetaRangoSeleccionado = 'Esta semana';
-  textoRango = '';
+    estadoOptions = [
+    { label: 'Todo', value: 0 },
+    { label: 'Enviado', value: 1 },
+    { label: 'Asignado', value: 2 },
+    { label: 'Finalizado', value: 3 },
+  ];
+getEstadoDescripcion(audiencia: unknown): string | null {
+  const i = audiencia as {
+    ultimo_estado?: { descripcion?: string };
+  };
 
-  seleccionarRango(rango: 'Hoy' | 'Ayer' | '7' | '30' | '90'): void {
-    const hoy = new Date();
-    let inicio: Date;
-    let fin: Date = new Date(hoy);
+  return i.ultimo_estado?.descripcion ?? null;
+}
 
-    switch (rango) {
-      case 'Hoy':
-        inicio = new Date(hoy);
-        this.etiquetaRangoSeleccionado = 'Hoy';
-        break;
-      case 'Ayer':
-        inicio = new Date(hoy);
-        inicio.setDate(inicio.getDate() - 1);
-        fin = new Date(inicio);
-        this.etiquetaRangoSeleccionado = 'Ayer';
-        break;
-      case '7':
-        // Semana actual: desde el lunes hasta hoy o domingo
-        const day = hoy.getDay(); // 0=domingo, 1=lunes,...
-        const diffToMonday = day === 0 ? 6 : day - 1;
-        inicio = new Date(hoy);
-        inicio.setDate(hoy.getDate() - diffToMonday);
-        this.etiquetaRangoSeleccionado = 'Esta semana';
-        break;
-      case '30':
-        inicio = new Date(hoy);
-        inicio.setDate(hoy.getDate() - 29);
-        this.etiquetaRangoSeleccionado = 'Ultimos 30 días';
-        break;
-      case '90':
-        inicio = new Date(hoy);
-        inicio.setDate(hoy.getDate() - 89);
-        this.etiquetaRangoSeleccionado = 'Ultimos 90 días';
-        break;
+getEstadoId(audiencia: unknown): number | null {
+  const i = audiencia as {
+    ultimo_estado?: { idCatalogoEstadoAudiencia?: string | number };
+  };
+
+  return i.ultimo_estado?.idCatalogoEstadoAudiencia
+    ? Number(i.ultimo_estado.idCatalogoEstadoAudiencia)
+    : null;
+}
+
+
+    getEstadoTag(audiencia: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+    const id = this.getEstadoId(audiencia);
+    switch (id) {
+      case 1:
+        return { severity: 'success', icon: 'pi pi-check' };
+      case 2:
+        return { severity: 'info', icon: 'pi pi-clock' };
+      case 3:
+        return { severity: 'warn', icon: 'pi pi-exclamation-triangle' };
       default:
-        inicio = new Date(hoy);
-        this.etiquetaRangoSeleccionado = 'Esta semana';
+        return { severity: 'secondary' };
     }
-
-
-    const fInicio = inicio.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-    const fFin = fin.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-    this.textoRango = `${fInicio} - ${fFin}`;
-
-    this.filtro.rangeDates = [inicio, fin];
-
-    this.aplicarFiltros();
-                // Cierra el dropdown si está abierto
-    this.mostrarDropdown = false;
-    const dropdown = document.getElementById('transactions-dropdown');
-    if (dropdown) {
-      dropdown.classList.remove('show');
-      dropdown.classList.add('hidden');
-    }
-  }
-  aplicarMascaraFolio(valor: string) {
-    let limpio = valor.replace(/\D/g, '');
-    limpio = limpio.slice(0, 8);
-    if (limpio.length > 4) {
-      limpio = limpio.slice(0, 4) + '/' + limpio.slice(4);
-    }
-    this.filtro.folio = limpio;
   }
 
 }

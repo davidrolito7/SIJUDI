@@ -1,624 +1,121 @@
-<app-spinner [isLoading]="isLoading"></app-spinner>
+ <!-- HEADER -->
+  <app-breadcrub></app-breadcrub>
 
-<!-- Encabezado -->
-<div class="bg-white dark:bg-gray-900 p-4 animate-fade-in-down">
-    <div class="w-full max-w-7xl">
-        <div class="sm:flex sm:items-center sm:justify-between">
-            <p class=" text-3xl font-bold leading-none tracking-tight text-gray-900  dark:text-white">
+    <!-- BUSQUEDA -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
                 Audiencias programadas
-        </div>
-    </div>
-</div>
+              </label>
 
+ </div>
+        <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de exhortos enviados">
+            <div class="grid grid-cols-12 gap-4 w-full items-end">
+                <!-- Folio -->
+                <div class="col-span-12 md:col-span-6 lg:col-span-4 w-full">
+                    <label for="folio" class="block mb-2 text-sm font-medium">Folio</label>
 
-<section class="bg-gray-50 dark:bg-gray-900 animate-fade-in-down">
-    <!-- Card header -->
-    <div class="mx-4 pb-4 border-b border-gray-200 dark:border-gray-700 
-        flex flex-wrap items-center justify-between gap-x-4">
-
-        <!-- bloque 1 + 2 -->
-        <div class="flex flex-wrap gap-x-4 gap-y-2 flex-1 min-w-0">
-
-            <!-- bloque 1 -->
-            <form (ngSubmit)="aplicarFiltros()" class="relative flex-1 min-w-50 max-w-md">
-                <div class="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 20 20">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                    </svg>
+                    <p-inputmask fluid [(ngModel)]="filtro.folio" name="folio" class="uppercase text-sm rounded-lg" mask="9999/9999"
+                        placeholder="0001/2026" />
                 </div>
-                <input type="text" id="table-search" [ngModel]="filtro.folio" name="folio" #expedienteInput="ngModel"
-                    pattern="^\d{4}/\d{4}$" maxlength="9" (ngModelChange)="aplicarMascaraFolio($event)"
-                    (keypress)="validarCaracteres($event)"
-                    class="block w-full ps-10 pr-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 h-10 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    placeholder="Búsqueda de folio" required />
 
-                <button type="submit"
-                    class="absolute inset-y-0 right-0 h-10 font-medium rounded-e-lg text-sm px-4 text-white bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 focus:ring-2 focus:outline-none focus:ring-blue-300"
-                    [ngClass]="{
-                          'cursor-pointer': !expedienteInput.invalid && filtro.folio,
-                          'cursor-not-allowed': expedienteInput.invalid || !filtro.folio
-                        }" [disabled]="expedienteInput.invalid || !filtro.folio">
-                    Buscar
-                </button>
-            </form>
+                <!-- Estatus -->
+                <div class="col-span-12 md:col-span-6 lg:col-span-2 w-full">
+                    <label for="estado" class="block mb-2 text-sm font-medium">Estatus</label>
 
-            <!-- bloque 2 -->
-            <div class="relative flex-1 min-w-25">
-                <button id="dropdownTimepickerButton" data-dropdown-toggle="dropdownTimepicker"
-                    class="inline-flex items-center justify-between w-full md:w-auto min-w-max text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 h-10 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                    type="button">
-                    Filtrar por fecha
-                    <svg class="w-4 h-4 ml-2 shrink-0" aria-hidden="true" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <!-- Dropdown menu -->
-                <div id="dropdownTimepicker"
-                    class="z-10 hidden bg-white rounded-lg shadow-sm w-[20rem] dark:bg-gray-700 p-3">
-                    <div class="max-w-200 mx-auto grid grid-cols-1 mb-2">
-                        <label for="idCatVia"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha</label>
+                    <p-select inputId="estado" name="estado" class="w-full" [options]="estadoOptions"
+                        [(ngModel)]="filtro.estado" optionLabel="label" optionValue="value" appendTo="body" fluid
+                        [attr.aria-label]="'Estatus'"></p-select>
+                </div>
 
-                        <p-datepicker [style]="{'width':'100%'}" class="custom-datepicker"
-                            placeholder="Selecciona rango" [(ngModel)]="filtro.rangeDates" selectionMode="range"
-                            [readonlyInput]="true" ngClass="w-full" />
-                    </div>
+                <!-- Fecha -->
+                <div class="col-span-12 md:col-span-8 lg:col-span-3 ">
+                    <label for="rangeDates" class="block mb-2 text-sm font-medium">Fecha</label>
 
-                    <!-- Contenedor para los botones -->
-                    <div class="flex gap-2 mt-3   pt-2 border-t border-gray-200">
-                        <button type="button" id="updateProductButton" (click)="aplicarFiltros()"
-                            class="w-1/2 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-600/80 rounded-lg focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                            [disabled]="!filtro.rangeDates || filtro.rangeDates.length !== 2 || !filtro.rangeDates[0] || !filtro.rangeDates[1]"
-                            [ngClass]="{
-              'cursor-not-allowed opacity-50': !filtro.rangeDates || filtro.rangeDates.length !== 2 || !filtro.rangeDates[0] || !filtro.rangeDates[1]
-              }">
-                            Mostrar
-                        </button>
+                    <p-datepicker inputId="rangeDates" name="rangeDates" fluid placeholder="Selecciona rango"
+                        [(ngModel)]="filtro.rangeDates" selectionMode="range" [readonlyInput]="true"></p-datepicker>
+                </div>
 
-                        <button type="button" id="deleteProductButton" (click)="limpiarFiltros()"
-                            class="w-1/2 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-600/80 rounded-lg focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
-                            Limpiar
-                        </button>
-                    </div>
+                <!-- Botones -->
+                <div class="col-span-12 md:col-span-4 lg:col-span-2 flex gap-4 ">
+                    <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
+                        aria-label="Limpiar filtros"></p-button>
+
+                    <p-button type="submit" aria-label="Buscar">
+                        <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
+                        <span pButtonLabel>Buscar</span>
+                    </p-button>
                 </div>
             </div>
+        </form>
 
-        </div>
     </div>
-    <div class=" flex flex-col sm:flex">
-        <div class="mx-4 py-4 flex flex-wrap items-center gap-4">
-            <p class="inline-flex items-center">Mostrar:</p>
-            <label class="inline-flex items-center">
-                <p-radiobutton name="filtro" [value]="0" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()"
-                    class="text-blue-600 border-gray-300 focus:ring-blue-500" />
-                <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Todo</span>
-            </label>
-            <label class="inline-flex items-center">
-                <p-radiobutton name="filtro" [value]="1" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()"
-                    class="text-blue-600 border-gray-300 focus:ring-blue-500" />
-                <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Enviado</span>
-            </label>
-            <label class="inline-flex items-center">
-                <p-radiobutton name="filtro" [value]="2" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()"
-                    class="text-blue-600 border-gray-300 focus:ring-blue-500" />
-                <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Asignado</span>
-            </label>
-            <label class="inline-flex items-center">
-                <p-radiobutton name="filtro" [value]="3" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()"
-                    class="text-blue-600 border-gray-300 focus:ring-blue-500" />
-                <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Finalizado</span>
-            </label>
-        </div>
-
-        <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
-    </div>
-
 
     <!--Tabla-->
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
 
-    <div class="flex flex-col">
-        <div class="overflow-x-auto ">
-            <div class="inline-block min-w-full align-middle">
-                <div class="overflow-hidden ">
-                    <table class="min-w-full ">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
+    <div class="card">
+        <p-table #dtInicio [value]="audiencias" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [globalFilterFields]="[
+    'folio',
+    'cat_via_materia.cat_materia.Descripcion',
+    'cat_via_materia.cat_via.descripcion',
+    'historial_estado.0.estado.descripcion'
+  ]">
+            <ng-template #caption>
+                <div class="flex">
+                    <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
 
-                                <tr>
-
-                                    <th>
-                                        <div class="flex items-center justify-between">Expediente</div>
-                                    </th>
-                                    <th>
-                                        <div class="flex items-center justify-between">Folio</div>
-                                    </th>
-                                    <th>
-                                        <div class="flex items-center justify-between">Titulo</div>
-                                    </th>
-                                    <th>
-                                        <div class="flex items-center justify-between">Hora Inicio</div>
-                                    </th>
-                                    <th>
-                                        <div class="flex items-center justify-between">Hora Fin</div>
-                                    </th>
-                                    <th>
-                                        <div class="flex items-center justify-between">Estado</div>
-                                    </th>
-                                    <th>
-                                        <div class="flex items-center justify-between">Acciones</div>
-                                    </th>
-                                </tr>
-                         
-                        </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
-
-
-                            @for (audiencia of audiencias; track audiencia) {
-                           
-                                <tr>
-                                    <td style="font-size: small;">{{ audiencia.expediente.NumExpediente }}</td>
-                                    <td style="font-size: small;">{{audiencia.folio }}</td>
-                                    <td style="font-size: small;">{{ audiencia.title }}</td>
-                                    <td style="font-size: small;">{{ audiencia.start | date:'dd/MM/yyyy HH:mm' }}</td>
-                                    <td style="font-size: small;">{{ audiencia.end | date:'dd/MM/yyyy HH:mm' }}</td>
-                                    <td style="font-size: small;">{{ audiencia.expediente.NumExpediente }}</td>
-                                    <td class="px-4 whitespace-nowrap">
-                                        @if (isEnProgreso(audiencia.start, audiencia.end)) {
-                                        <span
-                                            class=" bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-yellow-100 dark:bg-gray-700 dark:border-yellow-500 dark:text-yellow-400">
-                                            EN PROGRESO
-                                        </span>
-                                        } @else {
-                                        @if (audiencia.ultimo_estado; as estado) {
-                                        @switch (estado?.idCatalogoEstadoAudiencia) {
-                                        @case ('1') {
-                                        <span
-                                            class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-green-400 border border-green-100 dark:border-green-500">
-                                            {{ estado.descripcion | uppercase }}
-                                        </span>
-                                        }
-                                        @case ('2') {
-                                        <span
-                                            class="bg-purple-100 text-purple-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-purple-100 dark:bg-gray-700 dark:border-purple-500 dark:text-purple-400">
-                                            {{ estado.descripcion | uppercase }}
-                                        </span>
-                                        }
-                                        @case ('3') {
-                                        <span
-                                            class="bg-orange-100 text-orange-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-orange-100 dark:bg-orange-700 dark:border-orange-300 dark:text-orange-300">
-                                            {{ estado.descripcion | uppercase }}
-                                        </span>
-                                        }
-                                        @case ('4') {
-                                        <span
-                                            class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-red-100 dark:bg-red-700 dark:border-red-300 dark:text-orange-300">
-                                            {{ estado.descripcion | uppercase }}
-                                        </span>
-                                        }
-                                        @default {
-                                        <span>
-                                            {{ estado.descripcion | uppercase }}
-                                        </span>
-                                        }
-                                        }
-                                        }
-                                        @if (!audiencia.ultimo_estado) {
-                                        <span class="text-xs text-gray-400">Sin estado</span>
-                                        }
-                                        }
-                                    </td>
-                                    <td class=" px-4 py-2 flex items-center justify-center">
-                                        <button type="button" (click)="detalle(audiencia.idAudiencia)"
-                                            class="text-white bg-gradient-to-r from-[#8464c7] to-[#584286] cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                            Detalles</button>
-                                    </td>
-                                </tr>
-                          
-                            }
-
-                        </tbody>
-                    </table>
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="dtInicio.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Buscar una palabra" aria-label="Buscar" />
+                    </p-iconfield>
                 </div>
-            </div>
-        </div>
-    </div>
+            </ng-template>
 
-    @if (pagination) {
-    <nav class=" border-b border-t border-gray-200 dark:border-gray-600 flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
-        aria-label="Table navigation">
-        <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-            Mostrando
-            <span class="font-semibold text-gray-900 dark:text-white">
-                {{ ((pagination.current_page - 1) * pagination.per_page) + 1 }}
-                -
-                {{
-                Math.min(pagination.current_page * pagination.per_page, pagination.total)
-                }}
-            </span>
-            de
-            <span class="font-semibold text-gray-900 dark:text-white">{{ pagination.total }}</span>
-        </span>
-        <ul class="inline-flex items-stretch -space-x-px">
-            <li>
-                <button (click)="cambiarPagina(pagination.current_page - 1)" [disabled]="pagination.current_page === 1"
-                    class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span class="sr-only">Anterior</span>
-                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
-                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </li>
-            @for (page of [].constructor(pagination.last_page); track page; let i = $index) {
-            @if (i + 1 === 1 || i + 1 === pagination.last_page || (i + 1 >= pagination.current_page - 1 && i + 1 <=
-                pagination.current_page + 1)) { <li>
-                <button (click)="cambiarPagina(i + 1)" [ngClass]="{
-                            'z-10 text-primary-600 bg-primary-50 border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white': (i + 1) === pagination.current_page,
-                            'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': (i + 1) !== pagination.current_page
-                        }" class="flex items-center justify-center text-sm py-2 px-3 leading-tight"
-                    [attr.aria-current]="(i + 1) === pagination.current_page ? 'page' : null">
-                    {{ i + 1 }}
-                </button>
-                </li>
-                }
-                @if (i + 1 === pagination.current_page - 2 || i + 1 === pagination.current_page + 2) {
-                <li>
-                    <span
-                        class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">...</span>
-                </li>
-                }
-                }
-                <li>
-                    <button (click)="cambiarPagina(pagination.current_page + 1)"
-                        [disabled]="pagination.current_page === pagination.last_page"
-                        class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="sr-only">Siguiente</span>
-                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </li>
-        </ul>
-    </nav>
-    }
+            <ng-template #header>
+                <tr>
+                        <th>Expediente</th>
+                    <th>Folio</th>
+                    <th>Titulo</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </ng-template>
 
-</section>
+          <ng-template #body let-audiencia>
+                <tr>
+                    <td>{{ audiencia.expediente.NumExpediente }}</td>
+                    <td>{{ audiencia. folio}}</td>
+                    <td>{{ audiencia.title }}</td>
+                    <td>{{ audiencia.start | date:'dd/MM/yyyy HH:mm'  }}</td>
+                    <td>{{ audiencia.end  | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>
+                        <p-tag [value]="(getEstadoDescripcion(audiencia) | uppercase) ?? ''"
+                            [severity]="getEstadoTag(audiencia).severity" [icon]="getEstadoTag(audiencia).icon" />
+                    </td>
+                    <td>
+                         <p-button (click)="detalle(audiencia.idPreregistro)" [rounded]="true"
+                        [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
+                        pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                        </p-button>
+                      
+                    </td>
+                </tr>
+            </ng-template>
 
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="6">Sin registros</td>
+                </tr>
+            </ng-template>
+        </p-table>
 
-
-
-<!-- Encabezado 
-<section class=" dark:bg-gray-900 animate-fade-in-down">
-
-  <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row flex-wrap items-center sm:items-center gap-4 justify-between">
-
-    Título
-    <p class="flex-shrink-0 text-3xl font-bold leading-none tracking-tight text-gray-900 dark:text-white w-full sm:w-auto">
-    Audiencias programadas </p>
-
-    Contenedor buscador + dropdown 
-    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto min-w-0 items-center">
-
-    Buscador con ancho fijo
-      <div class="relative w-full sm:w-[250px] md:w-[320px] min-w-0">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <svg class="w-4 h-4 text-gray-400 dark:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
-            viewBox="0 0 20 20">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-            </svg>
-          </div>
-          <input type="text" id="table-search" [(ngModel)]="filtro.folio" pattern="^\d{4}/\d{4}$"
-            #expedienteInput="ngModel" maxlength="9" (ngModelChange)="limpiarEspaciosFolio($event)"
-            (keypress)="validarCaracteres($event)"
-            class="block w-full pl-10 pr-24 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 h-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            placeholder="Buscar folio" required />
-            <button type="submit" (click)="aplicarFiltros()"
-              class="absolute inset-y-0 right-0 h-10 px-4 text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-r-lg focus:ring-2 focus:outline-none focus:ring-blue-300"
-          [ngClass]="{
-          'cursor-pointer': !expedienteInput.invalid && filtro.folio,
-          'cursor-not-allowed': expedienteInput.invalid || !filtro.folio
-        }" [disabled]="expedienteInput.invalid || !filtro.folio">
-              Buscar
-            </button>
-          </div>
-
-          Dropdown de fecha
-          <div class="flex-shrink-0 w-full sm:w-auto min-w-0">
-            <button id="dropdownTimepickerButton" data-dropdown-toggle="dropdownTimepicker"
-              class="inline-flex w-full sm:w-auto items-center justify-between text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 h-10 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-500"
-              type="button">
-              Filtrar por fecha
-              <svg class="w-4 h-4 ml-2 flex-shrink-0" aria-hidden="true" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </button>
-
-            <div id="dropdownTimepicker"
-              class="z-10 hidden bg-white rounded-lg shadow-sm w-full sm:w-80 dark:bg-gray-700 p-3 mt-2">
-              <div class="grid grid-cols-1 mb-2">
-                <label for="idCatVia" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha</label>
-                <p-datepicker [style]="{'width':'100%'}" class="custom-datepicker" [(ngModel)]="filtro.rangeDates"
-                  selectionMode="range" [readonlyInput]="true" ngClass="w-full" />
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-2 mt-3 pt-2 border-t border-gray-200">
-                  <button type="button" (click)="aplicarFiltros()"
-                    class="w-full sm:w-1/2 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-600/80 rounded-lg focus:ring-2 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700"
-                    [disabled]="!filtro.rangeDates || filtro.rangeDates.length !== 2 || !filtro.rangeDates[0] || !filtro.rangeDates[1]"
-                    [ngClass]="{'cursor-not-allowed opacity-50': !filtro.rangeDates || filtro.rangeDates.length !== 2}">
-                    Mostrar
-                  </button>
-                  <button type="button" (click)="limpiarFiltros()"
-                    class="w-full sm:w-1/2 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-600/80 rounded-lg focus:ring-2 focus:ring-green-400 dark:focus:ring-green-700">
-                    Limpiar
-                  </button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-    
-
-<div class="mx-4 py-4 flex flex-wrap items-center gap-4">
-    <p class="inline-flex items-center">Mostrar:</p>
-    <label class="inline-flex items-center">
-        <input type="radio" name="filtro" value="0" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()"
-            class="text-blue-600 border-gray-300 focus:ring-blue-500">
-        <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white ">Todo</span>
-    </label>
-    <label class="inline-flex items-center">
-        <input type="radio" name="filtro" value="1" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()"
-            class="text-blue-600 border-gray-300 focus:ring-blue-500">
-        <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white ">Programadas</span>
-    </label>
-    <label class="inline-flex items-center">
-        <input type="radio" name="filtro" value="2" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()"
-            class="text-blue-600 border-gray-300 focus:ring-blue-500">
-        <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white ">Finalizadas</span>
-    </label>
-
-    <label class="inline-flex items-center">
-        <input type="radio" name="filtro" value="3" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()"
-            class="text-blue-600 border-gray-300 focus:ring-blue-500">
-        <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white ">Canceladas</span>
-    </label>
-
-</div>
-    -->
-
-<!-- Table
-<div class="flex flex-col ">
-    <div class="overflow-x-auto ">
-        <div class="inline-block min-w-full align-middle">
-            <div class="overflow-hidden ">
-                <table class="min-w-full ">
-                    <thead class="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Expediente
-                            </th>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Folio
-                            </th>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Título
-                            </th>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Hora Inicio
-                            </th>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Hora Fin
-                            </th>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Estado
-                            </th>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Acciones
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
-
-                        @for (audiencia of audiencias; track audiencia) {
-                        <tr>
-                            <td class=" px-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                {{ audiencia.expediente.NumExpediente }}</td>
-                            <td class=" px-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                {{ audiencia.folio }}</td>
-                            <td class=" px-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                {{ audiencia.title }}</td>
-                            <td class=" px-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                <span class="font-bold"> {{ audiencia.start | date:'dd/MM/yyyy HH:mm' }} h</span>
-                            </td>
-                            <td class=" px-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                <span class="font-bold"> {{ audiencia.end | date:'dd/MM/yyyy HH:mm' }} h</span>
-                            </td>
-                            <td class="px-4 whitespace-nowrap">
-                                @if (isEnProgreso(audiencia.start, audiencia.end)) {
-                                <span
-                                    class=" bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-yellow-100 dark:bg-gray-700 dark:border-yellow-500 dark:text-yellow-400">
-                                    EN PROGRESO
-                                </span>
-                                } @else {
-                                @if (audiencia.ultimo_estado; as estado) {
-                                @switch (estado?.idCatalogoEstadoAudiencia) {
-                                @case ('1') {
-                                <span
-                                    class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-green-400 border border-green-100 dark:border-green-500">
-                                    {{ estado.descripcion | uppercase }}
-                                </span>
-                                }
-                                @case ('2') {
-                                <span
-                                    class="bg-purple-100 text-purple-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-purple-100 dark:bg-gray-700 dark:border-purple-500 dark:text-purple-400">
-                                    {{ estado.descripcion | uppercase }}
-                                </span>
-                                }
-                                @case ('3') {
-                                <span
-                                    class="bg-orange-100 text-orange-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-orange-100 dark:bg-orange-700 dark:border-orange-300 dark:text-orange-300">
-                                    {{ estado.descripcion | uppercase }}
-                                </span>
-                                }
-                                @case ('4') {
-                                <span
-                                    class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-red-100 dark:bg-red-700 dark:border-red-300 dark:text-orange-300">
-                                    {{ estado.descripcion | uppercase }}
-                                </span>
-                                }
-                                @default {
-                                <span>
-                                    {{ estado.descripcion | uppercase }}
-                                </span>
-                                }
-                                }
-                                }
-                                @if (!audiencia.ultimo_estado) {
-                                <span class="text-xs text-gray-400">Sin estado</span>
-                                }
-                                }
-                            </td>
-                            <td class=" px-4 py-2 flex items-center justify-center">
-                                <button type="button" (click)="detalle(audiencia.idAudiencia)"
-                                    class="text-white bg-gradient-to-r from-[#8464c7] to-[#584286] cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                    Detalles</button>
-                            </td>
-                        </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 </div>
- -->
 
-<!-- Card Footer 
-<div class="border-b border-t border-gray-200 dark:border-gray-600  flex items-center justify-between ">
-
-    <div>
-        <button
-            class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 rounded-lg hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-            type="button" data-dropdown-toggle="transactions-dropdown">{{ etiquetaRangoSeleccionado }}<svg
-                class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg></button> -->
-<!-- Dropdown menu
-        <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
-            id="transactions-dropdown">
-            @if (textoRango) {
-            <div class="px-4 py-3" role="none">
-                @if (textoRango) {
-                <p class="text-sm font-medium text-gray-900 truncate dark:text-white" role="none">
-                    {{ textoRango }}
-                </p>
-                }
-            </div>
-            }
-            <ul class="py-1" role="none">
-                <li><button (click)="seleccionarRango('Ayer')"
-                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:text-gray-900">Ayer</button>
-                </li>
-                <li><button (click)="seleccionarRango('Hoy')"
-                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:text-gray-900">Hoy</button>
-                </li>
-                <li><button (click)="seleccionarRango('7')"
-                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:text-gray-900">Esta
-                        semana</button></li>
-                <li><button (click)="seleccionarRango('30')"
-                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:text-gray-900">Ultimos
-                        30 días</button>
-                </li>
-                <li><button (click)="seleccionarRango('90')"
-                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:text-gray-900">Ultimos
-                        90 días</button>
-                </li>
-            </ul>
-
-        </div>
-    </div>
-
-    @if (pagination) {
-    <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
-        aria-label="Table navigation">
-        <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mr-4">
-            Mostrando
-            <span class="font-semibold text-gray-900 dark:text-white">
-                {{ ((pagination.current_page - 1) * pagination.per_page) + 1 }}
-                -
-                {{
-                Math.min(pagination.current_page * pagination.per_page, pagination.total)
-                }}
-            </span>
-            de
-            <span class="font-semibold text-gray-900 dark:text-white">{{ pagination.total }}</span>
-        </span>
-        <ul class="inline-flex items-stretch -space-x-px">
-            <li>
-                <button (click)="cambiarPagina(pagination.current_page - 1)" [disabled]="pagination.current_page === 1"
-                    class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span class="sr-only">Anterior</span>
-                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
-                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </li>
-            @for (page of [].constructor(pagination.last_page); track page; let i = $index) {
-            @if (i + 1 === 1 || i + 1 === pagination.last_page || (i + 1 >= pagination.current_page - 1 && i + 1 <=
-                pagination.current_page + 1)) { <li>
-                <button (click)="cambiarPagina(i + 1)" [ngClass]="{
-          'z-10 text-primary-600 bg-primary-50 border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white': (i + 1) === pagination.current_page,
-          'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white': (i + 1) !== pagination.current_page
-          }" class="flex items-center justify-center text-sm py-2 px-3 leading-tight"
-                    [attr.aria-current]="(i + 1) === pagination.current_page ? 'page' : null">
-                    {{ i + 1 }}
-                </button>
-                </li>
-                }
-                @if (i + 1 === pagination.current_page - 2 || i + 1 === pagination.current_page + 2) {
-                <li>
-                    <span
-                        class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">...</span>
-                </li>
-                }
-                }
-                <li>
-                    <button (click)="cambiarPagina(pagination.current_page + 1)"
-                        [disabled]="pagination.current_page === pagination.last_page"
-                        class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="sr-only">Siguiente</span>
-                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </li>
-        </ul>
-    </nav>
-    }
-</div>
- -->
+<p-toast></p-toast>
