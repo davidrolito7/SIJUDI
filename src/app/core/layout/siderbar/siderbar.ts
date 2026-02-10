@@ -27,7 +27,6 @@ import { AppIcon } from "./icon/app-icon.component";
     AvatarModule,
     DrawerModule,
     ButtonModule,
-    AppIcon
 ],
   templateUrl: './siderbar.html',
   styleUrl: './siderbar.css',
