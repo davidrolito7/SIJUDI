@@ -15,7 +15,7 @@
 
         <div class="flex flex-wrap gap-4">
             <div class="mx-4 py-4 flex flex-wrap items-center gap-4">
-          <p class="inline-flex items-center">Mostrar:</p>
+          <!-- <p class="inline-flex items-center">Mostrar:</p>
 
           <div class="flex items-center">
                     <p-radiobutton name="filtro" value="0" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small" />
@@ -45,7 +45,41 @@
                  <div class="flex items-center">
                     <p-radiobutton name="filtro" value="5" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small"/>
                     <label for="5"  class="ml-2">Rechazados</label>
+                </div> -->
+
+                  <div class="grid grid-cols-12 gap-4 w-full items-end">
+                <!-- Estatus -->
+                <div class="col-span-6 lg:col-span-3 w-full">
+                    <label class="block mb-2 text-sm font-medium">Estatus</label>
+                    <p-select inputId="idEstatus" class="w-full" name="idEstatus"
+                        [options]="[...listadoEstatus]"
+                        [(ngModel)]="filtro.estado" optionLabel="descripcion" appendTo="body" fluid></p-select>
                 </div>
+
+                <!-- Fecha Inicial -->
+                <div class="col-span-6 lg:col-span-2 w-full">
+                    <label class="block mb-2 text-sm font-medium">Fecha Inicial</label>
+                    <p-datepicker ngSkipHydration inputId="fechaInicio" name="fechaInicio" [iconDisplay]="'input'" [showIcon]="true"
+                        [(ngModel)]="fechaInicio" class="w-full" fluid dateFormat="dd/mm/yy"></p-datepicker>
+                </div>
+
+                <!-- Fecha Final -->
+                <div class="col-span-6 lg:col-span-2 w-full">
+                    <label class="block mb-2 text-sm font-medium">Fecha Final</label>
+                    <p-datepicker ngSkipHydration inputId="fechaFin" name="fechaFin" [iconDisplay]="'input'" [showIcon]="true"
+                        [(ngModel)]="fechaFin" class="w-full" fluid dateFormat="dd/mm/yy"></p-datepicker>
+                </div>
+                <!-- Botones Filtrar y Buscar -->
+                <div class="col-span-6 lg:col-span-4 flex gap-4 items-end">
+                    <p-button [outlined]="true" icon="pi pi-filter-slash" (click)="clearFecha()"></p-button>
+                    <p-button type="submit" >
+                        <i pButtonIcon class="pi pi-search"></i>
+                        <span pButtonLabel>Buscar</span>
+                    </p-button>
+                </div>
+
+
+            </div>
 
           
                     </div>
@@ -65,7 +99,7 @@
             <!-- <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
                 <div class="flex items-center gap-2">
                     <i class="pi pi-users text-base! leading-normal!"></i>
-                    <span>332 Registros</span>
+                    <span>332 Registros</sp an>
                 </div>
                 <div class="flex items-center gap-2">
                     <i class="pi pi-globe text-base! leading-normal!"></i>
