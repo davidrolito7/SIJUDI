@@ -124,7 +124,7 @@ export class DetallesExhortoRecibido {
   verAcuerdos() {
     //console.log('Naavegando a detalle-promocion con idPromocion:', idExhortoRecibido);
     const idExhortoRecibido= this.idExhortoRecibido;
-    this.router.navigate(['/inicio/exhortos/acuerdos'], { state: { idExhortoRecibido } });
+    this.router.navigate(['/exhortos/respuesta-exhorto-recibido'], { state: { idExhortoRecibido } });
 
   }
   /*
