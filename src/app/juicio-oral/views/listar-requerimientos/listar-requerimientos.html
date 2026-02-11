@@ -72,7 +72,7 @@
                 <!-- Botones Filtrar y Buscar -->
                 <div class="col-span-6 lg:col-span-4 flex gap-4 items-end">
                     <p-button [outlined]="true" icon="pi pi-filter-slash" (click)="clearFecha()"></p-button>
-                    <p-button type="submit" >
+                    <p-button (onClick)="aplicarFiltros()" type="submit" >
                         <i pButtonIcon class="pi pi-search"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
@@ -116,7 +116,7 @@
     </div>
 
     <div class="card">
-        <p-table  [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+        <p-table  [rows]="10" [value]="requerimientosTotales" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="['estadoOrigen','juzgadoOrigenNombre','numeroExpedienteOrigen','municipioDestino']">
             <ng-template #caption>
                 <div class="flex">
@@ -153,14 +153,31 @@
                 </tr>
             </ng-template>
 
-            <ng-template #body >
+            <ng-template #body let-requerimiento>
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ requerimiento.expediente.NumExpediente }}</td>
+                    <td>{{ requerimiento.expediente.juzgado.Descripcion}}</td>
+                    
+                    <td>{{ requerimiento.fechaLimite | date:'dd/MM/yyyy HH:mm'  }}</td>
+                   
+                    <td>{{ requerimiento.tiempoRestante }}</td>
+                    <td style="font-size: small;">
+                        <p-tag [icon]="getTagConfig(requerimiento).icon"
+                            [severity]="getTagConfig(requerimiento).severity"   >
+                            <div class="flex items-center gap-2 px-1">
+                             <span class="text-base">{{getTagConfig(requerimiento).nombre}} </span>
+                            </div>
+                            </p-tag>
+
+                            
+                    </td>
+                    <td>
+                         <p-button (click)="detalleRequerimiento(requerimiento.idRequerimiento)" [rounded]="true"
+                        [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
+                        pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                        </p-button>
+                      
+                    </td>
                 </tr>
             </ng-template>
 
