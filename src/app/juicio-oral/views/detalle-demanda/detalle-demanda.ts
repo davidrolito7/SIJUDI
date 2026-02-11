@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { DetalleInicioResponse } from '../../interfaces/juicioenlinea.model';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { TooltipModule } from 'primeng/tooltip';
+import { base64ToFile } from '../../../shared/functions/utils';
 
 @Component({
   selector: 'app-detalle-demanda',
@@ -21,17 +22,16 @@ export class DetalleDemanda implements OnInit {
 
   idInicio: number | undefined;
   nombre: string = '';
-  documentoUrl: string | null = null;  // ← string, NO SafeResourceUrl
+  documentoUrl: SafeResourceUrl | null = null;
   detalleInicio: DetalleInicioResponse | null = null;
   isLoading = false;
-  mostrarDocumento = false;
+  mostrarDocumento = signal<boolean>(false);
 
   constructor(
     private juicioService: JuicioService,
     private router: Router,
     private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef,
-
   ) { }
 
   ngOnInit(): void {
@@ -59,34 +59,36 @@ export class DetalleDemanda implements OnInit {
     });
   }
 
+  onVerDocumento(fileBase64: string, nombre: string, mime: string): void {
+    const file = base64ToFile(fileBase64, nombre, mime);
+    if (file instanceof File) {
+      const url = URL.createObjectURL(file);
+      this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      this.mostrarDocumento.set(true);
+    } else {
+      console.error('Documento inválido');
+    }
+  }
+
   openModal(idDocumento: number): void {
     this.isLoading = true;
+    this.cdr.detectChanges();
 
     this.juicioService.getDocumento(idDocumento).subscribe({
       next: (response) => {
-        this.isLoading = false;
-
         if (response?.data?.file) {
-          const byteCharacters = atob(response.data.file);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'application/pdf' });
-
-          // ✅ Pasa el string puro, PdfDialog ya sanitiza internamente
-          this.documentoUrl = URL.createObjectURL(blob);
-          this.nombre = response.data.nombre
-
-          this.mostrarDocumento = true;
-          this.cdr.markForCheck();
+          this.nombre = response.data.nombre ?? 'documento.pdf';
+          this.onVerDocumento(response.data.file, this.nombre, 'application/pdf');
         }
       },
       error: (error) => {
-        this.isLoading = false;
         console.error('Error al obtener el documento:', error);
-        this.cdr.markForCheck();
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }

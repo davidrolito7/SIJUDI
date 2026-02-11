@@ -25,7 +25,7 @@ import { TagModule } from "primeng/tag";
 
 @Component({
   selector: 'app-DetallesExhortoEnviado',
-  imports: [ Spinner, ToastModule, CommonModule, ButtonModule, TableModule, ConfirmDialog, DialogModule, PdfDialog, Breadcrub, TagModule],
+  imports: [Spinner, ToastModule, CommonModule, ButtonModule, TableModule, ConfirmDialog, DialogModule, PdfDialog, Breadcrub, TagModule],
   templateUrl: './detalles-exhorto-enviado.html',
   styleUrl: './detalles-exhorto-enviado.css',
   providers: [MessageService,ConfirmationService]
