@@ -1,0 +1,3 @@
+:host ::ng-deep .p-datatable-header {
+  background: transparent !important;
+}

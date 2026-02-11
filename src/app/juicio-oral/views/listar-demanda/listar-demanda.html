@@ -1,19 +1,19 @@
 <!-- <app-spinner [isLoading]="isLoading"></app-spinner> -->
 <!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+<div class="sticky top-0 z-50  flex flex-col gap-4">
 
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
 
     <!-- BUSQUEDA -->
-    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+    <div class=" border border-surface rounded-2xl p-4">
 
         <div class="flex items-start flex-col md:flex-row justify-between">
-            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+            <div class="font-medium text-2xl ">
                 Registro de demandas electrónicas 1° instancia
-            </label>
+            </div>
             <div class="flex items-center">
-                <p-button (click)="onRedirigirCrear()"> 
+                <p-button (click)="onRedirigirCrear()">
                     <i pButtonIcon class="pi pi-file-plus"></i>
                     <span pButtonLabel>Nuevo</span>
                 </p-button>
@@ -63,7 +63,7 @@
 
 </div>
 
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+<div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
 
     <div class="card">
         <p-table #dtInicio [value]="inicios" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
@@ -75,7 +75,7 @@
   ]">
             <ng-template #caption>
                 <div class="flex">
-                    <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
+                    <div class="font-medium text-xl mb-4">Resultado</div>
 
                     <p-iconfield iconPosition="left" class="ml-auto">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
@@ -85,7 +85,7 @@
                 </div>
             </ng-template>
 
-            <ng-template #header>
+            <ng-template #header class="bg-red-500">
                 <tr>
                     <th scope="col">Folio</th>
                     <th scope="col">Materia</th>
