@@ -1,4 +1,4 @@
-import { Component,OnInit } from '@angular/core';
+import { ChangeDetectorRef,Component,OnInit } from '@angular/core';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { Table, TableModule } from 'primeng/table';
@@ -61,14 +61,15 @@ constructor(
   private messageService: MessageService,
   private router: Router,
   private route: ActivatedRoute,
+  private cdr: ChangeDetectorRef,
 ){
   
 }
    
 
     ngOnInit() : void {
-  
- this.requerimientosTotales = [];
+
+      
     this.route.queryParams.subscribe(params => {
       this.filtro.estado = params['estado'] || '';
 
@@ -105,9 +106,11 @@ constructor(
           this.requerimientosTotales = response.data;
           this.pagination = response.pagination;
           this.requerimientosTotales.forEach(r => this.actualizarTiempo(r));
+          this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Error:', error);
+          this.cdr.markForCheck();
         }
       });
     });
@@ -140,6 +143,8 @@ constructor(
       queryParamsHandling: 'merge'
     });
 
+
+    this.getListarRequerimientos();
     console.log('hace algo el form',queryParams);
   }
 
@@ -148,7 +153,7 @@ constructor(
      this.filtro = { estado: 0, rangeDates: '', folio: '' };
 
     // Limpiar resultados visibles
-  // this.getListarRequerimientos();
+  this.getListarRequerimientos();
 
     // Mostrar mensaje opcional
     this.router.navigate([], {
@@ -247,7 +252,7 @@ constructor(
     }
 
     if (this.filtro.estado > 0) params['estado'] = this.filtro.estado;
-
+console.log('cargando datos--->' , params);
     this.juicioService.getListarRequerimientosAbogados(params).subscribe(
       (response) => {
         this.requerimientosTotales = response?.data ?? [];
@@ -256,10 +261,12 @@ constructor(
         this.requerimientosTotales.forEach(r => this.actualizarTiempo(r));
       //  this.loading = false;
         console.log('cargando datos');
+        this.cdr.markForCheck();
       },
       (error) => {
         console.error('Error al obtener el listado de requerimiento', error);
        // this.loading = false;
+       this.cdr.markForCheck();
       }
     );
   }
