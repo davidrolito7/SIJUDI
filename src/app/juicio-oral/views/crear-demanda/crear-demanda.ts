@@ -19,12 +19,16 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { FileUploadModule } from 'primeng/fileupload';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
 @Component({
   selector: 'app-crear-demanda',
- imports: [CommonModule, FormsModule, ToastModule, SelectModule, DialogModule, ButtonModule,
-    InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule, InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule],
+  imports: [CommonModule, FormsModule, ToastModule, SelectModule, DialogModule, ButtonModule,
+    InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule, InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule, TableModule, TagModule],
   templateUrl: './crear-demanda.html',
   styleUrl: './crear-demanda.css',
+  providers: [ConfirmationService, MessageService]
+
 })
 export class CrearDemanda {
   //* === DATOS DEL USUARIO Y CATÁLOGOS ===
@@ -75,7 +79,7 @@ export class CrearDemanda {
 
 
   constructor(
-  //  private readonly flowbiteService: FlowbiteService,
+    //  private readonly flowbiteService: FlowbiteService,
     private readonly fb: FormBuilder,
     private readonly confirmationService: ConfirmationService,
     private readonly sanitizer: DomSanitizer,
@@ -89,7 +93,7 @@ export class CrearDemanda {
 
   ngOnInit(): void {
     //this.cargarLocalStorage();
-  //  this.flowbiteService.loadFlowbite(() => initFlowbite());
+    //  this.flowbiteService.loadFlowbite(() => initFlowbite());
     this.cargarCatalogoMunicipios(); // cat
     this.cargarCatalogoMaterias(); // cat
     this.cargarCatTipoDocumento(); // cat
@@ -471,14 +475,14 @@ export class CrearDemanda {
       this.declaracionAnexoForm.markAllAsTouched();
       return;
     }
-  
+
     const raw = this.declaracionAnexoForm.getRawValue();
     const id = Number(raw.idCatTipoDocumento);
-  
+
     const cantidadNueva = Number(raw.cantidad ?? 0);
     const valorNuevo = raw.valor != null && raw.valor !== '' ? Number(raw.valor) : undefined;
     const descripcionNueva = (raw.descripcion ?? '').toString().trim();
-  
+
     // Regla:
     //  Si trae "valor" => siempre agregar como nuevo
     //  Si NO trae "valor" => evitar duplicado por id, sumando cantidad
@@ -486,7 +490,7 @@ export class CrearDemanda {
       const idxExistente = this.anexosDeclarados.findIndex(a =>
         Number(a.idCatTipoDocumento) === id && (a.valor == null)
       );
-  
+
       if (idxExistente !== -1) {
         this.anexosDeclarados[idxExistente] = {
           ...this.anexosDeclarados[idxExistente],
@@ -494,12 +498,12 @@ export class CrearDemanda {
           // si la descripción existente está vacía, toma la nueva
           descripcion: (this.anexosDeclarados[idxExistente].descripcion ?? '').toString().trim() || descripcionNueva
         };
-  
+
         this.resetDeclaracionAnexoForm();
         return;
       }
     }
-  
+
     // Si trae valor insertar nuevo
     this.anexosDeclarados.push({
       idCatTipoDocumento: id,
@@ -507,7 +511,7 @@ export class CrearDemanda {
       cantidad: cantidadNueva,
       valor: valorNuevo
     });
-  
+
     this.resetDeclaracionAnexoForm();
   }
   // ...existing code...

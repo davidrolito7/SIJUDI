@@ -40,7 +40,6 @@ export class Siderbar {
   readonly svgSrcForPantalla = svgSrcForPantalla;
   readonly svgSrcForModulo = svgSrcForModulo;
 
-  visibleDrawer: boolean = false;
 
   readonly modulos = this.menuStore.modulos;
   readonly showMenu = signal(false);
