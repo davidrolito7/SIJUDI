@@ -12,8 +12,12 @@
             <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
                 Registro de demandas electrónicas 1° instancia
             </label>
-
-
+            <div class="flex items-center">
+                <p-button (click)="onRedirigirCrear()"> 
+                    <i pButtonIcon class="pi pi-file-plus"></i>
+                    <span pButtonLabel>Nuevo</span>
+                </p-button>
+            </div>
         </div>
         <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de exhortos enviados">
             <div class="grid grid-cols-12 gap-4 w-full items-end">
@@ -21,8 +25,8 @@
                 <div class="col-span-12 md:col-span-6 lg:col-span-4 w-full">
                     <label for="folio" class="block mb-2 text-sm font-medium">Folio</label>
 
-                    <p-inputmask fluid [(ngModel)]="filtro.folio" name="folio" class="uppercase text-sm rounded-lg" mask="9999/9999"
-                        placeholder="0001/2026" />
+                    <p-inputmask fluid [(ngModel)]="filtro.folio" name="folio" class="uppercase text-sm rounded-lg"
+                        mask="9999/9999" placeholder="0001/2026" />
                 </div>
 
                 <!-- Estatus -->
@@ -47,7 +51,7 @@
                     <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
                         aria-label="Limpiar filtros"></p-button>
 
-                    <p-button type="submit" aria-label="Buscar">
+                    <p-button type="submit" aria-label="Buscar" styleClass="btn-secondary">
                         <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
@@ -116,11 +120,11 @@
                     </td>
 
                     <td>
-                         <p-button (click)="detalle(inicio.idPreregistro)" [rounded]="true"
-                        [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
-                        pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                        <p-button (click)="detalle(inicio.idPreregistro)" [rounded]="true" [text]="true" [raised]="true"
+                            severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
+                            tooltipPosition="top" title="Detalle">
                         </p-button>
-                      
+
                     </td>
                 </tr>
             </ng-template>

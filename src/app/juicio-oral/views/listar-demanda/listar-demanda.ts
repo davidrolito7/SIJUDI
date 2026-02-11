@@ -217,8 +217,8 @@ export class ListarDemanda implements OnInit {
     this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idInicio } });
   }
 
-  showModalFirma() {
-    this.router.navigate(['/demandas/crear']);
+  onRedirigirCrear() {
+    this.router.navigate(['/juicioenlinea/demandas/crear']);
   }
 
   // ============================
