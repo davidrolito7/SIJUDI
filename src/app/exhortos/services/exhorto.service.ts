@@ -13,7 +13,8 @@ import { ExhortoEnviadoGuardarGeneralesRequest, generalesExhortoEnviado, Enviado
          ArchivoRecibidoPromocionConAcuse,actualizacionesExhortoEnviado,VerMovimientosEnviadosResponse,IdArchivoPromcionesEnviada,
          PromocionExhortoEnviado,folioPromocionExhortoEnviado,IncompetenciaRequest,turnosResponse,VerMovimientosResponse,
          DetalleExhortoRecibidoResponseI,respuestaExhorto,promocionExhortos,EnviadoRespuestaGeneralesResponse,
-        EnviadoRespuestaArchivosResponse} from '../interfaces/exhortos.model';
+        EnviadoRespuestaArchivosResponse,ListadoCatalogoTipoDiligenciado,guardaExhortoRespuesta,
+        generales} from '../interfaces/exhortos.model';
 
 @Injectable({
   providedIn: 'root'
@@ -296,5 +297,17 @@ export class ExhortosService {
   enviarRespuestaArchivos(idExhortoRecibido: number):Observable<GenericResponse<EnviadoRespuestaArchivosResponse>>{
     const url = `${this.apiAcuerdo}EntregarRespuestaExhortoRecibidoArchivos?idExhortoRecibido=${idExhortoRecibido}`;
     return this.http.post<GenericResponse<EnviadoRespuestaArchivosResponse>>(url,null,{context:checkToken()});
+  }
+  //obtener el tipo de diligenciado
+  getCatalogoTipoDiligenciado(): Observable<GenericResponse<ListadoCatalogoTipoDiligenciado[]>> {
+    //const headers = new HttpHeaders({'X-Api-Key': this.APIKEY});
+
+    // construcción de la URL y el uso de opciones
+    return this.http.get<GenericResponse<ListadoCatalogoTipoDiligenciado[]>>(this.cat + "TipoDiligenciado", {context:checkToken()});
+  }
+   //Guardar respuesta de exhorto recibido
+  setRespuestaExhorto(idUsuario: number, idExhortoRecibido: number, tipoDiligenciado: number, observaciones: string | null) {
+    //const headers = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    return this.http.post<GenericResponse<generales>>(`${this.apiAcuerdo}GuardarRespuestaExhortoRecibido`, {idUsuario, idExhortoRecibido, tipoDiligenciado, observaciones},{context:checkToken()});
   }
 }

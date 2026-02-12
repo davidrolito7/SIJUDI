@@ -100,7 +100,7 @@ constructor(
         ...(params['fechaFinal'] && { fechaFinal: params['fechaFinal'] })
       };
 
-     
+
       this.juicioService.getListarRequerimientosAbogados(requestParams).subscribe({
         next: (response) => {
           this.requerimientosTotales = response.data;
@@ -145,7 +145,7 @@ constructor(
 
 
     this.getListarRequerimientos();
-   
+
   }
 
     clearFiltros() {

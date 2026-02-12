@@ -178,8 +178,8 @@ ngOnInit(): void {
   }
 
 
-  detalle(idAudiencia: number): void {
-    this.router.navigate(['/audiencias/detalle'], { state: { idAudiencia } });
+    detalle(idAudiencia: number) {
+    this.router.navigate(['/juicioenlinea/audiencias/detalle'], { state: { idAudiencia } });
   }
 
   isEnProgreso(start: string | Date, end: string | Date): boolean {

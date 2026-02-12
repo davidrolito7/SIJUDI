@@ -118,7 +118,7 @@ export class DetallesExhortoRecibido {
   }
   generarRespuesta(){
         //console.log("Navengando hacia generar respuesta", this.idExhortoRecibido);
-        this.router.navigate(['/inicio/exhortos/detalle/generar-respuesta'], { state: { idExhortoRecibido: this.idExhortoRecibido } });
+        this.router.navigate(['/exhortos/generar-acuerdo'], { state: { idExhortoRecibido: this.idExhortoRecibido } });
 
   }
   verAcuerdos() {

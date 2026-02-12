@@ -3,40 +3,39 @@
 @import "tailwindcss-primeui";
 @import "primeicons/primeicons.css";
 
+/* ============================================
+   THEME - Colores personalizados
+   ============================================ */
 @theme {
+  /* Primario */
   --color-pry-100: #f3eadc;
+
+  /* Secundario (café) */
   --color-secondary-200: #eadcc4;
   --color-secondary-300: #ddc8a4;
   --color-secondary-400: #c5a875;
-  --color-secondary-500: #b2915b; /* café base */
+  --color-secondary-500: #b2915b;
   --color-secondary-600: #9a7b4e;
   --color-secondary-700: #7f6542;
-
   --color-secondary-contrast: #ffffff;
 }
 
+/* ============================================
+   BOTONES PERSONALIZADOS
+   ============================================ */
+
 /* Botón secundario (café) */
 .btn-secondary {
-    --p-button-primary-background: #b2915b;
-    --p-button-primary-border: #b2915b;
-    --p-button-primary-hover-background: #9a7b4e;
-    --p-button-primary-hover-border: #9a7b4e;
-
+  --p-button-primary-background: #b2915b;
+  --p-button-primary-border: #b2915b;
+  --p-button-primary-hover-background: #9a7b4e;
+  --p-button-primary-hover-border: #9a7b4e;
   --p-button-primary-active-background: #7f6542;
   --p-button-primary-active-border: #7f6542;
-  @apply
-    bg-secondary-500
-    hover:bg-secondary-600
-    text-secondary-contrast
-    border-0;
-}
-.bg-secondary {
-  background-color: var(--color-secondary-500);
+
+  @apply bg-secondary-500 hover:bg-secondary-600 text-secondary-contrast border-0;
 }
 
-.dark .bg-secondary {
-  background-color: var(--color-secondary-500);
-}
 /* Botón eliminar (rojo) */
 .btn-rojo {
   --p-button-primary-background: #ef4444;
@@ -44,12 +43,9 @@
   --p-button-primary-hover-background: #dc2626;
   --p-button-primary-hover-border: #dc2626;
 
-  @apply
-    bg-red-500
-    hover:bg-red-600
-    text-white
-    border-0;
+  @apply bg-red-500 hover:bg-red-600 text-white border-0;
 }
+
 /* Botón info (azul) */
 .btn-info {
   --p-button-primary-background: #3b82f6;
@@ -57,21 +53,38 @@
   --p-button-primary-hover-background: #2563eb;
   --p-button-primary-hover-border: #2563eb;
 
-  @apply
-    bg-blue-500
-    hover:bg-blue-600
-    text-white
-    border-0;
+  @apply bg-blue-500 hover:bg-blue-600 text-white border-0;
 }
 
-.p-datatable-header{
+/* ============================================
+   FONDOS - Variantes de color secundario
+   ============================================ */
+.bg-secondary {
+  background-color: var(--color-secondary-500);
+}
+
+.dark .bg-secondary {
+  background-color: var(--color-secondary-500);
+}
+
+/* ============================================
+   TABLA (p-table) - Estilos globales
+   ============================================ */
+
+/* Caption: sin borde superior, padding inferior */
+.p-datatable-header {
   @apply border-t-0 p-0! pb-4!;
+   background: transparent
 }
 
-.p-menu.p-menu-overlay {
-  z-index: 9999 !important;
+/* Cabeceras: peso de fuente medium */
+.p-datatable th {
+  font-weight: 500 !important;
 }
 
+/* ============================================
+   DIALOG (p-dialog) - Variante compacta
+   ============================================ */
 .dialog-compact .p-dialog-header {
   padding: 0.25rem 0.75rem !important;
 }
@@ -79,3 +92,11 @@
 .dialog-compact .p-dialog-content {
   padding: 0.6rem !important;
 }
+
+/* ============================================
+   MENÚ (p-menu) - Z-index overlay
+   ============================================ */
+.p-menu.p-menu-overlay {
+  z-index: 9999 !important;
+}
+

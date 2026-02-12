@@ -184,11 +184,12 @@ export interface generales{
     fechaHoraRecepcion:string;
     fechaHora:string;
     fechaEnvio:string;
+    idEstatus: number;
 }
 //interface de "archivos" de respuesta exhortos
 export interface archivos{
-    length: number; //número de elementos (archivos)
-    forEach(arg0: (archivo: any) => void): unknown; //permite iterar sobre cada elemento de un array.
+    //length: number; //número de elementos (archivos)
+    //forEach(arg0: (archivo: any) => void): unknown; //permite iterar sobre cada elemento de un array.
     idArchivo: number;
     idExhortoRecibido: number;
     nombreArchivo: string;
@@ -200,17 +201,17 @@ export interface archivos{
         nombre: string;
         activo: boolean;
     },
-    tamaño: number;
+    tamanio: number;
     paginas: number;
     recibido: boolean;
     idClasificacionArchivo: number;
     ruta: string;
     activo: boolean;
-    tam: number;
     firmado : boolean;
     fechaFirmado: string;
     selecParaFirma: boolean;
     firmantes:Firmantes[];
+    file: File;
 }
 
 //Interfaz de las promociones de exhortos recibidos
@@ -1036,4 +1037,12 @@ export interface EnviadoRespuestaArchivosResponse
     archivo: ArchivoRecibidoResponse;
     acuse: AcuseRespuestaExhortoRecibido;
     restantes: ArchivosRestantesResponse[];
+}
+//Interfaz para el catálogo de tipo de diligenciado
+export interface ListadoCatalogoTipoDiligenciado{
+    idTipoDiligenciado: number;
+    descripcion: string;
+}
+export interface guardaExhortoRespuesta {
+    idRespuesta : number;
 }

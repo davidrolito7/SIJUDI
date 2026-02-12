@@ -18,11 +18,12 @@ import { PromocionExhortoEnviadoComponent } from './enviados/promocion/promocion
 import { RespuestaExhortoEnviado } from './enviados/respuesta/respuesta-exhorto-enviado';
 import { DetallesExhortoRecibido } from './recibidos/detalles/detalles-exhorto-recibido';
 import { RespuestaExhortoRecibido } from './recibidos/respuesta/respuesta-exhorto-recibido';
+import { GenerarAcuerdo } from './recibidos/acuerdo/generar-acuerdo';
 
 export const EXHORTOS_ROUTES: Routes = [
   { path: 'lista-exhortos-enviados', component: ListaExhortosEnviados, title: 'Exhortos enviados'/*, canActivate: [RedirectGuard]*/ },
   { path: 'detalles-exhorto-recibido', component: DetallesExhortoRecibido, title: 'Detalles exhortos recibidos'/*, canActivate: [RedirectGuard] */},
-  //{ path: 'detalle/generar-respuesta', component: GenerarRespuestaComponent, title: 'Generar respuesta', canActivate: [RedirectGuard] },
+  { path: 'generar-acuerdo', component: GenerarAcuerdo, title: 'Generar respuesta'/*, canActivate: [RedirectGuard]*/ },
   //{ path: 'detalle/promocion-exhorto', component: PromocionExhortosComponent, title: 'Promociones de exhorto', canActivate: [RedirectGuard] },
   { path: 'respuesta-exhorto-recibido', component: RespuestaExhortoRecibido, title: 'Acuerdos Exhortos' },
   //{ path: 'exhortos-enviados', component: ExhortosEnviadosComponent, title: 'Exhortos enviados', canActivate: [RedirectGuard] },
