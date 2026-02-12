@@ -1,4 +1,4 @@
-import { Component,OnInit } from '@angular/core';
+import { ChangeDetectorRef,Component,OnInit } from '@angular/core';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { Table, TableModule } from 'primeng/table';
@@ -8,7 +8,7 @@ import { DatePicker } from "primeng/datepicker";
 import { MenuItem, MessageService } from 'primeng/api';
 import { Button } from "primeng/button";
 import { listarRequerimientos } from '../../../juicio-oral/interfaces/juicioenlinea.model';
-import { CommonModule } from '@angular/common';
+import { CommonModule ,formatDate} from '@angular/common';
 import {ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TagModule } from 'primeng/tag';
 import { JuicioService } from '../../services/juicioenlinea.service';
@@ -61,14 +61,15 @@ constructor(
   private messageService: MessageService,
   private router: Router,
   private route: ActivatedRoute,
+  private cdr: ChangeDetectorRef,
 ){
   
 }
    
 
-    ngOnInit() {
-  
+    ngOnInit() : void {
 
+      
     this.route.queryParams.subscribe(params => {
       this.filtro.estado = params['estado'] || '';
 
@@ -99,15 +100,17 @@ constructor(
         ...(params['fechaFinal'] && { fechaFinal: params['fechaFinal'] })
       };
 
+      console.log(requestParams);
       this.juicioService.getListarRequerimientosAbogados(requestParams).subscribe({
         next: (response) => {
-          console.table(response.data);
           this.requerimientosTotales = response.data;
           this.pagination = response.pagination;
           this.requerimientosTotales.forEach(r => this.actualizarTiempo(r));
+          this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Error:', error);
+          this.cdr.markForCheck();
         }
       });
     });
@@ -121,22 +124,45 @@ constructor(
       
 
 
-    aplicarFiltros(){}
+    aplicarFiltros(): void {
+    const queryParams: any = {
+      estado: this.filtro.estado || undefined,
+      fechaInicio: undefined,
+      fechaFinal: undefined,
+      page: 1 // Resetear a página 1
+    };
 
-    clearFecha() {
+    if (this.filtro.rangeDates?.length === 2) {
+      queryParams.fechaInicio = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
+      queryParams.fechaFinal = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
+    }
 
-    this.fechaInicio = undefined;
-    this.fechaFin = undefined;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge'
+    });
+
+
+    this.getListarRequerimientos();
+    console.log('hace algo el form',queryParams);
+  }
+
+    clearFiltros() {
+
+     this.filtro = { estado: 0, rangeDates: '', folio: '' };
 
     // Limpiar resultados visibles
-    // this.listadosSignal.set([]);
+  this.getListarRequerimientos();
 
     // Mostrar mensaje opcional
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Filtros reiniciados',
-      detail: 'Fechas y resultados han sido limpiados'
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { estado: null, folio: null, fechaInicio: null, fechaFinal: null, page: 1 },
+      queryParamsHandling: 'merge',
     });
+
+    //this.cargarDatos(1);
 
   }
 
@@ -149,13 +175,15 @@ constructor(
 
 
   getTagConfig(estatus: any): { icon: string; severity: 'success' | 'warn' | 'info' | 'secondary',nombre:string } {
-    console.log("eeee",estatus);
-
+   
     const historial = estatus?.historial;
     if (!historial || historial.length === 0) {
       return {icon: 'pi pi-check', severity: 'info', nombre:'Sin historial' };
     }
-    switch (estatus) {
+
+    const idEstado = historial?.at(-1)?.idCatEstadoRequerimientos;
+
+    switch (idEstado) {
       case '1':
         return { icon: 'pi pi-check', severity: 'info', nombre:'Pendiente' };
       case '2':
@@ -167,7 +195,7 @@ constructor(
         case '5':
         return { icon: 'pi pi-send', severity: 'warn' , nombre:'Rechazado' };
       default:
-        return { icon: 'pi pi-exclamation-triangle', severity: 'warn' , nombre:'Sin historial' };
+        return { icon: 'pi pi-exclamation-triangle', severity: 'warn' , nombre:'Estado desconocido' };
     }
   }
 
@@ -204,6 +232,43 @@ constructor(
       const minutosTexto = minutos === 1 ? '1 minuto' : `${minutos} minutos`;
       requerimiento.tiempoRestante = `Último día: ${horasTexto} y ${minutosTexto}`;
     }
+  }
+
+
+ getListarRequerimientos(): void {
+   // this.loading = true;
+    const currentParams = this.route.snapshot.queryParams;
+    const page = currentParams['page'] ? +currentParams['page'] : 1;
+
+    const params: any = {
+      page: page,
+      per_page: 5
+    };
+
+   
+    if (Array.isArray(this.filtro.rangeDates) && this.filtro.rangeDates.length === 2) {
+      params['fechaInicio'] = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
+      params['fechaFinal'] = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
+    }
+
+    if (this.filtro.estado > 0) params['estado'] = this.filtro.estado;
+console.log('cargando datos--->' , params);
+    this.juicioService.getListarRequerimientosAbogados(params).subscribe(
+      (response) => {
+        this.requerimientosTotales = response?.data ?? [];
+        console.log('requerimientos totales', this.requerimientosTotales);
+        this.pagination = response.pagination;
+        this.requerimientosTotales.forEach(r => this.actualizarTiempo(r));
+      //  this.loading = false;
+        console.log('cargando datos');
+        this.cdr.markForCheck();
+      },
+      (error) => {
+        console.error('Error al obtener el listado de requerimiento', error);
+       // this.loading = false;
+       this.cdr.markForCheck();
+      }
+    );
   }
 
  
