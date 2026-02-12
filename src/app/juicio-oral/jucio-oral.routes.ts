@@ -3,11 +3,12 @@ import { ListarDemanda } from './views/listar-demanda/listar-demanda';
 import { ListarAudiencias } from './views/listar-audiencias/listar-audiencias';
 import { DetalleAudiencia } from './views/detalle-audiencia/detalle-audiencia';
 import { DetalleDemanda } from './views/detalle-demanda/detalle-demanda';
-import {ListarRequerimientos} from './views/listar-requerimientos/listar-requerimientos';
+import { ListarRequerimientos } from './views/listar-requerimientos/listar-requerimientos';
 import { CrearDemanda } from './views/crear-demanda/crear-demanda';
-
+import { DetalleRequerimientos } from './views/detalle-requerimientos/detalle-requerimientos';
 
 export const JUICIO_ORAL_ROUTES: Routes = [
+
     {
         path: 'demandas',
         children: [
@@ -20,13 +21,14 @@ export const JUICIO_ORAL_ROUTES: Routes = [
         path: 'audiencias',
         children: [
             { path: 'listar', component: ListarAudiencias },
-     { path: 'detalle', component: DetalleAudiencia },
+            { path: 'detalle', component: DetalleAudiencia },
 
         ]
     },
     { path: 'requerimientos',
         children: [
-    { path: 'listar', component: ListarRequerimientos }
+    { path: 'listar', component: ListarRequerimientos },
+    { path: 'detalle', component: DetalleRequerimientos }
         ]
     }
-]
+];
