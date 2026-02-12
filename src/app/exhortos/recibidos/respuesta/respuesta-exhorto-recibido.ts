@@ -15,10 +15,12 @@ import { base64ToFile, downloadBase64 } from '../../../shared/functions/utils';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+import { Dialog } from "primeng/dialog";
+import { Toast } from "primeng/toast";
 
 @Component({
   selector: 'app-respuestaExhortoRecibido',
-  imports: [PdfDialog, TableModule, Button, CommonModule, Breadcrub, Spinner, ConfirmDialog],
+  imports: [PdfDialog, TableModule, Button, CommonModule, Breadcrub, Spinner, ConfirmDialog, Dialog, Toast],
   templateUrl: './respuesta-exhorto-recibido.html',
   styleUrl: './respuesta-exhorto-recibido.css',
   providers: [MessageService,ConfirmationService]
@@ -34,6 +36,7 @@ export class RespuestaExhortoRecibido {
   isLoading: boolean = false;
   generalesEnviado =false;
   archivosEnviado =false;
+  envioDialog: boolean = false;
   //confirmacionEliminar = false;
   //confirmacionEnvio = false;
   //confirmacionEnvioArchivos = false;
@@ -68,7 +71,7 @@ export class RespuestaExhortoRecibido {
       //private route: ActivatedRoute,
       private cd: ChangeDetectorRef,
       private sanitizer: DomSanitizer,
-      //private confirmationService: ConfirmationService,
+      private confirmationService: ConfirmationService,
       private router: Router,
       //public modalService : ModalService,
       private authService: AuthService
@@ -97,13 +100,20 @@ export class RespuestaExhortoRecibido {
   }
 
   // Método para redirigir a la vista de promoción
-  redirectToPromocion(idExhortoRecibido: number, idRespuesta: number) {
+  generarAcuerdo(idExhortoRecibido: number, idRespuesta: number) {
     //console.log('Navegando a promoción con idNotificacion:', idExhortoRecibido, 'y idRespuesta:', idRespuesta);
-    this.router.navigate(['/inicio/exhortos/detalle/generar-respuesta'], {
+    this.router.navigate(['/exhortos/generar-acuerdo'], {
       state: { idExhortoRecibido, idRespuesta }
     });
   }
-  enviarAcuerdoGenerales(idExhortoRecibido: number){
+  enviarAcuerdoGenerales(idExhortoRecibido: number) {
+    this.confirmationService.confirm({
+      key: 'enviarGenerales',
+      accept: () => this.onEnviarAcuerdoGenerales(idExhortoRecibido),
+      reject: () => { }
+    });
+  }
+  onEnviarAcuerdoGenerales(idExhortoRecibido: number){
     this.exhortosService.enviarRespuestaGenerales(idExhortoRecibido).subscribe({
       next: (response:any) => {
         if(response.success){
@@ -129,7 +139,14 @@ export class RespuestaExhortoRecibido {
 
     
   }
-  enviarAcuerdoArchivos(idExhortoRecibido: number){
+  enviarAcuerdoArchivos(idExhortoRecibido: number) {
+    this.confirmationService.confirm({
+      key: 'enviarArchivos',
+      accept: () => this.onEnviarAcuerdoArchivos(idExhortoRecibido),
+      reject: () => { }
+    });
+  }
+  onEnviarAcuerdoArchivos(idExhortoRecibido: number){
 
     this.exhortosService.enviarRespuestaArchivos(idExhortoRecibido).subscribe({
       next: (response:any) => {
@@ -138,6 +155,7 @@ export class RespuestaExhortoRecibido {
           this.messageService.add({ severity: 'success', summary: 'Enviado', detail: 'Archivos enviados' });
           this.archivosEnviado=true;
           this.enviadoRespuestaArchivosResponse = response.data;
+          this.envioDialog = true;
           //this.modalService.open('modal2');
           // Aquí podrías actualizar la lista de documentos si es necesario
         }
@@ -198,7 +216,7 @@ export class RespuestaExhortoRecibido {
         //console.log("recibe respuesta");
         if(response.success){
           const base64String = response.data.documento;
-          if((documento.tamaño ?? 0) <= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
+          if((documento.tamanio ?? 0) <= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
               
               this.onVerDocumento(base64String,documento.nombreArchivo ?? 'sinnombre', 'application/pdf'); // se visualiza en modal
           else{
@@ -240,7 +258,14 @@ export class RespuestaExhortoRecibido {
         console.error('Documento inválido');
     } 
   }
-  confirmEliminar( idArchivo: number) {
+  eliminarDocumento(idArchivo: number) {
+    this.confirmationService.confirm({
+      key: 'eliminarArchivos',
+      accept: () => this.onEliminarDocumento(idArchivo),
+      reject: () => { }
+    });
+  }
+  onEliminarDocumento( idArchivo: number) {
     const tipo = 1; // Puedes cambiar este valor según sea necesario
     this.exhortosService.eliminarArchivo(idArchivo, tipo).subscribe({
       next:(response)=>{
@@ -298,5 +323,8 @@ export class RespuestaExhortoRecibido {
         }
       });
     });
+  }
+  hideDialogAcuse() {
+    this.envioDialog = false;
   }
 }
