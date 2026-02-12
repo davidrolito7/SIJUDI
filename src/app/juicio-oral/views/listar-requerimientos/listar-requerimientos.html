@@ -15,38 +15,7 @@
 
         <div class="flex flex-wrap gap-4">
             <div class="mx-4 py-4 flex flex-wrap items-center gap-4">
-          <!-- <p class="inline-flex items-center">Mostrar:</p>
-
-          <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="0" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small" />
-                    <label for="0" class="ml-2">Todo</label>
-                </div>
-
-                 <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="1" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()"  inputId="size_small"/>
-                    <label for="1" class="ml-2">Pendiente</label>
-                </div>
-
-                 <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="2"  [(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small"/>
-                    <label for="2" class="ml-2">Expirado</label>
-                </div>
-
-                 <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="3" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small"/>
-                    <label for="3" class="ml-2">Entregados</label>
-                </div>
-
-                 <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="4"[(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small"/>
-                    <label for="4" class="ml-2">Aceptado</label>
-                </div>
-
-                 <div class="flex items-center">
-                    <p-radiobutton name="filtro" value="5" [(ngModel)]="filtro.estado" (change)="aplicarFiltros()" inputId="size_small"/>
-                    <label for="5"  class="ml-2">Rechazados</label>
-                </div> -->
-
+            <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de requerimientos">
                   <div class="grid grid-cols-12 gap-4 w-full items-end">
                 <!-- Estatus -->
                 <div class="col-span-6 lg:col-span-3 w-full">
@@ -57,22 +26,30 @@
                 </div>
 
                 <!-- Fecha Inicial -->
-                <div class="col-span-6 lg:col-span-2 w-full">
+                <!-- <div class="col-span-6 lg:col-span-2 w-full">
                     <label class="block mb-2 text-sm font-medium">Fecha Inicial</label>
                     <p-datepicker ngSkipHydration inputId="fechaInicio" name="fechaInicio" [iconDisplay]="'input'" [showIcon]="true"
                         [(ngModel)]="fechaInicio" class="w-full" fluid dateFormat="dd/mm/yy"></p-datepicker>
                 </div>
 
-                <!-- Fecha Final -->
+                <!- - Fecha Final - ->
                 <div class="col-span-6 lg:col-span-2 w-full">
                     <label class="block mb-2 text-sm font-medium">Fecha Final</label>
                     <p-datepicker ngSkipHydration inputId="fechaFin" name="fechaFin" [iconDisplay]="'input'" [showIcon]="true"
                         [(ngModel)]="fechaFin" class="w-full" fluid dateFormat="dd/mm/yy"></p-datepicker>
+                </div> -->
+
+                <!-- Fecha -->
+                <div class="col-span-12 md:col-span-8 lg:col-span-3 ">
+                    <label for="rangeDates" class="block mb-2 text-sm font-medium">Fecha</label>
+
+                    <p-datepicker inputId="rangeDates" name="rangeDates" fluid placeholder="Selecciona rango"
+                        [(ngModel)]="filtro.rangeDates" selectionMode="range" [readonlyInput]="true"></p-datepicker>
                 </div>
                 <!-- Botones Filtrar y Buscar -->
                 <div class="col-span-6 lg:col-span-4 flex gap-4 items-end">
-                    <p-button [outlined]="true" icon="pi pi-filter-slash" (click)="clearFecha()"></p-button>
-                    <p-button (onClick)="aplicarFiltros()" type="submit" >
+                    <p-button [outlined]="true" icon="pi pi-filter-slash" (click)="clearFiltros()"></p-button>
+                    <p-button  type="submit" >
                         <i pButtonIcon class="pi pi-search"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
@@ -80,7 +57,7 @@
 
 
             </div>
-
+</form>
           
                     </div>
         </div>
@@ -117,7 +94,7 @@
 
     <div class="card">
         <p-table  [rows]="10" [value]="requerimientosTotales" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
-            [globalFilterFields]="['estadoOrigen','juzgadoOrigenNombre','numeroExpedienteOrigen','municipioDestino']">
+            [globalFilterFields]="['NumExpediente','fechaLimite','Descripcion','tiempoRestante']">
             <ng-template #caption>
                 <div class="flex">
                     <!-- <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />

@@ -120,11 +120,9 @@ export class JuicioService {
         );
     }
 
-    getCatalogoSexos(): Observable<CatSexos[]> {
+    getCatalogoSexos(): Observable<ApiResponse<CatSexos[]>> {
         const url = `${this.catalogos}Generos`;
-        return this.http.get<{ data: CatSexos[] }>(url).pipe(
-            map(response => response.data)
-        );
+        return this.http.get<ApiResponse<CatSexos[]>>(url, { context: checkToken() });
     }
 
     getCatalogoTipoPartes(): Observable<CatTipoPartes[]> {

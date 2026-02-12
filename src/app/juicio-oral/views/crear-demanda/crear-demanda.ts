@@ -21,10 +21,13 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 @Component({
   selector: 'app-crear-demanda',
   imports: [CommonModule, FormsModule, ToastModule, SelectModule, DialogModule, ButtonModule,
-    InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule, InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule, TableModule, TagModule],
+    InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule, InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule, TableModule, TagModule, Breadcrub, InputGroupModule, InputGroupAddonModule],
   templateUrl: './crear-demanda.html',
   styleUrl: './crear-demanda.css',
   providers: [ConfirmationService, MessageService]
@@ -224,11 +227,18 @@ export class CrearDemanda {
   }
   // Método para actualizar validadores
   actualizarValidadores() {
+    const camposReadonly = ['nombre', 'correo', 'correoAlterno', 'direccion'];
+
     if (this.filtroParte === 'manual') {
       this.parteForm.get('nombre')?.setValidators([Validators.required, Validators.maxLength(100)]);
       this.parteForm.get('apellidoPaterno')?.setValidators([Validators.required]);
       this.parteForm.get('apellidoMaterno')?.setValidators([Validators.required]);
       this.parteForm.reset();
+
+      // Habilitar campos en modo manual
+      camposReadonly.forEach(campo => {
+        this.parteForm.get(campo)?.enable({ emitEvent: false });
+      });
     } else {
       this.parteForm.get('nombre')?.setValidators([Validators.required, Validators.maxLength(90)]);
       this.parteForm.get('apellidoPaterno')?.clearValidators();
@@ -237,12 +247,16 @@ export class CrearDemanda {
       this.parteForm.get('apellidoMaterno')?.setValue('');
       this.parteForm.reset();
       this.buscarUsr.reset();
+
+      // Deshabilitar campos en modo búsqueda
+      camposReadonly.forEach(campo => {
+        this.parteForm.get(campo)?.disable({ emitEvent: false });
+      });
     }
     this.parteForm.get('nombre')?.updateValueAndValidity();
     this.parteForm.get('apellidoPaterno')?.updateValueAndValidity();
     this.parteForm.get('apellidoMaterno')?.updateValueAndValidity();
   }
-
 
   // get partes(): FormArray {
   //   return this.formulario.get('partes') as FormArray;
@@ -278,12 +292,15 @@ export class CrearDemanda {
       if (valor.length > 5) {
         valor = valor.slice(0, 5) + '/' + valor.slice(5, 9);
       }
-    } else if (this.tipoBusqueda === "1" || this.tipoBusqueda === "4") {
-      // Solo números
-      valor = valor.replace(/\D/g, '');
+    } else if (this.tipoBusqueda === "1") {
+      // Solo números, máximo 6 dígitos
+      valor = valor.replace(/\D/g, '').slice(0, 6);
     } else if (this.tipoBusqueda === "3") {
       // Solo alfanumérico, máximo 8
       valor = valor.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
+    } else if (this.tipoBusqueda === "4") {
+      // Solo números, máximo 4 dígitos
+      valor = valor.replace(/[^0-9]/g, '').slice(0, 4);
     }
 
     this.buscarUsr.get('usuario')?.setValue(valor, { emitEvent: false });
@@ -305,12 +322,22 @@ export class CrearDemanda {
         this.isLoading = false; // Desactiva el spinner al recibir respuesta
         if (response && response.success) {
           this.usrData = response.data;
+          // Habilitar temporalmente para patchValue, luego deshabilitar
+          const camposReadonly = ['nombre', 'correo', 'correoAlterno', 'direccion'];
+          camposReadonly.forEach(campo => {
+            this.parteForm.get(campo)?.enable({ emitEvent: false });
+          });
+
           this.parteForm.patchValue({
             idUsr: this.usrData.idUsr,
             nombre: this.usrData.nombre,
             correo: this.usrData.correo,
             correoAlterno: this.usrData.correoAlterno,
             direccion: this.usrData.direccion
+          });
+          // Volver a deshabilitar
+          camposReadonly.forEach(campo => {
+            this.parteForm.get(campo)?.disable({ emitEvent: false });
           });
           this.messageService.add({ severity: 'success', summary: 'Datos encontrados', detail: "Verifique si los datos son correctos" });
 
@@ -319,10 +346,9 @@ export class CrearDemanda {
         }
       },
       error: (error) => {
-        this.isLoading = false; // Desactiva el spinner si hay error
+        this.isLoading = false; 
         this.messageService.add({ severity: 'warn', summary: 'Ocurrió un error inesperado', detail: "Intente mas tarde" });
 
-        // No muestra mensaje para otros errores
         console.error('Error al obtener los datos del usuario:', error);
       }
     });
@@ -514,43 +540,10 @@ export class CrearDemanda {
 
     this.resetDeclaracionAnexoForm();
   }
-  // ...existing code...
-  // agregarAnexo() {
-  //   if (this.anexoForm.invalid) {
-  //     this.anexoForm.markAllAsTouched();
-  //     return;
-  //   }
-
-  //   const anexo = this.anexoForm.getRawValue();
-
-  //   if (!(anexo.documento instanceof File)) {
-  //     this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Debes seleccionar un archivo.' });
-  //     return;
-  //   }
-
-  //   const nuevoAnexo: DocumentosRequest = {
-  //     ...anexo,
-  //     //  idCatTipoDocumento: Number(anexo.idCatTipoDocumento),
-  //     // valor: anexo.valor != null ? Number(anexo.valor) : null,
-  //     firmaDigital: Number(anexo.firmaDigital),
-  //     documento: anexo.documento
-  //   };
-
-  //   this.listaAnexos.push(nuevoAnexo);
-
-
-
-  //   this.resetAnexoForm();
-  // }
 
   onToggleFirmaDigital(event: Event) {
     const checked = (event.target as HTMLInputElement).checked;
     this.anexoForm.patchValue({ firmaDigital: checked ? 1 : 0 });
-  }
-
-  onToggleMenorEdad(event: Event) {
-    const checked = (event.target as HTMLInputElement).checked;
-    this.parteForm.patchValue({ esMenorEdad: checked });
   }
 
   resetAnexoForm() {
@@ -842,7 +835,7 @@ export class CrearDemanda {
   cargarCatalogoSexos() {
     this.juicioService.getCatalogoSexos().subscribe({
       next: (response) => {
-        this.catSexos = response;
+        this.catSexos = response.data;
       },
       error: (error) => {
         console.error('Error al cargar el catálogo de materias:', error);
