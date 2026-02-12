@@ -18,7 +18,7 @@
 
         <!-- Input de búsqueda -->
         <div class="relative w-full">
-          <!--  <button type="button" (click)="reprogramarAudiencia()"
+            <button type="button" (click)="reprogramarAudiencia()"
                 *ngIf="detalleAudiencia && detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia !== 4 && detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia !== 2 && !isEnProgreso(detalleAudiencia.start, detalleAudiencia.end) && mostrarBoton()"               
                  class="text-white whitespace-nowrap cursor-pointer bg-[#ff830a] hover:bg-[#ff830a]/80 focus:ring-4 focus:outline-none focus:ring-[#FF9119]/50 font-medium rounded-lg text-sm px-4 h-10 text-center inline-flex items-center w-full sm:w-auto me-2">
                 <svg class="w-5 h-5 me-2 -ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -32,8 +32,7 @@
                 </svg>
                 Reprogramar
             </button>
-        -->
-        <!--    <button type="button" (click)="showModalAnexo()"
+            <button type="button" (click)="showModalAnexo()"
                 *ngIf="detalleAudiencia && (isEnProgreso(detalleAudiencia.start, detalleAudiencia.end) || (detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia !== 2 && detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia !== 4)) && mostrarBoton()"
                 class="text-white whitespace-nowrap cursor-pointer bg-red-600 hover:bg-red-600/80 focus:ring-4 focus:outline-none focus:ring-[#FF9119]/50 font-medium rounded-lg text-sm px-4 h-10 text-center inline-flex items-center w-full sm:w-auto me-2">
                 <svg class="w-5 h-5 me-2 -ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -42,8 +41,8 @@
                         d="M17.133 12.632v-1.8a5.406 5.406 0 0 0-4.154-5.262.955.955 0 0 0 .021-.106V3.1a1 1 0 0 0-2 0v2.364a.955.955 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C6.867 15.018 5 15.614 5 16.807 5 17.4 5 18 5.538 18h12.924C19 18 19 17.4 19 16.807c0-1.193-1.867-1.789-1.867-4.175ZM6 6a1 1 0 0 1-.707-.293l-1-1a1 1 0 0 1 1.414-1.414l1 1A1 1 0 0 1 6 6Zm-2 4H3a1 1 0 0 1 0-2h1a1 1 0 1 1 0 2Zm14-4a1 1 0 0 1-.707-1.707l1-1a1 1 0 1 1 1.414 1.414l-1 1A1 1 0 0 1 18 6Zm3 4h-1a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2ZM8.823 19a3.453 3.453 0 0 0 6.354 0H8.823Z" />
                 </svg>
                 Cancelar
-            </button> -->
-      <!--   <button type="button" (click)="showModalReqGrabacion()"
+            </button>
+            <button type="button" (click)="showModalReqGrabacion()"
                 *ngIf="isArrayAndNotEmpty(detalleAudiencia?.grabaciones) && !mostrarBoton()"
                 class="text-white whitespace-nowrap cursor-pointer bg-[#937ed6] hover:bg-[#937ed6]/80 focus:ring-4 focus:outline-none focus:ring-[#FF9119]/50 font-medium rounded-lg text-sm px-4 h-10 text-center inline-flex items-center w-full sm:w-auto me-2">
                 <svg class="w-5 h-5 me-2 -ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -53,7 +52,7 @@
                         clip-rule="evenodd" />
                 </svg>
                 Solicitar grabacion
-            </button>  -->
+            </button>
         </div>
 
     </div>

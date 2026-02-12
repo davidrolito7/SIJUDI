@@ -11,12 +11,13 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Spinner } from '../../../shared/components/spinner/spinner';
+import { AuthService } from '../../../core/auth/service/auth.service';
 @Component({
-  selector: 'app-detaalle-audiencia',
-  imports: [CommonModule, ButtonModule, DialogModule, ReactiveFormsModule, TooltipModule, ConfirmDialogModule, Spinner],
-  templateUrl: './detalle-audiencia.html',
+  selector: 'app-detalle-audiencia',
+ imports: [CommonModule, ButtonModule, DialogModule, ReactiveFormsModule, TooltipModule, ConfirmDialogModule, Spinner],
+templateUrl: './detalle-audiencia.html',
   styleUrl: './detalle-audiencia.css',
-    providers: [ConfirmationService]
+    providers: [ConfirmationService, MessageService]
 
 })
 export class DetalleAudiencia {
@@ -48,7 +49,7 @@ export class DetalleAudiencia {
     private messageService: MessageService,
     private sanitizer: DomSanitizer,
     private confirmationService: ConfirmationService,
-  //  private authService: AuthService
+   private authService: AuthService
 
 
   ) { }
@@ -97,9 +98,10 @@ export class DetalleAudiencia {
   showModalReqGrabacion() {
     this.visibleSolicitarGrabacion = true;
   }
- // mostrarBoton(): boolean {
-   //return this.authService.tienePermiso('audiencias/crear');
- // }
+ mostrarBoton(): boolean {
+  return true;
+  //return this.authService.tienePermiso('audiencias/crear');
+ }
   getDetalleExpediente(idAudiencia: number): void {
     this.juicioService.getDetalleAudiencia(idAudiencia).subscribe({
       next: (response: any) => {
