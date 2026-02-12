@@ -1,5 +1,6 @@
 <p-dialog
   [header]="header"
+  styleClass="dialog-compact"
   maskStyleClass="bg-primary/40!"
   [modal]="true"
   [(visible)]="visible"
@@ -11,6 +12,7 @@
   [contentStyle]="{ overflow: 'hidden', height: 'calc(90vh - 3rem)' }"
   [draggable]="false"
   [resizable]="false">
+  
   <iframe @if(url) [src]="url" type="application/pdf" width="100%" height="100%">
     <p>
       No se pudo mostrar el PDF.

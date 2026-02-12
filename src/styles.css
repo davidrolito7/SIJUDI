@@ -71,3 +71,11 @@
 .p-menu.p-menu-overlay {
   z-index: 9999 !important;
 }
+
+.dialog-compact .p-dialog-header {
+  padding: 0.25rem 0.75rem !important;
+}
+
+.dialog-compact .p-dialog-content {
+  padding: 0.6rem !important;
+}

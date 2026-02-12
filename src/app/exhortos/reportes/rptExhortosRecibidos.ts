@@ -236,7 +236,7 @@ const generateExRecibidosPDF = (
                   {text: `  ➜${h.nombreArchivo}`,fontSize:8},
                   {text: h.tipoDocumento?.nombre, fontSize:8},
                   {text: h.paginas,fontSize:8},
-                  {text: ((h.tamaño === null ? 0 : h.tamaño)  /1024).toFixed(2),fontSize:8},
+                  {text: ((h.tamanio === null ? 0 : h.tamanio)  /1024).toFixed(2),fontSize:8},
                 ]):[])
               ]
             },

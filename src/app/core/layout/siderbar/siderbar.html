@@ -1,6 +1,6 @@
-<div class="h-screen overflow-hidden flex bg-surface-50 dark:bg-surface-900 p-4 gap-4">
+<div class="h-screen overflow-hidden flex bg-surface-0 dark:bg-surface-900 p-4 gap-4">
     <aside
-        class="sticky top-4 z-50 h-[calc(100vh-2rem)] overflow-auto bg-primary-50 p-4 dark:bg-surface-900 flex flex-col justify-between w-auto border border-surface rounded-2xl">
+        class="sticky top-4 z-50 h-[calc(100vh-2rem)] overflow-auto bg-primary-50 p-4 dark:bg-surface-900 flex flex-col justify-between w-auto rounded-2xl">
         <div class="w-12 flex flex-col items-center">
             <div class="flex items-center gap-3">
                 <button type="button"
@@ -154,17 +154,14 @@
 
             <p-divider></p-divider>
             <div class="flex flex-col gap-3">
-                <button type="button" (click)="visibleDrawer = true"
+                <button type="button" 
                     class="px-4 flex items-center gap-1 cursor-pointer text-base rounded-lg transition-all select-none w-12 justify-center py-4 text-muted-color hover:bg-emphasis bg-transparent"
                     aria-label="Configuración">
                     <i class="pi pi-cog" aria-hidden="true"></i>
                 </button>
             </div>
 
-
            <!--   <div class="flex items-center justify-center">
-
-
                 <button type="button" (click)="visibleDrawer = true" class="rounded-xl cursor-pointer"
                     aria-label="Abrir menú de usuario">
                     <p-avatar [image]="abogadoFotoUrl"
@@ -217,36 +214,3 @@
         </div>
     </main>
 </div>
-
-<p-drawer [(visible)]="visibleDrawer" position="right" styleClass="!w-full sm:!w-[30rem]">
-    <ng-template #headless>
-        <form class="flex flex-col">
-
-            <div class="flex align-items-center gap-3 p-6">
-                <p-avatar [image]="abogadoFotoUrl" size="large"
-                    class="rounded-xl overflow-hidden p-avatar p-avatar-image p-avatar-lg p-component"
-                    data-p="square large" pc1573="" data-pc-section="root" data-pc-name="avatar">
-                </p-avatar>
-                <div class="flex-1">
-                    <div class="leading-6 text-color font-medium">{{abogadoNombre}}</div>
-                    <div class="mt-1 leading-5 text-muted-color text-sm">{{ areaNombre ? ('Área: ' + areaNombre) : '' }}
-                        {{ areaNombre && perfilNombre ? ' · ' : '' }}
-                        {{ perfilNombre ? ('Perfil: ' + perfilNombre) : '' }}</div>
-                </div>
-                <p-button (onClick)="onLogout()" pTooltip="Cerrar Sesión" tooltipPosition="left" icon="pi pi-sign-out"
-                    text="" rounded="" severity="secondary" pc1574="" data-pc-section="host"></p-button>
-            </div>
-            <div class="bg-surface-50 border border-surface-0 m-6 rounded-lg  flex items-center justify-between p-1 ">
-                <label class="text-sm font-medium text-color pl-2">Perfil</label>
-
-                <button type="button"
-                    class="px-3 py-2 cursor-pointer rounded-lg bg-primary-400 hover:bg-primary text-surface-0 dark:text-surface-200 text-sm font-normal transition-all"
-                    (click)="onChangeProfile()">
-                    Cambiar de perfil
-                </button>
-            </div>
-        </form>
-    </ng-template>
-
-
-</p-drawer>

@@ -214,11 +214,11 @@ export class ListarDemanda implements OnInit {
   }
 
   detalle(idInicio: number) {
-    this.router.navigate(['/demandas/detalle'], { state: { idInicio } });
+    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idInicio } });
   }
 
-  showModalFirma() {
-    this.router.navigate(['/demandas/crear']);
+  onRedirigirCrear() {
+    this.router.navigate(['/juicioenlinea/demandas/crear']);
   }
 
   // ============================
