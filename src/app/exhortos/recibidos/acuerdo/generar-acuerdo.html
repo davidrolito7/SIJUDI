@@ -1,0 +1,229 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
+
+
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+  <!-- BREADCRUMB -->
+  <app-breadcrub></app-breadcrub>
+
+  <!-- ENCABEZADO -->
+  <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+    <div class="flex items-start flex-col md:flex-row justify-between">
+      <div>
+        <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+          Crear acuerdo
+        </label>
+
+        <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-users text-base! leading-normal!"></i>
+            <span>Caprura del acuerdo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 md:mt-0 flex items-center">
+        {{detallesAcuerdo | json}}
+            @if (tienePermisoGuardar()) {
+                <div class="relative">
+                    @if (detallesAcuerdo()?.generales?.idEstatus === 0) {
+                    <button type="button" (click)="guardarRespuestaExhorto()"
+                        class="text-white bg-morado hover:bg-morado_hover focus:outline-none focus:ring-4 focus:ring-violeta/50 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
+                    Guardar</button>
+                    }
+                   
+                </div>
+            }
+            <td class="px-2 py-2">
+            @if (tienePermisoEnviarGenerales()) {
+                <div class="relative">
+                <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
+                @if (detallesAcuerdo()?.generales?.idEstatus === 11 ) {
+                    <button type="button" (click)="enviarAcuerdoGenerales(this.idExhortoRecibido)"
+                    class="text-white bg-morado hover:bg-morado_hover focus:outline-none focus:ring-4 focus:ring-violeta/50 font-medium rounded-full text-sm px-3 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><i class="bi bi-send"></i> Enviar Generales</button>
+                    }
+
+                </div>
+                }
+                @if (tienePermisoEnviarArchvios()) {
+                <div class="relative">
+                    @if (detallesAcuerdo()?.generales?.idEstatus === 12) {
+                    <button type="button" (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"
+                        class="text-white bg-morado hover:bg-morado_hover focus:outline-none focus:ring-4 focus:ring-violeta/50 font-medium rounded-full text-sm px-3 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><i class="bi bi-send"></i> Enviar Archivos</button>
+                    }
+
+                    </div>
+                }
+            </td>
+            <div class="relative">
+
+
+
+            </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4 mt-4">
+  <div [formGroup]="acuerdosForm" class="grid grid-cols-12 gap-4 w-full items-end">
+      <!-- Estado destino -->
+    <div class="col-span-12 sm:col-span-3">
+      <label class="block mb-2 text-sm font-medium">Tipo de diligencia*</label>
+      <p-select id="tipoDiligenciado" [options]="listadoTipoDiligenciado()" formControlName="tipoDiligenciado"
+        optionLabel="descripcion" appendTo="body"
+        inputId="tipoDiligenciado-dropdown" fluid></p-select>
+    </div>
+    <!-- Observaciones -->
+    <div class="col-span-12">
+      <label class="block mb-2 text-sm font-medium">Observaciones</label>
+      <textarea id="observaciones" formControlName="observaciones" rows="4" pInputTextarea class="w-full"
+        maxlength="900"></textarea>
+
+    </div>
+  </div>
+</div>
+@if(detallesAcuerdo()?.generales?.idRespuesta !== 0)
+{
+  <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+      <div class="flex items-start flex-col md:justify-between md:flex-row">
+          <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
+
+          <div class="flex items-center">
+             @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
+                <p-button 
+                  (click)="openNewFirma()"
+                  severity="warn">Firmar
+                </p-button>
+              }
+              <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
+                  accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
+                  chooseLabel="Agregar documento" />
+             
+          </div>
+      </div>
+
+      <div class="w-full">
+          <div class="grid grid-cols-6 gap-4 w-full items-end">
+              @if (listaDocumentos().length > 0) {
+              <div class="col-span-6 sm:col-span-6 ">
+
+                  <p-table [value]="listaDocumentos()" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+                      <ng-template #header>
+                          <tr class="uppercase text-xs">
+                              <th>para firmar</th>
+                              <th>Documento</th>
+                              <th>Tipo documento</th>
+                              <th>¿Firma aplicado?</th>
+                              <th>Fecha firmado</th>
+                              <th>Firmantes</th>
+                              <th>Peso</th>
+                              <th style="min-width: 10rem">Acciones</th>
+                          </tr>
+                      </ng-template>
+                      <ng-template #body let-documento let-i="rowIndex">
+                          <tr>
+                              <td>@if(!documento.firmado){
+                                <input  (change)="archivo_seleccionado(documento)"
+                                        [id]="documento.selecParaFirma"
+                                        type="checkbox" [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma"/>
+                              }
+                              </td>
+                              <td style="font-size: small;">{{ documento.nombreArchivo }}</td>
+                              <td style="font-size: small;">
+                                @if(documento.idArchivo === 0){
+                                  <form [formGroup]="doctosForm">
+                                    <p-select id="tipoDocumento" inputId="tipoDocumento-dropdown"
+                                      formControlName="tipoDocumento"
+                                      [options]="(listadoTipoDocumento())"
+                                      optionLabel="nombre"
+                                      placeholder="seleccione" 
+                                      appendTo="body"
+                                      filterPlaceholder="Buscar tipo..."
+                                      class="w-full md:w-56"
+                                      fluid>
+                                    </p-select>
+                                  </form>
+                                }
+                                @else{
+                                  <span>
+                                    {{ documento.tipoDocumento.nombre }}
+                                  </span>
+                                }
+                              </td>
+                              <td style="font-size: small;">{{ documento.firmado ? 'Sí' : 'No' }}</td>
+                              <td style="font-size: small;">{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+                              <td>
+                                <table>
+                                    @for (firmante of documento.firmantes; track firmante) {
+                                      <tr>
+                                        @if(firmante != undefined)
+                                          {
+                                          <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
+                                          @if(!documento.firmado){
+                                            <td class="px-4">
+                                              <!--<a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">Eliminar</a>-->
+                                              <p-button  (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true" icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>
+                                            </td>
+                                          }
+                                        }
+                                      </tr>
+                                    }
+                                </table>
+                              </td>
+                              <td style="font-size: small;">{{ ((documento.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
+                            
+                              <td class="text-center">
+                                @if(documento.idArchivo === 0){
+                                  <p-button (click)="onUpload(documento.file)" severity="success" [rounded]="true"
+                                        icon="pi pi-upload" class="mr-2" title="cargar documento">
+                                  </p-button>
+                                }
+                                  <!--APLICAR FIRMAS-->
+                                @if(!documento.firmado && documento.firmantes.length>0 ){
+                                    <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
+                                      icon="pi pi-key" class="mr-2" title="Aplicar firmas">
+                                    </p-button>
+                                                            
+                                }
+                                <!--VER O DESCARGAR DOCUMENTO-->
+                                <p-button (click)="getFile(documento,1)" severity="success" [rounded]="true"
+                                                          icon="pi pi-file-pdf" class="mr-2" title="Descargar PDF"></p-button>
+
+                                <!--ELIMINAR DOCUMENTO-->
+                                @if(detallesAcuerdo().generales.idEstatus === 0 ){ <!--//Pendiente de enviar-->
+                                  @if(tienePermisoEliminarArchivo()){
+                                    <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                                    (click)="eliminarDocumento(documento,2,i)" ></p-button>
+                                    
+                                  }
+                                }
+
+                              </td>
+                          </tr>
+                      </ng-template>
+                  </p-table>
+                  @if(mostrarDocumento()){
+                    <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                    </app-pdf-dialog>
+                  }
+              </div>
+              }
+
+          </div>
+          <div>
+          </div>
+      </div>
+  </div>
+}
+<!--* MODAL DE CONFIRMACION PARA GUARDAR LOS DATOS GENERALES DEL ACUERDO -->
+<app-confirm-dialog key="guardarAcuerdo" title="Confirmación" message="¿Está seguro que desea guardar el acuerdo?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA ENVIAR LOS DATOS GENERALES DEL ACUERDO -->
+<app-confirm-dialog key="enviarGenerales" title="Confirmación" message="¿Está seguro que desea enviar los datos generales del acuerdo?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA ENVIAR LOS ARCHIVOS DEL ACUERDO -->
+<app-confirm-dialog key="enviarArchivos" title="Confirmación" message="¿Está seguro que desea enviar los datos generales del acuerdo?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+
