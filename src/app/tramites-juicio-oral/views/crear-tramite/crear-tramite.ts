@@ -27,7 +27,7 @@ import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
   selector: 'app-crear-tramite',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, TextareaModule, FileUploadModule, PdfDialog, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Breadcrub
+    Spinner, TextareaModule, FileUploadModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Breadcrub
   ],
   templateUrl: './crear-tramite.html',
   styleUrl: './crear-tramite.css',

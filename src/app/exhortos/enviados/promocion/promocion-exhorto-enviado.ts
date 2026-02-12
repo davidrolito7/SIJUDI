@@ -34,7 +34,7 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 
 @Component({
   selector: 'app-PromocionExhortoEnviadoComponent',
-  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, ProgressBar, Message, TextareaModule, TableModule, Dialog, InputMaskModule, PdfDialog],
+  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, PdfDialog],
   templateUrl: './promocion-exhorto-enviado.html',
   styleUrl: './promocion-exhorto-enviado.css',
   providers:[MessageService,ConfirmationService]

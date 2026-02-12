@@ -10,6 +10,7 @@ import { DialogModule } from 'primeng/dialog';
 })
 
 export class PdfDialog {
+  
   @Input() header = '';
   @Input() url: any = null;
   @Input() visible = false;

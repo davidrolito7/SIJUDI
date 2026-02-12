@@ -27,7 +27,6 @@ import { AppIcon } from "./icon/app-icon.component";
     AvatarModule,
     DrawerModule,
     ButtonModule,
-    AppIcon
 ],
   templateUrl: './siderbar.html',
   styleUrl: './siderbar.css',
@@ -41,7 +40,6 @@ export class Siderbar {
   readonly svgSrcForPantalla = svgSrcForPantalla;
   readonly svgSrcForModulo = svgSrcForModulo;
 
-  visibleDrawer: boolean = false;
 
   readonly modulos = this.menuStore.modulos;
   readonly showMenu = signal(false);

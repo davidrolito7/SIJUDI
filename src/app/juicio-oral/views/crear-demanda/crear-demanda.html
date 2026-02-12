@@ -1,0 +1,711 @@
+<h2 class="text-2xl font-medium leading-none tracking-tight text-gray-900 dark:text-white">
+    Captura registro 1° instancia
+</h2>
+<div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
+    <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div class="font-medium text-xl text-surface-800 dark:text-surface-200  mb-4">Generales</div>
+
+    </div>
+
+    <div class="w-full">
+        <!--* FORMULARIO GENERALES  -->
+        <form [formGroup]="formulario">
+            <div class="grid grid-cols-6 gap-6">
+                <div class="col-span-6 sm:col-span-3 grid gap-3 ">
+                    <!-- Catálogo de Municipio -->
+                    <div id="idCatMunicipio" class="col-span-6 sm:col-span-3 relative">
+                        <label for="idCatMunicipio"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Municipio</label>
+
+                        <p-select fluid="" [options]="catMunicipios" optionValue="idMunicipio"
+                            placeholder="Selecciona un municipio" [filter]="true" appendTo="body" optionLabel="Descripcion" />
+                    </div>
+                    <!-- Catálogo de Materias -->
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="IdCatMateria"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Materia</label>
+                        <p-select formControlName="idCatMateria" fluid appendTo="body" [options]="catMaterias"
+                            optionValue="IdCatMateria" (onChange)="cargarCatalogoVias($event.value)"
+                            placeholder="Selecciona una materia" optionLabel="Descripcion" />
+
+                    </div>
+
+                    <!-- Catálogo de Vías -->
+                    <div id="idCatTipoVia" class="col-span-6 sm:col-span-3">
+                        <label for="idCatVia"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Vía</label>
+
+                        <p-select formControlName="idCatTipoVia" fluid appendTo="body" [disabled]="catTipoVias.length === 0"
+                            [options]="catTipoVias" optionValue="idCatTipoVia" placeholder="Selecciona una vía"
+                            optionLabel="descripcion" />
+                    </div>
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <div id="descripcionDemanda" class="col-span-6 sm:col-span-6">
+                        <label for="descripcionDemanda"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Descripción</label>
+
+                        <textarea formControlName="descripcionDemanda" rows="8" fluid appendTo="body"
+                            placeholder="Resume tu demanda..." pTextarea></textarea>
+
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<p-toast></p-toast>
+
+<p-confirmdialog />
+
+<!--LISTA PARTES-->
+<div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
+
+    <div class="w-full">
+        <p-table [value]="listaPartes" [tableStyle]="{ 'min-width': '60rem' }" stripedRows>
+            <ng-template #caption>
+                <div class="flex">
+                    <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Partes</div>
+                    <p-button icon="pi pi-users" class="ml-auto" label="Agregar" (click)="showDialog()" />
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Estatus</th>
+                    <th>Género</th>
+                    <th>Tipo parte</th>
+                    <th>Correo</th>
+                    <th>Menor de edad</th>
+                    <th>Dirección</th>
+                    <th>Acciones</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-parte let-i="rowIndex">
+                <tr>
+                    <td class="font-semibold">
+                        {{ parte.nombre }} {{ parte.apellidoPaterno }} {{ parte.apellidoMaterno }}
+                    </td>
+                    <td>
+                        @if (parte.idUsr) {
+                        <p-tag severity="success" value="VERIFICADO" />
+                        } @else {
+                        <p-tag severity="danger" value="NO VERIFICADO" />
+                        }
+                    </td>
+                    <td>
+                        {{ parte.idCatSexo == 1 ? "HOMBRE" : parte.idCatSexo == 2 ? "MUJER" : "OTRO" }}
+                    </td>
+                    <td>{{ parte.descripcionTipoParte }}</td>
+                    <td>
+                        <div class="font-semibold">{{ parte.correo }}</div>
+                        <div class="text-xs text-surface-500">{{ parte.correoAlterno }}</div>
+                    </td>
+                    <td>
+                        @if (parte.esMenorEdad) {
+                        <p-tag severity="success" value="SI" />
+                        } @else {
+                        <p-tag severity="danger" value="NO" />
+                        }
+                    </td>
+                    <td>{{ parte.direccion }}</td>
+                    <td>
+                        <div class="flex gap-2">
+                            <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info"
+                                (click)="editarParte(i)" pTooltip="Actualizar" tooltipPosition="top" />
+                            <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                                (click)="confirm1($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="8" class="text-center p-4">No hay partes registradas.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<!--* TABLA DE DOCUMENTOS DECLARADOS -->
+<div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
+    <div class="w-full">
+        <p-table [value]="anexosDeclarados" [tableStyle]="{ 'min-width': '50rem' }" stripedRows>
+                <ng-template #caption>
+                <div class="flex">
+                    <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Anexos declarados</div>
+                    <p-button icon="pi pi-file-plus" class="ml-auto" label="Agregar" (click)="showModalListAnexo()" />
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <tr>
+                    <th>ID</th>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Valor</th>
+                    <th>Acciones</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-a let-i="rowIndex">
+                <tr>
+                    <td>{{ a.idCatTipoDocumento }}</td>
+                    <td>{{ a.descripcion }}</td>
+                    <td>{{ a.cantidad }}</td>
+                    <td>{{ a.valor ? "$" + (a.valor | number : "1.2-2" : "en-US") : "N/A" }}</td>
+                    <td>
+                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                            (click)="confirm3($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="5" class="text-center p-4">No hay anexos declarados.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <!--* MODAL DE CONFIRMACION ELIMINAR ANEXO DECLARADO -->
+    <p-confirmdialog key="declarado">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+                <div
+                    class="rounded-full bg-black text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                    <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <p class="text-2xl font-medium mt-2.5 text-surface-900 dark:text-surface-0">
+                    Confirmación
+                </p>
+                <p class="font-medium mb-0">¿Está seguro de eliminar el anexo declarado?</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button label="Eliminar" severity="danger" (onClick)="onAccept()" />
+                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" />
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+</div>
+
+<!--* TABLA DE ANEXOS -->
+<div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
+    <div class="w-full">
+        <p-table [value]="listaAnexos" [tableStyle]="{ 'min-width': '50rem' }" stripedRows>
+               <ng-template #caption>
+                <div class="flex">
+                    <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Archivos adjuntos</div>
+                   <p-fileupload mode="basic" styleClass="btn-morado" class=" ml-auto" name="demo[]" accept=".pdf"
+                (onSelect)="onAnexosSelect($event)" [multiple]="true" [auto]="true" maxFileSize="1000000"
+                chooseIcon="pi pi-upload" chooseLabel="Agregar" />
+                </div>
+            </ng-template>
+            <ng-template #header>
+                <tr>
+                    <th>Nombre</th>
+                    <th>MB</th>
+                    <th>Documento</th>
+                    <th>Firma electrónica</th>
+                    <th>Acciones</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-anexo let-i="rowIndex">
+                <tr>
+                    <td class="font-semibold">{{ anexo.nombre }}</td>
+                    <td>
+                        {{ anexo.documento.size ? (anexo.documento.size / (1024 * 1024) | number : "1.3-3") : "0.000" }}
+                        MB
+                    </td>
+                    <td>
+                        <p-button icon="pi pi-file-pdf" [rounded]="true" [text]="true" severity="warn"
+                            (click)="verDocumento(anexo)" pTooltip="Ver PDF" tooltipPosition="top" />
+                    </td>
+                    <td>
+                        <p-toggleswitch [ngModel]="anexo.firmaDigital === 1"
+                            (ngModelChange)="onFirmaDigitalChange(i, $event)" />
+                    </td>
+                    <td>
+                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                            (click)="confirm2($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="5" class="text-center p-4">No hay archivos adjuntos.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <!--* MODAL DE CONFIRMACION ELIMINAR ANEXO -->
+    <p-confirmdialog key="anexo">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+                <div
+                    class="rounded-full bg-black text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                    <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <p class="text-2xl font-medium mt-2.5 text-surface-900 dark:text-surface-0">
+                    Confirmación
+                </p>
+                <p class="font-medium mb-0">¿Está seguro de eliminar el documento?</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button label="Eliminar" severity="danger" (onClick)="onAccept()" />
+                    <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" />
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+</div>
+
+<!--* BOTÓN AUTORIZAR FIREL -->
+<section class="bg-whit animate-fade-in-down rounded-lg flex justify-center dark:bg-gray-900 mx-4 mb-4">
+    <button type="button" *ngIf="!firmaVerificada" (click)="autorizarFirel($event)" [disabled]="!canEnviar()" [ngClass]="{
+      'cursor-pointer bg-[#301A80] hover:bg-[#301A80]/80': canEnviar(),
+      'cursor-not-allowed bg-[#b9b5ec] ': !canEnviar()
+    }"
+        class="text-white font-medium rounded-lg text-sm px-5 h-[37.6px] py-0 me-2 mb-2 focus:outline-none focus:ring-4 focus:ring-blue-300 text-center inline-flex items-center">
+        <svg class="w-5 h-5 me-2 -ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="m7.171 12.906-2.153 6.411 2.672-.89 1.568 2.34 1.825-5.183m5.73-2.678 2.154 6.411-2.673-.89-1.568 2.34-1.825-5.183M9.165 4.3c.58.068 1.153-.17 1.515-.628a1.681 1.681 0 0 1 2.64 0 1.68 1.68 0 0 0 1.515.628 1.681 1.681 0 0 1 1.866 1.866c-.068.58.17 1.154.628 1.516a1.681 1.681 0 0 1 0 2.639 1.682 1.682 0 0 0-.628 1.515 1.681 1.681 0 0 1-1.866 1.866 1.681 1.681 0 0 0-1.516.628 1.681 1.681 0 0 1-2.639 0 1.681 1.681 0 0 0-1.515-.628 1.681 1.681 0 0 1-1.867-1.866 1.681 1.681 0 0 0-.627-1.515 1.681 1.681 0 0 1 0-2.64c.458-.361.696-.935.627-1.515A1.681 1.681 0 0 1 9.165 4.3ZM14 9a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
+        </svg>
+        Autorizar FIREL
+    </button>
+</section>
+
+<!--* BOTÓN ENVIAR DEMANDA -->
+<section class="bg-whit animate-fade-in-down rounded-lg flex justify-center dark:bg-gray-900 mx-4 mb-4">
+    <button type="button" (click)="enviarDemanda($event)" *ngIf="firmaVerificada" [disabled]="!canEnviar()" [ngClass]="{
+      'cursor-pointer bg-[#ffa032] hover:bg-[#ff830a]/80': canEnviar(),
+      'cursor-not-allowed bg-[#edd8bf] ': !canEnviar()
+    }"
+        class="text-black cursor-pointer font-medium rounded-lg text-sm px-5 h-[37.6px] py-0 me-2 mb-2 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 text-center inline-flex items-center">
+        <svg class="w-5 h-5 me-2 -ms-1 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+            height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 5v9m-5 0H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2M8 9l4-5 4 5m1 8h.01" />
+        </svg>
+
+        Enviar demanda
+    </button>
+</section>
+
+<!--* DIALOGO DE CONFIRMACION VALIDAR FIREL -->
+<p-confirmdialog key="firma">
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+            <div
+                class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+            </div>
+            <p class="text-2xl font-medium mt-2.5 text-gray-900 dark:text-white">
+                Autorización
+            </p>
+            <p class="font-medium mb-0">Ingrese su contraseña FIREL para continuar</p>
+            <div class="w-full mt-2 relative">
+                <input id="password_Efirma" [type]="showPassword ? 'text' : 'password'"
+                    formControlName="password_Efirma" maxlength="20"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 pr-10"
+                    placeholder="Contraseña FIREL" />
+                <button type="button" (click)="showPassword = !showPassword"
+                    class="absolute right-2 top-2 text-gray-500 dark:text-gray-300" tabindex="-1"
+                    style="background: none; border: none">
+                    <svg *ngIf="showPassword" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-width="2"
+                            d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
+                        <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+
+                    <svg *ngIf="!showPassword" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3.933 13.909A4.357 4.357 0 0 1 3 12c0-1 4-6 9-6m7.6 3.8A5.068 5.068 0 0 1 21 12c0 1-3 6-9 6-.314 0-.62-.014-.918-.04M5 19 19 5m-4 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div *ngIf="shouldShowError('password_Efirma', firmaForm)" class="text-red-500 text-sm mt-1">
+                    {{ getError("password_Efirma", firmaForm) }}
+                </div>
+            </div>
+            <div class="flex items-center gap-2 mt-6">
+                <button type="button" (click)="onAccept()"
+                    class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                    Autorizar
+                </button>
+                <button type="button" (click)="onReject()"
+                    class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>
+
+<!--* DIALOGO DE CONFIRMACION ENVIAR DEMANDA -->
+<p-confirmdialog key="demanda">
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+            <div
+                class="rounded-full bg-green-600 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+            </div>
+            <p class="text-2xl font-medium mt-2.5 text-gray-900 dark:text-white">
+                Confirmación
+            </p>
+            <p class="font-medium mb-0">Confirme la acción para enviar demanda</p>
+
+            <div class="flex items-center gap-2 mt-6">
+                <!-- <button type="button" (click)="onAccept()"
+                    class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                    Confirmar
+                </button>
+                <button type="button" (click)="onReject()"
+                    class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    Cancelar
+                </button> -->
+                <p-button label="Confirmar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+                <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>
+
+<!--* DIALOGO DE CONFIRMACION VER DEMANDA -->
+<p-confirmdialog key="success">
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+            <div
+                class="rounded-full bg-green-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+            </div>
+            <p class="text-2xl font-medium mt-2.5 text-gray-900 dark:text-white">
+                Pre-folio: {{ folio }}
+            </p>
+            <p class="font-medium mb-0">Pre-registro enviado exitosamente!</p>
+            <div class="flex items-center gap-2 mt-6">
+                <button type="button" (click)="onAccept()"
+                    class="text-white bg-green-700 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                    Ver pre-registro
+                </button>
+                <button type="button" (click)="onReject()"
+                    class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>
+
+<!--* MODAL PARA AGREGAR PARTES -->
+<p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }" [closable]="false">
+    <ng-template pTemplate="header">
+        <div class="flex justify-between items-center w-full">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Parte</h2>
+            <div class="flex items-center gap-4" *ngIf="!editandoParte">
+                <p class="inline-flex items-center dark:text-white">Tipo:</p>
+                <label class="inline-flex items-center">
+                    <p-radiobutton type="radio" name="filtro" value="busqueda" [(ngModel)]="filtroParte"
+                        (ngModelChange)="actualizarValidadores()" [ngClass]="{
+              'cursor-pointer': !(editandoParte && filtroParte === 'manual'),
+              'cursor-not-allowed': editandoParte && filtroParte === 'manual'
+            }" class="text-blue-600 border-gray-300 focus:ring-blue-500" />
+                    <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Búsqueda</span>
+                </label>
+
+                <label class="inline-flex items-center">
+                    <p-radiobutton type="radio" name="filtro" value="manual" [(ngModel)]="filtroParte"
+                        (change)="actualizarValidadores()" [ngClass]="{
+              'cursor-pointer': !(editandoParte && filtroParte === 'busqueda'),
+              'cursor-not-allowed': editandoParte && filtroParte === 'busqueda'
+            }" class="text-blue-600 border-gray-300 focus:ring-blue-500" />
+
+                    <span class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Manual</span>
+                </label>
+            </div>
+        </div>
+    </ng-template>
+
+    <!--  FORMULARIO AGREGAR PARTE-->
+    <form [formGroup]="buscarUsr" (ngSubmit)="onBuscarUsuario()" *ngIf="!editandoParte && filtroParte === 'busqueda'"
+        class="grid grid-cols-6 gap-6 mb-2 mt-2 pb-4 border-b border-gray-200 dark:border-gray-600">
+        <div class="relative col-span-6">
+            <!-- selector tipoBusqueda -->
+            <select id="tipoBusqueda" formControlName="tipoBusqueda" (change)="onTipoBusquedaChange()"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <option [ngValue]="null" selected>
+                    Seleccione el tipo de búsqueda
+                </option>
+                <option value="1">Por ID General del usuario (número entero)</option>
+                <option value="2">
+                    Por Folio de registro RUNE (formato 00001/2025)
+                </option>
+                <option value="3">
+                    Por Código de llave (8 caracteres alfanuméricos)
+                </option>
+                <option value="4">Por Número de empleado (4 dígitos)</option>
+            </select>
+        </div>
+        <div class="relative col-span-6 sm:col-span-3">
+            <!-- input CURP -->
+            <input type="text" id="curp" formControlName="curp" maxlength="18"
+                class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="CURP" />
+            <div *ngIf="shouldShowError('curp', buscarUsr)" class="text-red-500 text-sm mt-1">
+                {{ getError("curp", buscarUsr) }}
+            </div>
+        </div>
+        <div class="relative col-span-6 sm:col-span-3">
+            <!-- Input + botón en un contenedor relativo para control de altura -->
+            <div class="relative">
+                <input type="text" id="usuario" formControlName="usuario" maxlength="30"
+                    [placeholder]="getPlaceholder()" (input)="aplicarMascaraBusqueda($event)"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 shadow-xs dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+
+                <!-- Botón alineado al input, altura igual -->
+                <button type="submit" [disabled]="buscarUsr.invalid"
+                    class="absolute inset-y-0 right-0 px-4 text-white cursor-pointer bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm rounded-e-lg dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400">
+                    Buscar
+                </button>
+            </div>
+
+            <!-- Errores de validacion -->
+            <div *ngIf="shouldShowError('usuario', buscarUsr)" class="text-red-500 text-sm mt-1">
+                {{ getError("usuario", buscarUsr) }}
+            </div>
+        </div>
+    </form>
+
+    <form [formGroup]="parteForm" (ngSubmit)="agregarParte()" class="relative rounded-lg">
+        <!-- Modal body -->
+        <div class="grid grid-cols-6 gap-6">
+            <div class="col-span-6 sm:col-span-6" *ngIf="filtroParte === 'busqueda'">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre Completo</label>
+                <input type="text" name="nombre" id="nombre" formControlName="nombre" readonly
+                    class="shadow-xs bg-gray-50 uppercase border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="EJ. ANA MARIA PEREZ GARCIA" />
+            </div>
+
+            <div class="col-span-6 sm:col-span-3" *ngIf="filtroParte === 'manual'">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre</label>
+                <input type="text" name="nombre" id="nombre" formControlName="nombre" maxlength="100"
+                    class="shadow-xs bg-gray-50 uppercase border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Bonnie" />
+                <div *ngIf="shouldShowError('nombre')" class="text-red-500 text-sm mt-1">
+                    {{ getError("nombre") }}
+                </div>
+            </div>
+            <div class="col-span-6 sm:col-span-3" *ngIf="filtroParte === 'manual'">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apellido Paterno
+                </label>
+                <input type="text" name="apellidoPaterno" id="last-name" formControlName="apellidoPaterno"
+                    maxlength="100"
+                    class="shadow-xs bg-gray-50 uppercase border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Green" required="" />
+                <div *ngIf="shouldShowError('apellidoPaterno')" class="text-red-500 text-sm mt-1">
+                    {{ getError("apellidoPaterno") }}
+                </div>
+            </div>
+            <div class="col-span-6 sm:col-span-3" *ngIf="filtroParte === 'manual'">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apellido Materno
+                </label>
+                <input type="text" name="apellidoMaterno" id="last-name" formControlName="apellidoMaterno"
+                    maxlength="100"
+                    class="shadow-xs bg-gray-50 uppercase border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Green" />
+                <div *ngIf="shouldShowError('apellidoMaterno')" class="text-red-500 text-sm mt-1">
+                    {{ getError("apellidoMaterno") }}
+                </div>
+            </div>
+
+            <div class="col-span-6 sm:col-span-3">
+                <label for="idCatSexo"
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Género</label>
+                <select id="idCatSexo" name="idCatSexo" formControlName="idCatSexo"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                    <option [ngValue]="null" selected="">Selecciona un género</option>
+                    <option *ngFor="let sexo of catSexos" [value]="sexo.idCatSexo">
+                        {{ sexo.descripcion }}
+                    </option>
+                </select>
+                <div *ngIf="shouldShowError('idCatSexo')" class="text-red-500 text-sm mt-1">
+                    {{ getError("idCatSexo") }}
+                </div>
+            </div>
+            <div [ngClass]="filtroParte === 'busqueda' ? 'col-span-3' : 'col-span-6'">
+                <label for="idCatParte" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipo
+                    parte</label>
+                <select id="idCatTipoParte" name="idCatTipoParte" formControlName="idCatTipoParte"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                    <option [ngValue]="null" selected="">Selecciona un tipo</option>
+                    <option *ngFor="let tipoParte of catTipoPartes" [value]="tipoParte.idCatTipoParte">
+                        {{ tipoParte.descripcion }}
+                    </option>
+                </select>
+                <div *ngIf="shouldShowError('idCatTipoParte')" class="text-red-500 text-sm mt-1">
+                    {{ getError("idCatTipoParte") }}
+                </div>
+            </div>
+            <div class="col-span-6">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Correo electrónico
+                </label>
+                <input type="email" name="correo" id="correo" formControlName="correo" maxlength="250"
+                    [readonly]="filtroParte === 'busqueda'"
+                    class="shadow-xs bg-gray-50 uppercase border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="ejemplo@gmail.com" />
+                <div *ngIf="shouldShowError('correo') && filtroParte !== 'busqueda'" class="text-red-500 text-sm mt-1">
+                    {{ getError("correo") }}
+                </div>
+            </div>
+
+            <div class="col-span-4">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Correo alterno
+                </label>
+                <input type="email" name="correoAlterno" id="correoAlterno" formControlName="correoAlterno"
+                    maxlength="250" [readonly]="filtroParte === 'busqueda'"
+                    class="shadow-xs bg-gray-50 uppercase border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="ejemplo@gmail.com" />
+                <div *ngIf="shouldShowError('correoAlterno')" class="text-red-500 text-sm mt-1">
+                    {{ getError("correoAlterno") }}
+                </div>
+                <div *ngIf="parteForm.errors?.['correosIguales'] && filtroParte === 'manual'"
+                    class="text-red-500 text-sm mt-1 col-span-6">
+                    El correo alterno debe ser diferente al correo principal.
+                </div>
+            </div>
+            <div class="col-span-2 flex items-end mb-2.5">
+                <label class="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" value="" class="sr-only peer" formControlName="esMenorEdad"
+                        (change)="onToggleMenorEdad($event)" />
+                    <div
+                        class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600">
+                    </div>
+                    <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Menor de edad</span>
+                </label>
+            </div>
+
+            <div class="col-span-6">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Dirección</label>
+                <textarea name="direccion" rows="4" formControlName="direccion" [readonly]="filtroParte === 'busqueda'"
+                    maxlength="250"
+                    class="block p-2.5 w-full uppercase text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Escribe tu dirreción aquí"></textarea>
+                <div *ngIf="shouldShowError('direccion') && filtroParte !== 'busqueda'"
+                    class="text-red-500 text-sm mt-1">
+                    {{ getError("direccion") }}
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-2 mt-2">
+            <p-button label="Cancelar" severity="secondary" (click)="resetParteForm()"></p-button>
+            <p-button type="submit" label="Guardar" [disabled]="parteForm.invalid" />
+        </div>
+    </form>
+</p-dialog>
+
+<!--* MODAL PARA AGREGAR LISTA DE ANEXOS A ENTREGAR -->
+<p-dialog header="Declaración de documentos" [modal]="true" [(visible)]="visibleListAnexo" [style]="{ width: '35rem' }"
+    [closable]="false">
+    <form [formGroup]="declaracionAnexoForm" (ngSubmit)="agregarListAnexo()" class="relative rounded-lg">
+        <!-- Modal body -->
+        <div class="space-y-6">
+            <div class="grid grid-cols-6 gap-6">
+                <div class="col-span-6 sm:col-span-6">
+                    <label for="idCatTipoDocumento"
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipo de documento</label>
+                    <p-select formControlName="idCatTipoDocumento" class=" w-full" [filter]="true"
+                        [options]="catTipoDocumentos" optionValue="idCatTipoDocumento" appendTo="body"
+                        placeholder="Selecciona uno o más anexos" optionLabel="descripcion" />
+                </div>
+            </div>
+            <div class="col-span-6">
+                <label for="cantidad" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Cantidad
+                </label>
+
+                <input id="valor" pInputText type="number" formControlName="cantidad" maxlength="12"
+                    class="block w-full" placeholder="Escribe el nombre personalizado" />
+                <div *ngIf="shouldShowError('cantidad', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
+                    {{ getError("cantidad", declaracionAnexoForm) }}
+                </div>
+            </div>
+            <div class="col-span-6" *ngIf="mostrarInputNombre">
+                <label for="descripcion" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Nombre del documento
+                </label>
+                <input id="descripcion" pInputText type="text" formControlName="descripcion" maxlength="200"
+                    class="block w-full" placeholder="Escribe el nombre personalizado" />
+                <div *ngIf="shouldShowError('descripcion', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
+                    {{ getError("descripcion", declaracionAnexoForm) }}
+                </div>
+            </div>
+            <div class="col-span-6">
+                <label for="valor" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Es valor
+                </label>
+                <div class="flex items-center gap-10" style="height: 37.6px;">
+                    <p-toggleswitch id="esValor" formControlName="esValor" class="shrink-0 mt-1.5" />
+                    <p-inputnumber *ngIf="declaracionAnexoForm.get('esValor')?.value" inputId="valor"
+                        formControlName="valor" mode="currency" currency="MXN" locale="es-MX"
+                        placeholder="Ingrese una cantidad" class=" w-full" />
+                </div>
+                <div *ngIf="shouldShowError('valor', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
+                    {{ getError("valor", declaracionAnexoForm) }}
+                </div>
+            </div>
+            <!-- <div class="col-span-6" *ngIf="mostrarCampoValor">
+                <label for="valor" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Valor
+                </label>
+                <input id="valor" pInputText type="number" formControlName="valor" maxlength="12" class="block w-full"
+                    placeholder="Escribe el nombre personalizado" />
+                <div *ngIf="shouldShowError('valor', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
+                    {{ getError("valor", declaracionAnexoForm) }}
+                </div>
+            </div> -->
+
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+            <p-button label="Cancelar" severity="secondary" (click)="resetDeclaracionAnexoForm()" />
+            <p-button type="submit" label="Guardar" [disabled]="declaracionAnexoForm.invalid" />
+        </div>
+    </form>
+</p-dialog>
+
+<p-dialog header="{{ nombre }}" [modal]="true" [(visible)]="visibleDocumento" [style]="{ width: '40rem' }">
+    <iframe *ngIf="documentoUrl" [src]="documentoUrl" type="application/pdf" width="100%" height="500px">
+        <p>
+            No se pudo mostrar el PDF.
+            <a [href]="documentoUrl" download>Descargar</a> en su lugar.
+        </p>
+    </iframe>
+</p-dialog>

@@ -1,11 +1,9 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-
-<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
 <div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
 
     <!-- HEADER -->
-<app-breadcrub></app-breadcrub>
+    <app-breadcrub></app-breadcrub>
     <!-- BUSQUEDA -->
     <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
         <form class="flex flex-col" [formGroup]="validarCausaForm">
@@ -25,13 +23,13 @@
 
             <div class="grid grid-cols-6 gap-4 w-full items-end">
                 <div class="col-span-6 sm:col-span-3">
-                    <label class="block mb-2 text-sm font-medium">Nombre Completo</label>
+                    <label class="block mb-2 text-sm font-medium">Folio</label>
                     <p-inputmask fluid formControlName="numeroCausa" class="uppercase text-sm rounded-lg"
-                        mask="9999/9999"  placeholder="0001/2026" />
+                        mask="9999/9999" placeholder="0001/2026" />
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
-                    <label class="block mb-2 text-sm font-medium">Nombre</label>
+                    <label class="block mb-2 text-sm font-medium">Juzgado</label>
                     <p-select class="w-full" [options]="catJuzgados" formControlName="idJuzgado"
                         optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
                         optionLabel="descripcion" appendTo="body" />
@@ -107,7 +105,7 @@
                             <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
                         </div>
                     </th>
-                      <th style="min-width:10rem">
+                    <th style="min-width:10rem">
                         <div class="flex items-center justify-between">
                             Acciones
                         </div>
@@ -121,9 +119,9 @@
                     <td>{{ tramite.fechaEnvio | date: 'MM/dd/yyyy' }}</td>
                     <td>{{ tramite.observaciones }}</td>
                     <td>{{ tramite.cantidadAnexos }}</td>
-                    <td> <p-button type="button" class="btn-secondary" >
-                                    <i class="pi pi-edit"></i>
-                                </p-button></td>
+                    <td> <p-button type="button" class="btn-secondary">
+                            <i class="pi pi-edit"></i>
+                        </p-button></td>
                 </tr>
             </ng-template>
 

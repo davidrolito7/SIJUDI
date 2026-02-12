@@ -1,32 +1,23 @@
-<!-- <app-spinner [isLoading]="isLoading"></app-spinner> -->
-<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
-<div class="sticky top-0 z-50  flex flex-col gap-4">
-
-    <!-- HEADER -->
-    <app-breadcrub></app-breadcrub>
+ <!-- HEADER -->
+  <app-breadcrub></app-breadcrub>
 
     <!-- BUSQUEDA -->
-    <div class=" border border-surface rounded-2xl p-4">
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
 
         <div class="flex items-start flex-col md:flex-row justify-between">
-            <div class="font-medium text-2xl ">
-                Registro de demandas electrónicas 1° instancia
-            </div>
-            <div class="flex items-center">
-                <p-button (click)="onRedirigirCrear()">
-                    <i pButtonIcon class="pi pi-file-plus"></i>
-                    <span pButtonLabel>Nuevo</span>
-                </p-button>
-            </div>
-        </div>
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                Audiencias programadas
+              </label>
+
+ </div>
         <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de exhortos enviados">
             <div class="grid grid-cols-12 gap-4 w-full items-end">
                 <!-- Folio -->
                 <div class="col-span-12 md:col-span-6 lg:col-span-4 w-full">
                     <label for="folio" class="block mb-2 text-sm font-medium">Folio</label>
 
-                    <p-inputmask fluid [(ngModel)]="filtro.folio" name="folio" class="uppercase text-sm rounded-lg"
-                        mask="9999/9999" placeholder="0001/2026" />
+                    <p-inputmask fluid [(ngModel)]="filtro.folio" name="folio" class="uppercase text-sm rounded-lg" mask="9999/9999"
+                        placeholder="0001/2026" />
                 </div>
 
                 <!-- Estatus -->
@@ -51,7 +42,7 @@
                     <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
                         aria-label="Limpiar filtros"></p-button>
 
-                    <p-button type="submit" aria-label="Buscar" styleClass="btn-secondary">
+                    <p-button type="submit" aria-label="Buscar">
                         <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
@@ -61,12 +52,11 @@
 
     </div>
 
-</div>
-
-<div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
+    <!--Tabla-->
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
 
     <div class="card">
-        <p-table #dtInicio [value]="inicios" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+        <p-table #dtInicio [value]="audiencias" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="[
     'folio',
     'cat_via_materia.cat_materia.Descripcion',
@@ -75,7 +65,7 @@
   ]">
             <ng-template #caption>
                 <div class="flex">
-                    <div class="font-medium text-xl mb-4">Resultado</div>
+                    <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
 
                     <p-iconfield iconPosition="left" class="ml-auto">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
@@ -85,46 +75,35 @@
                 </div>
             </ng-template>
 
-            <ng-template #header class="bg-red-500">
+            <ng-template #header>
                 <tr>
-                    <th scope="col">Folio</th>
-                    <th scope="col">Materia</th>
-                    <th scope="col">Vía</th>
-                    <th scope="col">Fecha Creado</th>
-                    <th scope="col">Estatus</th>
-                    <th scope="col">Acciones</th>
+                        <th>Expediente</th>
+                    <th>Folio</th>
+                    <th>Titulo</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
                 </tr>
             </ng-template>
 
-            <ng-template #body let-inicio>
+          <ng-template #body let-audiencia>
                 <tr>
+                    <td>{{ audiencia.expediente.NumExpediente }}</td>
+                    <td>{{ audiencia. folio}}</td>
+                    <td>{{ audiencia.title }}</td>
+                    <td>{{ audiencia.start | date:'dd/MM/yyyy HH:mm'  }}</td>
+                    <td>{{ audiencia.end  | date:'dd/MM/yyyy HH:mm' }}</td>
                     <td>
-                        # <span>{{ inicio.folio }}</span>
+                        <p-tag [value]="(getEstadoDescripcion(audiencia) | uppercase) ?? ''"
+                            [severity]="getEstadoTag(audiencia).severity" [icon]="getEstadoTag(audiencia).icon" />
                     </td>
-
                     <td>
-                        {{ inicio.cat_via_materia?.cat_materia?.Descripcion }}
-                    </td>
-
-                    <td>
-                        {{ inicio.cat_via_materia?.cat_via?.descripcion }}
-                    </td>
-
-                    <td>
-                        {{ inicio.fechaHoraRecepcion | date: 'dd/MM/yyyy HH:mm' }} h
-                    </td>
-
-                    <td>
-                        <p-tag [value]="(getEstadoDescripcion(inicio) | uppercase) ?? ''"
-                            [severity]="getEstadoTag(inicio).severity" [icon]="getEstadoTag(inicio).icon" />
-                    </td>
-
-                    <td>
-                        <p-button (click)="detalle(inicio.idPreregistro)" [rounded]="true" [text]="true" [raised]="true"
-                            severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
-                            tooltipPosition="top" title="Detalle">
+                         <p-button (click)="detalle(audiencia.idPreregistro)" [rounded]="true"
+                        [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
+                        pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
                         </p-button>
-
+                      
                     </td>
                 </tr>
             </ng-template>
@@ -138,4 +117,5 @@
 
     </div>
 </div>
+
 <p-toast></p-toast>
