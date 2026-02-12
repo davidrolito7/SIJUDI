@@ -11,10 +11,11 @@ import { TagModule } from 'primeng/tag';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { TooltipModule } from 'primeng/tooltip';
 import { base64ToFile } from '../../../shared/functions/utils';
+import { Spinner } from "../../../shared/components/spinner/spinner";
 
 @Component({
   selector: 'app-detalle-demanda',
-  imports: [CommonModule, TableModule, Breadcrub, ButtonModule, TagModule, PdfDialog, TooltipModule],
+  imports: [CommonModule, TableModule, Breadcrub, ButtonModule, TagModule, PdfDialog, TooltipModule, Spinner],
   templateUrl: './detalle-demanda.html',
   styleUrl: './detalle-demanda.css',
 })
