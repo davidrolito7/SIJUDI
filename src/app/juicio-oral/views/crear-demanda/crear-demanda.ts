@@ -24,10 +24,13 @@ import { TagModule } from 'primeng/tag';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { Spinner } from "../../../shared/components/spinner/spinner";
+import { PasswordModule } from 'primeng/password';
+import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 @Component({
   selector: 'app-crear-demanda',
   imports: [CommonModule, FormsModule, ToastModule, SelectModule, DialogModule, ButtonModule,
-    InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule, InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule, TableModule, TagModule, Breadcrub, InputGroupModule, InputGroupAddonModule],
+    InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule, InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule, TableModule, TagModule, Breadcrub, InputGroupModule, InputGroupAddonModule, Spinner, PasswordModule, ConfirmDialog],
   templateUrl: './crear-demanda.html',
   styleUrl: './crear-demanda.css',
   providers: [ConfirmationService, MessageService]
@@ -766,6 +769,12 @@ export class CrearDemanda {
             key: 'success',
             accept: () => {
               this.detalle(idPreregistro);
+            },
+            reject: () => {
+              this.formulario.reset();
+              this.listaPartes = [];
+              this.listaAnexos = [];
+              this.anexosDeclarados = [];
             }
           });
         }
@@ -779,7 +788,7 @@ export class CrearDemanda {
 
   detalle(idInicio: number) {
     console.log('Navegando a detalle:', idInicio);
-    this.router.navigate(['/demandas/detalle'], { state: { idInicio } });
+    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idInicio } });
   }
 
   getError(controlName: string, form: FormGroup = this.parteForm): string {

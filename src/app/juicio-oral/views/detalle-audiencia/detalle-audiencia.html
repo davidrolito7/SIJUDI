@@ -1,176 +1,134 @@
-<app-spinner [isLoading]="isLoading"></app-spinner>
 
 
-<!-- Card header -->
-<section class=" animate-fade-in-down p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-    <div class="w-full md:w-auto">
-        <h2 class=" text-3xl font-bold leading-none tracking-tight text-gray-900  dark:text-white">
-            Audiencia # {{detalleAudiencia?.expediente?.NumExpediente}}
-        </h2>
+        <app-spinner [isLoading]="isLoading" message="" /> 
 
-        <div class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
 
-        </div>
-    </div>
-    <!-- Zona de búsqueda y filtros -->
-    <div class="flex flex-col gap-4 w-full md:flex-row md:items-center md:justify-end md:w-auto">
+<div class="sticky top-0 z-50 flex flex-col gap-4">
 
-        <!-- Input de búsqueda -->
-        <div class="relative w-full">
-            <button type="button" (click)="reprogramarAudiencia()"
-                *ngIf="detalleAudiencia && detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia !== 4 && detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia !== 2 && !isEnProgreso(detalleAudiencia.start, detalleAudiencia.end) && mostrarBoton()"               
-                 class="text-white whitespace-nowrap cursor-pointer bg-[#ff830a] hover:bg-[#ff830a]/80 focus:ring-4 focus:outline-none focus:ring-[#FF9119]/50 font-medium rounded-lg text-sm px-4 h-10 text-center inline-flex items-center w-full sm:w-auto me-2">
-                <svg class="w-5 h-5 me-2 -ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                    height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd"
-                        d="M12.512 8.72a2.46 2.46 0 0 1 3.479 0 2.461 2.461 0 0 1 0 3.479l-.004.005-1.094 1.08a.998.998 0 0 0-.194-.272l-3-3a1 1 0 0 0-.272-.193l1.085-1.1Zm-2.415 2.445L7.28 14.017a1 1 0 0 0-.289.702v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .703-.288l2.851-2.816a.995.995 0 0 1-.26-.189l-3-3a.998.998 0 0 1-.19-.26Z"
-                        clip-rule="evenodd" />
-                    <path fill-rule="evenodd"
-                        d="M7 3a1 1 0 0 1 1 1v1h3V4a1 1 0 1 1 2 0v1h3V4a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1V4a1 1 0 0 1 1-1Zm10.67 8H19v8H5v-8h3.855l.53-.537a1 1 0 0 1 .87-.285c.097.015.233.13.277.087.045-.043-.073-.18-.09-.276a1 1 0 0 1 .274-.873l1.09-1.104a3.46 3.46 0 0 1 4.892 0l.001.002A3.461 3.461 0 0 1 17.67 11Z"
-                        clip-rule="evenodd" />
-                </svg>
-                Reprogramar
-            </button>
-            <button type="button" (click)="showModalAnexo()"
-                *ngIf="detalleAudiencia && (isEnProgreso(detalleAudiencia.start, detalleAudiencia.end) || (detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia !== 2 && detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia !== 4)) && mostrarBoton()"
-                class="text-white whitespace-nowrap cursor-pointer bg-red-600 hover:bg-red-600/80 focus:ring-4 focus:outline-none focus:ring-[#FF9119]/50 font-medium rounded-lg text-sm px-4 h-10 text-center inline-flex items-center w-full sm:w-auto me-2">
-                <svg class="w-5 h-5 me-2 -ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                    height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M17.133 12.632v-1.8a5.406 5.406 0 0 0-4.154-5.262.955.955 0 0 0 .021-.106V3.1a1 1 0 0 0-2 0v2.364a.955.955 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C6.867 15.018 5 15.614 5 16.807 5 17.4 5 18 5.538 18h12.924C19 18 19 17.4 19 16.807c0-1.193-1.867-1.789-1.867-4.175ZM6 6a1 1 0 0 1-.707-.293l-1-1a1 1 0 0 1 1.414-1.414l1 1A1 1 0 0 1 6 6Zm-2 4H3a1 1 0 0 1 0-2h1a1 1 0 1 1 0 2Zm14-4a1 1 0 0 1-.707-1.707l1-1a1 1 0 1 1 1.414 1.414l-1 1A1 1 0 0 1 18 6Zm3 4h-1a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2ZM8.823 19a3.453 3.453 0 0 0 6.354 0H8.823Z" />
-                </svg>
-                Cancelar
-            </button>
-            <button type="button" (click)="showModalReqGrabacion()"
-                *ngIf="isArrayAndNotEmpty(detalleAudiencia?.grabaciones) && !mostrarBoton()"
-                class="text-white whitespace-nowrap cursor-pointer bg-[#937ed6] hover:bg-[#937ed6]/80 focus:ring-4 focus:outline-none focus:ring-[#FF9119]/50 font-medium rounded-lg text-sm px-4 h-10 text-center inline-flex items-center w-full sm:w-auto me-2">
-                <svg class="w-5 h-5 me-2 -ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                    height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd"
-                        d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Zm-2 4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H9Zm0 2h2v2H9v-2Zm7.965-.557a1 1 0 0 0-1.692-.72l-1.268 1.218a1 1 0 0 0-.308.721v.733a1 1 0 0 0 .37.776l1.267 1.032a1 1 0 0 0 1.631-.776v-2.984Z"
-                        clip-rule="evenodd" />
-                </svg>
-                Solicitar grabacion
-            </button>
+    <!-- HEADER -->
+    <app-breadcrub></app-breadcrub>
+
+    <!-- DETALLE -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl">
+
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
+                 Audiencia # {{detalleAudiencia?.expediente?.NumExpediente}}
+         </label>
         </div>
 
-    </div>
-</section>
-
-
-<section class="animate-fade-in-down dark:bg-gray-900  mb-4">
-    <h2 id="accordion-open-heading-1">
-        <button type="button"
-            class="flex items-center justify-between w-full p-4 font-medium rtl:text-right text-gray-500  bg-gray-100 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 transition-all duration-300 ease-in-out transform hover:scale-[1.008]"
-            data-accordion-target="#accordion-open-body-1" aria-expanded="false" aria-controls="accordion-open-body-1">
+        <!-- Sección: Datos generales -->
+        <div
+            class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 transition delay-100 duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.01]">
             <span class="flex items-center">
-                <svg class="w-5 h-5 me-2 shrink-0 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                    height="24" fill="currentColor" viewBox="0 0 24 24">
                     <path fill-rule="evenodd"
                         d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm9.408-5.5a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2h-.01ZM10 10a1 1 0 1 0 0 2h1v3h-1a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2h-1v-4a1 1 0 0 0-1-1h-2Z"
                         clip-rule="evenodd" />
-                </svg> Datos generales</span>
+                </svg>
+                Datos generales
+            </span>
+        </div>
 
-
-        </button>
-    </h2>
-    <div id="accordion-open-body-1" aria-labelledby="accordion-open-heading-1">
-        <div class="p-5 w-full dark:bg-gray-900 ">
-            <div class="grid grid-cols-6 gap-4" *ngIf="detalleAudiencia">
-                <!-- Mostrar datos generales si están disponibles -->
-
+        <div class="p-5 w-full">
+            @if (detalleAudiencia) {
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <!-- Columna Izquierda -->
-                <div class="flex flex-col space-y-2 col-span-6 sm:col-span-3 ">
-
-                    <p class="text-gray-700 dark:text-gray-300 break-words"><b>Titulo: </b>
-                        {{detalleAudiencia.title}}</p>
-                    <p class="text-gray-700 dark:text-gray-300"><b>Fecha:</b>
-                        {{ detalleAudiencia.start | date:'EEEE, d \'de\' MMMM \'de\' y' | uppercase}}
+                <div class="flex flex-col space-y-2">
+                    <p class="text-surface-600 dark:text-surface-200"><b>Titulo: </b>
+                        {{detalleAudiencia.title}}
                     </p>
-                    <p class="text-gray-700 dark:text-gray-300"><b>Hora:</b>
-                        {{ detalleAudiencia.start | date:'HH:mm' }} - {{ detalleAudiencia.end | date:'HH:mm' }} H
+                    <p class="text-surface-600 dark:text-surface-200"><b>Fecha:</b>
+                        {{ detalleAudiencia.start | date:'EEEE, d \'de\' MMMM \'de\' y' | uppercase }}
                     </p>
-
-                    <p class="italic text-gray-700 dark:text-gray-300 break-words"><b>Observaciones:</b>
-                        {{ detalleAudiencia.ultimo_estado.observaciones | uppercase }}
+                    <p class="text-surface-600 dark:text-surface-200"><b>Hora:</b>
+                        {{detalleAudiencia.start | date:'HH:mm' }} - {{ detalleAudiencia.end | date:'HH:mm' }} H
+                    </p>
+                    <p class="text-surface-600 dark:text-surface-200"><b>Observaciones:</b>
+                        {{ detalleAudiencia.ultimo_estado.observaciones | uppercase }} h
                     </p>
 
                 </div>
-
                 <!-- Columna Derecha -->
-                <div class="flex flex-col space-y-2 col-span-6 sm:col-span-3 ">
-                    <p class="text-gray-700 dark:text-gray-300"><b>Estado:</b>
-                        <ng-container *ngIf="detalleAudiencia">
-                            <ng-container
-                                *ngIf="isEnProgreso(detalleAudiencia.start, detalleAudiencia.end); else estadoNormal">
-                                <span
-                                    class="ml-2 bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-yellow-100 dark:bg-gray-700 dark:border-yellow-500 dark:text-yellow-400">
-                                    EN PROGRESO
-                                </span>
-                            </ng-container>
-                            <ng-template #estadoNormal>
-                                <ng-container [ngSwitch]="detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia">
-                                    <span *ngSwitchCase="'1'"
-                                        class="ml-2 bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-green-400 border border-green-100 dark:border-green-500">
-                                        {{ detalleAudiencia.ultimo_estado.descripcion | uppercase }}
-                                    </span>
-                                    <span *ngSwitchCase="'2'"
-                                        class="ml-2 bg-purple-100 text-purple-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-purple-100 dark:bg-gray-700 dark:border-purple-500 dark:text-purple-400">
-                                        {{ detalleAudiencia.ultimo_estado.descripcion | uppercase }}
-                                    </span>
-                                    <span *ngSwitchCase="'3'"
-                                        class="ml-2 bg-orange-100 text-orange-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-orange-100 dark:bg-gray-700 dark:border-orange-300 dark:text-orange-300">
-                                        {{ detalleAudiencia.ultimo_estado.descripcion | uppercase }}
-                                    </span>
-                                    <span *ngSwitchCase="'4'"
-                                        class="ml-2 bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-orange-100 dark:bg-gray-700 dark:border-orange-300 dark:text-orange-300">
-                                        {{ detalleAudiencia.ultimo_estado.descripcion | uppercase }}
-                                    </span>
-                                    <span *ngSwitchDefault>
-                                        {{ detalleAudiencia.ultimo_estado.descripcion | uppercase }}
-                                    </span>
-                                </ng-container>
-                            </ng-template>
-                        </ng-container>
+                <div class="flex flex-col space-y-2">
+                    <p class="text-surface-600 dark:text-surface-200"><b>Estado:</b>
+                        @if (isEnProgreso(detalleAudiencia.start, detalleAudiencia.end)) {
+                        <span class="ml-2 bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-md">
+                            EN PROGRESO
+                        </span>
+                        }
+                        @else
+                        {
+                        @switch (detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia) {
+
+                        @case (1) {
+                        <span
+                            class="ml-2 bg-green-100 text-green-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-green-400 border border-green-500">
+                            {{ detalleAudiencia.ultimo_estado.descripcion | uppercase}}
+                        </span>
+                        }
+                        @case (2) {
+                        <span
+                            class="ml-2 bg-purple-100 text-purple-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-purple-400 border border-purple-500">
+                            {{ detalleAudiencia.ultimo_estado.descripcion | uppercase }}
+                        </span>
+                        }
+                        @case (3) {
+                        <span
+                            class="ml-2 bg-orange-100 text-orange-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-orange-300 border border-orange-300">
+                            {{ detalleAudiencia.ultimo_estado.descripcion}}
+                        </span>
+                        }
+                        @case (4) {
+                        <span
+                            class="ml-2 bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md border border-orange-100 dark:bg-gray-700 dark:border-orange-300 dark:text-orange-300">
+                            {{ detalleAudiencia.ultimo_estado.descripcion}}
+                        </span>
+                        }
+                        @default {
+                        <span
+                            class="ml-2 bg-purple-100 text-purple-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-purple-400 border border-purple-500">
+                            {{detalleAudiencia.ultimo_estado.descripcion | uppercase }}
+                        </span>
+                        }
+                        }
+                        }
                     </p>
-                    <div class="space-y-2"
-                        *ngIf="detalleAudiencia && detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia !== 4">
-                        <p class="text-gray-700 dark:text-gray-300"><b>Número de la reunión: </b>
-                            {{detalleAudiencia.meetingNumber}}
-                        <p class="text-gray-700 dark:text-gray-300" *ngIf="detalleAudiencia.password">
-                            <b>Contraseña:</b> {{detalleAudiencia.password}}
-                        </p>
+                    @if (detalleAudiencia?.ultimo_estado?.idCatalogoEstadoAudiencia !== 4) {
+                    <p class="text-gray-700 dark:text-gray-300"><b>Número de la reunión: </b>
+                        {{detalleAudiencia.meetingNumber}}
+                    <p class="text-gray-700 dark:text-gray-300" *ngIf="detalleAudiencia.password">
+                        <b>Contraseña:</b> {{detalleAudiencia.password}}
+                    </p>
 
-                        <p class="text-gray-700 dark:text-gray-300 break-all">
-                            <b>Enlace:</b>
-                            <a [href]="detalleAudiencia.webLink" target="_blank" rel="noopener noreferrer"
-                                class=" text-gray-700 hover:text-blue-500  dark:text-blue-500 hover:underline">
-                                {{detalleAudiencia.webLink }}
-                            </a>
-                        </p>
+                    <p class="text-gray-700 dark:text-gray-300 break-all">
+                        <b>Enlace:</b>
+                        <a [href]="detalleAudiencia.webLink" target="_blank" rel="noopener noreferrer"
+                            class=" text-gray-700 hover:text-blue-500  dark:text-blue-500 hover:underline">
+                            {{detalleAudiencia.webLink }}
+                        </a>
+                    </p>
 
-                    </div>
-
-                    <!-- Documento: Acuse -->
-                    <div *ngIf="detalleAudiencia && detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia == 4 "
-                        class="w-full max-w-[15rem]  border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-gray-50 dark:bg-gray-900">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">📬 Acuse</h3>
-
-                        <button (click)="openModal(detalleAudiencia.ultimo_estado.idDocumento!)"
-                            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-400 to-blue-700 hover:scale-105 transform transition-all rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                            Ver documento
-                            <svg class="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2 2 2 0 0 0 2 2h12a2 2 0 0 0 2-2 2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2V4a2 2 0 0 0-2-2h-7Z" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-
+                   }
             </div>
         </div>
+        }
+    </div>
+    <!-- Documento: Acuse -->
+    <div *ngIf="detalleAudiencia && detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia == 4 "
+        class="w-full max-w-[15rem]  border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-gray-50 dark:bg-gray-900">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">📬 Acuse</h3>
+
+        <button (click)="openModal(detalleAudiencia.ultimo_estado.idDocumento!)"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-400 to-blue-700 hover:scale-105 transform transition-all rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+            Ver documento
+            <svg class="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2 2 2 0 0 0 2 2h12a2 2 0 0 0 2-2 2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2V4a2 2 0 0 0-2-2h-7Z" />
+            </svg>
+        </button>
     </div>
     <div #defaultModal id="default-modal" tabindex="-1" aria-hidden="true"
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
@@ -200,356 +158,292 @@
                 <div class="p-1 md:p-1 space-y-4">
                     <object *ngIf="documentoUrl" [data]="documentoUrl" type="application/pdf" width="100%"
                         height="500px">
-                        <p>Unable to display PDF file. <a href="{{ documentoUrl }}" download>Download</a> instead.</p>
+                        <p>Unable to display PDF file. <a href="{{ documentoUrl }}" download>Download</a> instead.
+                        </p>
                     </object>
                 </div>
             </div>
         </div>
     </div>
-    <h2 id="accordion-open-heading-2">
-        <button type="button"
-            class="flex items-center justify-between w-full p-4 font-medium rtl:text-right text-gray-500 bg-gray-100 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 transition-all duration-300 ease-in-out transform hover:scale-[1.008]"
-            data-accordion-target="#accordion-open-body-2" aria-expanded="true" aria-controls="accordion-open-body-2">
-            <span class="flex items-center">
-                <svg class="w-5 h-5 me-2 shrink-0 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd"
-                        d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-1.5 8a4 4 0 0 0-4 4 2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-3Zm6.82-3.096a5.51 5.51 0 0 0-2.797-6.293 3.5 3.5 0 1 1 2.796 6.292ZM19.5 18h.5a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-1.1a5.503 5.503 0 0 1-.471.762A5.998 5.998 0 0 1 19.5 18ZM4 7.5a3.5 3.5 0 0 1 5.477-2.889 5.5 5.5 0 0 0-2.796 6.293A3.501 3.501 0 0 1 4 7.5ZM7.1 12H6a4 4 0 0 0-4 4 2 2 0 0 0 2 2h.5a5.998 5.998 0 0 1 3.071-5.238A5.505 5.505 0 0 1 7.1 12Z"
-                        clip-rule="evenodd" />
-                </svg>Invitados</span>
 
-
-        </button>
-    </h2>
-
-    <div id="accordion-open-body-2" aria-labelledby="accordion-open-heading-2">
-        <div class="p-3 bg-white dark:bg-gray-900">
-            <div class="relative overflow-x-auto">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Nombre
-                            </th>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Estatus
-                            </th>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Correo
-                            </th>
-
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Tipo parte
-
-                            </th>
-                            <!-- <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Género
-                            </th> -->
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let invitado of detalleAudiencia?.invitados"
-                            class="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <th scope="row"
-                                class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
-                                {{invitado.nombre}}
-                            </th>
-                            <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
-                                <span *ngIf="invitado.idUsr"
-                                    class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-green-400 border border-green-100 dark:border-green-500">
-                                    VERIFICADO
-                                </span>
-                                <span *ngIf="!invitado.idUsr"
-                                    class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-red-400 border border-red-100 dark:border-red-500">
-                                    NO VERIFICADO
-                                </span>
-                            </td>
-                            <th scope="row"
-                                class="flex items-center p-4 text-gray-900 whitespace-nowrap dark:text-white">
-                                <div class="">
-                                    <div class="text-sm font-semibold">{{invitado.correo | uppercase}}</div>
-                                    <div class="font-normal text-gray-500">{{invitado.correoAlterno | uppercase}}</div>
-                                </div>
-                            </th>
-
-                            <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
-                                <span [ngClass]="!invitado.tipoParteDescripcion ? 'italic text-gray-400' : ''">
-                                    {{ invitado.tipoParteDescripcion || 'ABOGADO' }}
-                                </span>
-                            </td>
-                            <!-- <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
-                                {{invitado.sexoDescripcion}}
-                            </td> -->
-
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
+    <div
+        class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0">
+        <span class="flex items-center">
+            <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                height="24" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd"
+                    d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-1.5 8a4 4 0 0 0-4 4 2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-3Zm6.82-3.096a5.51 5.51 0 0 0-2.797-6.293 3.5 3.5 0 1 1 2.796 6.292ZM19.5 18h.5a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-1.1a5.503 5.503 0 0 1-.471.762A5.998 5.998 0 0 1 19.5 18ZM4 7.5a3.5 3.5 0 0 1 5.477-2.889 5.5 5.5 0 0 0-2.796 6.293A3.501 3.501 0 0 1 4 7.5ZM7.1 12H6a4 4 0 0 0-4 4 2 2 0 0 0 2 2h.5a5.998 5.998 0 0 1 3.071-5.238A5.505 5.505 0 0 1 7.1 12Z"
+                    clip-rule="evenodd" />
+            </svg>
+            Invitados
+        </span>
     </div>
 
-    <h2 id="accordion-open-heading-3" *ngIf="isArrayAndNotEmpty(detalleAudiencia?.grabaciones)">
-        <button type="button"
-            class="flex items-center justify-between w-full p-4 font-medium rtl:text-right text-gray-500 bg-gray-100 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 transition-all duration-300 ease-in-out transform hover:scale-[1.008]"
-            data-accordion-target="#accordion-open-body-2" aria-expanded="true" aria-controls="accordion-open-body-2">
-            <span class="flex items-center">
-                <svg class="w-5 h-5 me-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                    height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M6 16v-3h.375a.626.626 0 0 1 .625.626v1.749a.626.626 0 0 1-.626.625H6Zm6-2.5a.5.5 0 1 1 1 0v2a.5.5 0 0 1-1 0v-2Z" />
-                    <path fill-rule="evenodd"
-                        d="M11 7V2h7a2 2 0 0 1 2 2v5h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2H3a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h6a2 2 0 0 0 2-2Zm7.683 6.006 1.335-.024-.037-2-1.327.024a2.647 2.647 0 0 0-2.636 2.647v1.706a2.647 2.647 0 0 0 2.647 2.647H20v-2h-1.335a.647.647 0 0 1-.647-.647v-1.706a.647.647 0 0 1 .647-.647h.018ZM5 11a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.376A2.626 2.626 0 0 0 9 15.375v-1.75A2.626 2.626 0 0 0 6.375 11H5Zm7.5 0a2.5 2.5 0 0 0-2.5 2.5v2a2.5 2.5 0 0 0 5 0v-2a2.5 2.5 0 0 0-2.5-2.5Z"
-                        clip-rule="evenodd" />
-                    <path d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Z" />
-                </svg>Grabaciones</span>
+    <div class="p-3">
+        <p-table [value]="detalleAudiencia?.invitados ?? []" [tableStyle]="{ 'min-width': '60rem' }">
+            <ng-template #header>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Estatus</th>
+                    <th>Correo</th>
+                    <th>Tipo parte</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-invitado>
+                <tr>
+                    <td class="font-semibold">{{ invitado.nombre }}</td>
+                    <td>
+                        @if (invitado.idUsr) {
+                        <p-tag severity="success" value="VERIFICADO" />
+                        } @else {
+                        <p-tag severity="danger" value="NO VERIFICADO" />
+                        }
+                    </td>
+                    <td>
+                        <div>{{ invitado.correo }}</div>
+                        <div class="text-xs text-surface-500">{{ invitado.correoAlterno }}</div>
+                    </td>
+                    <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
 
+                        @if (invitado.tipoParteDescripcion) {
+                        {{ invitado.tipoParteDescripcion }}
+                        } @else {
+                        <span class="italic text-gray-400">
+                            ABOGADO
+                        </span>
+                        }
 
+                    </td>
 
-        </button>
-    </h2>
-    <div id="accordion-open-body-3" aria-labelledby="accordion-open-heading-3"
-        *ngIf="isArrayAndNotEmpty(detalleAudiencia?.grabaciones)">
-        <div class="p-3 bg-white dark:bg-gray-900">
-            <div class="relative overflow-x-auto">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Titulo
-                            </th>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Duración (segundos)
-                            </th>
-
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Contraseña
-                            </th>
-                            <th scope="col"
-                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                Video
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let grabacion of detalleAudiencia?.grabaciones; let i = index"
-                            class="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
-
-                            <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ grabacion.topic }}
-                            </td>
-                            <td class="p-4 text-sm font-semibold text-gray-500 whitespace-nowrap dark:text-white">
-                                {{grabacion.durationSeconds}}
-                            </td>
-                            <td
-                                class="p-4 text-sm font-semibold text-gray-500 whitespace-nowrap dark:text-white relative">
-                                <span [class.cursor-pointer]="grabacion.password && grabacion.password !== ''"
-                                    [class.cursor-not-allowed]="!grabacion.password || grabacion.password === ''"
-                                    [class.text-gray-400]="!grabacion.password || grabacion.password === ''"
-                                    [attr.data-copy-to-clipboard-target]="grabacion.password && grabacion.password !== '' ? 'password-' + i : null"
-                                    pTooltip="{{ (grabacion.password && grabacion.password !== '') ? (showPasswords[i] ? 'Ocultar' : 'Mostrar y Copiar') : '' }}"
-                                    tooltipPosition="top"
-                                    (click)="grabacion.password && grabacion.password !== '' && togglePassword(i)">
-                                    <ng-container *ngIf="grabacion.password && grabacion.password !== ''">
-                                        {{ showPasswords[i] ? grabacion.password : '•'.repeat(grabacion.password.length)
-                                        }}
-                                    </ng-container>
-                                    <ng-container *ngIf="!grabacion.password || grabacion.password === ''">
-                                        {{ showPasswords[i] ? 'password' : '•'.repeat(8) }}
-                                    </ng-container>
-                                </span>
-
-                                <!-- Hidden input for Flowbite clipboard copy -->
-                                <input type="text" [id]="'password-' + i" class="sr-only"
-                                    [value]="grabacion.password ? grabacion.password : 'password'"
-                                    [disabled]="!grabacion.password || grabacion.password === ''" readonly />
-                            </td>
-
-
-
-                            <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
-                                <a *ngIf="grabacion.playbackUrl && grabacion.playbackUrl.trim() !== ''"
-                                    [href]="grabacion.playbackUrl" target="_blank" rel="noopener noreferrer"
-                                    title="Ver grabación"
-                                    class="bg-[#ffc56d] p-2 rounded-[10%] inline-block cursor-pointer">
-                                    <svg class="text-[#a5508c]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                        width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                        <path fill-rule="evenodd"
-                                            d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Zm-2 4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H9Zm0 2h2v2H9v-2Zm7.965-.557a1 1 0 0 0-1.692-.72l-1.268 1.218a1 1 0 0 0-.308.721v.733a1 1 0 0 0 .37.776l1.267 1.032a1 1 0 0 0 1.631-.776v-2.984Z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </a>
-
-                                <span *ngIf="!grabacion.playbackUrl || grabacion.playbackUrl.trim() === ''"
-                                    class="bg-[#ffc56d] p-2 rounded-[10%] inline-block cursor-not-allowed opacity-60"
-                                    title="No disponible">
-                                    <svg class="text-[#a5508c]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                        width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                        <path fill-rule="evenodd"
-                                            d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Zm-2 4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H9Zm0 2h2v2H9v-2Zm7.965-.557a1 1 0 0 0-1.692-.72l-1.268 1.218a1 1 0 0 0-.308.721v.733a1 1 0 0 0 .37.776l1.267 1.032a1 1 0 0 0 1.631-.776v-2.984Z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </span>
-                            </td>
-
-
-                        </tr>
-
-
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="6" class="text-center p-4">No hay partes registradas.</td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
-</section>
 
-<!-- Modal de agregar DOCUMENTOS de cancelacion -->
-<p-dialog header="Agregar anexo" [modal]="true" [(visible)]="visibleAnexo" [style]="{ width: '35rem' }"
-    [closable]="false">
-    <form [formGroup]="anexoForm" (ngSubmit)="confirmSolicitud($event)"
-        class="relative rounded-lg">
 
-        <!-- Modal body -->
-        <div class=" space-y-6">
-            <div class="grid grid-cols-6 gap-6">
+    @if (isArrayAndNotEmpty(detalleAudiencia?.grabaciones)) {
+    <div
+        class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0">
+        <span class="flex items-center">
+            <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                height="24" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd"
+                    d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-1.5 8a4 4 0 0 0-4 4 2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-3Zm6.82-3.096a5.51 5.51 0 0 0-2.797-6.293 3.5 3.5 0 1 1 2.796 6.292ZM19.5 18h.5a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-1.1a5.503 5.503 0 0 1-.471.762A5.998 5.998 0 0 1 19.5 18ZM4 7.5a3.5 3.5 0 0 1 5.477-2.889 5.5 5.5 0 0 0-2.796 6.293A3.501 3.501 0 0 1 4 7.5ZM7.1 12H6a4 4 0 0 0-4 4 2 2 0 0 0 2 2h.5a5.998 5.998 0 0 1 3.071-5.238A5.505 5.505 0 0 1 7.1 12Z"
+                    clip-rule="evenodd" />
+            </svg>
+            Grabaciones
+        </span>
+    </div>
 
-                <div class="col-span-6 sm:col-span-6">
-                    <label for="nombre" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Observaciones
-                    </label>
-                    <textarea id="message" rows="4" formControlName="observaciones"
-                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Escribe tu motivo aquí..."></textarea>
+    <div class="p-3">
+        <p-table [value]="detalleAudiencia?.grabaciones ?? []" [tableStyle]="{ 'min-width': '60rem' }">
+            <ng-template #header>
+                <tr>
+                    <th>Titulo</th>
+                    <th>Duración (segundos)</th>
+                    <th>Contraseña</th>
+                    <th>Video</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-grabacion let-i="rowIndex">
+                <tr>
+                    <td class="font-semibold">{{ grabacion.topic}}</td>
+                    <td class="font-semibold">{{ grabacion.durationSeconds}}</td>
+                    <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
+                        @if (grabacion.password?.trim()) {
 
-                    <div *ngIf="shouldShowError('observaciones', anexoForm)" class="text-red-500 text-sm mt-1">
-                        {{ getError('observaciones', anexoForm) }}
+                        <span class="cursor-pointer" (click)="togglePassword(i)">
+                            {{ showPasswords[i]
+                            ? grabacion.password
+                            : '•'.repeat(grabacion.password.length) }}
+                        </span>
+
+                        } @else {
+                        <span class="text-gray-400 italic">
+                            No disponible
+                        </span>
+                        }
+                    </td>
+                    <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
+
+                        @if (grabacion.playbackUrl?.trim()) {
+
+                        <a [href]="grabacion.playbackUrl" target="_blank" rel="noopener noreferrer"
+                            class="bg-[#ffc56d] p-2 rounded-[10%] inline-block cursor-pointer">
+
+                            <svg class="text-[#a5508c]" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Z"
+                                    clip-rule="evenodd" />
+                            </svg>
+
+                        </a>
+
+                        } @else {
+
+                        <span class="bg-[#ffc56d] p-2 rounded-[10%] inline-block cursor-not-allowed opacity-60">
+                            <svg class="text-[#a5508c]" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </span>
+
+                        }
+
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="6" class="text-center p-4">No hay partes registradas.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+
+    }
+
+    <!-- Modal de agregar DOCUMENTOS de cancelacion -->
+    <p-dialog header="Agregar anexo" [modal]="true" [(visible)]="visibleAnexo" [style]="{ width: '35rem' }"
+        [closable]="false">
+        <form [formGroup]="anexoForm" (ngSubmit)="confirmSolicitud($event)" class="relative rounded-lg">
+
+            <!-- Modal body -->
+            <div class=" space-y-6">
+                <div class="grid grid-cols-6 gap-6">
+
+                    <div class="col-span-6 sm:col-span-6">
+                        <label for="nombre" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Observaciones
+                        </label>
+                        <textarea id="message" rows="4" formControlName="observaciones"
+                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Escribe tu motivo aquí..."></textarea>
+
+                        <div *ngIf="shouldShowError('observaciones', anexoForm)" class="text-red-500 text-sm mt-1">
+                            {{ getError('observaciones', anexoForm) }}
+                        </div>
                     </div>
-                </div>
-                <div class="col-span-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Anexo</label>
-                    <input
-                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                        aria-describedby="file_input_help" id="documento" type="file"
-                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" (change)="onFileSelected($event)">
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
-                        PDF, DOC, JPG, PNG (solo 1 archivo)
-                    </p>
-                </div>
-
-            </div>
-        </div>
-        <div class="flex justify-end gap-2 mt-2.5">
-            <p-button label="Cancel" label="Cancelar" severity="secondary" (click)="resetAnexoForm()" />
-            <p-button type="submit" label="Confirmar" [disabled]="anexoForm.invalid" />
-        </div>
-
-    </form>
-
-</p-dialog>
-<p-dialog header="Agregar anexo" [modal]="true" [(visible)]="visibleSolicitarGrabacion" [style]="{ width: '35rem' }"
-    [closable]="false">
-    <form [formGroup]="solicitudForm" (ngSubmit)="confirmarSolcitudGrabacion($event)" class="relative  rounded-lg">
-        <!-- Modal body -->
-        <div class=" space-y-6">
-            <div class="grid grid-cols-6 gap-6">
-
-                <div class="col-span-6 sm:col-span-6">
-                    <label for="nombre" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Mensaje
-                    </label>
-                    <textarea id="message" rows="4" formControlName="observaciones"
-                        class="block p-2.5 uppercase w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Escribe tu mensaje aquí..."></textarea>
-
-                    <div *ngIf="shouldShowError('observaciones', solicitudForm)" class="text-red-500 text-sm mt-1">
-                        {{ getError('observaciones', solicitudForm) }}
+                    <div class="col-span-6">
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Anexo</label>
+                        <input
+                            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                            aria-describedby="file_input_help" id="documento" type="file"
+                            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" (change)="onFileSelected($event)">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
+                            PDF, DOC, JPG, PNG (solo 1 archivo)
+                        </p>
                     </div>
+
                 </div>
-                <div class="col-span-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Anexo</label>
-                    <input
-                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                        aria-describedby="file_input_help" id="solicitudDocumento" type="file"
-                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" (change)="onFileSelectedSolicitud($event)">
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
-                        PDF, DOC, JPG, PNG (solo 1 archivo)
-                    </p>
+            </div>
+            <div class="flex justify-end gap-2 mt-2.5">
+                <p-button label="Cancel" label="Cancelar" severity="secondary" (click)="resetAnexoForm()" />
+                <p-button type="submit" label="Confirmar" [disabled]="anexoForm.invalid" />
+            </div>
+
+        </form>
+
+    </p-dialog>
+    <p-dialog header="Agregar anexo" [modal]="true" [(visible)]="visibleSolicitarGrabacion" [style]="{ width: '35rem' }"
+        [closable]="false">
+        <form [formGroup]="solicitudForm" (ngSubmit)="confirmarSolcitudGrabacion($event)" class="relative  rounded-lg">
+            <!-- Modal body -->
+            <div class=" space-y-6">
+                <div class="grid grid-cols-6 gap-6">
+
+                    <div class="col-span-6 sm:col-span-6">
+                        <label for="nombre" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Mensaje
+                        </label>
+                        <textarea id="message" rows="4" formControlName="observaciones"
+                            class="block p-2.5 uppercase w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Escribe tu mensaje aquí..."></textarea>
+
+                        <div *ngIf="shouldShowError('observaciones', solicitudForm)" class="text-red-500 text-sm mt-1">
+                            {{ getError('observaciones', solicitudForm) }}
+                        </div>
+                    </div>
+                    <div class="col-span-6">
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Anexo</label>
+                        <input
+                            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                            aria-describedby="file_input_help" id="solicitudDocumento" type="file"
+                            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" (change)="onFileSelectedSolicitud($event)">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
+                            PDF, DOC, JPG, PNG (solo 1 archivo)
+                        </p>
+                    </div>
+
                 </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-2.5">
+                <p-button label="Cancel" label="Cancelar" severity="secondary" (click)="resetSolicitudForm()" />
+                <p-button type="submit" label="Confirmar" [disabled]="solicitudForm.invalid" />
+            </div>
 
-            </div>
-        </div>
-        <div class="flex justify-end gap-2 mt-2.5">
-            <p-button label="Cancel" label="Cancelar" severity="secondary" (click)="resetSolicitudForm()" />
-            <p-button type="submit" label="Confirmar" [disabled]="solicitudForm.invalid" />
-        </div>
+        </form>
 
-    </form>
+    </p-dialog>
 
-</p-dialog>
-
-<!-- Confirmar CANCELAR solicitud de audiencia -->
-<p-confirmdialog key="cancelarAudiencia">
-    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
-        <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
-            <div
-                class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
-                <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
+    <!-- Confirmar CANCELAR solicitud de audiencia -->
+    <p-confirmdialog key="cancelarAudiencia">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+                <div
+                    class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                    <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <p class="text-2xl font-medium mt-2.5 text-gray-900 dark:text-white">Confirmación</p>
+                <p class="font-medium mb-0">Confirma para cancelar la audiencia</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <button type="button" (click)="onAccept()"
+                        class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                        Confirmar
+                    </button>
+                    <button type="button" (click)="onReject()"
+                        class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                        Cancelar
+                    </button>
+                </div>
             </div>
-            <p class="text-2xl font-medium mt-2.5 text-gray-900 dark:text-white">Confirmación</p>
-            <p class="font-medium mb-0">Confirma para cancelar la audiencia</p>
-            <div class="flex items-center gap-2 mt-6">
-                <button type="button" (click)="onAccept()"
-                    class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
-                    Confirmar
-                </button>
-                <button type="button" (click)="onReject()"
-                    class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                    Cancelar
-                </button>
+        </ng-template>
+    </p-confirmdialog>
+    <!-- Modal de dialgo para confirmar solicitud de grabacion -->
+    <p-confirmdialog key="solicitudGrabacion">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+                <div
+                    class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                    <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <p class="text-2xl font-medium mt-2.5 text-gray-900 dark:text-white">Confirmación</p>
+                <p class="font-medium mb-0">Confirma para solicitar las grabaciones</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <button type="button" (click)="onAccept()"
+                        class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                        Confirmar
+                    </button>
+                    <button type="button" (click)="onReject()"
+                        class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                        Cancelar
+                    </button>
+                </div>
             </div>
-        </div>
-    </ng-template>
-</p-confirmdialog>
-<!-- Modal de dialgo para confirmar solicitud de grabacion -->
-<p-confirmdialog key="solicitudGrabacion">
-    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
-        <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
-            <div
-                class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
-                <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-            </div>
-            <p class="text-2xl font-medium mt-2.5 text-gray-900 dark:text-white">Confirmación</p>
-            <p class="font-medium mb-0">Confirma para solicitar las grabaciones>
-            <div class="flex items-center gap-2 mt-6">
-                <button type="button" (click)="onAccept()"
-                    class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
-                    Confirmar
-                </button>
-                <button type="button" (click)="onReject()"
-                    class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                    Cancelar
-                </button>
-            </div>
-        </div>
-    </ng-template>
-</p-confirmdialog>
+        </ng-template>
+    </p-confirmdialog>

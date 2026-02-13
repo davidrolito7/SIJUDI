@@ -23,6 +23,7 @@ import {ExhortosService} from '../../services/exhorto.service';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { TooltipModule } from 'primeng/tooltip';
+import { secciones } from '../../../core/auth/interface/login.interfaces';
 
 @Component({
   selector: 'app-ListaExhortosRecibidos',
@@ -44,7 +45,7 @@ export class ListaExhortosRecibidos implements OnInit {
   filter!: UI_ParamlistadoExhortosRecibidosRequest;
   response!: GenericResponse<ListadoExhortosRecibidosI[]>;
   listadosExhortos= signal<ListadoExhortosRecibidosI[]>([]);
-
+  tienePermisoVerAcuerdo = signal<boolean>(false);
 
   fechaInicio : Date | undefined;
   fechaFin : Date | undefined;
@@ -58,7 +59,10 @@ export class ListaExhortosRecibidos implements OnInit {
 
   //@ViewChild('dt1') dt1: any;
 
- 
+  //Asignamos el id pantalla
+   idPantalla=14157;
+   //Obtenemos las secciones de la pantalla actual
+   secciones : secciones[] = [] ;
   listadoEstatus: ListadoEstatus[] = [];
   //selectedEstatus : number=5; ///se ponme en 5 por que es el valor del estatus "recibidos"
   selectedEstatus : ListadoEstatus | undefined;
@@ -69,7 +73,7 @@ export class ListaExhortosRecibidos implements OnInit {
     public authService: AuthService,
     public router: Router,
     private messageService: MessageService,
-    private cdr: ChangeDetectorRef
+    private cd: ChangeDetectorRef
   ) { 
 
   }
@@ -139,7 +143,7 @@ export class ListaExhortosRecibidos implements OnInit {
     };
 
     this.isLoading=true;
-    this.cdr.detectChanges();
+    this.cd.detectChanges();
 
     this.exhortoService.getExhortosRecibidosListado(obj).subscribe({
       next: (res => {
@@ -158,11 +162,11 @@ export class ListaExhortosRecibidos implements OnInit {
         // Manejo de errores
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el listado de exhortos' });
         this.isLoading=false;
-        this.cdr.detectChanges();
+        this.cd.detectChanges();
       }),
       complete:()=>{
         this.isLoading=false;
-        this.cdr.detectChanges();
+        this.cd.detectChanges();
       }
     });
     });
@@ -284,5 +288,38 @@ export class ListaExhortosRecibidos implements OnInit {
     // this.fechaInicial = undefined;
     // this.fechaFinal = undefined;
     table.clear();
+  }
+  GetSeccionesUsuario(): Promise<void>{
+    return new Promise((resolve, reject) => {
+      const idAreaSistemaUsuario = this.authService.getAreaSistemaUsuario(); // Obtener perfil del servicio
+      const perfilSeleccionado = this.authService.getPerfilSeleccionado();
+      //const perfilSeleccionado = localStorage.getItem('perfilSeleccionado');
+      //const idAreaSistemaUsuario = localStorage.getItem('idAreaSistemaUsuario');
+    this.isLoading=true;
+    this.cd.detectChanges();
+    this.authService.GetSeccionesUsuario(idAreaSistemaUsuario,this.idPantalla.toString(),perfilSeleccionado)
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.secciones = res.data;
+            this.tienePermisoVerAcuerdo.set(this.secciones.some(s => s.descripcion === 'VerAcuerdo'));
+                             
+
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor." });
+          }
+        },
+        error: (err) => {
+          
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+          this.isLoading=false;
+          this.cd.detectChanges();
+        },
+        complete:()=>{
+          this.isLoading=false;
+          this.cd.detectChanges();
+        }
+      });
+    });
   }
 }

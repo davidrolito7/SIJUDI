@@ -39,7 +39,6 @@ import { TooltipModule } from 'primeng/tooltip';
     CommonModule,
     RouterModule,
     FormsModule,
-
     // PrimeNG
     DatePickerModule,
     DialogModule,
@@ -53,10 +52,10 @@ import { TooltipModule } from 'primeng/tooltip';
     InputTextModule,
     InputMaskModule,
     TooltipModule,
-
     // Shared components
     Breadcrub,
-  ],
+    Spinner
+],
   templateUrl: './listar-demanda.html',
   styleUrl: './listar-demanda.css',
   providers: [MessageService],
@@ -224,15 +223,15 @@ export class ListarDemanda implements OnInit {
   // ============================
   // Estado helpers for UI tags
   // ============================
-  getEstadoDescripcion(inicio: unknown): string | null {
-    const i = inicio as { historial_estado?: Array<{ estado?: { descripcion?: string } }> };
-    return i.historial_estado?.[0]?.estado?.descripcion ?? null;
-  }
+getEstadoDescripcion(inicio: unknown): string | null {
+    const i = inicio as { ultimo_estado?: { estado?: { descripcion?: string } } };
+    return i.ultimo_estado?.estado?.descripcion ?? null;
+}
 
-  getEstadoId(inicio: unknown): number | null {
-    const i = inicio as { historial_estado?: Array<{ estado?: { idCatEstadoInicio?: number } }> };
-    return i.historial_estado?.[0]?.estado?.idCatEstadoInicio ?? null;
-  }
+getEstadoId(inicio: unknown): number | null {
+    const i = inicio as { ultimo_estado?: { estado?: { idCatEstadoInicio?: number } } };
+    return i.ultimo_estado?.estado?.idCatEstadoInicio ?? null;
+}
 
   getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
     const id = this.getEstadoId(inicio);

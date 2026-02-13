@@ -22,7 +22,7 @@ export interface ListadoIniciosCreados { //* OK
     created_at: string;
     updated_at: string;
     cat_via_materia: CatMateriaVia;
-    historial_estado: HistorialEstado[];
+    ultimo_estado: HistorialEstado;
 }
 // export interface FrimaElectronicaRequest {   //! QUITAR
 //     archivoPfx_Efirma: File;
@@ -58,7 +58,7 @@ export interface DetalleInicioResponse {  //* OK
     partes: Partes[];
     documentos: Documentos[];
     cat_via_materia: CatMateriaVia;
-    historial_estado: HistorialEstado[];
+    ultimo_estado: HistorialEstado;
     tipo: string;
     cat_tipo_parte: CatTipoPartes;
 }
