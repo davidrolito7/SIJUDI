@@ -86,13 +86,17 @@
    DIALOG (p-dialog) - Variante compacta
    ============================================ */
 .dialog-compact .p-dialog-header {
-  padding: 0.25rem 0.75rem !important;
+  padding: 0rem 0rem 0rem 0.6rem  !important;
 }
 
 .dialog-compact .p-dialog-content {
-  padding: 0.6rem !important;
+  padding: 0rem 0.6rem  !important;
 }
 
+.dialog-compact .p-dialog-title {
+  font-size: 1.125rem !important; /* text-lg */
+
+}
 /* ============================================
    MENÚ (p-menu) - Z-index overlay
    ============================================ */

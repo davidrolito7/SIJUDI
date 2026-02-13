@@ -60,7 +60,7 @@ export interface CONATRIB_ExhortosRecibidosArchivos {
     hashSha256: string | null;
     idTipoDocumento: number;
     tipoDocumento: CONATRIB_catTipoDocumento | null;
-    tamaño: number | null;
+    tamanio: number | null;
     paginas: number | null;
     recibido: boolean | null;
     idClasificacionArchivo: number;

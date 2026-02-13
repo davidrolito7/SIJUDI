@@ -114,6 +114,8 @@ export class RespuestaExhortoRecibido {
     });
   }
   onEnviarAcuerdoGenerales(idExhortoRecibido: number){
+    this.isLoading=true;
+    this.cd.detectChanges();
     this.exhortosService.enviarRespuestaGenerales(idExhortoRecibido).subscribe({
       next: (response:any) => {
         if(response.success){
@@ -131,9 +133,13 @@ export class RespuestaExhortoRecibido {
       error:(e)=>{
         //console.error('Error al recibir el archivo', e);
         this.messageService.add({severity:'error',summary: 'Error', detail:e.message});
+        this.isLoading=false;
+        this.cd.detectChanges();
       },
       complete:()=>{
         //console.log('FIN:');
+        this.isLoading=false;
+        this.cd.detectChanges();
       }
     });
 
@@ -147,7 +153,8 @@ export class RespuestaExhortoRecibido {
     });
   }
   onEnviarAcuerdoArchivos(idExhortoRecibido: number){
-
+    this.isLoading=true;
+    this.cd.detectChanges();
     this.exhortosService.enviarRespuestaArchivos(idExhortoRecibido).subscribe({
       next: (response:any) => {
         if(response.success){
@@ -169,9 +176,13 @@ export class RespuestaExhortoRecibido {
       error:(e)=>{
         //console.error('Error al recibir el archivo', e);
         this.messageService.add({severity:'error',summary: 'Error', detail:e.message});
+        this.isLoading=false;
+        this.cd.detectChanges();
       },
       complete:()=>{
         //console.log('FIN:');
+        this.isLoading=false;
+        this.cd.detectChanges();
       }
     });
     
@@ -273,6 +284,8 @@ export class RespuestaExhortoRecibido {
           /*this.detallesAcuerdo.forEach(promocion => {
             //promocion.archivos = promocion.archivos.filter(archivo => archivo.idArchivo !== idArchivo);
           });*/
+          // Encuentra el índice del documento que quieres eliminar
+              this.cargarDetallesPromocion(this.idNotificacion);
           this.messageService.add({ severity: 'info', summary: 'Eliminado', detail: 'Documento eliminado exitosamente' });
           // Aquí podrías actualizar la lista de documentos si es necesario
         }

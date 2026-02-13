@@ -100,7 +100,7 @@ constructor(
         ...(params['fechaFinal'] && { fechaFinal: params['fechaFinal'] })
       };
 
-      console.log(requestParams);
+
       this.juicioService.getListarRequerimientosAbogados(requestParams).subscribe({
         next: (response) => {
           this.requerimientosTotales = response.data;
@@ -118,7 +118,7 @@ constructor(
 
   detalleRequerimiento(idRequerimiento: number) {
     console.log('Ir al requerimiento numero: ', idRequerimiento);
-    this.router.navigate(['/requerimiento/asignaciones/detalle'], { state: { idRequerimiento } });
+    this.router.navigate(['/juicioenlinea/requerimientos/detalle'], { state: { idRequerimiento } });
    
   }
       
@@ -145,7 +145,7 @@ constructor(
 
 
     this.getListarRequerimientos();
-    console.log('hace algo el form',queryParams);
+
   }
 
     clearFiltros() {
