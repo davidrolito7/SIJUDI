@@ -623,19 +623,19 @@
     </form>
 
 </p-dialog>
-@if (documentoUrl) {
+<!-- @if (documentoUrl) {
      <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="visibleDocumento">
             </app-pdf-dialog>
-}
+} -->
 
-<!-- <p-dialog header="Documento: {{ nombre }}" [modal]="true" [(visible)]="visibleDocumento" [style]="{ width: '40rem' }">
+<p-dialog header="Documento: {{ nombre }}" [modal]="true" [(visible)]="visibleDocumento" [style]="{ width: '40rem' }">
     @if(documentoUrl){
     <iframe  [src]="documentoUrl" type="application/pdf" width="100%" height="500px">
         <p>No se pudo mostrar el PDF. <a [href]="documentoUrl" download>Descargar</a> en su lugar.</p>
     </iframe>
    
 }
-</p-dialog> -->
+</p-dialog>
 
 
 <div #defaultModal id="default-modal" tabindex="-1" aria-hidden="true"
