@@ -120,8 +120,9 @@
                         <div class="flex gap-2">
                             <p-button icon="pi pi-pencil" [rounded]="true" [raised]="true" [text]="true" severity="info"
                                 (click)="editarParte(i)" pTooltip="Actualizar" tooltipPosition="top" />
-                            <p-button icon="pi pi-trash" [rounded]="true" [raised]="true" [text]="true" severity="danger"
-                                (click)="confirm1($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
+                            <p-button icon="pi pi-trash" [rounded]="true" [raised]="true" [text]="true"
+                                severity="danger" (click)="confirm1($event, i)" pTooltip="Eliminar"
+                                tooltipPosition="top" />
                         </div>
                     </td>
                 </tr>
@@ -136,15 +137,9 @@
 </div>
 
 <!--* MODAL DE CONFIRMACION ELIMINAR PARTE -->
-<app-confirm-dialog
-  key="parte"
-  title="Confirmación"
-  message="¿Está seguro de eliminar esta parte?"
-  icon="pi pi-question-circle"
-  circleClass="bg-surface-900 dark:bg-surface-0"
-  acceptLabel="Eliminar"
-  acceptStyleClass="bg-red-600 border-red-600"
-  rejectLabel="Cancelar">
+<app-confirm-dialog key="parte" title="Confirmación" message="¿Está seguro de eliminar esta parte?"
+    icon="pi pi-question-circle" circleClass="bg-surface-900 dark:bg-surface-0" acceptLabel="Eliminar"
+    acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
 </app-confirm-dialog>
 
 <!--* TABLA DE DOCUMENTOS DECLARADOS -->
@@ -187,17 +182,11 @@
         </p-table>
     </div>
 
-<!--* MODAL DE CONFIRMACION ELIMINAR ANEXO DECLARADO -->
-<app-confirm-dialog
-  key="declarado"
-  title="Confirmación"
-  message="¿Está seguro de eliminar el anexo declarado?"
-  icon="pi pi-question-circle"
-  circleClass="bg-surface-900 dark:bg-surface-0"
-  acceptLabel="Eliminar"
-  acceptStyleClass="bg-red-600 border-red-600"
-  rejectLabel="Cancelar">
-</app-confirm-dialog>
+    <!--* MODAL DE CONFIRMACION ELIMINAR ANEXO DECLARADO -->
+    <app-confirm-dialog key="declarado" title="Confirmación" message="¿Está seguro de eliminar el anexo declarado?"
+        icon="pi pi-question-circle" circleClass="bg-red-500" acceptLabel="Eliminar"
+        acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
+    </app-confirm-dialog>
 </div>
 
 <!--* TABLA DE ANEXOS -->
@@ -251,16 +240,10 @@
     </div>
 
     <!--* MODAL DE CONFIRMACION ELIMINAR ANEXO -->
-<app-confirm-dialog
-  key="anexo"
-  title="Confirmación"
-  message="¿Está seguro de eliminar el documento?"
-  icon="pi pi-question-circle"
-  circleClass="bg-surface-900 dark:bg-surface-0"
-  acceptLabel="Eliminar"
-  acceptStyleClass="bg-red-600 border-red-600"
-  rejectLabel="Cancelar">
-</app-confirm-dialog>
+    <app-confirm-dialog key="anexo" title="Confirmación" message="¿Está seguro de eliminar el documento?"
+        icon="pi pi-question-circle" circleClass="bg-red-500" acceptLabel="Eliminar"
+        acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
+    </app-confirm-dialog>
 </div>
 
 <!--* BOTÓN AUTORIZAR FIREL -->
@@ -272,8 +255,8 @@
 
 <!--* BOTÓN ENVIAR DEMANDA -->
 <section class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
-    <p-button *ngIf="firmaVerificada" (onClick)="enviarDemanda($event)" [disabled]="!canEnviar()"
-        icon="pi pi-upload" label="Enviar demanda"
+    <p-button *ngIf="firmaVerificada" (onClick)="enviarDemanda($event)" [disabled]="!canEnviar()" icon="pi pi-upload"
+        label="Enviar demanda"
         styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:enabled:bg-[#ff830a]/80 hover:enabled:border-[#ff830a]/80 disabled:opacity-50 disabled:cursor-not-allowed" />
 </section>
 
@@ -296,8 +279,8 @@
             <div class="w-full mt-2">
                 <p-inputgroup>
                     <input id="password_Efirma" pInputText [type]="showPassword ? 'text' : 'password'"
-                        formControlName="password_Efirma" maxlength="20"
-                        placeholder="Contraseña FIREL" class="w-full" />
+                        formControlName="password_Efirma" maxlength="20" placeholder="Contraseña FIREL"
+                        class="w-full" />
                     <p-inputgroup-addon>
                         <p-button [icon]="showPassword ? 'pi pi-eye' : 'pi pi-eye-slash'" [text]="true"
                             (onClick)="showPassword = !showPassword" [tabindex]="-1" />
@@ -316,27 +299,15 @@
 </p-confirmdialog>
 
 <!--* DIALOGO DE CONFIRMACION ENVIAR DEMANDA -->
-<app-confirm-dialog
-  key="demanda"
-  title="Confirmación"
-  message="Confirme la acción para enviar demanda"
-  icon="pi pi-question-circle"
-  circleClass="bg-green-600"
-  acceptLabel="Confirmar"
-  acceptStyleClass="bg-green-600 border-green-600"
-  rejectLabel="Cancelar">
+<app-confirm-dialog key="demanda" title="Confirmación" message="Confirme la acción para enviar demanda"
+    icon="pi pi-question-circle" circleClass="bg-green-600" acceptLabel="Confirmar"
+    acceptStyleClass="bg-green-600 border-green-600" rejectLabel="Cancelar">
 </app-confirm-dialog>
 
 <!--* DIALOGO DE CONFIRMACION VER DEMANDA -->
-<app-confirm-dialog
-  key="success"
-  title="Pre-folio: {{ folio }}"
-  message="Pre-registro enviado exitosamente!"
-  icon="pi pi-check"
-  circleClass="bg-primary"
-  acceptLabel="Ver pre-registro"
-  acceptStyleClass="bg-primary"
-  rejectLabel="Cerrar">
+<app-confirm-dialog key="success" title="Pre-folio: {{ folio }}" message="Pre-registro enviado exitosamente!"
+    icon="pi pi-check" circleClass="bg-primary" acceptLabel="Ver pre-registro" acceptStyleClass="bg-primary"
+    rejectLabel="Cerrar">
 </app-confirm-dialog>
 
 <!--* MODAL PARA AGREGAR PARTES -->
