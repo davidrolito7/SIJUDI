@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { AudienciasResponse, CancelarAudienciaRequest, CatTipoDocumento } from '../../interfaces/juicioenlinea.model';
 import { CommonModule } from '@angular/common';
@@ -12,15 +12,19 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { AuthService } from '../../../core/auth/service/auth.service';
+import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+
 @Component({
   selector: 'app-detalle-audiencia',
- imports: [CommonModule, ButtonModule, DialogModule, ReactiveFormsModule, TooltipModule, ConfirmDialogModule, Spinner],
+ imports: [CommonModule,Breadcrub, ButtonModule, DialogModule, ReactiveFormsModule, TooltipModule, ConfirmDialogModule, TableModule, Spinner, TagModule],
 templateUrl: './detalle-audiencia.html',
   styleUrl: './detalle-audiencia.css',
     providers: [ConfirmationService, MessageService]
 
 })
-export class DetalleAudiencia {
+export class DetalleAudiencia implements OnInit {
  @ViewChild('defaultModal') defaultModal: any;
   isLoading: boolean = false;
 
@@ -49,13 +53,14 @@ export class DetalleAudiencia {
     private messageService: MessageService,
     private sanitizer: DomSanitizer,
     private confirmationService: ConfirmationService,
-   private authService: AuthService
+   private authService: AuthService,
+    private cdr: ChangeDetectorRef
 
 
   ) { }
 
 
-  ngOnInit(): void {
+ /* ngOnInit(): void {
     //this.flowbiteService.loadFlowbite(() => initFlowbite());
     console.log('Navegando a detalle de audiencia :', this.idAudiencia);
 
@@ -90,6 +95,26 @@ export class DetalleAudiencia {
       observaciones: ['', [Validators.required, Validators.maxLength(250)]],
       solicitudDocumento: [null, Validators.required],
     });
+  }*/
+   ngOnInit(): void {
+
+      const state = window.history.state as { idAudiencia: number };
+   
+    if (state?.idAudiencia) {
+      this.idAudiencia = state.idAudiencia;
+      this.getDetalleExpediente(this.idAudiencia);
+    } else {
+  //   this.router.navigate(['/layout/inicio']);  
+  }
+
+       this.anexoForm = this.fb.group({
+      observaciones: ['', [Validators.required, Validators.maxLength(250)]],
+      documento: [null, Validators.required],
+    });
+    this.solicitudForm = this.fb.group({
+      observaciones: ['', [Validators.required, Validators.maxLength(250)]],
+      solicitudDocumento: [null, Validators.required],
+    });
   }
 
   showModalAnexo() {
@@ -102,7 +127,7 @@ export class DetalleAudiencia {
   return true;
   //return this.authService.tienePermiso('audiencias/crear');
  }
-  getDetalleExpediente(idAudiencia: number): void {
+ /* getDetalleExpediente(idAudiencia: number): void {
     this.juicioService.getDetalleAudiencia(idAudiencia).subscribe({
       next: (response: any) => {
         console.log('Detalle de la audiencia:', response.data);
@@ -113,7 +138,24 @@ export class DetalleAudiencia {
         console.error('Error:', error);
       }
     });
+  }*/
+
+  getDetalleExpediente(idAudiencia: number): void {
+    this.juicioService.getDetalleAudiencia(idAudiencia).subscribe({
+      next: (response: any) => {
+        this.detalleAudiencia = response.data || null;
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        console.error('Error:', error);
+        this.detalleAudiencia = null;
+        this.cdr.markForCheck();
+      }
+    });
   }
+
+
+
   reprogramarAudiencia() {
     if (this.detalleAudiencia) {
       const fecha = this.detalleAudiencia.start?.split(' ')[0]; // Extrae la fecha del campo `start`

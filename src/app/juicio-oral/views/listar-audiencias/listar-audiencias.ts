@@ -49,6 +49,7 @@ import { MessageService } from 'primeng/api';
 
     // Shared components
     Breadcrub,
+    Spinner
  ],
   templateUrl: './listar-audiencias.html',
   styleUrl: './listar-audiencias.css',
@@ -260,9 +261,9 @@ ngOnInit(): void {
 
     estadoOptions = [
     { label: 'Todo', value: 0 },
-    { label: 'Enviado', value: 1 },
-    { label: 'Asignado', value: 2 },
-    { label: 'Finalizado', value: 3 },
+    { label: 'Programadas', value: 1 },
+    { label: 'Finalizadas', value: 2 },
+    { label: 'Canceladas', value: 3 },
   ];
 getEstadoDescripcion(audiencia: unknown): string | null {
   const i = audiencia as {

@@ -362,7 +362,7 @@ export class DetallesExhortoRecibido {
         //console.log("recibe respuesta");
         if(response.success){
           const base64String = response.data.documento;
-          if((documento.tamaño ?? 0) <= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
+          if((documento.tamanio ?? 0) <= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
               
               this.onVerDocumento(base64String,documento.nombreArchivo ?? 'sinnombre', 'application/pdf'); // se visualiza en modal
           else{

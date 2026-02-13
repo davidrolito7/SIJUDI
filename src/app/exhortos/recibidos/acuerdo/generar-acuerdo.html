@@ -22,13 +22,12 @@
       </div>
 
       <div class="mt-6 md:mt-0 flex items-center">
-        {{detallesAcuerdo | json}}
+          {{detallesAcuerdo()?.generales?.idEstatus}}
             @if (tienePermisoGuardar()) {
                 <div class="relative">
-                    @if (detallesAcuerdo()?.generales?.idEstatus === 0) {
-                    <button type="button" (click)="guardarRespuestaExhorto()"
-                        class="text-white bg-morado hover:bg-morado_hover focus:outline-none focus:ring-4 focus:ring-violeta/50 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
-                    Guardar</button>
+                    @if ([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)) {
+                    <p-button type="button" (click)="guardarRespuestaExhorto()">
+                    Guardar</p-button>
                     }
                    
                 </div>
@@ -38,8 +37,8 @@
                 <div class="relative">
                 <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
                 @if (detallesAcuerdo()?.generales?.idEstatus === 11 ) {
-                    <button type="button" (click)="enviarAcuerdoGenerales(this.idExhortoRecibido)"
-                    class="text-white bg-morado hover:bg-morado_hover focus:outline-none focus:ring-4 focus:ring-violeta/50 font-medium rounded-full text-sm px-3 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><i class="bi bi-send"></i> Enviar Generales</button>
+                    <p-button type="button" (click)="enviarAcuerdoGenerales(this.idExhortoRecibido)"
+                    ><i class="bi bi-send"></i> Enviar Generales</p-button>
                     }
 
                 </div>
@@ -47,8 +46,8 @@
                 @if (tienePermisoEnviarArchvios()) {
                 <div class="relative">
                     @if (detallesAcuerdo()?.generales?.idEstatus === 12) {
-                    <button type="button" (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"
-                        class="text-white bg-morado hover:bg-morado_hover focus:outline-none focus:ring-4 focus:ring-violeta/50 font-medium rounded-full text-sm px-3 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><i class="bi bi-send"></i> Enviar Archivos</button>
+                    <p-button type="button" (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"
+                        ><i class="bi bi-send"></i> Enviar Archivos</p-button>
                     }
 
                     </div>
@@ -88,16 +87,17 @@
           <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
 
           <div class="flex items-center">
-             @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
-                <p-button 
-                  (click)="openNewFirma()"
-                  severity="warn">Firmar
-                </p-button>
-              }
-              <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
-                  accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
-                  chooseLabel="Agregar documento" />
-             
+            @if([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)){
+              @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
+                  <p-button 
+                    (click)="openNewFirma()"
+                    severity="warn">Firmar
+                  </p-button>
+                }
+                <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
+                    accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
+                    chooseLabel="Agregar documento" />
+            }
           </div>
       </div>
 
@@ -189,10 +189,10 @@
                                                           icon="pi pi-file-pdf" class="mr-2" title="Descargar PDF"></p-button>
 
                                 <!--ELIMINAR DOCUMENTO-->
-                                @if(detallesAcuerdo().generales.idEstatus === 0 ){ <!--//Pendiente de enviar-->
+                                @if([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)){ <!--//Pendiente de enviar-->
                                   @if(tienePermisoEliminarArchivo()){
                                     <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
-                                    (click)="eliminarDocumento(documento,2,i)" ></p-button>
+                                    (click)="eliminarDocumento(documento,1,i)" ></p-button>
                                     
                                   }
                                 }
@@ -226,4 +226,7 @@
 <app-confirm-dialog key="enviarArchivos" title="Confirmación" message="¿Está seguro que desea enviar los datos generales del acuerdo?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
-
+<!-- MODAL DE CONFIRMACION PARA ELIMINAR UN ARCHIVO -->
+<app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro que desea eliminar el archivo?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>

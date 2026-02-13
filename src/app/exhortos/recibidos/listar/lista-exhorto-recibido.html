@@ -141,10 +141,12 @@
                             [severity]="getTagConfig(listado.estatus).severity" [value]="listado.estatus" />
                     </td>
                     <td class="text-end whitespace-nowrap ">
-                        @if (listado.respuesta != 0) {
-                        <p-button (click)="verAcuerdos(listado.idExhortoRecibido)" [rounded]="true" [text]="true"
-                            [raised]="true" severity="success" [rounded]="true" icon="pi pi-file-check"
-                            pTooltip="Ver acuerdos" tooltipPosition="top" class="mr-2"></p-button>
+                        @if (tienePermisoVerAcuerdo()) {
+                            @if (listado.respuesta != 0) {
+                            <p-button (click)="verAcuerdos(listado.idExhortoRecibido)" [rounded]="true" [text]="true"
+                                [raised]="true" severity="success" [rounded]="true" icon="pi pi-file-check"
+                                pTooltip="Ver acuerdos" tooltipPosition="top" class="mr-2"></p-button>
+                            }
                         }
 
                         <p-button (click)="verDetalleNotificacion(listado.idExhortoRecibido)" [rounded]="true"

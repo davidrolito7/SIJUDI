@@ -7,13 +7,20 @@ import { Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, FormsModule, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { CommonModule ,DatePipe } from '@angular/common';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
+import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 
 @Component({
   selector: 'app-detalle-requerimientos',
-  imports: [FieldsetModule,CardModule],
+  imports: [PdfDialog,FieldsetModule,CardModule,DatePipe,CommonModule,ConfirmDialogModule,DialogModule,FormsModule,ReactiveFormsModule,ButtonModule],
   templateUrl: './detalle-requerimientos.html',
   styleUrl: './detalle-requerimientos.css',
-  providers: [ConfirmationService, MessageService]  
+  providers: [ConfirmationService, MessageService] ,
+  standalone: true, 
 })
 export class DetalleRequerimientos implements OnInit {
 
@@ -24,7 +31,7 @@ export class DetalleRequerimientos implements OnInit {
   idRequerimiento: number | undefined;
   detalleRequerimiento: DetalleRequerimiento | null = null;
   documentoBase64: string | null = null;
-  nombre: string | null = null;
+  nombre: string | "" = "";//nombre: string | null = null;
   documentoUrl: SafeUrl | null = null;
   loading: boolean = false;
   subido = false;
@@ -49,6 +56,7 @@ export class DetalleRequerimientos implements OnInit {
   ngOnInit(): void {
 
     const state = window.history.state as { idRequerimiento: number };
+    console.log('daaa',state)
     if (state && state.idRequerimiento) {
       this.idRequerimiento = state.idRequerimiento;
       this.getDetalleRequerimiento(this.idRequerimiento);
