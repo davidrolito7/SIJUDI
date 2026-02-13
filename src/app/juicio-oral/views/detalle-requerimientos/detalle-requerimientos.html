@@ -46,45 +46,50 @@
         
 
         <div class="p-3 w-full">
-            <!-- @if (detalleRequerimiento) { -->
+            @if (detalleRequerimiento) {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <!-- Columna Izquierda -->
                 <div class="flex flex-col space-y-2">
                     <p class="text-surface-600 dark:text-surface-200"><b>Descripción: </b>
-                        <!-- {{detalleRequerimiento.descripcion}} -->
+                        {{detalleRequerimiento.descripcion}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Fecha creado:</b>
-                        <!-- {{ detalleRequerimiento.created_at  | date:'yyyy-MM-dd' }} -->
+                        {{ detalleRequerimiento.created_at  | date:'yyyy-MM-dd' }}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Fecha Límite:</b>
-                        <!-- {{ detalleRequerimiento.fechaLimite | date:'HH:mm' }} h -->
+                        {{ detalleRequerimiento.fechaLimite | date:'HH:mm' }} h
                     </p>
                 </div>
                 <!-- Columna Derecha -->
                 <div class="flex flex-col space-y-2">
                     <p class="text-surface-600 dark:text-surface-200"><b>Estado: </b>
-                        <!-- <span [ngClass]="getEstadoRequerimientoConEstilo(detalleRequerimiento).clase"
+                        <span [ngClass]="getEstadoRequerimientoConEstilo(detalleRequerimiento).clase"
                             class="text-xs font-medium me-2 px-2.5 py-0.5 rounded-full uppercase">
                             {{ getEstadoRequerimientoConEstilo(detalleRequerimiento).nombre }}
-                        </span> -->
-                        <!-- <br *ngIf="expiro()">
-                        <span *ngIf="expiro()"
+                        </span> 
+                        @if (expiro()) {
+                         <br >
+                        <span 
                             class="text-xs font-medium me-2 px-2.5 py-0.5 rounded-full text-yellow-800 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300 uppercase">
                             El requerimiento ha expirado. En la audiencia aún puede mostrar los documentos
                             requeridos.
-                        </span> -->
+                        </span>
+                        }
                         
                     </p>
-                    <!-- <p class="text-surface-600 dark:text-surface-200" *ngIf="rechazado()"><b>Motivo del rechazó:</b>
-                        <!- - <span *ngIf="rechazado() && detalleRequerimiento.descripcionRechazo"
-                            class="text-xs font-medium me-2 px-2.5 py-0.5 rounded-full text-red-800 bg-red-100 dark:bg-red-900 dark:text-red-300 uppercase">
+                    @if (rechazado()) {
+                    <p class="text-surface-600 dark:text-surface-200" ><b>Motivo del rechazó:</b>
+                        @if (rechazado() && detalleRequerimiento.descripcionRechazo) {
+                         <span class="text-xs font-medium me-2 px-2.5 py-0.5 rounded-full text-red-800 bg-red-100 dark:bg-red-900 dark:text-red-300 uppercase">
                             {{ detalleRequerimiento.descripcionRechazo }}
-                        </span> - ->
-                    </p> -->
+                        </span> 
+                    }
+                    </p>
+                }
                     <p class="text-surface-600 dark:text-surface-200"><b>Juzgado:</b>
-                        <!-- <span>
+                        <span>
                             {{detalleRequerimiento.expediente.juzgado.Descripcion}}
-                        </span> -->
+                        </span>
                         <!-- @switch (detalleInicio.historial_estado[0].estado.idCatEstadoInicio) {
                         @case (1) {
                         <span
@@ -118,10 +123,12 @@
                     </p>
                 </div>
             </div>
-            <!-- } -->
+            }
             <div>
-                    <p *ngIf="!detalleRequerimiento" class="text-gray-700 dark:text-gray-300">No hay datos generales
+                @if (!detalleRequerimiento){
+                    <p  class="text-gray-700 dark:text-gray-300">No hay datos generales
                         disponibles.</p>
+                    }
                 </div>
         </div>
          </p-card>
@@ -145,14 +152,574 @@
         <div class="mb-4 p-0">
          <p-card >
 
-        <div class="p-3">
-            
+       <div id="accordion-open-body-3" aria-labelledby="accordion-open-heading-3">
+        <div class="p-3 bg-white dark:bg-gray-900">
+            <div class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+
+                            <th scope="col"
+                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                Folio
+                            </th>
+                            <th scope="col"
+                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                Fecha creado
+                            </th>
+                            <th scope="col"
+                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            class="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+
+                            <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
+                                {{detalleRequerimiento?.documento_acuerdo?.folio}}
+                            </td>
+                            <td class="p-4 text-sm font-semibold text-gray-500 whitespace-nowrap dark:text-white">
+                                {{detalleRequerimiento?.documento_acuerdo?.created_at| date:"dd/MM/yyyy HH:mm"}}
+                            </td>
+                            <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
+                               @if(detalleRequerimiento){
+
+                                <button (click)="openModal(detalleRequerimiento.documento_acuerdo.idDocumento!)"
+                                     class="text-blue-600 cursor-pointer">Ver
+                                    documento</button>
+                               }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
+    </div>
+<!--
+    ########################################################################### 
+    ########################################################################### -->
+@if(mostrarUnaVezEnviadoYRevisado()){
+<h2 id="accordion-open-heading-3" >
+        <button type="button" class="flex items-center justify-between w-full p-4 font-medium rtl:text-right text-gray-500 bg-gray-100  dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 transition-all duration-300 ease-in-out transform hover:scale-[1.008]
+             dark:bg-gray-800  dark:hover:bg-gray-80" data-accordion-target="#accordion-open-body-2"
+            aria-expanded="true" aria-controls="accordion-open-body-2">
+            <span class="flex items-center">
+                <svg class="w-5 h-5 me-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                    height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M6 16v-3h.375a.626.626 0 0 1 .625.626v1.749a.626.626 0 0 1-.626.625H6Zm6-2.5a.5.5 0 1 1 1 0v2a.5.5 0 0 1-1 0v-2Z" />
+                    <path fill-rule="evenodd"
+                        d="M11 7V2h7a2 2 0 0 1 2 2v5h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2H3a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h6a2 2 0 0 0 2-2Zm7.683 6.006 1.335-.024-.037-2-1.327.024a2.647 2.647 0 0 0-2.636 2.647v1.706a2.647 2.647 0 0 0 2.647 2.647H20v-2h-1.335a.647.647 0 0 1-.647-.647v-1.706a.647.647 0 0 1 .647-.647h.018ZM5 11a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.376A2.626 2.626 0 0 0 9 15.375v-1.75A2.626 2.626 0 0 0 6.375 11H5Zm7.5 0a2.5 2.5 0 0 0-2.5 2.5v2a2.5 2.5 0 0 0 5 0v-2a2.5 2.5 0 0 0-2.5-2.5Z"
+                        clip-rule="evenodd" />
+                    <path d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Z" />
+                </svg>Documentos del requerimiento</span>
+        </button>
+    </h2>
+}
+
+@if (mostrarUnaVezEnviadoYRevisado()) {
+    <div class="flex flex-col sm:flex-row justify-between gap-6 p-6 bg-white dark:bg-gray-900 "
+        >
+
+        <!-- Documento: Oficio -->
+        <div class="flex-1 border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-gray-50 dark:bg-gray-900">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">📄 Oficio</h3>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mb-1">
+                <strong>Nombre:</strong> {{ detalleRequerimiento?.documento_oficio_requerimiento?.nombre }}
+            </p>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mb-1">
+                <strong>Folio:</strong>
+                <span class="text-gray-900 dark:text-white font-medium">
+                    {{ detalleRequerimiento?.documento_oficio_requerimiento?.folio }}
+                </span>
+            </p>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                <strong>Fecha de creación:</strong>
+                <span class="text-gray-900 dark:text-white font-medium">
+                    {{ detalleRequerimiento?.documento_oficio_requerimiento?.created_at | date: "dd/MM/yyyy HH:mm" }}
+                </span>
+            </p>
+            <button (click)="openModal(detalleRequerimiento?.documento_oficio_requerimiento?.idDocumento!)"
+                class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-400 to-orange-700 hover:scale-105 transform transition-all rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer">
+                Ver documento
+                <svg class="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2 2 2 0 0 0 2 2h12a2 2 0 0 0 2-2 2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2V4a2 2 0 0 0-2-2h-7Z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Documento: Acuse -->
+        <div class="flex-1 border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-gray-50 dark:bg-gray-900">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">📬 Acuse</h3>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mb-1">
+                <strong>Nombre:</strong> {{ detalleRequerimiento?.documento_acuse?.nombre }}
+            </p>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mb-1">
+                <strong>Fecha de recepción:</strong>
+                <span class="text-gray-900 dark:text-white font-medium">
+                    {{ detalleRequerimiento?.documento_acuse?.created_at | date: "dd/MM/yyyy HH:mm" }}
+                </span>
+            </p>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                <strong>Secretario que recibió:</strong>
+                <span class="text-gray-900 dark:text-white font-medium">
+                    <!-- {{ detalleRequerimiento?.usuarioSecretario}} -->
+                    {{nombreUsuario}}
+                </span>
+            </p>
+
+            <button (click)="openModal(detalleRequerimiento?.documento_acuse?.idDocumento!)"
+                class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-400 to-blue-700 hover:scale-105 transform transition-all rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                Ver documento
+                <svg class="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2 2 2 0 0 0 2 2h12a2 2 0 0 0 2-2 2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2V4a2 2 0 0 0-2-2h-7Z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+}
+
+    @if(mostrarUnaVezEnviadoYRevisado()){
+    <h4 class="text-m font-semibold text-gray-800 dark:text-gray-100 px-6" >
+        📁 Anexos solicitados
+    </h4>
+
+    <div id="accordion-open-body-3" aria-labelledby="accordion-open-heading-3" >
+        <div class="p-3 bg-white  dark:bg-gray-900">
+            <div class="relative overflow-x-auto  dark:bg-gray-900">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col"
+                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                Nombre
+                            </th>
+                            <th scope="col"
+                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                Fecha creado
+                            </th>
+                            <th scope="col"
+                                class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (documento of detalleRequerimiento?.documentos_requerimiento; track $index) {
+                        <tr 
+                            class="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+
+                            <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ documento.nombre }}
+                            </td>
+                            <td class="p-4 text-sm font-semibold text-gray-500 whitespace-nowrap dark:text-white">
+                                {{documento.created_at | date:"dd/MM/yyyy HH:mm"}} h
+                            </td>
+                            <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white">
+                       @if(detalleRequerimiento){
+                                 <button (click)="openModal(documento.idDocumento)" 
+                                    class="text-blue-600 cursor-pointer">Ver documento</button>
+                            
+        }    </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+<!-- </section> -->
+
+
+
+<!-- Subir documento oficio -->
+@if(mostrarSeccionSinDocumento()){
+    <section 
+    class="animate-fade-in-down mx-4 mb-4  bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+    <h2
+        class="mb-4  pb-2 text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-600 ">
+        Subir oficio de aclaración</h2>
+
+    <div class="w-full">
+        @if(!nombreArchivo){
+        <label for="documento" class="block text-sm font-medium text-gray-700 dark:text-white" >
+            Seleccionar documento:
+        </label>
+
+        <input 
+            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+            aria-describedby="file_input_help" id="documento" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+            #fileInput (change)="onFileChange($event)">
+
+
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help_admitir" >
+            Subir en formato PDF (solo 1 archivo)
+        </p>
+    }
+    @if(shouldShowError('documentoOficioRequerimiento')){
+        <div  class="text-red-500 text-sm mt-1">
+            {{ getError('documentoOficioRequerimiento') }}
+        </div>
+    }
+        <!-- Cuando hay archivo cargado -->
+         @if(nombreArchivo){
+        <div  class="mt-2 flex flex-col gap-2">
+            <span class="text-sm text-gray-800 dark:text-gray-200">
+                Archivo seleccionado: <strong>{{ nombreArchivo }}</strong>
+            </span>
+            <div class="flex gap-3 mt-1">
+                <button type="button" (click)="quitarArchivo(fileInput!)"
+                    class="inline-flex items-center px-3 py-1.5 rounded-md bg-red-100 text-red-700 hover:bg-red-200 transition-colors duration-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-400"
+                    [disabled]="!permitido">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Quitar archivo
+                </button>
+                <button type="button" (click)="verDocumentoOficio(fileInput)"
+                    class="inline-flex items-center px-3 py-1.5 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors duration-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 12H9m12 0A9 9 0 11 3 12a9 9 0 0118 0z" />
+                    </svg>
+                    Ver documento
+                </button>
+            </div>
+        </div>
+    }
+
+    </div>
+</section>
+}
+
+<!-- Subir documentos del requerimiento -->
+ @if(mostrarSeccionSinDocumento() && tieneDocumentoOficio()){
+<section 
+    class="animate-fade-in-down mx-4 mb-4  bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+    <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-600">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+            Subir documentos solicitados
+        </h2>
+        <button type="button" (click)="showModalAnexo()"
+            class="text-white animate-pulse cursor-pointer bg-gradient-to-r from-[#ffc56d] via-[#ff830a] to-[#cc4c02] hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center inline-flex items-center group transition-all duration-300 ease-in-out transform hover:scale-[1.05]">
+            Agregar
+            <svg class="w-6 h-6 text-white dark:text-white ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 12h14m-7 7V5" />
+            </svg>
+        </button>
+    </div>
+
+
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-9 py-3">
+                    Nombre
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Documento
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Acciones
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (anexo of listaAnexos; track $index) {
+            <tr 
+                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+
+                <td class="px-6 py-4">
+                    {{ getNombreTipoDocumento(anexo) }}
+                </td>
+
+                <td class="px-6 py-4">
+                    @if (detalleRequerimiento) {
+                    <button (click)="verDocumento(anexo)" 
+                        class="bg-[#faecda] cursor-pointer p-4 rounded-[10%] inline-block">
+                        <svg class="text-[#df7a30]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd"
+                                d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2 2 2 0 0 0 2 2h12a2 2 0 0 0 2-2 2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2V4a2 2 0 0 0-2-2h-7Zm-6 9a1 1 0 0 0-1 1v5a1 1 0 1 0 2 0v-1h.5a2.5 2.5 0 0 0 0-5H5Zm1.5 3H6v-1h.5a.5.5 0 0 1 0 1Zm4.5-3a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.376A2.626 2.626 0 0 0 15 15.375v-1.75A2.626 2.626 0 0 0 12.375 11H11Zm1 5v-3h.375a.626.626 0 0 1 .625.626v1.748a.625.625 0 0 1-.626.626H12Zm5-5a1 1 0 0 0-1 1v5a1 1 0 1 0 2 0v-1h1a1 1 0 1 0 0-2h-1v-1h1a1 1 0 1 0 0-2h-2Z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                }
+                </td>
+                
+
+                <td class="px-6 py-4">
+
+                    <button type="button" (click)="confirm2($event,$index)" id="deleteProductButton"
+                        class="inline-flex  cursor-pointer items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        }
+
+        </tbody>
+    </table>
+    <!-- Modal de confirmacion/ eliminar documento -->
+    <p-confirmdialog key="anexo">
+        <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+            <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+                <div
+                    class="rounded-full bg-black text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                    <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <p class="text-2xl font-medium mt-2.5 text-gray-900 dark:text-white">Confirmación</p>
+                <p class="font-medium mb-0">¿Está seguro de eliminar el documento?</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <button type="button" (click)="onAccept()"
+                        class="cursor-pointer text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                        Eliminar
+                    </button>
+                    <button type="button" (click)="onReject()"
+                        class="cursor-pointer py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </ng-template>
+    </p-confirmdialog>
+
+
+    <!-- <theme-switcher /> -->
+    <div class="card flex justify-center mt-4">
+        <p-confirmdialog #cd>
+            <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+
+                <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+                    <div
+                        class="rounded-full bg-black text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                        <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                    </div>
+                    <p class="text-2xl font-medium mt-2.5 text-gray-900 dark:text-white">Confirmación</p>
+                    <p class="font-medium mb-0">¿Esta seguro de enviar el requerimieno?</p>
+                    <div class="flex items-center gap-2 mt-6">
+                        <button type="button" (click)="onAccept()"
+                            class="cursor-pointer text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                            Aceptar
+                        </button>
+                        <button type="button" (click)="onReject()"
+                            class="cursor-pointer py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
+        </p-confirmdialog>
+
+        <button type="button" (click)="confirm()" [disabled]="oficio.invalid || !botonHabilitado" [ngClass]="{
+                'cursor-pointer bg-[#ffa032] hover:bg-[#ff830a] dark:bg-[#ffa032] dark:hover:bg-[#4c3e71]': !oficio.invalid && botonHabilitado,
+                'bg-gray-300 text-gray-500 cursor-not-allowed': oficio.invalid || !botonHabilitado
+            }"
+            class="text-white font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 text-center inline-flex items-center">
+
+
+            <span>Enviar requerimiento</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 ml-2">
+                <path
+                    d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
+            </svg>
+        </button>
+
+    </div>
+</section>
+}
+
+<!-- Modal de agregar DOCUMENTOS -->
+<p-dialog header="Agregar documentos" [modal]="true" [(visible)]="visibleAnexo" [style]="{ width: '25rem' }"
+    [closable]="false">
+    <form [formGroup]="requerimientoForm" (ngSubmit)="agregarAnexo()"
+        class="relative bg-[#ffffff] rounded-lg dark:bg-gray-700">
+
+        <!-- Modal body -->
+        <div class=" space-y-6">
+            <div class="grid grid-cols-6 gap-6">
+
+                <div class="col-span-6 sm:col-span-6">
+                    <label for="idCatTipoDocumento"
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipo de documento</label>
+                    <select id="idCatTipoDocumento" formControlName="idCatTipoDocumento" required=""
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        (change)="onTipoDocumentoChange($event)">
+                        <option [ngValue]="null" selected>Selecciona un tipo</option>
+                       @for(tipo of catTipoDocumentos; track $index){ 
+                        <option  [value]="tipo.idCatTipoDocumento">
+                            {{ tipo.descripcion }}
+                        </option>
+                    }
+                    </select>
+                    @if (shouldShowErrorDoc('idCatTipoDocumento')) {
+                    <div  class="text-red-500 text-sm mt-1">
+                        {{ getErrorDoc('idCatTipoDocumento') }}
+                    </div>
+                }
+                </div>
+
+                @if(mostrarInputNombre){
+                <div class="col-span-6 sm:col-span-6" >
+                    <label for="nombre" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+
+                    </label>
+                    <input id="nombre" type="text" formControlName="nombre" required minlength="10" maxlength="50"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        placeholder="Escribe el nombre personalizado">
+                        @if(shouldShowErrorDoc('nombre')){
+                    <div  class="text-red-500 text-sm mt-1">
+                        {{ getErrorDoc('nombre') }}
+                    </div>
+                }
+                </div>
+            }
+
+                <div class="col-span-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Documento</label>
+                    <input #fileInput
+                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                        aria-describedby="file_input_help" id="file_input" type="file"
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" (change)="onFileSelected($event)">
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
+                        Subir en formato PDF (solo 1 archivo)
+                    </p>
+                 @if(shouldShowErrorDoc('documento')){
+                    <div  class="text-red-500 text-sm mt-1">
+                        {{ getErrorDoc('documento') }}
+                    </div>
+                }
+                </div>
+
+            </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-2.5">
+            <p-button label="Cancelar" severity="secondary" (click)="visibleAnexo = false" />
+            <p-button type="submit" label="Guardar" [disabled]="requerimientoForm.invalid" />
+        </div>
+
+    </form>
+
+</p-dialog>
+@if (documentoUrl) {
+     <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="visibleDocumento">
+            </app-pdf-dialog>
+}
+
+<!-- <p-dialog header="Documento: {{ nombre }}" [modal]="true" [(visible)]="visibleDocumento" [style]="{ width: '40rem' }">
+    @if(documentoUrl){
+    <iframe  [src]="documentoUrl" type="application/pdf" width="100%" height="500px">
+        <p>No se pudo mostrar el PDF. <a [href]="documentoUrl" download>Descargar</a> en su lugar.</p>
+    </iframe>
+   
+}
+</p-dialog> -->
+
+
+<div #defaultModal id="default-modal" tabindex="-1" aria-hidden="true"
+    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+    data-backdrop="static">
+
+    <div class="absolute inset-0 bg-black opacity-50" (click)="closeModal()"></div>
+
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+
+        <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+
+            <div
+                class="flex items-center justify-between pr-2 p-4 md:p-2 md:pr-2 border-b rounded-t dark:border-gray-600 border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    {{ nombre }}
+
+                </h3>
+                <button type="button" (click)="closeModal()"
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                    <span class="sr-only">Cerrar modal</span>
+                </button>
+            </div>
+
+            <div class="p-1 md:p-1 space-y-4">
+
+
+                <div class="relative">
+                    <!-- Contenedor del spinner (se muestra mientras carga) -->
+                    @if (!documentoUrl) {
+                    <div 
+                        class="flex justify-center items-center h-[500px] bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div class="text-center">
+                            <svg aria-hidden="true"
+                                class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                    fill="currentFill" />
+                            </svg>
+                            <span class="sr-only">Cargando documento...</span>
+                            <p class="mt-2 text-gray-500 dark:text-gray-400">Cargando documento,
+                                por favor espere...</p>
+                        </div>
+                    </div>
+                }
+
+                    <!-- Contenedor del PDF (se muestra cuando está listo) -->
+                     @if (documentoUrl) {
+                    <div  class="pdf-container">
+                        <object [data]="documentoUrl" type="application/pdf" width="100%" height="500px">
+                            <div
+                                class="flex flex-col items-center justify-center h-[500px] bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
+                                <p class="text-gray-700 dark:text-gray-300 mb-4">No se puede
+                                    visualizar el documento PDF.</p>
+                                <a [href]="documentoUrl" download
+                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                    Descargar PDF
+                                </a>
+                            </div>
+                        </object>
+                    </div>
+                }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
          </p-card>
         </div>
 
         <!-- Sección: Anexos -->
-        <div
+        <!-- <div
             class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 ">
             <span class="flex items-center">
                 <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -171,11 +738,11 @@
          <p-card >
         <div class="p-3">
            
-            <!-- <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-            </app-pdf-dialog> -->
+            <!- - <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+            </app-pdf-dialog> - ->
         </div>
          </p-card>
-</div>
+</div> -->
 
     </div>
 
