@@ -49,6 +49,7 @@ import { MessageService } from 'primeng/api';
 
     // Shared components
     Breadcrub,
+    Spinner
  ],
   templateUrl: './listar-audiencias.html',
   styleUrl: './listar-audiencias.css',
