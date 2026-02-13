@@ -85,9 +85,9 @@
                                                     @if(!archivosEnviado)   {
                                                         @if (tienePermisoEnviarArchivos()) {
                                                             <div class="relative">
-                                                                <button type="button" (click)="enviarAcuerdoArchivos(this.idNotificacion)"
+                                                                <p-button type="button" (click)="enviarAcuerdoArchivos(this.idNotificacion)"
                                                                     class=""><i class="bi bi-send"></i> Enviar archivos
-                                                                </button>
+                                                                </p-button>
                                                             </div>
                                                         }
 
@@ -134,7 +134,7 @@
                                                 </p-button>
                                                 @if(!generalesEnviado)
                                                     {
-                                                    <p-button (onClick)="eliminarDocumento( Acuerdo.archivos.idArchivo)" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true">
+                                                    <p-button (onClick)="eliminarDocumento(Archivos.idArchivo)" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true">
                                                     </p-button>
 
                                                     }
@@ -148,10 +148,10 @@
                                                 </tr>
                                             </ng-template>
                                         </p-table>
-                                        <!-- @if(mostrarDocumento()){
+                                         @if(mostrarDocumento()){
                                             <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
                                             </app-pdf-dialog>
-                                        } -->
+                                        } 
                                         }
                                         </td>
                                     </tr>

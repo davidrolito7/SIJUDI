@@ -310,4 +310,10 @@ export class ExhortosService {
     //const headers = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.post<GenericResponse<generales>>(`${this.apiAcuerdo}GuardarRespuestaExhortoRecibido`, {idUsuario, idExhortoRecibido, tipoDiligenciado, observaciones},{context:checkToken()});
   }
+   //Actualizar respuesta exhorto
+  updateRespuestaExhorto(idRespuesta: number, observaciones:string | null, idTipoDiligenciado:number){
+    //const headers = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    return this.http.post(`${this.apiAcuerdo}actualizarRespuestaExhortoRecibido`,{idRespuesta, observaciones, idTipoDiligenciado}, {context:checkToken()});
+  }
+
 }

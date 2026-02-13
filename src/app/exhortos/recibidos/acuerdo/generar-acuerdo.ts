@@ -272,35 +272,77 @@ export class GenerarAcuerdo {
     if(userData !== null){
        idUsuario = userData.idGeneral;
     }
-    this.exhortosService.setRespuestaExhorto(idUsuario, this.idExhortoRecibido,  Number(this.acuerdosForm.value.tipoDiligenciado?.idTipoDiligenciado), this.acuerdosForm.value.observaciones ?? null)
-    .subscribe({
-      next:(response: GenericResponse<generales>) => {
-      //response  => {
-        if(response.success){
-          //console.log("Guardao");
-          //this.idRespuesta=Number(response.data.idRespuesta);
-          //this.acuerdo=response.data;
-          this.detallesAcuerdo().generales = response.data;
-          //asignamos los valores devueltos al formulario
-          this.acuerdosForm.patchValue({
-            tipoDiligenciado: this.listadoTipoDiligenciado().find(item => item.idTipoDiligenciado === this.detallesAcuerdo().generales.idTipoDiligenciado) || null,
-            observaciones: this.detallesAcuerdo().generales.observaciones || ''
-          });
-          this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Respuesta guardada.' });
-        }else{
-          //console.log("No se pudo guardar la respuesta.", response.message);
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors[0] });
-        }
+    if(this.idRespuesta && this.idRespuesta > 0){
+      this.actualizarRespuestaExhorto(this.idRespuesta);
+    }else{
 
-      },
-      error:(e) => {
-          //console.error('Error en la petición guardar:', e.message);
+      this.isLoading = true;
+      this.cd.detectChanges();
+      this.exhortosService.setRespuestaExhorto(idUsuario, this.idExhortoRecibido,  Number(this.acuerdosForm.value.tipoDiligenciado?.idTipoDiligenciado), this.acuerdosForm.value.observaciones ?? null)
+      .subscribe({
+        next:(response: GenericResponse<generales>) => {
+        //response  => {
+          if(response.success){
+            //console.log("Guardao");
+            //this.idRespuesta=Number(response.data.idRespuesta);
+            //this.acuerdo=response.data;
+            this.detallesAcuerdo().generales = response.data;
+            //asignamos los valores devueltos al formulario
+            this.acuerdosForm.patchValue({
+              tipoDiligenciado: this.listadoTipoDiligenciado().find(item => item.idTipoDiligenciado === this.detallesAcuerdo().generales.idTipoDiligenciado) || null,
+              observaciones: this.detallesAcuerdo().generales.observaciones || ''
+            });
+            this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Respuesta guardada.' });
+          }else{
+            //console.log("No se pudo guardar la respuesta.", response.message);
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors[0] });
+          }
+
+        },
+        error:(e) => {
+            //console.error('Error en la petición guardar:', e.message);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+            this.isLoading = false;
+            this.cd.detectChanges();
+        },
+        complete:()=>{
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }
+      });
+    }
+  }
+  //Actualizar la respuesta del exhorto
+  actualizarRespuestaExhorto(idRespuesta:number){
+      this.isLoading = true;
+      this.cd.detectChanges();
+      this.exhortosService.updateRespuestaExhorto(idRespuesta, this.acuerdosForm.value.observaciones ?? null,this.acuerdosForm.value.tipoDiligenciado?.idTipoDiligenciado ?? 0)
+      .subscribe({
+        next: (response: any) => {
+          if(response.success) 
+          {
+            //console.log("Datos actulizados: ",response);
+            this.verRespuestaExhortoRecibido(this.idExhortoRecibido);
+            this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Respuesta actualizada.' });
+          }
+        },
+        error:(e)=>{
+          //console.log("Error en la petición actualizar: ", error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
-      }
+          this.isLoading = false;
+          this.cd.detectChanges();
+        },
+        complete:()=>{
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }
     });
+
   }
   enviarAcuerdoGenerales(idExhortoRecibido: number){
     //console.log('Envio de datos generales', idExhortoRecibido);
+    this.isLoading=true;
+    this.cd.detectChanges();
     this.exhortosService.enviarRespuestaGenerales(idExhortoRecibido).subscribe({
       next: (response:any) => {
         if(response.success){
@@ -321,14 +363,20 @@ export class GenerarAcuerdo {
       error:(e)=>{
         //console.error('Error al recibir el archivo', e);
         this.messageService.add({severity:'error',summary: 'Error', detail:e.message});
+        this.isLoading=false;
+        this.cd.detectChanges();
       },
       complete:()=>{
         //console.log('FIN:');
+        this.isLoading=false;
+        this.cd.detectChanges();
       }
     });
 
   }
   enviarAcuerdoArchivos(idExhortoRecibido: number){
+    this.isLoading=true;
+    this.cd.detectChanges();
     this.exhortosService.enviarRespuestaArchivos(idExhortoRecibido).subscribe({
       next: (response:any) => {
         if(response.success){
@@ -353,9 +401,13 @@ export class GenerarAcuerdo {
       error:(e)=>{
         //console.error('Error al recibir el archivo', e);
         this.messageService.add({severity:'error',summary: 'Error', detail:e.message});
+        this.isLoading=false;
+        this.cd.detectChanges();
       },
       complete:()=>{
         //console.log('FIN:');
+        this.isLoading=false;
+        this.cd.detectChanges();
       }
     });
   }
@@ -714,6 +766,7 @@ export class GenerarAcuerdo {
               if (index !== -1) {
                 // Elimina el elemento del arreglo
                 this.listaDocumentos().splice(index, 1);
+                this.cd.detectChanges(); // Asegura que la vista se actualice después de modificar el arreglo
               }
               //console.log("Documento eliminado");
               this.messageService.add({ severity: 'success', summary: 'Error', detail: 'Documento eliminado' });

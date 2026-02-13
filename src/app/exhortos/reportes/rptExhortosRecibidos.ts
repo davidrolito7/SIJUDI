@@ -95,7 +95,7 @@ const generateExRecibidosPDF = (
       {text: archivo.nombreArchivo, fontSize:8},
       {text: archivo.tipoDocumento?.nombre, fontSize:8},
       {text: archivo.paginas, fontSize:8},
-      {text: ((archivo.tamaño === null ? 0 : archivo.tamaño)  /1024).toFixed(2), fontSize:8},
+      {text: ((archivo.tamanio === null ? 0 : archivo.tamanio)  /1024).toFixed(2), fontSize:8},
       {text: archivo.firmado, fontSize:8},
       {text: archivo.fechaFirmado, fontSize:8},
     ]),
