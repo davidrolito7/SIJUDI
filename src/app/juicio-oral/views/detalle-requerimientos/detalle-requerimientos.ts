@@ -56,8 +56,9 @@ export class DetalleRequerimientos implements OnInit {
   ngOnInit(): void {
 
     const state = window.history.state as { idRequerimiento: number };
-    console.log('daaa',state)
+   
     if (state && state.idRequerimiento) {
+      
       this.idRequerimiento = state.idRequerimiento;
       this.getDetalleRequerimiento(this.idRequerimiento);
       this.cargarCatTipoDocumento();
@@ -89,8 +90,9 @@ export class DetalleRequerimientos implements OnInit {
   getDetalleRequerimiento(idRequerimiento: number): void {
     this.juicioService.getDetalleRequerimiento(idRequerimiento).subscribe({
       next: (response: any) => {
-        // console.log('Datos recibidos:', response.data);
+       
         this.detalleRequerimiento = response.data || null;
+       
         this.getObtenerNombre();
       },
       error: (error) => {
@@ -547,12 +549,12 @@ export class DetalleRequerimientos implements OnInit {
 
   getObtenerNombre(): void {
     const usuario = this.detalleRequerimiento?.usuarioSecretario;
-    console.log('usuario', usuario);
+    
     this.juicioService.datos(usuario!).subscribe({
       next: (response) => {
-        console.log('llego', response.data);
+       
         this.nombreUsuario = response.data;
-        console.log('guardando', this.nombreUsuario);
+        
       },
       error: (err) => {
         console.error('Error al consumir el API:', err);
