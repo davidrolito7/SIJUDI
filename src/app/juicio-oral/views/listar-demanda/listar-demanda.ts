@@ -1,5 +1,5 @@
 
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -55,7 +55,7 @@ import { TooltipModule } from 'primeng/tooltip';
     // Shared components
     Breadcrub,
     Spinner
-],
+  ],
   templateUrl: './listar-demanda.html',
   styleUrl: './listar-demanda.css',
   providers: [MessageService],
@@ -71,7 +71,7 @@ export class ListarDemanda implements OnInit {
     { label: 'Finalizado', value: 3 },
   ];
 
-  inicios: ListadoIniciosCreados[] = [];
+  inicios = signal<ListadoIniciosCreados[]>([]);
   isLoading = false;
 
   filtro: { folio: string; rangeDates: Date[] | ''; estado: number } = {
@@ -95,7 +95,7 @@ export class ListarDemanda implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { }
 
   // ============================
   // Lifecycle
@@ -117,9 +117,9 @@ export class ListarDemanda implements OnInit {
     this.filtro.rangeDates =
       params['fechaInicio'] && params['fechaFinal']
         ? [
-            this.parseDateFromString(params['fechaInicio']),
-            this.parseDateFromString(params['fechaFinal']),
-          ]
+          this.parseDateFromString(params['fechaInicio']),
+          this.parseDateFromString(params['fechaFinal']),
+        ]
         : '';
   }
 
@@ -143,7 +143,7 @@ export class ListarDemanda implements OnInit {
     this.juicioService.getListadoInicios(requestParams).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.inicios = response?.data ?? [];
+        this.inicios.set(response.data);
         this.pagination = response.pagination;
         this.cdr.markForCheck();
       },
@@ -223,15 +223,15 @@ export class ListarDemanda implements OnInit {
   // ============================
   // Estado helpers for UI tags
   // ============================
-getEstadoDescripcion(inicio: unknown): string | null {
+  getEstadoDescripcion(inicio: unknown): string | null {
     const i = inicio as { ultimo_estado?: { estado?: { descripcion?: string } } };
     return i.ultimo_estado?.estado?.descripcion ?? null;
-}
+  }
 
-getEstadoId(inicio: unknown): number | null {
+  getEstadoId(inicio: unknown): number | null {
     const i = inicio as { ultimo_estado?: { estado?: { idCatEstadoInicio?: number } } };
     return i.ultimo_estado?.estado?.idCatEstadoInicio ?? null;
-}
+  }
 
   getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
     const id = this.getEstadoId(inicio);

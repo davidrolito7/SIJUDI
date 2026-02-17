@@ -18,7 +18,7 @@ import {
     CrearAudienciaRequest,
     PartesAudiencia,
     DetalleTramites,
-    juzgados,
+    Juzgado,
     Remitente,
     CancelarAudienciaRequest,
     AudienciaCreadaResponse,
@@ -289,9 +289,9 @@ export class JuicioService {
         );
     }
 
-    getJuzgados(): Observable<juzgados[]> {
+    getJuzgados(): Observable<Juzgado[]> {
         const token = this.tokenService.getToken();
-        return this.http.get<{ data: juzgados[] }>(
+        return this.http.get<{ data: Juzgado[] }>(
             `${this.juzgados}Listar`,
         ).pipe(map(response => response.data));
     }

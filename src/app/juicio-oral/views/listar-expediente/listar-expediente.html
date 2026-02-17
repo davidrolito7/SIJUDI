@@ -1,1 +1,137 @@
-<p>listar-expediente works!</p>
+<!-- <app-spinner [isLoading]="isLoading"></app-spinner>  -->
+<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
+<div class="sticky top-0 z-50  flex flex-col gap-4 bg-surface-0 dark:bg-surface-900">
+
+    <!-- HEADER -->
+    <app-breadcrub></app-breadcrub>
+
+    <!-- BUSQUEDA -->
+    <div class=" border border-surface rounded-2xl p-4">
+
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <div class="font-medium text-2xl mb-2">
+                Expedientes asignados
+            </div>
+
+        </div>
+        <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de exhortos enviados">
+            <div class="grid grid-cols-12 gap-4 w-full items-end">
+                <!-- Folio -->
+                <div class="col-span-12 md:col-span-6 lg:col-span-4 w-full">
+                    <label for="folio" class="block mb-2 text-sm font-medium">Folio</label>
+
+                    <p-inputmask fluid [(ngModel)]="filtro.expediente" name="folio" class="uppercase text-sm rounded-lg"
+                        mask="9999/9999" placeholder="0001/2026" />
+                </div>
+
+                <!-- Estatus -->
+                <!-- <div class="col-span-12 md:col-span-6 lg:col-span-2 w-full">
+                    <label for="estado" class="block mb-2 text-sm font-medium">Estatus</label>
+
+                    <p-select inputId="estado" name="estado" class="w-full" 
+                         optionLabel="label" optionValue="value" appendTo="body" fluid
+                        [attr.aria-label]="'Estatus'"></p-select>
+                </div> -->
+
+                <!-- Fecha -->
+                <div class="col-span-12 md:col-span-8 lg:col-span-3 ">
+                    <label for="rangeDates" class="block mb-2 text-sm font-medium">Fecha</label>
+
+                    <p-datepicker inputId="rangeDates" name="rangeDates" fluid placeholder="Selecciona rango"
+                        [(ngModel)]="filtro.rangeDates" selectionMode="range" [readonlyInput]="true"></p-datepicker>
+                </div>
+
+                <!-- Botones -->
+                <div class="col-span-12 md:col-span-4 lg:col-span-2 flex gap-4 ">
+                    <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
+                        aria-label="Limpiar filtros"></p-button>
+
+                    <p-button type="submit" aria-label="Buscar" styleClass="btn-secondary">
+                        <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
+                        <span pButtonLabel>Buscar</span>
+                    </p-button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+<div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
+
+    <div class="card">
+        <p-table #dtInicio [value]="expedientes()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [globalFilterFields]="[
+    'folio',
+    'cat_via_materia.cat_materia.Descripcion',
+    'cat_via_materia.cat_via.descripcion',
+    'historial_estado.0.estado.descripcion'
+  ]">
+            <ng-template #caption>
+                <div class="flex">
+                    <div class="font-medium text-xl mb-4">Resultado</div>
+
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="dtInicio.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Buscar una palabra" aria-label="Buscar" />
+                    </p-iconfield>
+                </div>
+            </ng-template>
+
+            <ng-template #header class="bg-red-500">
+                <tr>
+                    <th scope="col">Expediente</th>
+                    <th scope="col">Preregistro</th>
+                    <th scope="col">Fecha asignado</th>
+                    <th scope="col">Juzgado</th>
+                    <th scope="col">Materia</th>
+                    <th scope="col">Vía</th>
+                    <th scope="col">Estatus</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-expediente>
+                <tr>
+                    <td>
+                         <span>#{{ expediente.NumExpediente }}</span>
+                    </td>
+                    <td>
+                        {{ expediente.pre_registro.folio }}
+                    </td>
+                    <td>
+                        {{ expediente.fechaResponse | date: 'dd/MM/yyyy HH:mm' }} h
+                    </td>
+                    <td>
+                        {{ expediente.juzgado.Descripcion }}
+                    </td>
+                    <td>
+                        {{ expediente.pre_registro.cat_via_materia.cat_materia.Descripcion }}
+                    </td>
+        <td>
+                        {{ expediente.pre_registro.cat_via_materia.cat_via.descripcion}}
+                    </td>
+                    <td>
+                        <p-tag value="{{ (expediente.ultimo_historial.estado.descripcion).toUpperCase() }}"
+                            severity="info" icon="pi pi-bell" />
+                    </td>
+                    <td>
+                        <p-button (click)="detalle(expediente.idExpediente)" [rounded]="true"  [text]="true" [raised]="true" severity="info" [rounded]="true"
+                            icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                        </p-button>
+
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="6">Sin registros</td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+    </div>
+</div>

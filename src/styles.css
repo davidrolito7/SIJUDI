@@ -3,22 +3,6 @@
 @import "tailwindcss-primeui";
 @import "primeicons/primeicons.css";
 
-/* ============================================
-   THEME - Colores personalizados
-   ============================================ */
-@theme {
-  /* Primario */
-  --color-pry-100: #f3eadc;
-
-  /* Secundario (café) */
-  --color-secondary-200: #eadcc4;
-  --color-secondary-300: #ddc8a4;
-  --color-secondary-400: #c5a875;
-  --color-secondary-500: #b2915b;
-  --color-secondary-600: #9a7b4e;
-  --color-secondary-700: #7f6542;
-  --color-secondary-contrast: #ffffff;
-}
 
 /* ============================================
    BOTONES PERSONALIZADOS
@@ -26,16 +10,29 @@
 
 /* Botón secundario (café) */
 .btn-secondary {
+  /* PrimeNG v18+ (PrimeUI): variables del botón */
   --p-button-primary-background: #b2915b;
   --p-button-primary-border: #b2915b;
   --p-button-primary-hover-background: #9a7b4e;
   --p-button-primary-hover-border: #9a7b4e;
   --p-button-primary-active-background: #7f6542;
   --p-button-primary-active-border: #7f6542;
-
-  @apply bg-secondary-500 hover:bg-secondary-600 text-secondary-contrast border-0;
+  /* Tailwind: */
+  @apply border-[#b2915b];
 }
 
+/* Botón acción (terracota) */
+.btn-tertiary {
+  --p-button-primary-background: #C46A4A;
+  --p-button-primary-border: #C46A4A;
+  --p-button-primary-hover-background: #B85F43;
+  --p-button-primary-hover-border: #B85F43;
+  --p-button-primary-active-background: #9E523A;
+  --p-button-primary-active-border: #9E523A;
+
+    /* Tailwind: */
+  @apply border-[#C46A4A];
+}
 /* Botón eliminar (rojo) */
 .btn-rojo {
   --p-button-primary-background: #ef4444;

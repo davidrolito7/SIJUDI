@@ -1,4 +1,4 @@
-import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { provideRouter, withDebugTracing, withRouterConfig } from '@angular/router';
@@ -29,6 +29,7 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideAnimationsAsync(),
+    provideZonelessChangeDetection(),
     providePrimeNG({
       translation: es.es,
       theme: {
