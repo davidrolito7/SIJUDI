@@ -1,5 +1,5 @@
-import { ChangeDetectorRef,Component,ElementRef, OnInit, ViewChild  } from '@angular/core';
-import { DetalleRequerimiento, CatTipoDocumento } from '../../../juicio-oral/interfaces/juicioenlinea.model';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
+import { DetalleRequerimiento, CatTipoDocumento, DocumentosRequest } from '../../../juicio-oral/interfaces/juicioenlinea.model';
 import { FieldsetModule } from 'primeng/fieldset';
 import { CardModule } from 'primeng/card';
 import { JuicioService } from '../../services/juicioenlinea.service';
@@ -7,20 +7,27 @@ import { Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, FormsModule, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { CommonModule ,DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { TableModule } from 'primeng/table';
+import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+import { FileUpload, FileUploadClasses, FileUploadModule } from 'primeng/fileupload';
+import { base64ToFile } from '../../../shared/functions/utils';
+import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-detalle-requerimientos',
-  imports: [PdfDialog,FieldsetModule,CardModule,DatePipe,CommonModule,ConfirmDialogModule,DialogModule,FormsModule,ReactiveFormsModule,ButtonModule],
+  imports: [PdfDialog, FieldsetModule, CardModule, DatePipe, CommonModule, ConfirmDialogModule, DialogModule, FormsModule, ReactiveFormsModule, ButtonModule, Breadcrub, TableModule, ConfirmDialog, FileUploadModule, SelectModule, InputTextModule],
   templateUrl: './detalle-requerimientos.html',
   styleUrl: './detalle-requerimientos.css',
-  providers: [ConfirmationService, MessageService] ,
-  standalone: true, 
+  providers: [ConfirmationService, MessageService],
+  standalone: true,
 })
 export class DetalleRequerimientos implements OnInit {
 
@@ -29,19 +36,18 @@ export class DetalleRequerimientos implements OnInit {
 
   //Detalles del requerimiento
   idRequerimiento: number | undefined;
-  detalleRequerimiento: DetalleRequerimiento | null = null;
+  detalleRequerimiento = signal<DetalleRequerimiento | null>(null);
   documentoBase64: string | null = null;
   nombre: string | "" = "";//nombre: string | null = null;
   documentoUrl: SafeUrl | null = null;
   loading: boolean = false;
   subido = false;
   listaAnexos: { nombre: any; documento: File; idCatTipoDocumento: any; }[] = [];
-  catTipoDocumentos: CatTipoDocumento[] = [];
+  catTipoDocumentos = signal<CatTipoDocumento[]>([]);
   requerimientoForm!: FormGroup;
   oficio!: FormGroup;
   visibleAnexo: boolean = false;
-  visibleDocumento: boolean = false;
-  botonHabilitado: boolean = false; //habilitar el boton 
+  visibleDocumento = signal<boolean>(false);
   mostrarInputNombre: boolean | undefined;
   nombreArchivo: string | undefined;
   archivoSeleccionado: File | null = null;
@@ -56,9 +62,9 @@ export class DetalleRequerimientos implements OnInit {
   ngOnInit(): void {
 
     const state = window.history.state as { idRequerimiento: number };
-   
+
     if (state && state.idRequerimiento) {
-      
+
       this.idRequerimiento = state.idRequerimiento;
       this.getDetalleRequerimiento(this.idRequerimiento);
       this.cargarCatTipoDocumento();
@@ -70,10 +76,12 @@ export class DetalleRequerimientos implements OnInit {
     private juicioService: JuicioService,
     private router: Router,
     private sanitizer: DomSanitizer,
-    
+
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private readonly fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+
   ) {
     this.requerimientoForm = this.fb.group({
       nombre: [''],
@@ -90,56 +98,54 @@ export class DetalleRequerimientos implements OnInit {
   getDetalleRequerimiento(idRequerimiento: number): void {
     this.juicioService.getDetalleRequerimiento(idRequerimiento).subscribe({
       next: (response: any) => {
-       
-        this.detalleRequerimiento = response.data || null;
-       
+        this.detalleRequerimiento.set(response.data || null);
+
         this.getObtenerNombre();
       },
       error: (error) => {
         console.error('Error:', error);
-        this.detalleRequerimiento = null;
+        this.detalleRequerimiento.set(null);
       }
     });
   }
+  // En tu TS
+  getAcuerdoRow(): any[] {
+    const acuerdo = this.detalleRequerimiento()?.documento_acuerdo;
+    return acuerdo ? [acuerdo] : [];
+  }
 
-
-  //Modal
   openModal(idDocumento: number): void {
-    this.loading = true; // <-- ¡ACTIVAR cargando!
+    this.isLoading = true;
+    this.cdr.detectChanges();
 
-    this.juicioService.getVerDocumentos(idDocumento).subscribe({
-      next: (response: any) => {
-        if (response.data && response.data.file) {
-          this.loading = false; // <-- ¡ACTIVAR cargando!
-          this.documentoBase64 = response.data.file;
-          this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-            `data:application/pdf;base64,${this.documentoBase64}`
-          );
-
-          if (response.nombre == 'Sin nombre') {
-            this.nombre = response.descripcion
-          } else {
-            this.nombre = response.nombre
-          }
-
-          this.defaultModal.nativeElement.classList.remove('hidden');
-          this.defaultModal.nativeElement.classList.add('flex');
-
-        } else {
-          this.loading = false; // <-- ¡ACTIVAR cargando!
-          console.error('No se encontró contenido base64 para el documento');
+    this.juicioService.getDocumento(idDocumento).subscribe({
+      next: (response) => {
+        if (response?.data?.file) {
+          this.nombre = response.data.nombre ?? 'documento.pdf';
+          this.onVerDocumento(response.data.file, this.nombre, 'application/pdf');
         }
-        this.loading = false; // <-- ¡DESACTIVAR cargando cuando termina!
       },
       error: (error) => {
         console.error('Error al obtener el documento:', error);
-        this.loading = false; // <-- también desactiva si falla
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
-
-
   }
-
+  onVerDocumento(fileBase64: string, nombre: string, mime: string): void {
+    const file = base64ToFile(fileBase64, nombre, mime);
+    if (file instanceof File) {
+      const url = URL.createObjectURL(file);
+      this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      this.visibleDocumento.set(true);
+    } else {
+      console.error('Documento inválido');
+    }
+  }
 
   closeModal(): void {
     // Cierra el modal
@@ -149,7 +155,7 @@ export class DetalleRequerimientos implements OnInit {
 
 
   fechaLimite(callback?: (expiro: boolean) => boolean): boolean {
-    const fechaLimite = new Date(this.detalleRequerimiento?.fechaLimite || '');
+    const fechaLimite = new Date(this.detalleRequerimiento()?.fechaLimite || '');
     const fechaActual = new Date();
 
     if (fechaLimite && fechaLimite >= fechaActual) {
@@ -166,7 +172,7 @@ export class DetalleRequerimientos implements OnInit {
 
   mostrarSeccionSinDocumento(): boolean {
     let valido = false;
-    if (this.catalogo(this.detalleRequerimiento) == 1) {
+    if (this.catalogo(this.detalleRequerimiento()) == 1) {
       valido = true
     }
     return this.fechaValida && valido;
@@ -174,7 +180,7 @@ export class DetalleRequerimientos implements OnInit {
 
   mostrarUnaVezEnviadoYRevisado(): boolean {
     let valido = false;
-    if (this.catalogo(this.detalleRequerimiento) == 3 || this.catalogo(this.detalleRequerimiento) == 4 || this.catalogo(this.detalleRequerimiento) == 5) {
+    if (this.catalogo(this.detalleRequerimiento()) == 3 || this.catalogo(this.detalleRequerimiento()) == 4 || this.catalogo(this.detalleRequerimiento) == 5) {
       valido = true
     }
     return valido;
@@ -182,7 +188,7 @@ export class DetalleRequerimientos implements OnInit {
 
   rechazado(): boolean {
     let valido = false;
-    if (this.catalogo(this.detalleRequerimiento) == 5) {
+    if (this.catalogo(this.detalleRequerimiento()) == 5) {
       valido = true
     }
     return valido;
@@ -190,7 +196,7 @@ export class DetalleRequerimientos implements OnInit {
 
   expiro(): boolean {
     let valido = false;
-    if (this.catalogo(this.detalleRequerimiento) == 2) {
+    if (this.catalogo(this.detalleRequerimiento()) == 2) {
       valido = true
     }
     return valido;
@@ -237,29 +243,27 @@ export class DetalleRequerimientos implements OnInit {
   showModalAnexo() {
     this.visibleAnexo = true;
   }
-
   onFileSelected(event: any): void {
-    const file: File | null = event.target.files[0] || null;
+    const files: File[] = event?.files ?? event?.currentFiles ?? [];
+    const file: File | null = files[0] || null;
     const control = this.requerimientoForm.get('documento');
 
     if (control) {
-      control.markAsTouched(); // 🔥 fuerza la validación visual
+      control.markAsTouched();
     }
 
     if (file) {
       this.archivoSeleccionado = file;
-      this.nombreArchivo = 'Oficio de aclaración del requerimiento';
+      this.nombreArchivo = file.name;
       control?.setValue(file);
       this.mostrarSeccionArchivo = true;
       this.archivoUrl = URL.createObjectURL(file);
     } else {
-      // Si no se selecciona archivo, asegúrate de limpiar el valor
       control?.setValue(null);
       this.mostrarSeccionArchivo = false;
       this.archivoUrl = '';
     }
   }
-
   agregarAnexo() {
     if (this.requerimientoForm.invalid) {
       this.requerimientoForm.markAllAsTouched();
@@ -281,43 +285,17 @@ export class DetalleRequerimientos implements OnInit {
     this.requerimientoForm.reset();
     this.fileInput.nativeElement.value = '';
     this.mostrarInputNombre = false; // Ocultar el campo de texto
-    this.botonHabilitado = this.listaAnexos.length > 0;
+
   }
 
-  verDocumento(anexo: { documento: File, idCatTipoDocumento: number, nombre: string }): void {
-    this.loading = true; // Activar cargando
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.documentoBase64 = (reader.result as string).split(',')[1]; // Obtener base64
-      this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-        `data:application/pdf;base64,${this.documentoBase64}`
-      );
-
-      if (anexo.idCatTipoDocumento === -1) {
-        this.nombre = anexo.nombre; // Asignar el nombre directamente si es -1
-      } else {
-        const tipo = this.catTipoDocumentos.find(
-          (tipo: any) => tipo.idCatTipoDocumento === anexo.idCatTipoDocumento
-        );
-        this.nombre = tipo ? tipo.descripcion : anexo.nombre; // Asignar la descripción del catálogo o el nombre
-      }
-
-      this.defaultModal.nativeElement.classList.remove('hidden');
-      this.defaultModal.nativeElement.classList.add('flex');
-      this.loading = false; // Desactivar cargando
-    };
-
-    reader.onerror = () => {
-      console.error('Error al leer el archivo');
-      this.loading = false; // Desactivar cargando en caso de error
-    };
-
-    if (anexo?.documento) {
-      reader.readAsDataURL(anexo.documento);
+  verAcuerdo(anexo: DocumentosRequest): void {
+    if (anexo?.documento instanceof File) {
+      const url = URL.createObjectURL(anexo.documento);
+      this.nombre = anexo.nombre;
+      this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      this.visibleDocumento.set(true);
     } else {
       console.error('Documento inválido');
-      this.loading = false; // Desactivar cargando si no hay documento
     }
   }
 
@@ -334,33 +312,30 @@ export class DetalleRequerimientos implements OnInit {
   eliminarAnexo(index: number) {
     this.listaAnexos.splice(index, 1);
     // Habilita el botón si hay al menos un documento
-    this.botonHabilitado = this.listaAnexos.length > 0;
   }
 
   confirm() {
 
 
     this.confirmationService.confirm({
-      header: '¿Estás seguro?',
-      message: '¿Desea enviar este requerimiento?',
+      key: 'enviarReq',
 
       accept: () => {
-        this.botonHabilitado = false;
         this.permitido = false;
         this.isLoading = true;
         this.onEnviar((exito, mensajeError) => {
 
           if (exito) {
-               
+
             this.messageService.add({
               severity: 'success',
               summary: 'Confirmado',
               detail: '✅ Requerimiento enviado con éxito',
-               life: 7000 
+              life: 7000
             });
             this.isLoading = false;
-            this.getDetalleRequerimiento(this.detalleRequerimiento?.idRequerimiento!);
-         
+            this.getDetalleRequerimiento(this.detalleRequerimiento()?.idRequerimiento!);
+
           } else if (this.listaAnexos.length === 0) {
             this.messageService.add({
               severity: 'warn',
@@ -375,7 +350,6 @@ export class DetalleRequerimientos implements OnInit {
               detail: '❌ No se pudo crear el requerimiento: ' + mensajeError
             });
             this.isLoading = false; // Activa el spinner
-            this.botonHabilitado = true; // Habilita el botón nuevamente
           }
         });
       },
@@ -400,8 +374,9 @@ export class DetalleRequerimientos implements OnInit {
 
     formData.append('documentoOficioRequerimiento', this.oficio.get('documentoOficioRequerimiento')?.value);
 
-    if (this.detalleRequerimiento?.idRequerimiento !== undefined) {
-      this.juicioService.enviarRequerimiento(this.detalleRequerimiento.idRequerimiento, formData).subscribe({
+    const detalle = this.detalleRequerimiento();
+    if (detalle && detalle.idRequerimiento !== undefined) {
+      this.juicioService.enviarRequerimiento(detalle.idRequerimiento, formData).subscribe({
         next: () => {
           this.subido = true;
           callback?.(true);
@@ -414,21 +389,20 @@ export class DetalleRequerimientos implements OnInit {
     }
   }
 
-  // Método que se ejecuta al cambiar el valor del select
-  onTipoDocumentoChange(event: Event): void {
-    const selectElement = event.target as HTMLSelectElement;
-    const selectedValue = Number(selectElement.value);
-
-    // Verifica si el valor seleccionado corresponde al último elemento
-    const ultimoElemento = this.catTipoDocumentos[this.catTipoDocumentos.length - 1];
+  onTipoDocumentoChange(event: any): void {
+    const selectedValue = Number(event.value);
+    const ultimoElemento = this.catTipoDocumentos()[this.catTipoDocumentos().length - 1];
     this.mostrarInputNombre = selectedValue === ultimoElemento.idCatTipoDocumento;
 
+    const nombreControl = this.requerimientoForm.get('nombre');
     if (this.mostrarInputNombre) {
-      // Si es el último elemento, limpia el campo 'nombre' y establece idCatTipoDocumento como null
+      nombreControl?.setValidators([Validators.required, Validators.minLength(10), Validators.maxLength(50)]);
+      nombreControl?.updateValueAndValidity();
       this.requerimientoForm.patchValue({ nombre: '' });
     } else {
-      // Si no es el último elemento, actualiza el campo 'nombre' con el nombre del catálogo seleccionado
-      const tipoSeleccionado = this.catTipoDocumentos.find(
+      nombreControl?.clearValidators();
+      nombreControl?.updateValueAndValidity();
+      const tipoSeleccionado = this.catTipoDocumentos().find(
         (tipo) => tipo.idCatTipoDocumento === selectedValue
       );
       this.requerimientoForm.patchValue({
@@ -441,7 +415,7 @@ export class DetalleRequerimientos implements OnInit {
   cargarCatTipoDocumento() {
     this.juicioService.getCatTipoDocumento().subscribe({
       next: (tipoDocumento) => {
-        this.catTipoDocumentos = tipoDocumento;
+        this.catTipoDocumentos.set(tipoDocumento);
       },
       error: (error) => {
         console.error('Error al cargar el catálogo de materias:', error);
@@ -455,7 +429,7 @@ export class DetalleRequerimientos implements OnInit {
       return documento.nombre; // usar el nombre directamente si es OTRO
     }
 
-    const tipo = this.catTipoDocumentos.find(
+    const tipo = this.catTipoDocumentos().find(
       (tipo: any) => tipo.idCatTipoDocumento === +documento.idCatTipoDocumento
     );
 
@@ -463,33 +437,38 @@ export class DetalleRequerimientos implements OnInit {
   }
 
 
-  onFileChange(event: any): void {
-    const file: File | null = event.target.files[0] || null;
+  onOficioSelect(event: any): void {
+    const files: File[] = event?.files ?? event?.currentFiles ?? [];
+    const file = files?.[0];
+
+    if (!(file instanceof File)) return;
+
+    // marca validación
     const control = this.oficio.get('documentoOficioRequerimiento');
+    control?.markAsTouched();
 
-    if (control) {
-      control.markAsTouched(); // 🔥 fuerza la validación visual
-    }
+    // guarda 1 solo (sin multiple)
+    this.archivoSeleccionado = file;
+    this.nombreArchivo = file.name;
+    control?.setValue(file);
+    control?.updateValueAndValidity();
 
-    if (file) {
-      this.archivoSeleccionado = file;
-      this.nombreArchivo = 'Oficio de aclaración del requerimiento';
-      control?.setValue(file);
-      this.mostrarSeccionArchivo = true;
-      this.archivoUrl = URL.createObjectURL(file);
-    } else {
-      // Si no se selecciona archivo, asegúrate de limpiar el valor
-      control?.setValue(null);
-      this.mostrarSeccionArchivo = false;
-      this.archivoUrl = '';
-    }
+    this.mostrarSeccionArchivo = true;
+
+    if (this.archivoUrl) URL.revokeObjectURL(this.archivoUrl);
+    this.archivoUrl = URL.createObjectURL(file);
   }
 
-  quitarArchivo(fileInput: HTMLInputElement): void {
+
+  quitarArchivo(): void {
     this.archivoSeleccionado = null;
     this.nombreArchivo = '';
-    this.oficio.patchValue({ documentoOficioRequerimiento: null });
-    fileInput.value = '';
+
+    const control = this.oficio.get('documentoOficioRequerimiento');
+    control?.setValue(null);
+    control?.markAsTouched();
+    control?.updateValueAndValidity();
+
     this.mostrarSeccionArchivo = false;
 
     if (this.archivoUrl) {
@@ -509,10 +488,9 @@ export class DetalleRequerimientos implements OnInit {
 
   formatearDocumentos() {
     this.listaAnexos = [];
-    this.botonHabilitado = this.listaAnexos.length > 0;
   }
 
-  verDocumentoOficio(fileInput: HTMLInputElement): void {
+  verDocumentoOficio(): void {
     if (!this.archivoSeleccionado) {
       this.messageService.add({
         severity: 'warn',
@@ -522,39 +500,24 @@ export class DetalleRequerimientos implements OnInit {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = (reader.result as string).split(',')[1];
-      this.documentoBase64 = base64;
-      this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-        `data:application/pdf;base64,${base64}`
-      );
-      this.nombre = this.nombreArchivo || 'Documento de oficio';
-      this.defaultModal.nativeElement.classList.remove('hidden');
-      this.defaultModal.nativeElement.classList.add('flex');
-      this.loading = false;
-    };
-    reader.onerror = () => {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'No se pudo visualizar el archivo.'
-      });
-      this.loading = false;
-    };
+    const url = URL.createObjectURL(this.archivoSeleccionado);
 
-    this.loading = true;
-    reader.readAsDataURL(this.archivoSeleccionado);
+    if (this.archivoUrl) URL.revokeObjectURL(this.archivoUrl);
+    this.archivoUrl = url;
+
+    this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    this.nombre = this.nombreArchivo || 'Documento de oficio';
+    this.visibleDocumento.set(true);
   }
 
   getObtenerNombre(): void {
-    const usuario = this.detalleRequerimiento?.usuarioSecretario;
-    
+    const usuario = this.detalleRequerimiento()?.usuarioSecretario;
+
     this.juicioService.datos(usuario!).subscribe({
       next: (response) => {
-       
+
         this.nombreUsuario = response.data;
-        
+
       },
       error: (err) => {
         console.error('Error al consumir el API:', err);
@@ -606,4 +569,19 @@ export class DetalleRequerimientos implements OnInit {
     return control ? control.invalid && (control.dirty || control.touched) : false;
   }
 
+  cancelarAnexo(): void {
+    this.requerimientoForm.reset();
+    this.nombreArchivo = '';
+    this.archivoSeleccionado = null;
+    this.mostrarInputNombre = false;
+    this.mostrarSeccionArchivo = false;
+    this.visibleAnexo = false;
+    if (this.archivoUrl) {
+      URL.revokeObjectURL(this.archivoUrl);
+      this.archivoUrl = null;
+    }
+  }
+  get botonHabilitado(): boolean {
+    return this.listaAnexos.length > 0;
+  }
 }
