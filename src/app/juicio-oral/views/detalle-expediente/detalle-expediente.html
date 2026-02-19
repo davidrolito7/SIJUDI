@@ -13,7 +13,7 @@
             </div>
             <div class="flex gap-2 flex-wrap">
 
-                @if (!mostrarBoton()) {
+                @if (mostrarBoton()) {
                 <p-button (onClick)="irACrearTramite(expediente()?.idExpediente!, expediente()?.NumExpediente!)"
                     styleClass="btn-secondary" icon="pi pi-file-plus"
                     label="Nuevo trámite"></p-button>

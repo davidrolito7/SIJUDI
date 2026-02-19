@@ -210,7 +210,7 @@ tipoOptions = [
   }
 
   goCrearAudiencia(idExpediente: number, NumExpediente: string) {
-    this.router.navigate(['/audiencias/crear'], { state: { idExpediente, NumExpediente } });
+    this.router.navigate(['/juicioenlinea/audiencias/crear'], { state: { idExpediente, NumExpediente } });
   }
 
   irACrearTramite(idExpediente: number, NumExpediente: string) {
