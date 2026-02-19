@@ -19,7 +19,7 @@
                     <label for="idEstatus" class="block mb-2 text-sm font-medium">Estatus</label>
 
                     <p-select inputId="idEstatus" name="idEstatus" class="w-full" [options]="estadoOptions"
-                        [(ngModel)]="filtro.estado" optionLabel="label" appendTo="body" fluid>
+                        [(ngModel)]="filtro.estado" optionLabel="label" optionValue="value"  appendTo="body" fluid>
                     </p-select>
                 </div>
 
@@ -38,7 +38,7 @@
                         aria-label="Limpiar filtros">
                     </p-button>
 
-                    <p-button type="submit" aria-label="Buscar" styleClass="btn-secondary">
+                    <p-button type="submit" aria-label="Buscar" styleClass="btn-primary">
                         <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
@@ -107,7 +107,7 @@
                 </td>
                 <td>
                     <p-button (click)="detalleRequerimiento(requerimiento.idRequerimiento)" [rounded]="true"
-                        [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
+                         [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
                         pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
                     </p-button>
 

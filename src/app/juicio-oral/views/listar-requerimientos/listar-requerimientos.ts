@@ -89,7 +89,7 @@ export class ListarRequerimientos implements OnInit {
 
     if (this.filtro.estado > 0) requestParams['estado'] = this.filtro.estado;
 
-    this.juicioService.getListarRequerimientosAbogados(requestParams).subscribe({
+    this.juicioService.getListarRequerimientos(requestParams).subscribe({
       next: (response) => {
         this.isLoading = false;
         this.listaRequerimientos.set(response?.data ?? []);
@@ -112,32 +112,34 @@ export class ListarRequerimientos implements OnInit {
       fechaInicio: null,
       fechaFinal: null,
     };
-
+  
     if (Array.isArray(this.filtro.rangeDates) && this.filtro.rangeDates.length === 2) {
       queryParams['fechaInicio'] = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
       queryParams['fechaFinal'] = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
     }
-
+  
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
       queryParamsHandling: 'merge',
     });
-
+  
     this.cargarDatos(1);
   }
-
+  
   limpiarFiltros(): void {
     this.filtro = { estado: 0, rangeDates: '' };
-
+  
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { estado: null, fechaInicio: null, fechaFinal: null, page: 1 },
       queryParamsHandling: 'merge',
     });
-
+  
     this.cargarDatos(1);
   }
+
+
 
   cambiarPagina(page: number): void {
     this.router.navigate([], {

@@ -20,10 +20,12 @@ import { FileUpload, FileUploadClasses, FileUploadModule } from 'primeng/fileupl
 import { base64ToFile } from '../../../shared/functions/utils';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
+import { PantallasService } from '../../services/pantallas.service';
 
 @Component({
   selector: 'app-detalle-requerimientos',
-  imports: [PdfDialog, FieldsetModule, CardModule, DatePipe, CommonModule, ConfirmDialogModule, DialogModule, FormsModule, ReactiveFormsModule, ButtonModule, Breadcrub, TableModule, ConfirmDialog, FileUploadModule, SelectModule, InputTextModule],
+  imports: [PdfDialog, FieldsetModule, CardModule, DatePipe, CommonModule, ConfirmDialogModule, DialogModule, FormsModule, ReactiveFormsModule, ButtonModule, Breadcrub, TableModule, ConfirmDialog, FileUploadModule, SelectModule, InputTextModule, TextareaModule],
   templateUrl: './detalle-requerimientos.html',
   styleUrl: './detalle-requerimientos.css',
   providers: [ConfirmationService, MessageService],
@@ -57,7 +59,10 @@ export class DetalleRequerimientos implements OnInit {
   permitido: boolean = true;
   nombreUsuario: string | null = null;
   isLoading: boolean = false;
-
+  denegarForm!: FormGroup;
+  visibleDenegar: boolean = false;
+  visibleAdmitir: boolean = false;
+  creado = false;
 
   ngOnInit(): void {
 
@@ -81,6 +86,7 @@ export class DetalleRequerimientos implements OnInit {
     private messageService: MessageService,
     private readonly fb: FormBuilder,
     private cdr: ChangeDetectorRef,
+    private pantallasService: PantallasService
 
   ) {
     this.requerimientoForm = this.fb.group({
@@ -92,6 +98,12 @@ export class DetalleRequerimientos implements OnInit {
     this.oficio = this.fb.group({
       documentoOficioRequerimiento: [null, Validators.required],
     });
+
+
+    this.denegarForm = this.fb.group({
+      rechazo: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(255)]]
+    });
+
   }
 
   //  Metodo para listar detalle del requerimiento
@@ -184,6 +196,18 @@ export class DetalleRequerimientos implements OnInit {
       valido = true
     }
     return valido;
+  }
+
+  mostrarUnaVezEnviado(): boolean {
+    let valido = false;
+    if (this.catalogo(this.detalleRequerimiento()) == 3) {
+      valido = true
+    }
+    return valido; // Retorna true si la fecha límite ya pasó y hay un documento nuevo    
+  }
+
+  mostrarBoton(): boolean {
+    return this.pantallasService.tienePermiso('requerimiento/crear');
   }
 
   rechazado(): boolean {
@@ -584,4 +608,147 @@ export class DetalleRequerimientos implements OnInit {
   get botonHabilitado(): boolean {
     return this.listaAnexos.length > 0;
   }
+
+
+  subirDenegar() {
+    this.visibleDenegar = true; // Muestra el diálogo para denegar
+    this.visibleAdmitir = false; // Asegura que el diálogo de admitir esté oculto
+  }
+
+  admitir() {
+    // Asegura que el otro no se active
+    //  this.rejectDialog?.hide?.();
+    this.visibleAdmitir = false;
+    this.confirmationService.confirm({
+      key: 'accept',
+      header: '¿Estás seguro?',
+      message: '¿Desea enviar este requerimiento?',
+      accept: () => {
+        // this.botonHabilitado = true;
+        this.isLoading = true;
+        this.aceptarRequerimiento((exito, mensajeError) => {
+          if (exito) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Confirmado',
+              detail: '✅ Requerimiento admitido con éxito'
+            });
+            this.isLoading = false;
+            this.recargarDatos();
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: '❌ No se admitir el requerimiento: ' + mensajeError
+            });
+            this.isLoading = false;
+            //  this.botonHabilitado = false;
+          }
+        });
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelado',
+          detail: 'Acción cancelada'
+        });
+      }
+    });
+  }
+
+  aceptarRequerimiento(callback?: (exito: boolean, mensaje?: string) => void) {
+    const detalle = this.detalleRequerimiento();
+
+    if (detalle && detalle.idRequerimiento !== undefined) {
+      this.juicioService.admitirRequerimiento(detalle.idRequerimiento).subscribe({
+        next: () => {
+          this.creado = true;
+          callback?.(true);
+        },
+        error: (error) => {
+          console.error('Error al enviar requerimiento:', error);
+          callback?.(false, error?.error?.message || 'Error desconocido');
+        }
+      });
+    }
+  }
+
+  denegar() {
+    this.visibleDenegar = false;
+    this.confirmationService.confirm({
+      key: 'reject',
+      accept: () => {
+        this.isLoading = true;
+        // this.botonHabilitado = true;
+        this.denegarRequerimiento((exito, mensajeError) => {
+          if (exito) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Confirmado',
+              detail: '✅ Requerimiento denegado con éxito'
+            });
+            this.isLoading = false;
+            this.recargarDatos();
+            this.visibleDenegar = false;
+
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: '❌ No se denegar el requerimiento: ' + mensajeError
+            });
+            this.isLoading = false;
+            //  this.botonHabilitado = false;
+          }
+        });
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelado',
+          detail: 'Acción cancelada'
+        });
+        this.denegarForm.reset();
+        // this.denegarForm = new FormGroup({
+        //   descripcionRechazo: new FormControl<string>('', Validators.required),
+        // });
+        // this.denegarForm.get('descripcionRechazo')?.setValue('');
+      }
+
+    });
+  }
+  onCancelarDenegar(): void {
+    this.denegarForm.reset();
+    this.visibleDenegar = false;
+  }
+
+  denegarRequerimiento(callback?: (exito: boolean, mensaje?: string) => void) {
+    const formData = new FormData();
+    Object.keys(this.denegarForm.controls).forEach((key) => {
+      const control = this.denegarForm.get(key);
+      if (control && control.value !== null) {
+        formData.append(key, control.value as any);
+      }
+    });
+    console.log(formData)
+    const detalle = this.detalleRequerimiento();
+    if (detalle && detalle.idRequerimiento !== undefined) {
+      this.juicioService.denegarRequerimiento(detalle.idRequerimiento, formData).subscribe({
+        next: () => {
+          this.creado = true;
+          callback?.(true);
+        },
+        error: (error) => {
+          console.error('Error al enviar requerimiento:', error);
+          callback?.(false, error?.error?.message || 'Error desconocido');
+        }
+      });
+    }
+  }
+
+  onCerrarDialogo() {
+    this.denegarForm.reset(); // o setValue('')
+  }
+
+
 }

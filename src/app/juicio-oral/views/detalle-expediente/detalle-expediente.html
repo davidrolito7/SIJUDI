@@ -19,13 +19,13 @@
                     label="Nuevo trámite"></p-button>
                 }
               
-                @if (!mostrarBoton()) {
+                @if (mostrarBoton()) {
                 <p-button (onClick)="irACrearRequerimiento(expediente()?.idExpediente!, expediente()?.NumExpediente!)"
                     styleClass="bg-primary" icon="pi pi-pencil"
                     label="Requerimiento"></p-button>
                 }
 
-                @if (!mostrarBoton()) {
+                @if (mostrarBoton()) {
                 <p-button (onClick)="goCrearAudiencia(expediente()?.idExpediente!, expediente()?.NumExpediente!)"
                     styleClass="btn-tertiary" icon="pi pi-calendar"
                     label="Programar Audiencia"></p-button>
