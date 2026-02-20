@@ -1,0 +1,115 @@
+<p>busqueda-apelaciones works!</p>
+
+<p-accordion>
+    <p-accordion-panel value="0">
+
+        <p-accordion-header>
+            OPCIONES DE BÚSQUEDA
+        </p-accordion-header>
+
+        <p-accordion-content>
+            <p-fieldset legend="Datos de Apelación">
+
+                <div class="field col-12 md:col-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de Oficialia
+                    <input pInputText [(ngModel)]="filtros.folioOficial" />
+                    </label>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala 
+                    <p-select [options]="salas" [(ngModel)]="selected"></p-select>
+                    </label>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">  Nomenclatura 
+                    <p-select [options]="nomenclaturas" [(ngModel)]="selected"></p-select>
+                    </label>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Folio Apelación 
+                    <input pInputText [(ngModel)]="filtros.folioApelacion" />
+                    </label>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apelación 
+                    <p-select [options]="apelaciones" [(ngModel)]="selected"></p-select>
+                </label>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Exp/Causa 
+                    <input pInputText [(ngModel)]="filtros.expediente" />
+                    </label>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre Parte 
+                    <input pInputText [(ngModel)]="filtros.nombreParte" />
+                    </label>
+                </div>
+
+
+
+            </p-fieldset>
+
+            <p-fieldset legend="Fecha de Recepción" class="mt-3">
+
+                <div class="col-12 md:col-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Inicial 
+                    <p-datepicker [(ngModel)]="date2" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+                </label>
+                </div>
+
+
+                <div class="col-12 md:col-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Final 
+                    <p-datepicker [(ngModel)]="date2" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+                    </label>
+                </div>
+
+            </p-fieldset>
+
+            <div class="flex justify-content-end gap-2 mt-3">
+               <p-button label="Limpiar" label="Limpiar" severity="secondary"  />
+                <p-button type="submit" label="Confirmar" />
+          </div>
+
+        </p-accordion-content>
+
+    </p-accordion-panel>
+
+</p-accordion>
+
+
+
+<!-- TABLA -->
+<div class="col-12 md:col-9">
+    <p-table [value]="resultados" [tableStyle]="{'min-width':'100%'}">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Folio de Oficialia.</th>
+                <th>Folio de Apelación</th>
+                <th>Sala</th>
+                <th>Apelación</th>
+                <th>Tipo de Apelación</th>
+                <th>Expediente Causa</th>
+                <th>Folio</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row let-i="rowIndex">
+            <tr>
+                <td>{{i+1}}</td>
+                <td>{{row.tramite}}</td>
+                <td>{{row.folio}}</td>
+                <td>{{row.etapa}}</td>
+                <td>{{row.alcance}}</td>
+                <td>{{row.alcance}}</td>
+                <td>{{row.alcance}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
