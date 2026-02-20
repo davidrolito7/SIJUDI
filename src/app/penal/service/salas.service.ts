@@ -2,7 +2,7 @@ import { map, Observable, tap } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 //import { environment } from "src/environments/environment";
-import { ApiResponse,busquedaExpediente,DTABusqueda } from "../interface/salas.inerface";
+import { ApiResponse,busquedaExpediente,DTABusqueda } from "../interface/salas.interface";
 import { TokenService } from "../../core/auth/service/token.service";
 import { checkToken } from "../../core/auth/interceptor/token.interceptor";
 
