@@ -13,7 +13,7 @@ import { checkToken } from "../../core/auth/interceptor/token.interceptor";
 
 export class SalasService {
 
-    private BusquedaApelaciones = 'https://localhost:5221/api/consultaSalas/ObtieneBusquedaApelaciones'; // Reemplaza con tu URL real
+    private BusquedaApelaciones = 'https://localhost:7240/api/consultaSalas/ObtieneBusquedaApelaciones'; // Reemplaza con tu URL real
 
     constructor(private http: HttpClient) { } 
     

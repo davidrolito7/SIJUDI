@@ -51,11 +51,11 @@ export const routes: Routes = [
             import('./amparos/amparos.routes')
               .then(m => m.AMPAROS_ROUTES)
         },
-        
-           {path: 'penal', loadChildren: () =>
+        {path: 'penal', loadChildren: () =>
           import('./penal/penal.routes')
             .then(m => m.PENAL_ROUTES)
-           }
+        },
+
     ],
   },
 
