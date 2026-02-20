@@ -12,10 +12,11 @@ import { CommonModule, formatDate } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TagModule } from 'primeng/tag';
 import { JuicioService } from '../../services/juicioenlinea.service';
+import { Spinner } from "../../../shared/components/spinner/spinner";
 
 @Component({
   selector: 'app-listar-requerimientos',
-  imports: [CommonModule, Breadcrub, RadioButtonModule, TableModule, FormsModule, SelectModule, DatePicker, Button, TagModule],
+  imports: [CommonModule, Breadcrub, RadioButtonModule, TableModule, FormsModule, SelectModule, DatePicker, Button, TagModule, Spinner],
   templateUrl: './listar-requerimientos.html',
   styleUrl: './listar-requerimientos.css',
   providers: [MessageService]

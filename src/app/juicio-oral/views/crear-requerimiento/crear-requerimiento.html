@@ -1,0 +1,109 @@
+<p-toast></p-toast>
+
+<div class="px-4 mb-4">
+    <div class="flex items-center justify-between pt-4">
+        <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 tracking-tight">
+            Crear requerimiento
+        </h2>
+        <span class="text-surface-500 dark:text-surface-400 font-medium text-lg">
+            Expediente: {{ NumExpediente }}
+        </span>
+    </div>
+</div>
+
+<app-spinner [isLoading]="isLoading"></app-spinner>
+
+<form [formGroup]="crearRequerimientoForm">
+
+    <!-- Generales -->
+    <div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
+        <div class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Generales</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <!-- Abogado -->
+            <div>
+                <label class="block mb-2 text-sm font-medium">Abogado</label>
+                <p-select formControlName="idAbogado" [options]="Abogados" optionValue="idAbogado" optionLabel="nombre"
+                    placeholder="Seleccione al abogado" appendTo="body" fluid />
+                @if(shouldShowError('idAbogado')) {
+                <div class="text-red-500 text-sm mt-1">{{ getError('idAbogado') }}</div>
+                }
+            </div>
+
+            <!-- Fecha límite -->
+            <div>
+                <label class="block mb-2 text-sm font-medium">Fecha límite</label>
+                <p-datepicker formControlName="fechaLimite" appendTo="body" fluid placeholder="Seleccione una fecha"
+                    dateFormat="dd/mm/yy" [showIcon]="true" [minDate]="hoy" />
+                @if(shouldShowError('fechaLimite')) {
+                <div class="text-red-500 text-sm mt-1">{{ getError('fechaLimite') }}</div>
+                }
+            </div>
+
+            <!-- Descripción -->
+            <div class="sm:col-span-2">
+                <label class="block mb-2 text-sm font-medium">Descripción del requerimiento</label>
+                <textarea pTextarea formControlName="descripcion" rows="3" fluid
+                    placeholder="Resume el requerimiento..." class="w-full uppercase"></textarea>
+                @if(shouldShowError('descripcion')) {
+                <div class="text-red-500 text-sm mt-1">{{ getError('descripcion') }}</div>
+                }
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Acuerdo / Documento -->
+    <div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
+        <div class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Acuerdo</div>
+
+        @if(!nombreArchivo) {
+        <label class="block mb-2 text-sm font-medium">Seleccionar documento</label>
+        <p-fileupload mode="basic" name="documento" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" [multiple]="false"
+            [auto]="true" [customUpload]="true" chooseIcon="pi pi-upload" chooseLabel="Agregar"
+            (onSelect)="onFileChange($event)">
+        </p-fileupload>
+        <p class="mt-2 text-sm text-surface-500 dark:text-surface-400">
+            Subir en formato PDF (solo 1 archivo)
+        </p>
+        }
+
+        @if(shouldShowError('documentoAcuerdo')) {
+        <div class="text-red-500 text-sm mt-2">{{ getError('documentoAcuerdo') }}</div>
+        }
+
+        @if(nombreArchivo) {
+        <div class="mt-2 flex flex-col gap-3">
+            <span class="text-sm text-surface-800 dark:text-surface-200">
+                Archivo seleccionado: <strong>{{ nombreArchivo }}</strong>
+            </span>
+            <div class="flex flex-wrap gap-3">
+                <p-button type="button" icon="pi pi-times" severity="danger" [outlined]="true" label="Quitar archivo"
+                    (onClick)="quitarArchivo()">
+                </p-button>
+                <p-button type="button" icon="pi pi-eye" severity="secondary" [outlined]="true" label="Ver documento"
+                    (onClick)="verDocumentoOficio()">
+                </p-button>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Botón enviar -->
+    <div class="flex justify-center mb-4">
+        <p-button type="button" (onClick)="confirm()" [disabled]="crearRequerimientoForm.invalid" icon="pi pi-send"
+            label="Crear requerimiento" styleClass="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed">
+        </p-button>
+    </div>
+
+</form>
+
+@if (documentoUrl) {
+<app-pdf-dialog [header]="nombreArchivo" [url]="documentoUrl" [visible]="mostrarModal()"
+    (visibleChange)="mostrarModal.set($event)">
+</app-pdf-dialog>
+}
+<!--* DIALOGO DE CONFIRMACION ENVIAR REQUERIMIENTOS -->
+<app-confirm-dialog key="crearRequerimiento" title="Confirmación" message="Confirme la acción para crear el requerimiento"
+    icon="pi pi-question-circle" circleClass="bg-primary" acceptLabel="Confirmar"
+    acceptStyleClass="bg-primary" rejectLabel="Cancelar">
+</app-confirm-dialog>

@@ -60,6 +60,7 @@ export class CrearAudiencia {
   formEnviado: boolean = false;
 
   tipoBusqueda: string | null = null;
+  hoy: Date = new Date();
 
   ngOnInit(): void {
     // Inicializa el formulario primero

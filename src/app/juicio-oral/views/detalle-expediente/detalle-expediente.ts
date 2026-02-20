@@ -195,18 +195,18 @@ tipoOptions = [
     if (item.tipo === 'Pre-registro') {
       this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idInicio: item.id } });
     } else if (item.tipo === 'Requerimiento') {
-      this.router.navigate(['/requerimiento/asignaciones/detalle'], { state: { idRequerimiento: item.id } });
+      this.router.navigate(['/juicioenlinea/requerimientos/detalle'], { state: { idRequerimiento: item.id } });
     } else if (item.tipo === 'tramite') {
       const idTramite = item.datosOriginales.idTramite;
       this.router.navigate(['/tramites/ver/detalle'], { state: { idTramite } });
     } else if (item.tipo === 'Audiencia') {
       const idAudiencia = item.datosOriginales.idAudiencia;
-      this.router.navigate(['/audiencias/detalle'], { state: { idAudiencia } });
+      this.router.navigate(['/juicioenlinea/audiencias/detalle'], { state: { idAudiencia } });
     }
   }
 
   irACrearRequerimiento(idExpediente: number, NumExpediente: string) {
-    this.router.navigate(['/requerimiento/crear'], { state: { idExpediente, NumExpediente } });
+    this.router.navigate(['/juicioenlinea/requerimientos/crear'], { state: { idExpediente, NumExpediente } });
   }
 
   goCrearAudiencia(idExpediente: number, NumExpediente: string) {
@@ -214,7 +214,7 @@ tipoOptions = [
   }
 
   irACrearTramite(idExpediente: number, NumExpediente: string) {
-    this.router.navigate(['/tramites/crear'], { state: { idExpediente, NumExpediente } });
+    this.router.navigate(['/juicioenlinea/tramites/crear'], { state: { idExpediente, NumExpediente } });
   }
 
   limpiarEspaciosFolio(valor: string) {

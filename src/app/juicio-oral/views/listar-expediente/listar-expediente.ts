@@ -51,6 +51,8 @@ export class ListarExpediente {
   ) { }
 
   ngOnInit(): void {
+    this.isLoading = true;
+
     this.route.queryParams.subscribe(params => {
       const currentPage = params['page'] ? +params['page'] : 1;
       this.filtro.expediente = params['expediente'] || '';
@@ -65,12 +67,12 @@ export class ListarExpediente {
       }
 
       if (!params['page'] || params['page'] !== currentPage.toString()) {
-          this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: { ...params, page: currentPage },
-            queryParamsHandling: 'merge',
-            replaceUrl: true
-          });
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { ...params, page: currentPage },
+          queryParamsHandling: 'merge',
+          replaceUrl: true
+        });
         return;
       }
 
@@ -82,12 +84,11 @@ export class ListarExpediente {
         ...(params['fechaFinal'] && { fechaFinal: params['fechaFinal'] })
       };
 
-      this.isLoading = true;
       this.juicioService.getListadoExpedientes(requestParams).subscribe({
         next: (response) => {
-            this.expedientes.set(response.data);
-            this.pagination = response.pagination;
-            this.isLoading = false;
+          this.expedientes.set(response.data);
+          this.pagination = response.pagination;
+          this.isLoading = false;
         },
         error: (error) => {
           this.isLoading = false;
