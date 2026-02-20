@@ -235,25 +235,27 @@ export interface ListarExpedientesResponse {
     idCatJuzgado: string;
     fechaResponse: string;
     idPreregistro: string;
-    folioPreregistro: string;
-    idCatMateriaVia: string;
-    fechaCreada: string;
-    created_at_pre: string;
-    materiaDescripcion: string;
-    viaDescripcion: string;
-    juzgado: juzgados;
-    idAbogado: number;
-    nombre: string;
-    pre_registro: DetalleInicioResponse[];
-    ultimoHistorial: historialExpediente;
+    idSecretario: string;
+    numSecretaria: string;
+    tramites: DetalleTramites[];
+    pre_registro: ListadoIniciosCreados;
+    juzgado: Juzgado;
+    ultimo_historial: HistorialExpediente;
 
 }
 
-export interface historialExpediente {
+export interface HistorialExpediente {
     idHistorialExpediente: number;
-    estado: string;
+    idEstadoExpediente: string;
+    descripcion: string;
+    created_at: Date;
+    estado: Estado;
 }
 
+export interface Estado { //* OK
+    idEstadoExpediente: number;
+    descripcion: string;
+}
 //########################################################################
 
 //Requerimiento
@@ -355,7 +357,7 @@ export interface DetalleExpedienteResponse { //* OK
     idPreregistro: string;
     idSecretario: string;
     numSecretaria: string;
-    juzgado: juzgados;
+    juzgado: Juzgado;
     tramites: DetalleTramites[];
     pre_registro: DetalleInicioResponse;
     requerimientos: DetalleRequerimiento;
@@ -652,7 +654,7 @@ export interface TipoTramite {
     created_at: Date
 }
 
-export interface juzgados {
+export interface Juzgado {
     IdCatJuzgado: number
     nombre: string
     lugar: string
@@ -665,7 +667,7 @@ export interface Remitente {
     dependencia: string;
     remitente: string;
     cargo: string;
-    juzgados: juzgados[];
+    juzgados: Juzgado[];
 }
 
 //para paginar

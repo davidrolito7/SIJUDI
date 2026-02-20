@@ -1,5 +1,4 @@
-<app-spinner [isLoading]="isLoading"></app-spinner> 
-<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
+<!-- <app-spinner [isLoading]="isLoading"></app-spinner>  -->
 <div class="sticky top-0 z-50  flex flex-col gap-4 bg-surface-0 dark:bg-surface-900">
 
     <!-- HEADER -->
@@ -8,15 +7,30 @@
     <!-- BUSQUEDA -->
     <div class=" border border-surface rounded-2xl p-4">
 
-        <div class="flex items-start flex-col md:flex-row justify-between">
+        <div class="flex items-start flex-col md:flex-row justify-between mb-2">
             <div class="font-medium text-2xl ">
-                Registro de demandas electrónicas 1° instancia
+                Detalle del expediente
             </div>
-            <div class="flex items-center">
-                <p-button (click)="onRedirigirCrear()">
-                    <i pButtonIcon class="pi pi-file-plus"></i>
-                    <span pButtonLabel>Nuevo</span>
-                </p-button>
+            <div class="flex gap-2 flex-wrap">
+
+                @if (!mostrarBoton()) {
+                <p-button (onClick)="irACrearTramite(expediente()?.idExpediente!, expediente()?.NumExpediente!)"
+                    styleClass="btn-secondary" icon="pi pi-file-plus"
+                    label="Nuevo trámite"></p-button>
+                }
+              
+                @if (mostrarBoton()) {
+                <p-button (onClick)="irACrearRequerimiento(expediente()?.idExpediente!, expediente()?.NumExpediente!)"
+                    styleClass="bg-primary" icon="pi pi-pencil"
+                    label="Requerimiento"></p-button>
+                }
+
+                @if (mostrarBoton()) {
+                <p-button (onClick)="goCrearAudiencia(expediente()?.idExpediente!, expediente()?.NumExpediente!)"
+                    styleClass="btn-tertiary" icon="pi pi-calendar"
+                    label="Programar Audiencia"></p-button>
+                }
+
             </div>
         </div>
         <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de exhortos enviados">
@@ -33,8 +47,8 @@
                 <div class="col-span-12 md:col-span-6 lg:col-span-2 w-full">
                     <label for="estado" class="block mb-2 text-sm font-medium">Estatus</label>
 
-                    <p-select inputId="estado" name="estado" class="w-full" [options]="estadoOptions"
-                        [(ngModel)]="filtro.estado" optionLabel="label" optionValue="value" appendTo="body" fluid
+                    <p-select inputId="estado" name="estado" class="w-full" [options]="tipoOptions" [(ngModel)]="filtro.tipo"
+                        optionLabel="label" optionValue="value" appendTo="body" fluid
                         [attr.aria-label]="'Estatus'"></p-select>
                 </div>
 
@@ -66,7 +80,7 @@
 <div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
 
     <div class="card">
-        <p-table #dtInicio [value]="inicios()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+        <p-table #dtInicio [value]="tablaDatos()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="[
     'folio',
     'cat_via_materia.cat_materia.Descripcion',
@@ -87,40 +101,37 @@
 
             <ng-template #header class="bg-red-500">
                 <tr>
-                    <th scope="col">Folio</th>
-                    <th scope="col">Materia</th>
-                    <th scope="col">Vía</th>
-                    <th scope="col">Fecha Creado</th>
+                    <th scope="col">Folio Trámite</th>
+                    <th scope="col">Trámite</th>
+                    <th scope="col">Fecha del trámite</th>
                     <th scope="col">Estatus</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </ng-template>
 
-            <ng-template #body let-inicio>
+            <ng-template #body let-tablaDato>
                 <tr>
                     <td>
-                        # <span>{{ inicio.folio }}</span>
+                        <span># {{ tablaDato.folio }}</span>
                     </td>
 
                     <td>
-                        {{ inicio.cat_via_materia?.cat_materia?.Descripcion }}
+                        {{ tablaDato.nombre }}
                     </td>
 
                     <td>
-                        {{ inicio.cat_via_materia?.cat_via?.descripcion }}
+                        {{ tablaDato.fecha | date : "dd/MM/yyyy HH:mm" }} h
                     </td>
 
                     <td>
-                        {{ inicio.fechaHoraRecepcion | date: 'dd/MM/yyyy HH:mm' }} h
+                        <p-tag [value]="(getEstadoDescripcion(tablaDato) | uppercase) ?? ''"
+                            [severity]="getEstadoTag(tablaDato).severity" [icon]="getEstadoTag(tablaDato).icon">
+                        </p-tag>
                     </td>
 
-                    <td>
-                        <p-tag [value]="(getEstadoDescripcion(inicio) | uppercase) ?? ''"
-                            [severity]="getEstadoTag(inicio).severity" [icon]="getEstadoTag(inicio).icon" />
-                    </td>
 
                     <td>
-                        <p-button (click)="detalle(inicio.idPreregistro)" [rounded]="true" [text]="true" [raised]="true"
+                        <p-button (click)="verDetalle(tablaDato)" [rounded]="true" [text]="true" [raised]="true"
                             severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
                             tooltipPosition="top" title="Detalle">
                         </p-button>
@@ -138,4 +149,3 @@
 
     </div>
 </div>
-<p-toast></p-toast>

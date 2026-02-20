@@ -96,7 +96,7 @@
                         }
                         }
                     </p>
-                    @if (detalleAudiencia?.ultimo_estado?.idCatalogoEstadoAudiencia !== 4) {
+                    @if (detalleAudiencia.ultimo_estado.idCatalogoEstadoAudiencia !== 4) {
                     <p class="text-gray-700 dark:text-gray-300"><b>Número de la reunión: </b>
                         {{detalleAudiencia.meetingNumber}}
                     <p class="text-gray-700 dark:text-gray-300" *ngIf="detalleAudiencia.password">

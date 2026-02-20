@@ -1,165 +1,126 @@
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
-
+<div class="sticky top-0 z-50 flex flex-col gap-4 bg-surface-0 dark:bg-surface-900">
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
 
-  <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
-
-        <div class="flex items-start flex-col md:flex-row justify-between">
-            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+    <!-- BUSQUEDA -->
+    <div class="border border-surface rounded-2xl p-4">
+        <div class="flex items-start flex-col md:flex-row justify-between mb-2">
+            <div class="font-medium text-2xl">
                 Búsqueda
-            </label>
-
+            </div>
 
         </div>
 
-        <div class="flex flex-wrap gap-4">
-            <div class="mx-4 py-4 flex flex-wrap items-center gap-4">
-            <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de requerimientos">
-                  <div class="grid grid-cols-12 gap-4 w-full items-end">
+        <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de requerimientos">
+            <div class="grid grid-cols-12 gap-4 w-full items-end">
+
                 <!-- Estatus -->
-                <div class="col-span-6 lg:col-span-3 w-full">
-                    <label class="block mb-2 text-sm font-medium">Estatus</label>
-                    <p-select inputId="idEstatus" class="w-full" name="idEstatus"
-                        [options]="[...listadoEstatus]"
-                        [(ngModel)]="filtro.estado" optionLabel="descripcion" appendTo="body" fluid></p-select>
+                <div class="col-span-12 md:col-span-6 lg:col-span-3 w-full">
+                    <label for="idEstatus" class="block mb-2 text-sm font-medium">Estatus</label>
+
+                    <p-select inputId="idEstatus" name="idEstatus" class="w-full" [options]="estadoOptions"
+                        [(ngModel)]="filtro.estado" optionLabel="label" optionValue="value"  appendTo="body" fluid>
+                    </p-select>
                 </div>
 
-
                 <!-- Fecha -->
-                <div class="col-span-12 md:col-span-8 lg:col-span-3 ">
+                <div class="col-span-12 md:col-span-6 lg:col-span-3">
                     <label for="rangeDates" class="block mb-2 text-sm font-medium">Fecha</label>
 
                     <p-datepicker inputId="rangeDates" name="rangeDates" fluid placeholder="Selecciona rango"
-                        [(ngModel)]="filtro.rangeDates" selectionMode="range" [readonlyInput]="true"></p-datepicker>
+                        [(ngModel)]="filtro.rangeDates" selectionMode="range" [readonlyInput]="true">
+                    </p-datepicker>
                 </div>
-                <!-- Botones Filtrar y Buscar -->
-                <div class="col-span-6 lg:col-span-4 flex gap-4 items-end">
-                    <p-button [outlined]="true" icon="pi pi-filter-slash" (click)="clearFiltros()"></p-button>
-                    <p-button  type="submit" >
-                        <i pButtonIcon class="pi pi-search"></i>
+
+                <!-- Botones -->
+                <div class="col-span-12 md:col-span-6 lg:col-span-2 flex gap-4">
+                    <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
+                        aria-label="Limpiar filtros">
+                    </p-button>
+
+                    <p-button type="submit" aria-label="Buscar" styleClass="btn-primary">
+                        <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
                 </div>
 
-
             </div>
-</form>
-          
-                    </div>
-        </div>
-
-
-
+        </form>
     </div>
+</div>
 
 
-    <!-- CONTENIDO  -->
+<div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
+    <p-table [rows]="10" [value]="listaRequerimientos()" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+        [globalFilterFields]="['NumExpediente','fechaLimite','Descripcion','tiempoRestante']">
+        <ng-template #caption>
+            <div class="flex">
+                <div class="font-medium text-xl mb-4">Resultado</div>
 
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
-    <div class="flex items-start flex-col md:justify-between md:flex-row">
-        <div>
-            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
-            <!-- <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-users text-base! leading-normal!"></i>
-                    <span>332 Registros</sp an>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-globe text-base! leading-normal!"></i>
-                    <span>9.402 Sesiones</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-clock text-base! leading-normal!"></i>
-                    <span>2.32m Promedio</span>
-                </div>
-            </div> -->
-
-        
-        </div>
-    </div>
-
-    <div class="card">
-        <p-table  [rows]="10" [value]="requerimientosTotales" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
-            [globalFilterFields]="['NumExpediente','fechaLimite','Descripcion','tiempoRestante']">
-            <ng-template #caption>
-                <div class="flex">
-                    <!-- <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+                <!-- <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
                     <p-iconfield iconPosition="left" class="ml-auto">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
                         <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
                             placeholder="Buscar una palabra" />
                     </p-iconfield> -->
-                </div>
-            </ng-template>
+            </div>
+        </ng-template>
 
-            <ng-template #header>
-                <tr>
-                    <th>
-                        <div class="flex items-center justify-between">Expediente</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Juzgado</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Fecha Limite</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Tiempo restante</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Estado</div>
-                    </th>
-                    
-                    <th style="min-width: 9rem">
-                        <div class="flex items-center justify-between">Acciones</div>
-                    </th>
-                </tr>
-            </ng-template>
+        <ng-template #header>
+            <tr>
+                <th>
+                    <div class="flex items-center justify-between">Expediente</div>
+                </th>
+                <th>
+                    <div class="flex items-center justify-between">Juzgado</div>
+                </th>
+                <th>
+                    <div class="flex items-center justify-between">Fecha Limite</div>
+                </th>
+                <th>
+                    <div class="flex items-center justify-between">Tiempo restante</div>
+                </th>
+                <th>
+                    <div class="flex items-center justify-between">Estado</div>
+                </th>
 
-            <ng-template #body let-requerimiento>
-                <tr>
-                    <td>{{ requerimiento.expediente.NumExpediente }}</td>
-                    <td>{{ requerimiento.expediente.juzgado.Descripcion}}</td>
-                    
-                    <td>{{ requerimiento.fechaLimite | date:'dd/MM/yyyy HH:mm'  }}</td>
-                   
-                    <td>{{ requerimiento.tiempoRestante }}</td>
-                    <td style="font-size: small;">
-                        <p-tag [icon]="getTagConfig(requerimiento).icon"
-                            [severity]="getTagConfig(requerimiento).severity"   >
-                            <div class="flex items-center gap-2 px-1">
-                             <span class="text-base">{{getTagConfig(requerimiento).nombre}} </span>
-                            </div>
-                            </p-tag>
+                <th style="min-width: 9rem">
+                    <div class="flex items-center justify-between">Acciones</div>
+                </th>
+            </tr>
+        </ng-template>
 
-                            
-                    </td>
-                    <td>
-                         <p-button (click)="detalleRequerimiento(requerimiento.idRequerimiento)" [rounded]="true"
-                        [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
+        <ng-template #body let-requerimiento>
+            <tr>
+                <td>{{ requerimiento.expediente.NumExpediente }}</td>
+                <td>{{ requerimiento.expediente.juzgado.Descripcion}}</td>
+
+                <td>{{ requerimiento.fechaLimite | date:'dd/MM/yyyy HH:mm' }}</td>
+
+                <td>{{ requerimiento.tiempoRestante }}</td>
+                <td style="font-size: small;">
+                    <p-tag [value]="(getEstadoDescripcion(requerimiento) | uppercase) ?? ''"
+                        [severity]="getEstadoTag(requerimiento).severity" [icon]="getEstadoTag(requerimiento).icon">
+                    </p-tag>
+
+
+                </td>
+                <td>
+                    <p-button (click)="detalleRequerimiento(requerimiento.idRequerimiento)" [rounded]="true"
+                         [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
                         pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
-                        </p-button>
-                      
-                    </td>
-                </tr>
-            </ng-template>
+                    </p-button>
 
-            <ng-template #emptymessage>
-                <tr>
-                    <td colspan="8">Sin requerimientos.</td>
-                </tr>
-            </ng-template>
-        </p-table>
+                </td>
+            </tr>
+        </ng-template>
 
-        
-    </div>
-</div>
-
-
-
-
-
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="8">Sin requerimientos.</td>
+            </tr>
+        </ng-template>
+    </p-table>
 
 
 </div>

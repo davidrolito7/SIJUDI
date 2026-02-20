@@ -24,6 +24,7 @@ import { AuthService } from '../../service/auth.service';
 import { areasResponse, responseCatalogoPerfiles } from '../../interface/login.interfaces';
 import { GenericResponse } from '../../../../shared/interface/shared.interface';
 import { Spinner } from '../../../../shared/components/spinner/spinner';
+import { PantallasService } from '../../../../juicio-oral/services/pantallas.service';
 
 const SISTEMA_ID = 4169;
 
@@ -57,6 +58,7 @@ export class Perfil {
   private readonly messageService = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly menuStore = inject(UserMenuStore);
+  private readonly pantallasService = inject(PantallasService); //!quitar esto (DAVID RODRIGUEZ)
 
   readonly isLoading = signal(false);
 
@@ -160,6 +162,8 @@ export class Perfil {
 
     this.tokenService.setPerfilCompleted(true);
 
+    // === CARGA DE PANTALLAS DEL USUARIO ===
+    this.cargarPantallasUsuario();
     // Fuerza recarga de módulos/pantallas con el perfil nuevo
     this.menuStore.refresh()
       .pipe(
@@ -331,5 +335,20 @@ export class Perfil {
     this.tokenService.logout();
 
     this.router.navigate(['/login'], { replaceUrl: true });
+  }
+
+  //! QUITAR ESTO POSTERIOMENTE (DAVID RODRIGUEZ)
+  private cargarPantallasUsuario(): void {
+    const cache = this.pantallasService.getPantallas();
+    if (cache) {
+      return;
+    }
+    this.pantallasService.cargarPantallas().subscribe({
+      next: (pantallas) => {
+      },
+      error: (error) => {
+        console.error('Error al cargar las vistas:', error);
+      }
+    });
   }
 }

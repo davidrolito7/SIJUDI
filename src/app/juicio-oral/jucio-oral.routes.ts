@@ -7,6 +7,7 @@ import { ListarRequerimientos } from './views/listar-requerimientos/listar-reque
 import { CrearDemanda } from './views/crear-demanda/crear-demanda';
 import { DetalleRequerimientos } from './views/detalle-requerimientos/detalle-requerimientos';
 import { ListarExpediente } from './views/listar-expediente/listar-expediente';
+import { DetalleExpediente } from './views/detalle-expediente/detalle-expediente';
 
 export const JUICIO_ORAL_ROUTES: Routes = [
 
@@ -21,7 +22,8 @@ export const JUICIO_ORAL_ROUTES: Routes = [
     {
         path: 'expedientes',
         children: [
-            { path: 'listar', component: ListarExpediente }
+            { path: 'listar', component: ListarExpediente },
+            { path: 'detalle', component: DetalleExpediente },
         ]
     },
     {
@@ -29,7 +31,6 @@ export const JUICIO_ORAL_ROUTES: Routes = [
         children: [
             { path: 'listar', component: ListarAudiencias },
             { path: 'detalle', component: DetalleAudiencia },
-
         ]
     },
     {

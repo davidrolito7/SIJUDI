@@ -42,7 +42,8 @@ export class DetalleDemanda implements OnInit {
       this.idInicio = state.idInicio;
       this.getDetalleInicio(this.idInicio);
     } else {
-      this.router.navigate(['/layout/inicio']);
+      console.warn('No se proporcionó idInicio. Redirigiendo a la página de inicio.');
+    // this.router.navigate(['/layout/inicio']);
     }
   }
 

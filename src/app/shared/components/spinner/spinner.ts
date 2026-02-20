@@ -10,6 +10,4 @@ export class Spinner {
   @Input() isLoading: boolean = false; // Controla la visibilidad del spinner
   @Input() message: string = ''; // Mensaje opcional
 
-
-
 }

@@ -115,6 +115,8 @@ export class ListaExhortosRecibidos implements OnInit {
   }
 
   getListado(): Promise<void>{
+    this.isLoading=true;
+
     return new Promise((resolve,reject) =>{
     this.formSubmitted = true;
     // Utilizar fechas predeterminadas si date1 o date2 no están definidas
@@ -142,7 +144,6 @@ export class ListaExhortosRecibidos implements OnInit {
       IdAreaAdminAplicaciones : area 
     };
 
-    this.isLoading=true;
     this.cd.detectChanges();
 
     this.exhortoService.getExhortosRecibidosListado(obj).subscribe({
