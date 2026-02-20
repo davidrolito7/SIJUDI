@@ -1,0 +1,148 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
+<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+
+    <!-- HEADER -->
+
+    <app-breadcrub></app-breadcrub>
+
+
+    <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+        <div class="flex items-start flex-col md:justify-between md:flex-row">
+
+              <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
+                    <div class="relative overflow-x-auto">
+                        <div class="flex uppercase font-bold text-lg">
+                                    Detalles de la promoción
+                        </div>
+
+                    @if (detallesPromocion) {
+                      <p-table [value]="detallesPromocion" dataKey="idRespuesta"
+                        class="w-full text-sm text-left text-gray-500 dark:text-gray-400" [expandedRowKeys]="expandedRows"
+                        >
+                        <ng-template #caption>
+                                <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                    DATOS GENERALES
+                                </div>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                          <tr class="bg-gray-50 dark:bg-gray-700 text-gray-700 uppercase text-xs">
+                            <th></th>
+                            <th>Órgano impartidor</th>
+                            <th>Expediente </th>
+                            <th>Url EE </th>
+                            <th>Cuaderno</th>
+                            <!--<th class="px-2 py-2">Acciones</th>-->
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-promocion let-expanded="expanded">
+                          <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                            <td class="px-3 py-2">
+                          
+                              <button type="button"
+                                (click)="toggleRow(promocion)"
+                                >
+                                <i [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                              </button>
+                            </td>
+                            <td style="font-size: small;">{{ promocion.organoImpartidorJusticia.descripcion }}</td>
+                            <td style="font-size: small;">{{ promocion.numeroExpedienteOIJ }}</td>
+                            <td style="font-size: small;">{{ promocion.urlEE }}</td>
+                            <td style="font-size: small;">{{ promocion.tipoCuaderno }}</td>
+                            <td style="font-size: small;">
+                              @if(promocion.estatus !==3 && promocion.estatus !== 4){
+                                <div class="flex justify-center gap-3">
+                                  <div class="relative">
+                                    <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
+                                    <p-button type="button" severity="warn" (click)="redirectToPromocion(idNotificacion, promocion.idRespuesta)">
+                                      Editar
+                                    </p-button>
+                                  </div>
+                                  <div class="relative">
+                                    <p-button type="button" (click)="enviarPromocion(promocion.idRespuesta)">
+                                      Enviar
+                                    </p-button>
+                                  </div>
+                                </div>
+                              }
+                            </td>
+                          </tr>
+                          <!-- Expanded row details -->
+                          @if (expandedRows[promocion.idRespuesta]) {
+                            <tr class="bg-gray-50 dark:bg-gray-800">
+                              <td colspan="6" class="px-4 py-4">
+
+                                @if (promocion.archivos) {
+                                  <p-table [value]="promocion.archivos" dataKey="idDetalleActo"
+                                    class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                    <ng-template #caption>
+                                      <div class="flex uppercase justify-center items-center font-bold text-lg">
+                                        DOCUMENTOS
+                                      </div>
+                                    </ng-template>
+                                    <ng-template pTemplate="header">
+                                      <tr class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-600 dark:text-gray-400">
+                                        <th>Nombre del documento</th>
+                                        <th>PKCS7</th>
+                                        <th>Firmado</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-archivo>
+                                      <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                        <td style="font-size: small;">{{ archivo.nombreDocumento }}</td>
+                                        <td style="font-size: small;">{{ archivo.nombrePKCS7 }}</td>
+                                        <td style="font-size: small;">
+                                          @if(archivo.firmado){
+                                            <p>Si</p>
+                                          }
+                                          @else{
+                                          <p>No</p>
+                                        }
+                                      </td>
+                                      <td class="text-center">{{ archivo.fechaFirmado }}</td>
+                                      <td>
+                                        <p-button (click)="mostrarArchivo(archivo)" type="button" icon="pi pi-file-pdf"  [rounded]="true">
+                                        </p-button>
+                                          @if(promocion.estatus !==3 && promocion.estatus !== 4){
+                                            <p-button (click)="eliminarDocumento(archivo)" type="button" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                                              data-modal-toggle="popup-modal">
+                                             
+                                              </p-button>
+                                            }
+                                          </td>
+                                        </tr>
+                                      </ng-template>
+                                      <ng-template pTemplate="emptymessage">
+                                        <tr>
+                                          <td colspan="5" class="px-4 py-2 text-gray-500 dark:text-gray-400">No hay
+                                          detalles disponibles para esta promoción.</td>
+                                        </tr>
+                                      </ng-template>
+                                    </p-table>
+                                    @if(mostrarDocumento()){
+                                        <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                                        </app-pdf-dialog>
+                                    } 
+                                  }
+                                </td>
+                              </tr>
+                            }
+                          </ng-template>
+                        </p-table>
+                      }
+                    </div>
+
+
+            </div>
+        </div>
+    </div>
+  </div>
+<!--MODAL PARA CONFIRMAR LA ELIMINACION DE ARCHIVO-->
+<app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro de eliminar el documento?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+
+<p-toast></p-toast>
+ 
