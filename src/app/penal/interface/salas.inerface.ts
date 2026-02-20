@@ -88,3 +88,8 @@ Cantidad : string;
 Orden : string; 
 
 }
+
+
+/* #######################
+ CATALOGOS 
+ ######################## */
