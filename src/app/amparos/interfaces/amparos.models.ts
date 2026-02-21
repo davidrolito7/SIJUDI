@@ -138,7 +138,7 @@ export interface UI_PromocionResponse {
     folioConfirmacion: number | null;
     mensaje: string | null;
     activo: boolean;
-    estatus: number;
+    estatus: catalogoEstatus;
     archivos: PromocionDocumentos[];
 }
 
@@ -387,4 +387,59 @@ export interface turnosResponse{
  export interface CatalogoClasificacionArchivo{
     idClasificacionArchivo: number;
     descripcion: string;
+}
+// Catalogos de CFJ para expedientes fisicos
+export interface CatalogoAmbito {
+    cjF_catAmbitoId: number;
+    descripcion: string;
+    activo: boolean;
+
+}
+export interface CatalogoClasificacionResponse {
+    id: number;
+    descripcion: string;
+}
+export interface CatalogoCircuitoResponse {
+    cjF_catCircuitoId: number;
+    descripcion: string;
+    activo: boolean;
+}
+export interface CatalogoEstadoResponse {
+    id: number;
+    descripcion: string;
+}
+export interface CatalogoTipoOrganoResponse {
+    id: number;
+    descripcion: string;
+}
+export interface CatalogoMateriasResponse {
+    id: number;
+    descripcion: string;
+}
+export interface CatalogoOrganoResponse {
+    id: number;
+    descripcion: string;
+}
+export interface CatalogoTipoAsuntoResponse {
+    id: number;
+    descripcion: string;
+}
+// notificaciones que se iniciarion a travéz de un expediente físico
+export interface NotifiViaConsultaAsuntoResponse {
+    idNotificacion:number;
+    numeroDeAsunto: string;
+    idOrgano:number;
+    tipoAsunto:number;
+    idTipoProcedimiento: number;
+    idMateria:number;
+    neun:number;
+
+}
+export interface ConsultarAsuntoRequest {
+    numeroDeAsunto:string;
+    idOrgano:string;
+    idTipoAsunto:number;
+    idMateria:number;
+    idTipoProcedimiento:number;
+
 }

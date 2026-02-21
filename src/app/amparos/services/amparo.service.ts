@@ -33,7 +33,17 @@ import { ListadoAmparosRecibidosI,
           CatalogoTipoCuaderno,
           CatalogoOrganoDestino,
           PromocionGeneralesUpdate,
-          guardaFirmaTmpRequest} from '../interfaces/amparos.models';
+          guardaFirmaTmpRequest,
+          CatalogoAmbito,
+          CatalogoClasificacionResponse,
+          CatalogoCircuitoResponse,
+          CatalogoEstadoResponse,
+          CatalogoTipoOrganoResponse,
+          CatalogoMateriasResponse,
+          CatalogoOrganoResponse,
+          CatalogoTipoAsuntoResponse,
+          NotifiViaConsultaAsuntoResponse,
+          ConsultarAsuntoRequest} from '../interfaces/amparos.models';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 import { GenericResponse } from '../../shared/interface/shared.interface';
 import { environment } from '../../../environments/environment';
@@ -48,6 +58,7 @@ export class AmparosService {
    private efirma:string= environment.urlApiAmparosPJF+"/EFirma/";
    private turnos:string= environment.urlApiAmparosPJF+"/Turnos/";
    private catalogoUrl:string= environment.urlApiAmparosPJF+"/Catalogo/";
+   private catalogoCFJurl:string = environment.urlApiAmparosPJF+"/CatalogoCJF/"
 
   
 
@@ -159,7 +170,7 @@ export class AmparosService {
     // Realiza la solicitud GET
     return this.http.get<any>(url,{context:checkToken()});
   }
- /*
+ 
 //<<<<<<<<<<<<<<<<<Catalogos de expediente fisico para CFJ>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   getCatalogoAmbito(): Observable<GenericResponse<CatalogoAmbito[]>> {
     return this.http.post<GenericResponse<CatalogoAmbito[]>>(`${this.catalogoCFJurl}/ambito`,{},{context:checkToken()});
@@ -189,10 +200,10 @@ export class AmparosService {
 
 
 
-    // Método para obtener el catálogo de órganos destino
-    getNotificacionesViaConsultaAsunto(): Observable<NotifiViaConsultaAsuntoResponse[]> {
-      return this.http.get<NotifiViaConsultaAsuntoResponse[]>(`${this.baseUrl}NotificacionesViaConsultaAsunto`,{context:checkToken()});
-    }
+  // Método para obtener el catálogo de órganos destino
+  getNotificacionesViaConsultaAsunto(): Observable<NotifiViaConsultaAsuntoResponse[]> {
+    return this.http.get<NotifiViaConsultaAsuntoResponse[]>(`${this.ApiNotificacion}NotificacionesViaConsultaAsunto`,{context:checkToken()});
+  }
 
 
       //Método para guardar documento de la promocion
@@ -202,7 +213,7 @@ export class AmparosService {
   guardarAsunto( params: ConsultarAsuntoRequest ): Observable<any> {
     return this.http.post(`${this.apiUrlPromocion}/GuardarAsunto`, params,{context:checkToken()});
   }
-
+/*
   //Método para Firmar documento
   firmarDocumento(formData: FormData): Observable<any> {
     console.log("Firmando.")

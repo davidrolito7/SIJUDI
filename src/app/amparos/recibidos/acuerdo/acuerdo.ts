@@ -393,7 +393,7 @@ export class Acuerdo {
               this.acuerdoForm.patchValue({cuaderno: this.cuaderno().find(c => c.idTipoCuaderno === this.promocion()?.idTipoCuaderno) || null});
               // Asigna idRespuesta desde la promoción si no se ha asignado previamente
               this.idRespuesta = this.promocion()?.idRespuesta ?? 0;
-              this.idEstatus= this.promocion()?.estatus ?? 0;
+              this.idEstatus= this.promocion()?.estatus.idEstatus ?? 0;
           
             }
           }else{
