@@ -14,13 +14,15 @@ import { checkToken } from "../../core/auth/interceptor/token.interceptor";
 export class SalasService {
 
     private BusquedaApelaciones = 'https://localhost:7240/api/consultaSalas/ObtieneBusquedaApelaciones'; // Reemplaza con tu URL real
+// private BusquedaApelaciones = 'https://10.12.12.215:7240/api/consultaSalas/ObtieneBusquedaApelaciones'; // Reemplaza con tu URL real
+
 
     constructor(private http: HttpClient) { } 
     
     
-        getListadoInicios(params?: DTABusqueda): Observable<busquedaExpediente> {
-            return this.http.post<busquedaExpediente>(
-                `${this.BusquedaApelaciones}ListadoPreregistros`, { params, context: checkToken() }
+        getListadoInicios(params?: DTABusqueda): Observable<ApiResponse<busquedaExpediente[]>> {
+            return this.http.post<ApiResponse<busquedaExpediente[]>>(
+                `${this.BusquedaApelaciones}`, { params }
             );
         }
 

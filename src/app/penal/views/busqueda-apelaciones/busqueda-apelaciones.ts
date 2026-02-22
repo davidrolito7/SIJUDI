@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { PanelModule } from 'primeng/panel';
 import { InputTextModule } from 'primeng/inputtext';
 
@@ -14,6 +14,11 @@ import { Drawer, DrawerModule } from 'primeng/drawer';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SplitterModule } from 'primeng/splitter';
 import { Card } from 'primeng/card';
+
+import { SalasService } from '../../service/salas.service';
+import { MessageService } from 'primeng/api';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'; 
+import { busquedaExpediente } from '../../interface/salas.interface';
 
 @Component({
   selector: 'app-busqueda-apelaciones',
@@ -36,6 +41,7 @@ import { Card } from 'primeng/card';
   ],
   templateUrl: './busqueda-apelaciones.html',
   styleUrl: './busqueda-apelaciones.css',
+  providers: [MessageService],
 })
 export class BusquedaApelaciones {
   resultados: any[] = [];
@@ -58,6 +64,22 @@ export class BusquedaApelaciones {
   ];
 
   apelaciones = [];
+
+  lstapelaciones = signal<busquedaExpediente[]>([]);
+
+
+   constructor(
+    private salasService: SalasService,
+    private messageService: MessageService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
+  ) { }
+
+
+    ngOnInit(): void {    
+    this.cargarDatos();
+  }
 
   buscar() {
     console.log('Filtros:', this.filtros);
@@ -90,4 +112,42 @@ export class BusquedaApelaciones {
 
 mostrarTabla: boolean = false;
         date2: Date | undefined;
+
+
+       
+
+  cargarDatos(): void {
+    var requestParams: any = {
+      "idGeneral": 3315,
+      "idPantalla": 1,
+      "idSala": "",
+      "tipoApelacion": "",
+      "folioOficialia": "",
+      "idNomenclatura"  : "",
+  "folioExpediente": "",
+  "expedienteCausa": "",
+  "fechaRecepInicial": "01/01/2025",
+  "fechaRecepFinal": "24/01/2025",
+  "nombreParte": ""
+     }
+     this.salasService.getListadoInicios(requestParams).subscribe({
+      next: (response) => {
+        //this.isLoading = false;
+        this.lstapelaciones.set(response?.data ?? []);
+        console.log('Respuesta de la API:', response);
+       // this.pagination = response.pagination;
+        //this.listaRequerimientos().forEach(r => this.actualizarTiempo(r));
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+       // this.isLoading = false;
+        console.error('Error:', error);
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+
+
+
 }
