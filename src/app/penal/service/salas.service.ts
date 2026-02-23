@@ -2,7 +2,7 @@ import { map, Observable, tap } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 //import { environment } from "src/environments/environment";
-import { ApiResponse,busquedaExpediente,DTABusqueda } from "../interface/salas.interface";
+import { ApiResponse,busquedaExpediente,DTABusqueda, responseDataBusqueda } from "../interface/salas.interface";
 import { TokenService } from "../../core/auth/service/token.service";
 import { checkToken } from "../../core/auth/interceptor/token.interceptor";
 
@@ -20,9 +20,10 @@ export class SalasService {
     constructor(private http: HttpClient) { } 
     
     
-        getListadoInicios(params?: DTABusqueda): Observable<ApiResponse<busquedaExpediente[]>> {
-            return this.http.post<ApiResponse<busquedaExpediente[]>>(
-                `${this.BusquedaApelaciones}`, { params }
+        getListadoInicios(params?: any): Observable<ApiResponse<responseDataBusqueda[]>> {
+            console.log('Parámetros enviados al servicio:', params);
+            return this.http.post<ApiResponse<responseDataBusqueda[]>>(
+                `${this.BusquedaApelaciones}`,  params,{} 
             );
         }
 

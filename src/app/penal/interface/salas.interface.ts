@@ -89,6 +89,13 @@ Orden : string;
 
 }
 
+export interface responseDataBusqueda {
+
+expediente : busquedaExpediente[];
+anexos : busquedaAnexos[];
+partes : busquedaPartes[];
+}
+
 
 /* #######################
  CATALOGOS 
