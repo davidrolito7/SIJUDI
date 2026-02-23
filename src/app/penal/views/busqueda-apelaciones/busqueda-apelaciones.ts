@@ -149,7 +149,8 @@ cargarCatalogo() {
   this.salasService.getCatalogoApelaciones()
     .subscribe({
       next: (resp) => {
-        this.catApelaciones = resp.data; 
+        this.catApelaciones = resp.data;
+        this.cdr.detectChanges(); // 👈 fuerza sincronización 
       },
       error: (err) => {
         console.error(err);
@@ -162,6 +163,7 @@ cargarCatalogoSalas() {
     .subscribe({
       next: (resp) => {
         this.catSalas= resp.data; 
+        this.cdr.detectChanges(); // 👈 fuerza sincronización
       },
       error: (err) => {
         console.error(err);
@@ -173,6 +175,7 @@ cargarCatalogoSalas() {
   this.salasService.getCatNomenclaturas(1, 1, 1).subscribe({
       next: (resp) => {
           this.catNomenclatura= resp.data;
+          this.cdr.detectChanges(); // 👈 fuerza sincronización
       },
       error: (error) => {
         console.error('Error al cargar Nomenclatura', error);

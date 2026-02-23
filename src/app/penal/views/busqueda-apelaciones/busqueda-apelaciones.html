@@ -21,16 +21,17 @@
                 <div class="field col-12 md:col-6">
 
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala 
-                    <p-select [options]="catSalas" optionLabel="descripcion" placeholder="Selecciona una sala" appendTo="body"[(ngModel)]="filtros.idSala" name="idSala"></p-select>
+                    <p-select [options]="catSalas" optionLabel="descripcion" optionValue="idSala" placeholder="Selecciona una sala" appendTo="body" [(ngModel)]="filtros.idSala"  name="idSala"></p-select>
 
                     </label>
+                    
                  
                 </div>
-
+           
                 <div class="field col-12 md:col-6">
 
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">  Nomenclatura 
-                    <p-select [options]="catNomenclatura"   optionLabel="descripcion" placeholder="Selecciona tipo de nomenclatura" appendTo="body" [(ngModel)]="filtros.idNomenclatura" name="idNomenclatura"></p-select>
+                    <p-select [options]="catNomenclatura"   optionLabel="descripcion" optionValue="idNomenclatura"  placeholder="Selecciona tipo de nomenclatura" appendTo="body" [(ngModel)]="filtros.idNomenclatura" name="idNomenclatura"></p-select>
 
                     </label>
                 </div>
@@ -46,7 +47,7 @@
                 <div class="field col-12 md:col-6">
 
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apelación 
-                    <p-select [options]="catApelaciones" optionLabel="descripcion" optionValue="idCatApelacion" placeholder="Selecciona tipo de apelación" appendTo="body" [(ngModel)]="filtros.tipoApelacion" name="tipoApelacion"></p-select>
+                    <p-select [options]="catApelaciones" optionLabel="descripcion" optionValue="idApelacion" placeholder="Selecciona tipo de apelación" appendTo="body" [(ngModel)]="filtros.tipoApelacion" name="tipoApelacion"></p-select>
                 </label>
                 </div>
 
