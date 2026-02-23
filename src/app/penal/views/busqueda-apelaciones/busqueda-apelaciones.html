@@ -12,43 +12,47 @@
 
                 <div class="field col-12 md:col-6">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de Oficialia
-                    <input pInputText [(ngModel)]="filtros.folioOficial" />
+                        <input pInputText [(ngModel)]="filtros.folioOficial" />
                     </label>
                 </div>
 
                 <div class="field col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala 
-                    <p-select [options]="salas" [(ngModel)]="selected"></p-select>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala
+                        <p-select [options]="catSalas" optionLabel="descripcion" placeholder="Selecciona una sala" appendTo="body"  ></p-select>
+                            
+                    </label>
+                 
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Nomenclatura
+                        <p-select [options]="catNomenclatura"   optionLabel="descripcion" placeholder="Selecciona tipo de nomenclatura" appendTo="body"  ></p-select>
+                    
                     </label>
                 </div>
 
                 <div class="field col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">  Nomenclatura 
-                    <p-select [options]="nomenclaturas" [(ngModel)]="selected"></p-select>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Folio Apelación
+                        <input pInputText [(ngModel)]="filtros.folioApelacion" />
                     </label>
                 </div>
 
                 <div class="field col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Folio Apelación 
-                    <input pInputText [(ngModel)]="filtros.folioApelacion" />
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apelación
+                        <p-select [options]="catApelaciones" optionLabel="descripcion" optionValue="idCatApelacion" placeholder="Selecciona tipo de apelación" appendTo="body"  
+                        ></p-select>
                     </label>
                 </div>
 
                 <div class="field col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apelación 
-                    <p-select [options]="apelaciones" [(ngModel)]="selected"></p-select>
-                </label>
-                </div>
-
-                <div class="field col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Exp/Causa 
-                    <input pInputText [(ngModel)]="filtros.expediente" />
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Exp/Causa
+                        <input pInputText [(ngModel)]="filtros.expediente" />
                     </label>
                 </div>
 
                 <div class="field col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre Parte 
-                    <input pInputText [(ngModel)]="filtros.nombreParte" />
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre Parte
+                        <input pInputText [(ngModel)]="filtros.nombreParte" />
                     </label>
                 </div>
 
@@ -59,24 +63,26 @@
             <p-fieldset legend="Fecha de Recepción" class="mt-3">
 
                 <div class="col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Inicial 
-                    <p-datepicker [(ngModel)]="date2" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
-                </label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Inicial
+                        <p-datepicker [(ngModel)]="date2" [iconDisplay]="'input'" [showIcon]="true"
+                            inputId="icondisplay" />
+                    </label>
                 </div>
 
 
                 <div class="col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Final 
-                    <p-datepicker [(ngModel)]="date2" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Final
+                        <p-datepicker [(ngModel)]="date2" [iconDisplay]="'input'" [showIcon]="true"
+                            inputId="icondisplay" />
                     </label>
                 </div>
 
             </p-fieldset>
 
             <div class="flex justify-content-end gap-2 mt-3">
-               <p-button label="Limpiar" label="Limpiar" severity="secondary"  />
+                <p-button label="Limpiar" label="Limpiar" severity="secondary" />
                 <p-button type="submit" label="Confirmar" />
-          </div>
+            </div>
 
         </p-accordion-content>
 

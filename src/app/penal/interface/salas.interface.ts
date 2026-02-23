@@ -3,8 +3,6 @@ export interface ApiResponse<T> {
     status: number;
     message: string;
     data: T;
-    nombre?: string;
-    descripcion?: string;
 }
 
 
@@ -93,3 +91,18 @@ Orden : string;
 /* #######################
  CATALOGOS 
  ######################## */
+export interface CatApelaciones {
+  idApelacion: number;
+  descripcion: string;
+}
+
+export interface Nomenclatura {
+  idNomenclatura: number;
+  descripcion: string;
+}
+
+export interface CatSalas {
+  idSala: number;
+  descripcion: string;
+}
+
