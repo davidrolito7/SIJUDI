@@ -12,43 +12,56 @@
               
                 <div class="field col-12 md:col-6">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de Oficialia
+
                     <input pInputText [(ngModel)]="filtros.folioOficial"  name="folioOficial" />
+
                     </label>
                 </div>
 
                 <div class="field col-12 md:col-6">
+
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala 
-                    <p-select [options]="salas" [(ngModel)]="filtros.idSala" name="idSala"></p-select>
+                    <p-select [options]="catSalas" optionLabel="descripcion" placeholder="Selecciona una sala" appendTo="body"[(ngModel)]="filtros.idSala" name="idSala"></p-select>
+
                     </label>
+                 
                 </div>
 
                 <div class="field col-12 md:col-6">
+
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">  Nomenclatura 
-                    <p-select [options]="nomenclaturas" [(ngModel)]="filtros.idNomenclatura" name="idNomenclatura"></p-select>
+                    <p-select [options]="catNomenclatura"   optionLabel="descripcion" placeholder="Selecciona tipo de nomenclatura" appendTo="body" [(ngModel)]="filtros.idNomenclatura" name="idNomenclatura"></p-select>
+
                     </label>
                 </div>
 
                 <div class="field col-12 md:col-6">
+
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Folio Apelación 
                     <input pInputText [(ngModel)]="filtros.folioExpediente" name="folioExpediente" />
+
                     </label>
                 </div>
 
                 <div class="field col-12 md:col-6">
+
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apelación 
-                    <p-select [options]="apelaciones" [(ngModel)]="filtros.tipoApelacion" name="tipoApelacion"></p-select>
+                    <p-select [options]="catApelaciones" optionLabel="descripcion" optionValue="idCatApelacion" placeholder="Selecciona tipo de apelación" appendTo="body" [(ngModel)]="filtros.tipoApelacion" name="tipoApelacion"></p-select>
                 </label>
                 </div>
 
                 <div class="field col-12 md:col-6">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Exp/Causa 
                     <input pInputText [(ngModel)]="filtros.expedienteCausa" name="expedienteCausa" />
+
                     </label>
                 </div>
 
                 <div class="field col-12 md:col-6">
+
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre Parte 
                     <input pInputText [(ngModel)]="filtros.nombreParte" name="nombreParte" />
+
                     </label>
                 </div>
 
@@ -59,25 +72,32 @@
             <p-fieldset legend="Fecha de Recepción" class="mt-3">
 
                 <div class="col-12 md:col-6">
+
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Inicial 
                     <p-datepicker [(ngModel)]="filtros.fechaRecepInicial" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" name="fechaRecepInicial" />
                 </label>
+
                 </div>
 
 
                 <div class="col-12 md:col-6">
+
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Final 
                     <p-datepicker [(ngModel)]="filtros.fechaRecepFinal" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" name="fechaRecepFinal" />
+
                     </label>
                 </div>
 
             </p-fieldset>
 
             <div class="flex justify-content-end gap-2 mt-3">
-               <p-button label="Limpiar" label="Limpiar" severity="secondary"  />
+                <p-button label="Limpiar" label="Limpiar" severity="secondary" />
                 <p-button type="submit" label="Confirmar" />
+
           </div>
           </form>
+
+
 
         </p-accordion-content>
 

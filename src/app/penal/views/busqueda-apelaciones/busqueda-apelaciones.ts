@@ -1,7 +1,7 @@
+
 import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { PanelModule } from 'primeng/panel';
 import { InputTextModule } from 'primeng/inputtext';
-
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
@@ -13,8 +13,7 @@ import { AccordionModule  } from 'primeng/accordion';
 import { Drawer, DrawerModule } from 'primeng/drawer';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SplitterModule } from 'primeng/splitter';
-import { Card } from 'primeng/card';
-
+import { CatApelaciones, CatSalas, Nomenclatura } from '../../interface/salas.interface';
 import { SalasService } from '../../service/salas.service';
 import { MessageService } from 'primeng/api';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'; 
@@ -37,13 +36,29 @@ import { busquedaExpediente, DTABusqueda, responseDataBusqueda } from '../../int
     DrawerModule,
     DatePickerModule,
     SplitterModule,
-    Card
+
   ],
   templateUrl: './busqueda-apelaciones.html',
   styleUrl: './busqueda-apelaciones.css',
   providers: [MessageService],
 })
-export class BusquedaApelaciones {
+export class BusquedaApelaciones implements OnInit  {
+
+  catApelaciones: CatApelaciones[] = [];
+
+  catNomenclatura: Nomenclatura [] = [];
+  
+  catSalas: CatSalas[] = [];
+
+  ngOnInit(): void {
+  //  this.cargarApelaciones();
+    this.cargarNomenclatura();
+  //  this.cargarSalas();
+  this.cargarCatalogoSalas();
+    this.cargarCatalogo();
+  }
+
+
   resultados: any[] = [];
 
   filtros = {
@@ -59,6 +74,7 @@ export class BusquedaApelaciones {
     fechaRecepInicial: null,
     fechaRecepFinal: null,
   };
+
 
   salas = [
     { id: 1, nombre: 'Primera Sala' },
@@ -94,10 +110,6 @@ export class BusquedaApelaciones {
   ) { }
 
 
-    ngOnInit(): void {    
-    this.cargarDatos();
-  }
-
   buscar() {
     console.log('Filtros:', this.filtros);
     // aquí llamas tu API
@@ -118,19 +130,57 @@ export class BusquedaApelaciones {
       fechaRecepFinal: null,
     };
   }
-  nomenclaturas: any[] = [];
   selected: any;
-  visible: boolean = false;
 
+        date2: Date | undefined;
 
+  cargarApelaciones() {
+  this.salasService.getCatApelaciones(1, 1, 1).subscribe({
+      next: (resp) => {
+          this.catApelaciones= resp.data;
+      },
+      error: (error) => {
+        console.error('Error al cargar apelaciones', error);
+      }
+    });
+}
 
-     visible1: boolean = false;
-    visible2: boolean = false;
-    visible3: boolean = false;
-    visible4: boolean = false;
+cargarCatalogo() {
+  this.salasService.getCatalogoApelaciones()
+    .subscribe({
+      next: (resp) => {
+        this.catApelaciones = resp.data; 
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+}
+
+cargarCatalogoSalas() {
+  this.salasService.getCatalogoSalas()
+    .subscribe({
+      next: (resp) => {
+        this.catSalas= resp.data; 
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+}
+
+  cargarNomenclatura() {
+  this.salasService.getCatNomenclaturas(1, 1, 1).subscribe({
+      next: (resp) => {
+          this.catNomenclatura= resp.data;
+      },
+      error: (error) => {
+        console.error('Error al cargar Nomenclatura', error);
+      }
+    });
+}
 
 mostrarTabla: boolean = false;
-        date2: Date | undefined;
 
 
        
@@ -201,8 +251,5 @@ mostrarTabla: boolean = false;
       }
     });
   }
-
-
-
 
 }
