@@ -681,7 +681,7 @@ export class CrearAudiencia {
 
   // Método para navegar al detalle de la audiencia
   detalle(idAudiencia: number, tipoMensaje: 'crear' | 'actualizar'): void {
-    this.router.navigate(['/audiencias/detalle'], { state: { idAudiencia, tipoMensaje } });
+    this.router.navigate(['/juicioenlinea/audiencias/detalle'], { state: { idAudiencia, tipoMensaje } });
   }
 
   actualizarAudienciaDesdeFormulario() {

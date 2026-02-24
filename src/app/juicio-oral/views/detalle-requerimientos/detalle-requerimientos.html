@@ -1,4 +1,4 @@
-<!-- <app-spinner [isLoading]="isLoading" message="" /> -->
+ <app-spinner [isLoading]="isLoading" message="" />
 
 <div class="lg:sticky top-0 z-50 bg-surface-0 dark:bg-surface-900 flex flex-col mb-4">
 
@@ -374,8 +374,8 @@
     <div class="flex justify-center mt-4">
         <!-- ✅ Reutiliza TU confirm dialog (enviar) -->
         <app-confirm-dialog key="enviarReq" title="Confirmación" message="¿Esta seguro de enviar el requerimiento?"
-            icon="pi pi-question-circle" circleClass="bg-green-600" acceptLabel="Aceptar"
-            acceptStyleClass="bg-green-600 border-green-600" rejectLabel="Cancelar">
+            icon="pi pi-question-circle" circleClass="bg-primary" acceptLabel="Aceptar"
+            acceptStyleClass="bg-primary" rejectLabel="Cancelar">
         </app-confirm-dialog>
 
         <!-- Botón estilo uniforme (puedes cambiar a btn-secondary/btn-tertiary si ya los tienes) -->
@@ -510,7 +510,7 @@
 
 
 
-    <p-dialog header="Rechazar requerimiento" [modal]="true" [(visible)]="visibleDenegar" [style]="{ width: '25rem' }"
+    <p-dialog header="Rechazar requerimiento" [modal]="true" appendTo="body" [(visible)]="visibleDenegar" [style]="{ width: '25rem' }"
         [closable]="false">
 
         <form [formGroup]="denegarForm" (ngSubmit)="denegar()" class="relative rounded-lg">
