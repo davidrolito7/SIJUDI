@@ -1,0 +1,185 @@
+<app-spinner [isLoading]="isLoading" message="" />
+<p-toast></p-toast>
+
+<div class="lg:sticky top-0 z-50 flex flex-col gap-4">
+
+    <!-- HEADER -->
+    <app-breadcrub></app-breadcrub>
+
+    <!-- DETALLE -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl">
+
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
+                Trámite - {{ detalleTramite?.cat_tramite?.nombre }} #{{ detalleTramite?.folioOficio }}
+            </label>
+            @if (mostrarBoton() && detalleTramite?.idAcuerdo == null) {
+                <div class="p-4">
+                    <p-button
+                        icon="pi pi-sitemap"
+                        label="Acordar"
+                        (click)="detalle(+detalleTramite?.expediente?.idExpediente!)"
+                        styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:bg-[#ff830a]/80" />
+                </div>
+            }
+        </div>
+
+        <!-- Sección: Datos generales -->
+        <div class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 transition delay-100 duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.01]">
+            <span class="flex items-center">
+                <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm9.408-5.5a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2h-.01ZM10 10a1 1 0 1 0 0 2h1v3h-1a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2h-1v-4a1 1 0 0 0-1-1h-2Z" clip-rule="evenodd" />
+                </svg>
+                Datos generales
+            </span>
+        </div>
+
+        <div class="p-5 w-full">
+            @if (detalleTramite) {
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <!-- Columna Izquierda -->
+                    <div class="flex flex-col space-y-2">
+                        <p class="text-surface-600 dark:text-surface-200">
+                            <b>Número de expediente:</b> {{ detalleTramite.expediente.NumExpediente }}
+                        </p>
+                        <p class="text-surface-600 dark:text-surface-200">
+                            <b>Fecha creación:</b> {{ detalleTramite.created_at | date: 'dd/MM/yyyy HH:mm' }} h
+                        </p>
+                        <p class="text-surface-600 dark:text-surface-200 wrap-break-word">
+                            <b>Síntesis: </b>
+                            <span class="whitespace-pre-line break-words overflow-x-auto max-w-full uppercase">
+                                {{ detalleTramite.sintesis }}
+                            </span>
+                        </p>
+                    </div>
+                    <!-- Columna Derecha -->
+                    <div class="flex flex-col space-y-2">
+                        <p class="text-surface-600 dark:text-surface-200">
+                            <b>Juzgado:</b> {{ detalleTramite.expediente.juzgado.Descripcion | uppercase }}
+                        </p>
+                        <p class="text-surface-600 dark:text-surface-200">
+                            <b>Estado: </b>
+                            @switch (getEstadoId(detalleTramite)) {
+                                @case (1) {
+                                    <p-tag severity="info" [value]="getEstadoDescripcion(detalleTramite) ?? ''" [icon]="getEstadoTag(detalleTramite).icon ?? ''" />
+                                }
+                                @case (2) {
+                                    <p-tag severity="success" [value]="getEstadoDescripcion(detalleTramite) ?? ''" [icon]="getEstadoTag(detalleTramite).icon ?? ''" />
+                                }
+                                @case (10002) {
+                                    <p-tag severity="warn" [value]="getEstadoDescripcion(detalleTramite) ?? ''" [icon]="getEstadoTag(detalleTramite).icon ?? ''" />
+                                }
+                                @default {
+                                    <p-tag severity="secondary" [value]="getEstadoDescripcion(detalleTramite) ?? 'Sin estado'" />
+                                }
+                            }
+                        </p>
+                        <p class="text-surface-600 dark:text-surface-200 wrap-break-word">
+                            <b>Observaciones: </b>
+                            <span class="whitespace-pre-line break-words overflow-x-auto max-w-full uppercase">
+                                {{ detalleTramite.observaciones }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sección: Partes -->
+        @if (partesTramite && partesTramite.length > 0) {
+            <div class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 transition delay-100 duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.01]">
+                <span class="flex items-center">
+                    <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd" d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-1.5 8a4 4 0 0 0-4 4 2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-3Zm6.82-3.096a5.51 5.51 0 0 0-2.797-6.293 3.5 3.5 0 1 1 2.796 6.292ZM19.5 18h.5a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-1.1a5.503 5.503 0 0 1-.471.762A5.998 5.998 0 0 1 19.5 18ZM4 7.5a3.5 3.5 0 0 1 5.477-2.889 5.5 5.5 0 0 0-2.796 6.293A3.501 3.501 0 0 1 4 7.5ZM7.1 12H6a4 4 0 0 0-4 4 2 2 0 0 0 2 2h.5a5.998 5.998 0 0 1 3.071-5.238A5.505 5.505 0 0 1 7.1 12Z" clip-rule="evenodd" />
+                    </svg>
+                    Partes
+                </span>
+            </div>
+
+            <div class="p-3">
+                <p-table [value]="partesTramite" [tableStyle]="{ 'min-width': '100%', width: 'max-content' }">
+                    <ng-template #header>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Estatus</th>
+                            <th>Género</th>
+                            <th>Tipo parte</th>
+                            <th>Correo</th>
+                            <th>Dirección</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-parte>
+                        <tr>
+                            <td class="font-semibold">{{ parte.nombre }}</td>
+                            <td>
+                                @if (parte.idUsr) {
+                                    <p-tag severity="success" value="VERIFICADO" />
+                                } @else {
+                                    <p-tag severity="danger" value="NO VERIFICADO" />
+                                }
+                            </td>
+                            <td>{{ parte.idCatSexo == 1 ? 'HOMBRE' : parte.idCatSexo == 2 ? 'MUJER' : 'OTRO' }}</td>
+                            <td>{{ parte.cat_tipo_parte?.descripcion }}</td>
+                            <td>
+                                <div>{{ parte.correo }}</div>
+                                <div class="text-xs text-surface-500">{{ parte.correoAlterno }}</div>
+                            </td>
+                            <td>{{ parte.direccion }}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template #emptymessage>
+                        <tr>
+                            <td colspan="6" class="text-center p-4">No hay partes registradas.</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        }
+
+        <!-- Sección: Anexos -->
+        <div class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 transition delay-100 duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.01]">
+            <span class="flex items-center">
+                <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M6 16v-3h.375a.626.626 0 0 1 .625.626v1.749a.626.626 0 0 1-.626.625H6Zm6-2.5a.5.5 0 1 1 1 0v2a.5.5 0 0 1-1 0v-2Z" />
+                    <path fill-rule="evenodd" d="M11 7V2h7a2 2 0 0 1 2 2v5h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2H3a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h6a2 2 0 0 0 2-2Zm7.683 6.006 1.335-.024-.037-2-1.327.024a2.647 2.647 0 0 0-2.636 2.647v1.706a2.647 2.647 0 0 0 2.647 2.647H20v-2h-1.335a.647.647 0 0 1-.647-.647v-1.706a.647.647 0 0 1 .647-.647h.018ZM5 11a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.376A2.626 2.626 0 0 0 9 15.375v-1.75A2.626 2.626 0 0 0 6.375 11H5Zm7.5 0a2.5 2.5 0 0 0-2.5 2.5v2a2.5 2.5 0 0 0 5 0v-2a2.5 2.5 0 0 0-2.5-2.5Z" clip-rule="evenodd" />
+                    <path d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Z" />
+                </svg>
+                Anexos de {{ detalleTramite?.cat_tramite?.nombre }}
+            </span>
+        </div>
+
+        <div class="p-3">
+            <p-table [value]="anexos" [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template #header>
+                    <tr>
+                        <th>Folio</th>
+                        <th>Fecha subida</th>
+                        <th>Nombre</th>
+                        <th>Acciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-doc>
+                    <tr>
+                        <td class="font-semibold">{{ detalleTramite?.folioOficio }}</td>
+                        <td>{{ doc.created_at | date: 'dd/MM/yyyy HH:mm' }} h</td>
+                        <td>{{ doc.nombre }}</td>
+                        <td>
+                            <p-button icon="pi pi-file-pdf" [rounded]="true" [raised]="true" severity="success"
+                                (click)="openModal(doc.idDocumento)"
+                                pTooltip="Ver PDF" tooltipPosition="top" />
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="4" class="text-center p-4">No hay anexos registrados.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+            </app-pdf-dialog>
+        </div>
+
+    </div>
+</div>

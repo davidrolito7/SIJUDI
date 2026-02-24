@@ -168,7 +168,6 @@ export class DetalleExpediente {
 
     this.navigatePreservingState(queryParams);
     this.cargarDatos(1);
-    this.closeDropdown();
   }
 
   limpiarFiltros(): void {
@@ -187,7 +186,6 @@ export class DetalleExpediente {
     });
 
     this.cargarDatos(1);
-    this.closeDropdown();
   }
 
   cambiarPagina(page: number): void {
@@ -202,7 +200,7 @@ export class DetalleExpediente {
       this.router.navigate(['/juicioenlinea/requerimientos/detalle'], { state: { idRequerimiento: item.id } });
     } else if (item.tipo === 'tramite') {
       const idTramite = item.datosOriginales.idTramite;
-      this.router.navigate(['/tramites/ver/detalle'], { state: { idTramite } });
+      this.router.navigate(['/juicioenlinea/tramites/detalle'], { state: { idTramite } });
     } else if (item.tipo === 'Audiencia') {
       const idAudiencia = item.datosOriginales.idAudiencia;
       this.router.navigate(['/juicioenlinea/audiencias/detalle'], { state: { idAudiencia } });
@@ -240,14 +238,7 @@ export class DetalleExpediente {
     return new Date(year, month - 1, day);
   }
 
-  private closeDropdown(): void {
-    this.mostrarDropdown = false;
-    const dropdown = document.getElementById('dropdownTimepicker');
-    if (dropdown) {
-      dropdown.classList.remove('show');
-      dropdown.classList.add('hidden');
-    }
-  }
+
 
   private buildTablaDatos(registros: any[]): any[] {
     const tabla: any[] = [];

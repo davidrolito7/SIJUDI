@@ -288,7 +288,7 @@ export class ListarTramite implements OnInit {
   }
 
   detalle(idTramite: number): void {
-    this.router.navigate(['/tramites/detalle'], { state: { idTramite } });
+    this.router.navigate(['/juicioenlinea/tramites/detalle'], { state: { idTramite } });
   }
 
   mostrarBoton(): boolean {
@@ -302,12 +302,12 @@ export class ListarTramite implements OnInit {
   // ============================
   // Estado helpers para UI tags
   // ============================
-  getEstadoDescripcion(tramite: unknown): string | null {
-    const t = tramite as { historial?: Array<{ estado?: { descripcion?: string } }> };
-    const historial = t.historial;
-    if (!historial || historial.length === 0) return null;
-    return historial[historial.length - 1]?.estado?.descripcion ?? null;
-  }
+getEstadoDescripcion(tramite: unknown): string | null {
+  const t = tramite as { historial?: Array<{ cat_estado_tramite?: { nombre?: string } }> };
+  const historial = t.historial;
+  if (!historial || historial.length === 0) return null;
+  return historial[historial.length - 1]?.cat_estado_tramite?.nombre ?? null;
+}
 
   getEstadoId(tramite: unknown): number | null {
     const t = tramite as { historial?: Array<{ idCatEstadoTramite?: number }> };
