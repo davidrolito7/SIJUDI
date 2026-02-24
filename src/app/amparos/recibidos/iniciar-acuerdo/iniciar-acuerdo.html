@@ -16,12 +16,12 @@
         <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
           <div class="flex items-center gap-2">
             <i class="pi pi-users text-base! leading-normal!"></i>
-            <span>Para buscar un asunto partiendo de un expediente físico, capture los siguientes campos obligatarios</span>
             <p class="text-gray-500 dark:text-gray-400">Para buscar un asunto partiendo de un expediente físico, capture los siguientes campos
-                obligatarios
+                obligatarios..
             </p>
           </div>
         </div>
+        
       </div>
     </div>
   </div>
@@ -31,10 +31,175 @@
     <!-- Ambito -->
     <div class="col-span-12 sm:col-span-6">
       <label class="block mb-2 text-sm font-medium">Ámbito*</label>
-      <p-select id="ambito" [options]="ambito()" formControlName="ambito"
+      <p-select id="ambito" [options]="ambitoLista()" formControlName="ambito" (onChange)="onAmbitoChange($event.value)"
         optionLabel="descripcion" appendTo="body" filterPlaceholder="Buscar ámbito..."
         inputId="ambito-dropdown" fluid></p-select>
 
     </div>
+    <!-- clasificacion -->
+    <div class="col-span-12 sm:col-span-6">
+      <label class="block mb-2 text-sm font-medium">Clasificación*</label>
+      <p-select id="clasificacion" [options]="clasificacionLista()" formControlName="clasificacion" [disabled]="dropdownClasificacionDisabled"
+        (onChange)="onClasificacionChange($event.value)"
+        optionLabel="descripcion" appendTo="body" filterPlaceholder="Buscar clasificacion..."
+        inputId="clasificacion-dropdown" fluid></p-select>
+
+    </div>
+    <!-- circuito -->
+    <div class="col-span-12 sm:col-span-6">
+      <label class="block mb-2 text-sm font-medium">Circuito / Regiones*</label>
+      <p-select id="circuito" [options]="circuitoLista()" formControlName="circuito" [disabled]="dropdownCircuitoDisabled"
+        (onChange)="onCircuitoChange($event.value)"
+        optionLabel="descripcion" appendTo="body" filterPlaceholder="Buscar circuito..."
+        inputId="circuito-dropdown" fluid></p-select>
+
+    </div>
+    <!-- estado -->
+    <div class="col-span-12 sm:col-span-6">
+      <label class="block mb-2 text-sm font-medium">Estado*</label>
+      <p-select id="estado" [options]="estadoLista()" formControlName="estado" [disabled]="dropdownEstadoDisabled" (onChange)="onEstadoChange()"
+        optionLabel="descripcion" appendTo="body" filterPlaceholder="Buscar estado..."
+        inputId="estado-dropdown" fluid></p-select>
+
+    </div>
+    <!-- tipo organo -->
+    <div class="col-span-12 sm:col-span-6">
+      <label class="block mb-2 text-sm font-medium">tipo de órgano*</label>
+      <p-select id="tipoOrgano" [options]="tipoOrganoLista()" formControlName="tipoOrgano" [disabled]="dropdownTipoOrganoDisabled" (onChange)="onTipoOrganoChange($event.value)"
+        optionLabel="descripcion" appendTo="body" filterPlaceholder="Buscar tipoOrgano..."
+        inputId="tipoOrgano-dropdown" fluid></p-select>
+
+    </div>
+    <!-- materia -->
+    <div class="col-span-12 sm:col-span-6">
+      <label class="block mb-2 text-sm font-medium">Materia*</label>
+      <p-select id="materia" [options]="materiaLista()" formControlName="materia" [disabled]="dropdownMateriaDisabled" (onChange)="onTipoMateriaChange($event.value)"
+        optionLabel="descripcion" appendTo="body" filterPlaceholder="Buscar materia..."
+        inputId="materia-dropdown" fluid></p-select>
+
+    </div>
+    <!-- Órgano -->
+    <div class="col-span-12 sm:col-span-6">
+      <label class="block mb-2 text-sm font-medium">Órgano*</label>
+      <p-select id="organo" [options]="organoLista()" formControlName="organo" [disabled]="dropdownOrganoDisabled" (onChange)="cargarCatalogoTipoAsunto($event.value)"
+        optionLabel="descripcion" appendTo="body" filterPlaceholder="Buscar organo..."
+        inputId="organo-dropdown" fluid></p-select>
+
+    </div>
+    <!-- tipo asunto -->
+    <div class="col-span-12 sm:col-span-6">
+      <label class="block mb-2 text-sm font-medium">Tipo asunto*</label>
+      <p-select id="tipoAsunto" [options]="tipoAsuntoLista()" formControlName="tipoAsunto" [disabled]="dropdownTipoAsuntoDisabled"
+        optionLabel="descripcion" appendTo="body" filterPlaceholder="Buscar tipoAsunto..."
+        inputId="tipoAsunto-dropdown" fluid></p-select>
+
+    </div>
+    <!-- Numero de asunto -->
+    <div class="col-span-12 sm:col-span-3">
+      <label class="block mb-2 text-sm font-medium">Número de asunto</label>
+      <input pInputText type="text" id="numeroAsunto" name="numeroAsunto" formControlName="numeroAsunto" class="w-full"
+        maxlength="100" />
+    </div>
+     <!-- Tipo procedimiento -->
+    <div class="col-span-12 sm:col-span-3">
+      <label class="block mb-2 text-sm font-medium">Tipo de procedimiento</label>
+      <input pInputText type="text" id="tipoProcedimiento" name="tipoProcedimiento" formControlName="tipoProcedimiento" class="w-full"
+        maxlength="100" />
+    </div>
+    <div class="flex items-center">
+            <div class="relative">
+                <p-button type="button"  (click)="buscarAsunto()"
+                    class="text-white bg-violeta hover:bg-morado focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
+                    Buscar expediente</p-button>
+            </div>
+        </div>
   </div>
 </div>
+<!--*DIALOG QUE MUESTRA EL RESULTADO DE LA BUSQUEDA-->
+<p-dialog [(visible)]="resultadoDialog" [style]="{ width: '600px' }" header="Datos del asunto" [modal]="true">
+  <div class="w-full">
+    <div class="grid grid-cols-6 gap-4 w-full items-end">
+        <div class="col-span-6 sm:col-span-6 ">
+            <div class="p-4">
+                <div class="overflow-x-auto">
+                    <table
+                        class="table-auto md:table-fixed w-full text-surface-700 dark:text-surface-200">
+                        <tr>
+                            <td class="col1">
+                                <p class="text-surface-600  dark:text-surface-300"><b>Neun:
+                                    </b>
+                                </p>
+                            </td>
+                            <td class="col2 text-surface-700 dark:text-surface-200">
+                              <span class="text-red-500 font-bold">
+                              {{ asuntoResponse?.neun }}
+                              </span>
+                            </td>
+                              
+                        </tr>
+                        <tr>
+                            <td class="col1">
+                                <p class="text-surface-600  dark:text-surface-300"><b>Número de asunto: </b>
+                                </p>
+                            </td>
+                            <td class="col2 text-surface-700 dark:text-surface-200"><span
+                                    class="text-red-500 font-bold">{{
+                                    asuntoResponse?.numeroDeAsunto }}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="col1">
+                                <p class="text-surface-600  dark:text-surface-300"><b>Organo origen: </b>
+                                </p>
+                            </td>
+                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                '('+ asuntoResponse?.idOrgano +')'+ asuntoResponse?.organoDescripcion}}</td>
+                        </tr>
+                        <tr>
+                            <td class="col1">
+                                <p class="text-surface-600  dark:text-surface-300"><b>Tipo asunto: </b></p>
+                            </td>
+                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                '('+ asuntoResponse?.idTipoAsunto +')'+ asuntoResponse?.asuntoDescripcion }}</td>
+                        </tr>
+                        <tr>
+                            <td class="col1">
+                                <p class="text-surface-600  dark:text-surface-300"><b>Tipo procedimiento: </b>
+                                </p>
+                            </td>
+                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                asuntoResponse?.idTipoProcedimiento }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col1">
+                                <p class="text-surface-600  dark:text-surface-300"><b>Materia: </b></p>
+                            </td>
+                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                               '('+ asuntoResponse?.idMateria +')'+ asuntoResponse?.materiaDescripcion}}</td>
+                        </tr>
+                        <tr>
+                            <td class="col1">
+                                <p class="text-surface-600  dark:text-surface-300"><b>Notificacion: </b>
+                                </p>
+                            </td>
+                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                asuntoResponse?.idNotificacion }}</td>
+                        </tr>
+                        
+                    </table>
+                </div>
+            </div>
+          </div>                     
+        </div>
+      <div>
+    </div>
+  </div>
+  
+
+
+  <ng-template #footer>
+    <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialogResultado()" />
+    <p-button label="Guardar" icon="pi pi-check" (click)="guardarAsunto()" />
+  </ng-template>
+</p-dialog>
+<p-toast></p-toast>

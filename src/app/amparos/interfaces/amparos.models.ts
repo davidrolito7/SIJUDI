@@ -48,6 +48,7 @@ export interface generales{
     expFisico:boolean;
     recibido:boolean;
     idEstatus:number;
+    neun:number;
 }
 export interface actosReclamados {
     idActoReclamado: number;
@@ -331,9 +332,12 @@ export interface NotifiViaConsultaAsuntoResponse {
     idNotificacion:number;
     numeroDeAsunto: string;
     idOrgano:number;
-    tipoAsunto:number;
+    organoDescripcion:string | undefined;
+    idTipoAsunto:number;
+    asuntoDescripcion:string | undefined;
     idTipoProcedimiento: number;
     idMateria:number;
+    materiaDescripcion:string | undefined;
     neun:number;
 
 }
