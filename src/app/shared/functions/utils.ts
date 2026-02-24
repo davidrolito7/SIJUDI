@@ -111,5 +111,16 @@ export function base64ToFile(base64String: string, fileName: string, mimeType: s
   // Crear el objeto File
   return new File([byteArray], fileName, { type: mimeType });
 }
+export function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = () => {
+      resolve(reader.result as string); // Devuelve el string Base64 con el prefijo data:...
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
 
 

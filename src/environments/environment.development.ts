@@ -7,6 +7,7 @@ export const environment = {
     },
     urlApiEfirma: 'https://api.tribunaloaxaca.gob.mx/efirma/api/efirma',
     urlApiExhortosElectronicos: "https://api.tribunaloaxaca.gob.mx/exhortoselectronicos/api",
+    urlApiAmparosPJF:'https://interconexion.tribunaloaxaca.gob.mx/Api',
     ModuloExhortos:'Exhortos'
 };
 

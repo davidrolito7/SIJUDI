@@ -1,0 +1,152 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
+<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+
+    <!-- HEADER -->
+    <app-breadcrub></app-breadcrub>
+
+    <!-- BUSQUEDA -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                Búsqueda
+            </label>
+
+
+        </div>
+
+        <div class="grid grid-cols-12 gap-4 w-full items-end">
+            <!-- Estatus -->
+            <div class="col-span-6 lg:col-span-3 w-full">
+                <label class="block mb-2 text-sm font-medium">Estatus</label>
+                <p-select inputId="idEstatus" class="w-full"
+                    [options]="[...listaEstatus(), { idEstatus: 0, nombre: 'Todos' }]"
+                    [(ngModel)]="selectedEstatus" optionLabel="nombre" appendTo="body" fluid></p-select>
+            </div>
+
+            <!-- Exp. origen -->
+            <!--<div class="col-span-6 lg:col-span-3 w-full">
+                    <label class="block mb-2 text-sm font-medium">Exp. origen</label>
+                    <input type="text" pInputText fluid formControlName="expOrigen" class="w-full" />
+                </div>-->
+
+
+            <!-- Fecha Inicial -->
+            <div class="col-span-6 lg:col-span-2 w-full">
+                <label class="block mb-2 text-sm font-medium">Fecha Inicial</label>
+                <p-datepicker ngSkipHydration inputId="fechaInicio" [iconDisplay]="'input'" [showIcon]="true"
+                    [(ngModel)]="fechaInicio" class="w-full" fluid dateFormat="dd/mm/yy"></p-datepicker>
+            </div>
+
+            <!-- Fecha Final -->
+            <div class="col-span-6 lg:col-span-2 w-full">
+                <label class="block mb-2 text-sm font-medium">Fecha Final</label>
+                <p-datepicker ngSkipHydration inputId="fechaFin" [iconDisplay]="'input'" [showIcon]="true"
+                    [(ngModel)]="fechaFin" class="w-full" fluid dateFormat="dd/mm/yy"></p-datepicker>
+            </div>
+
+            <!-- Botón limpiar fechas -->
+            <div class="col-span-6 lg:col-span-4 flex gap-4 items-end">
+                <p-button [outlined]="true" icon="pi pi-filter-slash" (click)="clearFecha()"></p-button>
+                <p-button (click)="getListado()">
+                    <i pButtonIcon class="pi pi-search"></i>
+                    <span pButtonLabel>Buscar</span>
+                </p-button>
+            </div>
+        </div>
+
+
+
+    </div>
+
+</div>
+
+<!-- CONTENIDO (ya no se mete "debajo" visualmente) -->
+
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+    <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div>
+            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
+
+        </div>
+    </div>
+
+    <div class="card">
+        <p-table #dt1 [value]="listaAmparos()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [globalFilterFields]="['numeroExpediente','materia','organoOrigen','organo_impartidor_justicia']">
+            <ng-template #caption>
+                <div class="flex">
+                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Buscar una palabra" />
+                    </p-iconfield>
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <tr class="uppercase text-xs">
+                    <th>
+                        <div class="flex items-center justify-between">No. Expediente</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Materia</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Org. Origen</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Org. Destino</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Status</div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-between">Fecha de recepción</div>
+                    </th>
+
+                    <th style="min-width: 9rem">
+                        <div class="flex items-center justify-between">Acciones</div>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-listado>
+                <tr>
+                    <td style="font-size: small;">{{ listado.numeroExpediente }}</td>
+                    <td style="font-size: small;">{{ listado.materia}}</td>
+                    <td style="font-size: small;">{{ listado.organoOrigen }}</td>
+                    <td style="font-size: small;">{{ listado.organo_impartidor_justicia }}</td>
+                    <td style="font-size: small;">{{ listado.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                    <td style="font-size: small;">
+                        <p-tag [icon]="getTagConfig(listado.estatus).icon"
+                            [severity]="getTagConfig(listado.estatus).severity" [value]="listado.estatus" />
+                    </td>
+                    <td class="text-center whitespace-nowrap ">
+                        @if (tienePermisoVerAcuerdo()) {
+                            @if (listado.respuesta != 0) {
+                            <p-button (click)="verAcuerdos(listado.idNotificacion)" [rounded]="true" [text]="true"
+                                [raised]="true" severity="success" [rounded]="true" icon="pi pi-file-check"
+                                pTooltip="Ver acuerdos" tooltipPosition="top" class="mr-2"></p-button>
+                            }
+                        }
+
+                        <p-button (click)="verDetalleNotificacion(listado.idNotificacion)" [rounded]="true"
+                            [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
+                            pTooltip="Ver detalle" tooltipPosition="top"></p-button>
+                    </td>
+
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="8">Sin amparos.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+<p-toast></p-toast>
