@@ -11,6 +11,7 @@ import { DetalleExpediente } from './views/detalle-expediente/detalle-expediente
 import { CrearAudiencia } from './views/crear-audiencia/crear-audiencia';
 import { CrearRequerimiento } from './views/crear-requerimiento/crear-requerimiento';
 import { ListarSolicitud } from './views/listar-solicitud/listar-solicitud';
+import { ListarTramite } from './views/listar-tramite/listar-tramite';
 
 export const JUICIO_ORAL_ROUTES: Routes = [
 
@@ -49,6 +50,12 @@ export const JUICIO_ORAL_ROUTES: Routes = [
         path: 'solicitudes',
         children:[
             {path: 'listar', component: ListarSolicitud}
+        ]
+    },
+    {
+        path: 'tramites',
+        children:[
+            {path: 'listar', component: ListarTramite}
         ]
     }
 ];
