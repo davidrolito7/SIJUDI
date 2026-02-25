@@ -1,129 +1,161 @@
 <!-- Toast para mensajes globales -->
 <p-toast />
 
+<app-spinner [isLoading]="isLoading"></app-spinner>
+
 <!-- ==================================================
-     Filtros de búsqueda
+       Filtros de búsqueda
      ================================================== -->
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+<div class="sticky top-0 z-50 bg-surface-0 dark:bg-surface-900 flex flex-col gap-4">
+
   <!-- BREADCRUMB -->
   <app-breadcrub></app-breadcrub>
-  <div class="m-8 bg-surface-50 dark:bg-surface-900 p-4">
-    <p-card>
-      <h2 class="text-xl font-bold mb-4">
-        Búsqueda de Expedientes con Término
-      </h2>
 
-      <div class="grid grid-cols-6 gap-4 items-end">
+  <!-- BÚSQUEDA -->
+  <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4 ">
 
-        <!-- Instancia -->
-        <div class="col-span-6 sm:col-span-2">
-          <label class="block mb-2 text-sm font-medium">Instancia</label>
-          <p-select
-            [options]="instancias"
-            [(ngModel)]="instancia"
-            [ngModelOptions]="{ standalone: true }"
-            optionLabel="label"
-            optionValue="value"
-            class="w-full">
-          </p-select>
-        </div>
+    <div class="font-medium text-2xl mb-4">
+      Búsqueda de Expedientes con Término
+    </div>
 
-        <!-- Tipo de búsqueda -->
-        <div class="col-span-6 sm:col-span-2">
-          <label class="block mb-2 text-sm font-medium">Buscar por</label>
-          <p-select
-            [options]="tiposBusqueda"
-            [(ngModel)]="tipoBusqueda"
-            [ngModelOptions]="{ standalone: true }"
-            optionLabel="label"
-            optionValue="value"
-            class="w-full">
-          </p-select>
-        </div>
+    <div class="grid grid-cols-12 gap-4 w-full items-end">
 
-        <!-- Valor de búsqueda -->
-        <div class="col-span-6 sm:col-span-1">
-          <label class="block mb-2 text-sm font-medium">Valor</label>
-          <input
-            pInputText
-            #valorBusquedaInput
-            (keydown.enter)="$event.preventDefault(); buscar()"
-            [(ngModel)]="valorBusqueda"
-            [ngModelOptions]="{ standalone: true }"
-            class="w-full uppercase"
-            placeholder="P-2841/2026 o 0001/2026">
-        </div>
-
-        <!-- Acciones -->
-        <div class="col-span-6 sm:col-span-1 flex gap-2">
-          <button
-            pButton
-            type="button"
-            icon="pi pi-search"
-            label="Buscar"
-            (click)="buscar()">
-          </button>
-
-          <button
-            pButton
-            type="button"
-            icon="pi pi-times"
-            label="Limpiar"
-            class="p-button-secondary"
-            (click)="limpiarFiltros()">
-          </button>
-        </div>
-
+      <!-- Instancia -->
+      <div class="col-span-12 sm:col-span-6 md:col-span-3">
+        <label class="block mb-2 text-sm font-medium">Instancia</label>
+        <p-select [options]="instancias" [(ngModel)]="instancia" [ngModelOptions]="{ standalone: true }"
+          optionLabel="label" optionValue="value" class="w-full" fluid placeholder="Selecciona una instancia"
+          appendTo="body" />
       </div>
-    </p-card>
+
+      <!-- Tipo de búsqueda -->
+      <div class="col-span-12 sm:col-span-6 md:col-span-2">
+        <label class="block mb-2 text-sm font-medium">Buscar por</label>
+        <p-select [options]="tiposBusqueda" [(ngModel)]="tipoBusqueda" [ngModelOptions]="{ standalone: true }"
+          optionLabel="label" optionValue="value" class="w-full" fluid placeholder="Selecciona tipo de búsqueda"
+          appendTo="body" />
+      </div>
+
+      <!-- Valor de búsqueda -->
+      <div class="col-span-12 sm:col-span-8 md:col-span-3">
+        <label class="block mb-2 text-sm font-medium">Valor</label>
+        <input pInputText #valorBusquedaInput (keydown.enter)="$event.preventDefault(); buscar()"
+          [(ngModel)]="valorBusqueda" [ngModelOptions]="{ standalone: true }" class="w-full uppercase" fluid
+          placeholder="P-2841/2026 o 0001/2026" />
+      </div>
+
+      <!-- Acciones -->
+      <div class="col-span-12 sm:col-span-4 md:col-span-2 flex gap-4 sm:justify-end md:justify-start">
+        <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
+          aria-label="Limpiar filtros"></p-button>
+
+        <p-button type="submit" aria-label="Buscar" styleClass="btn-secondary" (click)="buscar()">
+          <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
+          <span pButtonLabel>Buscar</span>
+        </p-button>
+      </div>
+
+    </div>
   </div>
+
 </div>
+
 <!-- ==================================================
      Resultados de la búsqueda
      ================================================== -->
-<div class="m-8 bg-surface-50 dark:bg-surface-900 p-4">
+@if (resultados.length > 0) {
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
 
-  <!-- Tabla de resultados -->
-  <p-table
-    *ngIf="resultados.length > 0"
-    [value]="resultados"
-    [tableStyle]="{ 'min-width': '50rem' }">
+  <div class="flex items-start flex-col md:justify-between md:flex-row">
+    <div>
+      <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
+    </div>
+  </div>
 
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Folio</th>
-        <th>Expediente</th>
-        <th>Juzgado</th>
-        <th>Partes</th>
-        <th>Acciones</th>
-      </tr>
-    </ng-template>
+  <div class="card pt-4">
+    <p-table #dt1 [value]="resultados" dataKey="folio" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+      [paginator]="true" [globalFilterFields]="['folio','expediente','juzgado','partes']">
 
-    <ng-template pTemplate="body" let-row>
-      <tr>
-        <td>{{ row.folio }}</td>
-        <td>{{ row.expediente }}</td>
-        <td>{{ row.juzgado }}</td>
-        <td>{{ row.partes }}</td>
-        <td>
-          <button
-            pButton
-            icon="pi pi-eye"
-            class="p-button-info p-button-sm"
-            (click)="verEscrito(row.folio)">
-            Ver
-          </button>
-        </td>
-      </tr>
-    </ng-template>
+      <ng-template #caption>
+        <div class="flex">
+          <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" />
+          <p-iconfield iconPosition="left" class="ml-auto">
+            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+            <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+              placeholder="Buscar una palabra" />
+          </p-iconfield>
+        </div>
+      </ng-template>
 
-  </p-table>
+      <ng-template #header>
+        <tr>
+          <th style="min-width:12rem">
+            <div class="flex items-center justify-between">
+              Folio
+              <p-columnFilter type="text" field="folio" display="menu" />
+            </div>
+          </th>
+          <th style="min-width:15rem">
+            <div class="flex items-center justify-between">
+              Expediente
+              <p-columnFilter type="text" field="expediente" display="menu" />
+            </div>
+          </th>
+          <th style="min-width:15rem">
+            <div class="flex items-center justify-between">
+              Juzgado
+              <p-columnFilter type="text" field="juzgado" display="menu" />
+            </div>
+          </th>
+          <th style="min-width:15rem">
+            <div class="flex items-center justify-between">
+              Partes
+              <p-columnFilter type="text" field="partes" display="menu" />
+            </div>
+          </th>
+          <th style="min-width:10rem">
+            <div class="flex items-center justify-between">
+              Acciones
+            </div>
+          </th>
+        </tr>
+      </ng-template>
 
-  <!-- Mensaje sin resultados -->
-  <p-message
-    *ngIf="busquedaRealizada && resultados.length === 0"
-    severity="info"
-    text="No se encontraron resultados">
-  </p-message>
+      <ng-template #body let-row>
+        <tr>
+          <td>{{ row.folio }}</td>
+          <td>{{ row.expediente }}</td>
+          <td>{{ row.juzgado }}</td>
+          <td>{{ row.partes }}</td>
+          <td>
+            <p-button type="button" icon="pi pi-eye" [rounded]="true" size="small" pTooltip="Ver detalle" tooltipPosition="top"
+              (click)="verEscrito(row.folio)">
+              <span pButtonLabel>Ver</span>
+            </p-button>
+          </td>
+        </tr>
+      </ng-template>
 
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="5">No se encontraron expedientes.</td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+  </div>
 </div>
+}
+
+<!-- @if (busquedaRealizada && resultados.length === 0) {
+<app-confirm-dialog
+    key="info"
+    title="Sin resultados"
+    message="No se encontraron expedientes con los criterios ingresados."
+    icon="pi pi-info"
+    circleClass="bg-blue-500"
+    acceptLabel="Aceptar"
+    acceptStyleClass="btn-info"
+    [showReject]="false">
+</app-confirm-dialog>
+} -->

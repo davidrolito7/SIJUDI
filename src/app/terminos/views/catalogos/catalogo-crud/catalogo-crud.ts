@@ -17,6 +17,7 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { Breadcrub } from "../../../../shared/components/breadcrub/breadcrub";
+import { Spinner } from "../../../../shared/components/spinner/spinner";
 
 // =====================================================
 // COMPONENT
@@ -40,8 +41,9 @@ import { Breadcrub } from "../../../../shared/components/breadcrub/breadcrub";
     ConfirmDialog,
     InputIconModule,
     IconFieldModule,
-    Breadcrub
-],
+    Breadcrub,
+    Spinner
+  ],
   providers: [ConfirmationService, MessageService],
 
 })
@@ -58,6 +60,7 @@ export class CatalogoCrud implements OnInit {
   instanciasDisponibles: any[] = [];
   selectedItem: any = null;
   modoEdicion = false;
+  isLoading: boolean = false;
 
   // ================================
   // CONFIGURACIÓN DINÁMICA DE CATÁLOGOS
@@ -140,12 +143,15 @@ export class CatalogoCrud implements OnInit {
   // CARGAR DATOS
   // ================================
   cargarDatos() {
+    this.isLoading = true;
 
     // ANEXOS ignora instancia
     if (this.selectedTipo === 'Anexos') {
 
       this.apiService.getCatalogoAnexos()
         .subscribe((res: any) => {
+          this.isLoading = false;
+
           this.catalogos = res?.success ? res.data ?? [] : [];
           this.cd.markForCheck();
         });
@@ -157,6 +163,8 @@ export class CatalogoCrud implements OnInit {
     this.apiService
       .getCatalogo(this.selectedTipo, this.selectedInstancia)
       .subscribe((res: any) => {
+                  this.isLoading = false;
+
         this.catalogos = res?.success ? res.data ?? [] : [];
         this.cd.markForCheck();
       });
@@ -201,13 +209,14 @@ export class CatalogoCrud implements OnInit {
   // GUARDAR 
   // ================================
   guardar() {
-
+    this.isLoading = true;
     const data = this.construirPayload();
 
     console.log('Payload enviado:', data);
 
     this.apiService.crearCatalogo(this.selectedTipo, data)
       .subscribe((res: any) => {
+        this.isLoading = false;
 
         this.messageService.add({
           severity: res.success ? 'success' : 'warn',
@@ -229,6 +238,7 @@ export class CatalogoCrud implements OnInit {
   // ================================
 
   actualizar() {
+    this.isLoading = true;
 
     const config = this.catalogoConfig[this.selectedTipo];
     const id = this.selectedItem[config.idField];
@@ -237,6 +247,7 @@ export class CatalogoCrud implements OnInit {
 
     this.apiService.actualizarCatalogo(this.selectedTipo, id, data)
       .subscribe((res: any) => {
+        this.isLoading = false;
 
         this.messageService.add({
           severity: res.success ? 'success' : 'warn',
@@ -258,12 +269,14 @@ export class CatalogoCrud implements OnInit {
   // BORRAR
   // ================================
   borrar() {
+    this.isLoading = true;
 
     const tipo = this.selectedTipo;
     const id = this.getId(this.selectedItem);
 
     this.apiService.eliminarCatalogo(tipo, id)
       .subscribe((res: any) => {
+        this.isLoading = false;
 
         this.messageService.add({
           severity: res.success ? 'success' : 'warn',

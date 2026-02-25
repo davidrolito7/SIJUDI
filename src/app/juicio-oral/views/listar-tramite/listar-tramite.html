@@ -166,7 +166,7 @@
 
         <div class="flex justify-end gap-2 mt-6">
             <p-button label="Cancelar" severity="secondary" (click)="cerrarModal()" />
-            <p-button type="submit" label="Buscar" [disabled]="expedienteForm.invalid" (onClick)="busqueda()" />
+            <p-button type="submit" label="Buscar" [disabled]="expedienteForm.invalid" appendTo="body" (onClick)="busqueda()" />
         </div>
     </form>
 

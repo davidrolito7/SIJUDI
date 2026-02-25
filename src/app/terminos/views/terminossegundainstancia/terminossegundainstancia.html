@@ -1,487 +1,298 @@
 <p-toast />
-    <!-- Modal de confirmación de guardado exitoso -->
-    <p-dialog
-        header="Escrito guardado correctamente"
-        styleClass="dialog-exito-compacto"
-        [(visible)]="mostrarExito"
-        [modal]="true"
-        [closable]="true"
-        [dismissableMask]="false"
-        [draggable]="false"
-        [resizable]="false"
-        [maskStyleClass]="'bg-primary/40!'"
-        (onHide)="onCerrarDialogo()">
 
-        <div class="w-full text-center">
+<!-- Modal de confirmación de guardado exitoso -->
+<p-dialog header="Escrito guardado correctamente" styleClass="dialog-exito-compacto" [(visible)]="mostrarExito"
+    [modal]="true" [closable]="true" [dismissableMask]="false" [draggable]="false" [resizable]="false"
+    [maskStyleClass]="'bg-primary/40!'" (onHide)="onCerrarDialogo()">
+    <div class="w-full text-center">
+        <div class="text-base text-gray-600 mb-1">El folio generado es:</div>
+        <div class="text-2xl font-bold text-primary">{{ folioGenerado }}</div>
+    </div>
+</p-dialog>
 
-            <div class="text-base text-gray-600 mb-1">
-                El folio generado es:
-            </div>
-
-            <div class="text-2xl font-bold text-primary">
-                {{ folioGenerado }}
-            </div>
-
-        </div>
-
-    </p-dialog>
-
-    <!-- VERDE (Guardar y Actualizar Escritos) -->
-    <app-confirm-dialog
-        key="guardarEscrito"
-        title="Confirmación"
-        [message]="esActualizar 
+<!-- VERDE (Guardar y Actualizar Escritos) -->
+<app-confirm-dialog key="guardarEscrito" title="Confirmación" [message]="esActualizar 
             ? '¿Está seguro de actualizar la información?' 
-            : '¿Está seguro de guardar la información?'"
-        icon="pi pi-check"
-        circleClass="bg-primary"
-        acceptStyleClass="bg-primary">
-    </app-confirm-dialog>
+            : '¿Está seguro de guardar la información?'" icon="pi pi-check" circleClass="bg-primary"
+    acceptStyleClass="bg-primary">
+</app-confirm-dialog>
 
-    <!-- ROJO (eliminar Presentado Por) -->
-    <app-confirm-dialog
-        key="presentadoPor"
-        title="Confirmación"
-        message="¿Está seguro de eliminar esta persona de la lista?"
-        icon="pi pi-exclamation-triangle"
-        circleClass="bg-red-500"
-        acceptStyleClass="bg-red-600 border-red-600">
-    </app-confirm-dialog>
+<!-- ROJO (eliminar Presentado Por) -->
+<app-confirm-dialog key="presentadoPor" title="Confirmación"
+    message="¿Está seguro de eliminar esta persona de la lista?" icon="pi pi-exclamation-triangle"
+    circleClass="bg-red-500" acceptStyleClass="bg-red-600 border-red-600">
+</app-confirm-dialog>
 
-     <!-- ROJO (eliminar Otros Anexos) -->
-    <app-confirm-dialog
-        key="otrosAnexos"
-        title="Confirmación"
-        message="¿Está seguro de eliminar este anexo de la lista?"
-        icon="pi pi-exclamation-triangle"
-        circleClass="bg-red-500"
-        acceptStyleClass="bg-red-600 border-red-600">
-    </app-confirm-dialog>
+<!-- ROJO (eliminar Otros Anexos) -->
+<app-confirm-dialog key="otrosAnexos" title="Confirmación" message="¿Está seguro de eliminar este anexo de la lista?"
+    icon="pi pi-exclamation-triangle" circleClass="bg-red-500" acceptStyleClass="bg-red-600 border-red-600">
+</app-confirm-dialog>
 
-    <!-- VERDE (Confirmar Certificar) -->
-    <app-confirm-dialog
-        key="certificarDocumento"
-        title="Confirmación"
-        message="¿Desea certificar el documento recién guardado?"
-        icon="pi pi-question-circle"
-        circleClass="bg-primary"
-        acceptStyleClass="bg-primary">
-    </app-confirm-dialog>
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
-  <!-- BREADCRUMB -->
-  <app-breadcrub></app-breadcrub>
-</div>
-<div class="m-9 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
-    <!-- BUSQUEDA -->
-    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
-        <form class="flex flex-col" [formGroup]="terminosForm">
+<!-- VERDE (Confirmar Certificar) -->
+<app-confirm-dialog key="certificarDocumento" title="Confirmación"
+    message="¿Desea certificar el documento recién guardado?" icon="pi pi-question-circle" circleClass="bg-primary"
+    acceptStyleClass="bg-primary">
+</app-confirm-dialog>
 
-            <!-- HEADER -->
-            <div class="flex items-start flex-col md:flex-row justify-between">
-                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-                    Captura de términos de segunda instancia
-                </label>
+<!-- BREADCRUMB -->
+<app-spinner [isLoading]="isLoading"></app-spinner>
+<app-breadcrub></app-breadcrub>
 
-                <div class="flex items-center">
-                    <p-button (click)="irABuscar()">
+<!-- FORMULARIO -->
+<div class="mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+    <form class="flex flex-col" [formGroup]="terminosForm">
+
+        <!-- HEADER -->
+        <div class="flex items-start flex-col md:flex-row justify-between mb-2">
+
+            <div class="font-medium text-2xl">
+                Captura de términos de segunda instancia
+            </div>
+            <div class="flex items-center">
+                <p-button (click)="irABuscar()">
                     <i pButtonIcon class="pi pi-search"></i>
                     <span pButtonLabel>Buscar</span>
-                    </p-button>
+                </p-button>
+            </div>
+        </div>
 
+        <!-- GRID PRINCIPAL -->
+        <div class="grid grid-cols-8 gap-4 w-full items-start">
+
+            <!-- FOLIO -->
+            <div class="col-span-8 sm:col-span-4">
+                <label class="block mb-2 text-sm font-medium">Folio</label>
+                <input #folioInput pInputText formControlName="folio" class="w-full" maxlength="50"
+                    placeholder="Folio generado por el sistema" />
+                <small class="text-gray-500">Este folio se genera automáticamente al guardar el escrito</small>
+            </div>
+
+            <!-- FECHA -->
+            <div class="col-span-4 sm:col-span-2">
+                <label class="block mb-2 text-sm font-medium">Fecha</label>
+                <p-datepicker formControlName="fecha" dateFormat="dd/mm/yy" fluid></p-datepicker>
+            </div>
+
+            <!-- HORA -->
+            <div class="col-span-4 sm:col-span-2">
+                <label class="block mb-2 text-sm font-medium">Hora</label>
+                <p-datepicker formControlName="hora" [timeOnly]="true" hourFormat="24" fluid></p-datepicker>
+            </div>
+
+            <!-- PRESENTADO POR: input -->
+            <div class="col-span-8 sm:col-span-4">
+                <label class="block mb-2 text-sm font-medium">Presentado por</label>
+                <div class="flex gap-2">
+                    <input #presentadoPorInput pInputText formControlName="presentadoPor" class="w-full" maxlength="120"
+                        (keydown.enter)="$event.preventDefault(); agregarPresentado()" />
+                    <p-button (click)="agregarPresentado()">
+                        <i pButtonIcon class="pi pi-plus"></i>
+                        <span pButtonLabel>Agregar</span>
+                    </p-button>
                 </div>
             </div>
 
-            <!-- GRID -->
-            <div class="grid grid-cols-8 gap-4 w-full items-start">
-
-                <!-- FOLIO -->
-                <div class="col-span-6 sm:col-span-4">
-                    <label class="block mb-2 text-sm font-medium">Folio</label>
-                    <input
-                        #folioInput
-                        pInputText
-                        formControlName="folio"
-                        class="w-full"
-                        maxlength="50"
-                        placeholder="Folio generado por el sistema"
-                    />
-                    <small class="text-gray-500">
-                        Este folio se genera automáticamente al guardar el escrito
-                    </small>
-                </div>
-
-                <!-- FECHA -->
-                <div class="col-span-6 sm:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Fecha</label>
-                    <p-datepicker
-                        formControlName="fecha"
-                        dateFormat="dd/mm/yy"
-                        class="w-full"
-                    ></p-datepicker>
-                </div>
-
-                <!-- HORA -->
-                <div class="col-span-6 sm:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Hora</label>
-                    <p-datepicker
-                        formControlName="hora"
-                        [timeOnly]="true"
-                        hourFormat="24"
-                        class="w-full"
-                    ></p-datepicker>
-                </div>
-
-                <!-- PRESENTADO POR -->
-                <div class="col-span-6 sm:col-span-4">
-                    <label class="block mb-2 text-sm font-medium">
-                        Presentado por
-                    </label>
-                    <div class="flex gap-2">
-                        <input
-                            #presentadoPorInput
-                            pInputText
-                            formControlName="presentadoPor"
-                            class="w-full"
-                            maxlength="120"
-                            (keydown.enter)="$event.preventDefault(); agregarPresentado()"
-                        />
-
-                        <p-button (click)="agregarPresentado()">
-                            <i pButtonIcon class="pi pi-plus"></i>
-                            <span pButtonLabel>Agregar</span>
-                        </p-button>
-                    </div>
-                </div>
-
-                <div class="col-span-6 sm:col-span-4">
-                    <div class="card" style="max-height: 250px; overflow-y: auto;">
-                        <p-table
-                            stripedRows
-                            [value]="presentados"
-                            [tableStyle]="{ 'min-width': '20rem' }"
-                        >
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Nombre</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </ng-template>
-
-                            <ng-template pTemplate="body" let-nombre let-i="rowIndex">
-                                <tr>
-                                    <td>{{ i + 1 }}</td>
-                                    <td>{{ nombre }}</td>
-                                    <td>
-                                        <button
-                                            pButton
-                                            type="button"
-                                            icon="pi pi-trash"
-                                            class="p-button-danger p-button-sm"
-                                            (click)="eliminarPresentadoPor(i)"
-                                        ></button>
-                                    </td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
-                    </div>
-                </div>
-
-                <div class="col-span-8">
-                    <p-divider style="margin-top: 4px; margin-bottom: 4px;"></p-divider>
-                </div>
-
-                <!-- EXPEDIENTE -->
-                <div class="col-span-6 sm:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Expediente</label>
-                    <p-inputmask
-                        #expedienteInput
-                        mask="9999/9999"
-                        fluid
-                        placeholder="0000/0000"
-                        formControlName="expediente"
-                        (keydown.enter)="moveNext($event)"
-                    />
-                </div>
-
-                 <!-- TOCA -->
-                <div class="col-span-6 sm:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Toca</label>
-                    <p-inputmask
-                        #tocaInput
-                        mask="9999/9999"
-                        fluid
-                        placeholder="0000/0000"
-                        formControlName="toca"
-                        (keydown.enter)="moveNext($event)"
-                    />
-                </div>
-
-                <!-- FOJAS -->
-                <div class="col-span-6 sm:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Fojas</label>
-                    <p-inputNumber
-                        #fojasInput  
-                        formControlName="fojas"
-                        class="w-full"
-                        fluid
-                        [min]="1"
-                        [max]="99999"
-                        [allowEmpty]="true"
-                        [useGrouping]="false"
-                        (keydown.enter)="moveNext($event)"
-                    ></p-inputNumber>
-                </div>
-
-                <!-- TRASLADOS -->
-                <div class="col-span-6 sm:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Traslados</label>
-                    <p-inputNumber
-                        #trasladosInput      
-                        formControlName="traslados"
-                        class="w-full"
-                        fluid
-                        [min]="1"
-                        [max]="99999"
-                        [allowEmpty]="true"
-                        [useGrouping]="false"
-                        (keydown.enter)="moveNext($event)"
-                    ></p-inputNumber>
-                </div>
-
-                <div class="col-span-8">
-                    <p-divider style="margin-top: 8px; margin-bottom: 4px;"></p-divider>
-                    <p-divider style="margin-top: 8px; margin-bottom: 4px;"></p-divider>
-                    <p-divider style="margin-top: 8px; margin-bottom: 4px;"></p-divider>
-                </div>
-
-                <!-- SALA -->
-                <div class="col-span-6 sm:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Sala (Clave)</label>
-                    <div class="flex gap-2">
-                       <input
-                        #salaCveInput
-                        pInputText
-                        class="w-full"
-                        maxlength="4"
-                        placeholder="Ej. S003"
-                        formControlName="salaCve"
-                        (keydown.enter)="onEnterBuscar('salaCve', $event)"
-                    />
-
-                        <p-button
-                            icon="pi pi-search"
-                            label="Buscar"
-                            (click)="buscarSalaPorCve()"
-                        ></p-button>
-                    </div>
-                </div>
-
-                <div class="col-span-6 sm:col-span-6 mt-7">
-                    <p-select
-                        formControlName="salaId"
-                        [options]="catalogoSalas"
-                        optionValue="idCveSalas"
-                        optionLabel="descripcion"
-                        placeholder="Selecciona una sala"
-                        [filter]="true"
-                        class="w-full"
-                        appendTo="body"
-                    ></p-select>
-                </div>
-
-                <!-- TRAMITE -->
-                <div class="col-span-6 sm:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Trámite (Clave)</label>
-                    <div class="flex gap-2">
-                        <input
-                        #tramiteCveInput
-                        pInputText
-                        class="w-full"
-                        maxlength="4"
-                        placeholder="Ej. C021"
-                        formControlName="tramiteCve"
-                        (keydown.enter)="onEnterBuscar('tramiteCve', $event)"
-                    />
-
-                        <p-button
-                            icon="pi pi-search"
-                            label="Buscar"
-                            (click)="buscarTramitePorCve()"
-                        ></p-button>
-                    </div>
-                </div>
-
-                <div class="col-span-6 sm:col-span-6 mt-7">
-                    <p-select
-                        formControlName="tramiteId"
-                        [options]="catalogoTramites"
-                        optionValue="idElemencat"
-                        optionLabel="descripcion"
-                        placeholder="Selecciona un trámite"
-                        [filter]="true"
-                        class="w-full"
-                        appendTo="body"
-                    ></p-select>
-                </div>
-
-                <!-- ANEXOS -->
-                <div class="col-span-6 sm:col-span-8">
-                    <label class="block mb-2 text-sm font-medium">Anexos</label>
-                    <p-table
-                        [value]="catalogoAnexos"
-                        dataKey="idCatCveAnexos"
-                        class="w-full"
-                        [scrollable]="true"
-                        scrollHeight="250px"
-                        styleClass="p-datatable-sm p-datatable-gridlines"
-                    >
+            <!-- PRESENTADO POR: tabla -->
+            <div class="col-span-8 sm:col-span-4">
+                <div class="card" style="max-height: 250px; overflow-y: auto;">
+                    <p-table stripedRows [value]="presentados" [tableStyle]="{ 'min-width': '100%' }">
                         <ng-template pTemplate="header">
                             <tr>
-                                <th style="width: 3rem"></th>
-                                <th>Anexo</th>
-                                <th style="width: 6rem">Clave</th>
-                                <th style="width: 10rem">Cantidad</th>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Acciones</th>
                             </tr>
                         </ng-template>
-
-                        <ng-template pTemplate="body" let-anexo>
+                        <ng-template pTemplate="body" let-nombre let-i="rowIndex">
                             <tr>
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ nombre }}</td>
                                 <td>
-                                    <p-checkbox
-                                        [binary]="true"
-                                        [ngModel]="estaAnexoSeleccionado(anexo.idCatCveAnexos)"
-                                        [ngModelOptions]="{ standalone: true }"
-                                        (onChange)="toggleAnexo(anexo.idCatCveAnexos)"
-                                    ></p-checkbox>
-                                </td>
-                                <td>{{ anexo.descripcion }}</td>
-                                <td class="font-semibold text-center">
-                                    {{ anexo.cveAnexo }}
-                                </td>
-                                <td>
-                                    <p-inputNumber
-                                        #cantidadInput
-                                        [min]="1"
-                                        [max]="2147483647"
-                                        [useGrouping]="false"
-                                        [disabled]="!estaAnexoSeleccionado(anexo.idCatCveAnexos)"
-                                        [(ngModel)]="cantidadesAnexos[anexo.idCatCveAnexos]"
-                                        [ngModelOptions]="{ standalone: true }"
-                                        [inputId]="'cantidad-' + anexo.idCatCveAnexos"
-                                        (onInput)="actualizarCantidad(anexo.idCatCveAnexos, $event)"
-                                    ></p-inputNumber>
+                                    <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-sm"
+                                        (click)="eliminarPresentadoPor(i)"></button>
                                 </td>
                             </tr>
                         </ng-template>
                     </p-table>
                 </div>
+            </div>
 
-                <!-- OTROS ANEXOS -->
-                    <div class="col-span-6 sm:col-span-4">
-                    <label class="block mb-2 text-sm font-medium">
-                        Otros Anexos
-                    </label>
-                    <div class="flex gap-2">
-                        <input
-                        pInputText
-                        formControlName="otroAnexo"
-                        class="w-full"
-                        maxlength="150"
-                        (keydown.enter)="$event.preventDefault(); agregarOtroAnexo()"
-                        />
-                        <p-button (click)="agregarOtroAnexo()">
-                        <i pButtonIcon class="pi pi-plus"></i>
-                        <span pButtonLabel>Agregar</span>
+            <!-- DIVIDER -->
+            <div class="col-span-8">
+                <p-divider></p-divider>
+            </div>
 
-                        </p-button>
-                    </div>
-                    </div>
+            <!-- EXPEDIENTE -->
+            <div class="col-span-4 sm:col-span-2">
+                <label class="block mb-2 text-sm font-medium">Expediente</label>
+                <p-inputmask #expedienteInput mask="9999/9999" fluid placeholder="0000/0000"
+                    formControlName="expediente" (keydown.enter)="moveNext($event)" />
+            </div>
 
-                    <div class="col-span-6 sm:col-span-4">
-                    <div class="card" style="max-height: 250px; overflow-y: auto;">
-                        <p-table
-                        stripedRows
-                        [value]="otrosAnexosLista"
-                        [tableStyle]="{ 'min-width': '20rem' }"
-                        >
-                        <ng-template pTemplate="header">
-                            <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Acciones</th>
-                            </tr>
-                        </ng-template>
+            <!-- TOCA -->
+            <div class="col-span-4 sm:col-span-2">
+                <label class="block mb-2 text-sm font-medium">Toca</label>
+                <p-inputmask #tocaInput mask="9999/9999" fluid placeholder="0000/0000" formControlName="toca"
+                    (keydown.enter)="moveNext($event)" />
+            </div>
 
-                        <ng-template pTemplate="body" let-item let-i="rowIndex">
-                            <tr>
-                            <td>{{ i + 1 }}</td>
-                            <td>{{ item }}</td>
-                            <td>
-                                <button
-                                pButton
-                                type="button"
-                                icon="pi pi-trash"
-                                class="p-button-danger p-button-sm"
-                                (click)="eliminarOtrosAnexos(i)"
-                                ></button>
-                            </td>
-                            </tr>
-                        </ng-template>
-                        </p-table>
-                    </div>
-                    </div>
+            <!-- FOJAS -->
+            <div class="col-span-4 sm:col-span-2">
+                <label class="block mb-2 text-sm font-medium">Fojas</label>
+                <p-inputNumber #fojasInput formControlName="fojas" class="w-full" fluid [min]="1" [max]="99999"
+                    [allowEmpty]="true" [useGrouping]="false" (keydown.enter)="moveNext($event)"></p-inputNumber>
+            </div>
 
+            <!-- TRASLADOS -->
+            <div class="col-span-4 sm:col-span-2">
+                <label class="block mb-2 text-sm font-medium">Traslados</label>
+                <p-inputNumber #trasladosInput formControlName="traslados" class="w-full" fluid [min]="1" [max]="99999"
+                    [allowEmpty]="true" [useGrouping]="false" (keydown.enter)="moveNext($event)"></p-inputNumber>
+            </div>
 
+            <!-- DIVIDER -->
+            <div class="col-span-8">
+                <p-divider></p-divider>
+            </div>
 
-                <!-- OBSERVACIONES -->
-                <div class="col-span-6 sm:col-span-4">
-                    <label class="block mb-2 text-sm font-medium">Observaciones</label>
-                    <textarea
-                        pInputTextarea
-                        rows="3"
-                        formControlName="observaciones"
-                        class="w-full"
-                         maxlength="400"
-                    ></textarea>
-                </div>
-
-                <!-- FOOTER BOTONES -->
-                <div class="col-span-8 mt-6 flex justify-end gap-3 pt-4">
-
-                    <p-button
-                        label="Nuevo"
-                        icon="pi pi-file"
-                        class="p-button-secondary"
-                        (click)="nuevo()"
-                    ></p-button>
-
-                    <p-button
-                        [label]="terminosForm.get('folio')?.value ? 'Actualizar' : 'Guardar'"
-                        [icon]="terminosForm.get('folio')?.value ? 'pi pi-pencil' : 'pi pi-save'"
-                        class="p-button-success"
-                        (click)="confirmarGuardar()"
-                        [loading]="isSaving"
-                        [disabled]="isSaving">
-                    </p-button>
-
-                     <p-button
-                        label="Certificar"
-                        icon="pi pi-check-circle"
-                        (click)="certificar()"
-                        [disabled]="!terminosForm.get('folio')?.value || isSaving">
-                    </p-button>
-
-                    <button
-                        pButton
-                        icon="pi pi-file-pdf"
-                        label="Reporte"
-                        class="p-button-help"
-                        (click)="irAReporteDocumentos()">
-                    </button>
-                    
+            <!-- SALA clave -->
+            <div class="col-span-8 sm:col-span-2">
+                <label class="block mb-2 text-sm font-medium">Sala (Clave)</label>
+                <div class="flex gap-2">
+                    <input #salaCveInput pInputText class="w-full" maxlength="4" placeholder="Ej. S003"
+                        formControlName="salaCve" (keydown.enter)="onEnterBuscar('salaCve', $event)" />
+                    <p-button icon="pi pi-search" label="Buscar" (click)="buscarSalaPorCve()"></p-button>
                 </div>
             </div>
-        </form>
-    </div>
+
+            <!-- SALA select -->
+            <div class="col-span-8 sm:col-span-6 sm:mt-7">
+                <p-select formControlName="salaId" [options]="catalogoSalas" optionValue="idCveSalas"
+                    optionLabel="descripcion" placeholder="Selecciona una sala" [filter]="true" class="w-full" fluid
+                    appendTo="body"></p-select>
+            </div>
+
+            <!-- TRAMITE clave -->
+            <div class="col-span-8 sm:col-span-2">
+                <label class="block mb-2 text-sm font-medium">Trámite (Clave)</label>
+                <div class="flex gap-2">
+                    <input #tramiteCveInput pInputText class="w-full" maxlength="4" placeholder="Ej. C021"
+                        formControlName="tramiteCve" (keydown.enter)="onEnterBuscar('tramiteCve', $event)" />
+                    <p-button icon="pi pi-search" label="Buscar" (click)="buscarTramitePorCve()"></p-button>
+                </div>
+            </div>
+
+            <!-- TRAMITE select -->
+            <div class="col-span-8 sm:col-span-6 sm:mt-7">
+                <p-select formControlName="tramiteId" [options]="catalogoTramites" optionValue="idElemencat"
+                    optionLabel="descripcion" placeholder="Selecciona un trámite" [filter]="true" class="w-full" fluid
+                    appendTo="body"></p-select>
+            </div>
+
+            <!-- DIVIDER -->
+            <div class="col-span-8">
+                <p-divider></p-divider>
+            </div>
+
+            <!-- ANEXOS tabla -->
+            <div class="col-span-8">
+                <label class="block mb-2 text-sm font-medium">Anexos</label>
+                <p-table [value]="catalogoAnexos" dataKey="idCatCveAnexos" class="w-full" [scrollable]="true"
+                    scrollHeight="250px" styleClass="p-datatable-sm p-datatable-gridlines">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 3rem"></th>
+                            <th>Anexo</th>
+                            <th style="width: 6rem">Clave</th>
+                            <th style="width: 10rem">Cantidad</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-anexo>
+                        <tr>
+                            <td>
+                                <p-checkbox [binary]="true" [ngModel]="estaAnexoSeleccionado(anexo.idCatCveAnexos)"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    (onChange)="toggleAnexo(anexo.idCatCveAnexos)"></p-checkbox>
+                            </td>
+                            <td>{{ anexo.descripcion }}</td>
+                            <td class="font-semibold text-center">{{ anexo.cveAnexo }}</td>
+                            <td>
+                                <p-inputNumber #cantidadInput [min]="1" [max]="2147483647" [useGrouping]="false"
+                                    [disabled]="!estaAnexoSeleccionado(anexo.idCatCveAnexos)"
+                                    [(ngModel)]="cantidadesAnexos[anexo.idCatCveAnexos]"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [inputId]="'cantidad-' + anexo.idCatCveAnexos"
+                                    (onInput)="actualizarCantidad(anexo.idCatCveAnexos, $event)"></p-inputNumber>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+
+            <!-- OTROS ANEXOS: input -->
+            <div class="col-span-8 sm:col-span-4">
+                <label class="block mb-2 text-sm font-medium">Otros Anexos</label>
+                <div class="flex gap-2">
+                    <input pInputText formControlName="otroAnexo" class="w-full" maxlength="150"
+                        (keydown.enter)="$event.preventDefault(); agregarOtroAnexo()" />
+                    <p-button (click)="agregarOtroAnexo()">
+                        <i pButtonIcon class="pi pi-plus"></i>
+                        <span pButtonLabel>Agregar</span>
+                    </p-button>
+                </div>
+            </div>
+
+            <!-- OTROS ANEXOS: tabla -->
+            <div class="col-span-8 sm:col-span-4">
+                <div class="card" style="max-height: 250px; overflow-y: auto;">
+                    <p-table stripedRows [value]="otrosAnexosLista" [tableStyle]="{ 'min-width': '100%' }">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-item let-i="rowIndex">
+                            <tr>
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ item }}</td>
+                                <td>
+                                    <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-sm"
+                                        (click)="eliminarOtrosAnexos(i)"></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+
+            <!-- OBSERVACIONES -->
+            <div class="col-span-8 sm:col-span-4">
+                <label class="block mb-2 text-sm font-medium">Observaciones</label>
+                <textarea pInputTextarea rows="3" formControlName="observaciones" class="w-full"
+                    maxlength="400"></textarea>
+            </div>
+
+            <!-- FOOTER BOTONES -->
+            <div class="col-span-8 mt-6 flex flex-wrap justify-end gap-3 pt-4">
+
+                <p-button label="Nuevo" icon="pi pi-file" (click)="nuevo()"></p-button>
+
+                <p-button [label]="terminosForm.get('folio')?.value ? 'Actualizar' : 'Guardar'"
+                    [icon]="terminosForm.get('folio')?.value ? 'pi pi-pencil' : 'pi pi-save'"
+                    (click)="confirmarGuardar()"  [disabled]="isSaving">
+                </p-button>
+
+                <p-button label="Certificar" icon="pi pi-check-circle" (click)="certificar()"
+                    [disabled]="!terminosForm.get('folio')?.value || isSaving">
+                </p-button>
+
+                <p-button icon="pi pi-file-pdf" label="Reporte" styleClass="btn-secondary"
+                    (click)="irAReporteDocumentos()">
+                </p-button>
+
+            </div>
+        </div>
+    </form>
 </div>
