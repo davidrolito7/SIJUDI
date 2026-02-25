@@ -1,5 +1,5 @@
-<!-- <app-spinner [isLoading]="isLoading"></app-spinner>  -->
-<div class="sticky top-0 z-50  flex flex-col gap-4 bg-surface-0 dark:bg-surface-900">
+ <app-spinner [isLoading]="isLoading"></app-spinner> 
+<div class="lg:sticky top-0 z-50  flex flex-col gap-4 bg-surface-0 dark:bg-surface-900">
 
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
@@ -8,12 +8,12 @@
     <div class=" border border-surface rounded-2xl p-4">
 
         <div class="flex items-start flex-col md:flex-row justify-between mb-2">
-            <div class="font-medium text-2xl ">
+            <div class="font-medium text-2xl mb-2">
                 Detalle del expediente
             </div>
             <div class="flex gap-2 flex-wrap">
 
-                @if (!mostrarBoton()) {
+                @if (mostrarBoton()) {
                 <p-button (onClick)="irACrearTramite(expediente()?.idExpediente!, expediente()?.NumExpediente!)"
                     styleClass="btn-secondary" icon="pi pi-file-plus"
                     label="Nuevo trámite"></p-button>
@@ -36,7 +36,7 @@
         <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de exhortos enviados">
             <div class="grid grid-cols-12 gap-4 w-full items-end">
                 <!-- Folio -->
-                <div class="col-span-12 md:col-span-6 lg:col-span-4 w-full">
+                <div class="col-span-6 lg:col-span-4 w-full">
                     <label for="folio" class="block mb-2 text-sm font-medium">Folio</label>
 
                     <p-inputmask fluid [(ngModel)]="filtro.folio" name="folio" class="uppercase text-sm rounded-lg"
@@ -44,7 +44,7 @@
                 </div>
 
                 <!-- Estatus -->
-                <div class="col-span-12 md:col-span-6 lg:col-span-2 w-full">
+                <div class="col-span-6 lg:col-span-2 w-full">
                     <label for="estado" class="block mb-2 text-sm font-medium">Estatus</label>
 
                     <p-select inputId="estado" name="estado" class="w-full" [options]="tipoOptions" [(ngModel)]="filtro.tipo"

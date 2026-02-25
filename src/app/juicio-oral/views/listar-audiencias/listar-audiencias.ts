@@ -7,13 +7,13 @@ import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule, formatDate } from '@angular/common'; // Asegúrate de importar esto
 import { Spinner } from "../../../shared/components/spinner/spinner";
- 
+
 import { ListadoIniciosCreados } from '../../interfaces/juicioenlinea.model';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { Table,TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputMaskModule } from 'primeng/inputmask';
@@ -28,8 +28,8 @@ import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-listar-audiencias',
- imports: [
-      CommonModule,
+  imports: [
+    CommonModule,
     RouterModule,
     FormsModule,
 
@@ -50,10 +50,10 @@ import { MessageService } from 'primeng/api';
     // Shared components
     Breadcrub,
     Spinner
- ],
+  ],
   templateUrl: './listar-audiencias.html',
   styleUrl: './listar-audiencias.css',
-    providers: [MessageService],
+  providers: [MessageService],
 })
 export class ListarAudiencias implements OnInit {
   audiencias: AudienciasResponse[] = [];
@@ -80,10 +80,10 @@ export class ListarAudiencias implements OnInit {
     private juicioService: JuicioService,
     private router: Router,
     private route: ActivatedRoute,
-     private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) { }
 
-ngOnInit(): void {
+  ngOnInit(): void {
     const params = this.route.snapshot.queryParams;
     this.sincronizarFiltrosDesdeURL(params);
     const page = params['page'] ? +params['page'] : 1;
@@ -97,9 +97,9 @@ ngOnInit(): void {
     this.filtro.rangeDates =
       params['fechaInicio'] && params['fechaFinal']
         ? [
-            this.parseDateFromString(params['fechaInicio']),
-            this.parseDateFromString(params['fechaFinal']),
-          ]
+          this.parseDateFromString(params['fechaInicio']),
+          this.parseDateFromString(params['fechaFinal']),
+        ]
         : '';
   }
   private cargarDatos(page: number): void {
@@ -119,8 +119,8 @@ ngOnInit(): void {
 
     if (this.filtro.estado > 0) requestParams['estado'] = this.filtro.estado;
 
-       this.juicioService.getAudiencias(requestParams).subscribe({
-        next: (response) => {
+    this.juicioService.getAudiencias(requestParams).subscribe({
+      next: (response) => {
         this.isLoading = false;
         this.audiencias = response?.data ?? [];
         this.pagination = response.pagination;
@@ -179,7 +179,7 @@ ngOnInit(): void {
   }
 
 
-    detalle(idAudiencia: number) {
+  detalle(idAudiencia: number) {
     this.router.navigate(['/juicioenlinea/audiencias/detalle'], { state: { idAudiencia } });
   }
 
@@ -210,7 +210,7 @@ ngOnInit(): void {
   }
 
 
- aplicarFiltros(): void {
+  aplicarFiltros(): void {
     const queryParams: Record<string, string | number | null> = {
       page: 1,
       estado: this.filtro.estado > 0 ? this.filtro.estado : null,
@@ -259,32 +259,32 @@ ngOnInit(): void {
     this.cargarDatos(page);
   }
 
-    estadoOptions = [
+  estadoOptions = [
     { label: 'Todo', value: 0 },
     { label: 'Programadas', value: 1 },
     { label: 'Finalizadas', value: 2 },
     { label: 'Canceladas', value: 3 },
   ];
-getEstadoDescripcion(audiencia: unknown): string | null {
-  const i = audiencia as {
-    ultimo_estado?: { descripcion?: string };
-  };
+  getEstadoDescripcion(audiencia: unknown): string | null {
+    const i = audiencia as {
+      ultimo_estado?: { descripcion?: string };
+    };
 
-  return i.ultimo_estado?.descripcion ?? null;
-}
+    return i.ultimo_estado?.descripcion ?? null;
+  }
 
-getEstadoId(audiencia: unknown): number | null {
-  const i = audiencia as {
-    ultimo_estado?: { idCatalogoEstadoAudiencia?: string | number };
-  };
+  getEstadoId(audiencia: unknown): number | null {
+    const i = audiencia as {
+      ultimo_estado?: { idCatalogoEstadoAudiencia?: string | number };
+    };
 
-  return i.ultimo_estado?.idCatalogoEstadoAudiencia
-    ? Number(i.ultimo_estado.idCatalogoEstadoAudiencia)
-    : null;
-}
+    return i.ultimo_estado?.idCatalogoEstadoAudiencia
+      ? Number(i.ultimo_estado.idCatalogoEstadoAudiencia)
+      : null;
+  }
 
 
-    getEstadoTag(audiencia: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+  getEstadoTag(audiencia: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
     const id = this.getEstadoId(audiencia);
     switch (id) {
       case 1:
@@ -293,6 +293,8 @@ getEstadoId(audiencia: unknown): number | null {
         return { severity: 'info', icon: 'pi pi-clock' };
       case 3:
         return { severity: 'warn', icon: 'pi pi-exclamation-triangle' };
+      case 4:
+        return { severity: 'secondary', icon: 'pi pi-exclamation-triangle' };
       default:
         return { severity: 'secondary' };
     }

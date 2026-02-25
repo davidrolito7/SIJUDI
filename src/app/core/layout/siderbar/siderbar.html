@@ -191,7 +191,6 @@
                 <div class="text-sm font-medium leading-5 text-surface-400 dark:text-surface-500">
                     Navegación
                 </div>
-
                 @for (p of pantallasVisibles(); track p.IdPantalla ?? $index) {
                 <a class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-color bg-transparent"
                     [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis" >

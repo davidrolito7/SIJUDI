@@ -372,7 +372,6 @@ export class CrearDemanda {
         if (response && response.success) {
           this.firmaVerificada = true;
           this.messageService.add({ severity: 'success', summary: 'Firma verificada', detail: 'La firma digital es válida.' });
-
         } else {
           this.messageService.add({ severity: 'info', summary: 'Lo sentimos', detail: response?.message });
           this.resetFirmaForm();
@@ -687,14 +686,21 @@ export class CrearDemanda {
     });
   }
 
+  // ...existing code...
   enviarDemanda(event: Event) {
-    this.confirmationService.confirm({
-      key: 'demanda',
-      target: event.target as EventTarget,
-      accept: () => this.enviarFormulario(),
-      reject: () => { }
-    });
-  }
+      this.confirmationService.confirm({
+        key: 'demanda',
+        target: event.target as EventTarget,
+        accept: () => this.enviarFormulario(),
+        reject: () => {
+          this.formulario.reset();
+          this.listaPartes = [];
+          this.listaAnexos = [];
+          this.anexosDeclarados = [];
+        }
+      });
+    }
+  // ...existing code...
 
   enviarFormulario() {
     this.isLoading = true; // Activa el spinner

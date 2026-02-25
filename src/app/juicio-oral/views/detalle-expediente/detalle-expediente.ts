@@ -18,11 +18,12 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { TooltipModule } from 'primeng/tooltip';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { PantallasService } from '../../services/pantallas.service';
+import { Spinner } from "../../../shared/components/spinner/spinner";
 
 @Component({
   selector: 'app-detalle-expediente',
   imports: [CommonModule, RouterModule, DatePickerModule, FormsModule, RadioButtonModule, ButtonModule, TagModule,
-    IconFieldModule, InputIconModule, TableModule, SelectModule, InputTextModule, InputMaskModule, TooltipModule, Breadcrub],
+    IconFieldModule, InputIconModule, TableModule, SelectModule, InputTextModule, InputMaskModule, TooltipModule, Breadcrub, Spinner],
   templateUrl: './detalle-expediente.html',
   styleUrl: './detalle-expediente.css',
 })
@@ -31,19 +32,19 @@ export class DetalleExpediente {
   detalleExpediente: RegistroExpediente[] | null = null;
   expediente = signal<ListarExpedientesResponse | null>(null);
   tablaDatos = signal<any[]>([]);
-
+  isLoading: boolean = true;
   // Opciones para el select de tipo (ajusta los valores según tus tipos reales)
-tipoOptions = [
-  { label: 'Todo', value: 0 },
-  { label: 'Requerimientos', value: 1 },
-  { label: 'Trámites', value: 2 },
-  { label: 'Audiencias', value: 3 }
-];
+  tipoOptions = [
+    { label: 'Todo', value: 0 },
+    { label: 'Requerimientos', value: 1 },
+    { label: 'Trámites', value: 2 },
+    { label: 'Audiencias', value: 3 }
+  ];
 
   filtro: { folio: string; rangeDates: Date[] | ''; tipo: number } = {
     folio: '',
     rangeDates: '',
-  tipo: 0, // 0 = todos
+    tipo: 0, // 0 = todos
   };
 
   // Paginación
@@ -80,7 +81,7 @@ tipoOptions = [
   }
 
   private sincronizarFiltrosDesdeURL(params: Record<string, string>): void {
-  this.filtro.tipo = params['tipo'] ? Number(params['tipo']) : 0;
+    this.filtro.tipo = params['tipo'] ? Number(params['tipo']) : 0;
     this.filtro.folio = params['folio'] || '';
     this.filtro.rangeDates =
       params['fechaInicio'] && params['fechaFinal']
@@ -92,6 +93,7 @@ tipoOptions = [
   }
 
   private cargarDatos(page: number): void {
+    this.isLoading = true;
     if (!this.idExpediente) return;
 
     const requestParams: Record<string, string | number> = {
@@ -121,11 +123,13 @@ tipoOptions = [
         const registros = Array.isArray(data.registros) ? data.registros.filter(Boolean) : [];
         this.detalleExpediente = registros;
         this.tablaDatos.set(this.buildTablaDatos(registros));
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error al cargar el detalle:', error);
         this.detalleExpediente = null;
         this.expediente.set(null);
+        this.isLoading = false;
       }
     });
   }
@@ -195,26 +199,26 @@ tipoOptions = [
     if (item.tipo === 'Pre-registro') {
       this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idInicio: item.id } });
     } else if (item.tipo === 'Requerimiento') {
-      this.router.navigate(['/requerimiento/asignaciones/detalle'], { state: { idRequerimiento: item.id } });
+      this.router.navigate(['/juicioenlinea/requerimientos/detalle'], { state: { idRequerimiento: item.id } });
     } else if (item.tipo === 'tramite') {
       const idTramite = item.datosOriginales.idTramite;
       this.router.navigate(['/tramites/ver/detalle'], { state: { idTramite } });
     } else if (item.tipo === 'Audiencia') {
       const idAudiencia = item.datosOriginales.idAudiencia;
-      this.router.navigate(['/audiencias/detalle'], { state: { idAudiencia } });
+      this.router.navigate(['/juicioenlinea/audiencias/detalle'], { state: { idAudiencia } });
     }
   }
 
   irACrearRequerimiento(idExpediente: number, NumExpediente: string) {
-    this.router.navigate(['/requerimiento/crear'], { state: { idExpediente, NumExpediente } });
+    this.router.navigate(['/juicioenlinea/requerimientos/crear'], { state: { idExpediente, NumExpediente } });
   }
 
   goCrearAudiencia(idExpediente: number, NumExpediente: string) {
-    this.router.navigate(['/audiencias/crear'], { state: { idExpediente, NumExpediente } });
+    this.router.navigate(['/juicioenlinea/audiencias/crear'], { state: { idExpediente, NumExpediente } });
   }
 
   irACrearTramite(idExpediente: number, NumExpediente: string) {
-    this.router.navigate(['/tramites/crear'], { state: { idExpediente, NumExpediente } });
+    this.router.navigate(['/juicioenlinea/tramites/crear'], { state: { idExpediente, NumExpediente } });
   }
 
   limpiarEspaciosFolio(valor: string) {

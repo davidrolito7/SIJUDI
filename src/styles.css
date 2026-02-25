@@ -3,6 +3,14 @@
 @import "tailwindcss-primeui";
 @import "primeicons/primeicons.css";
 
+/* ============================================
+   TEMA - Define tus colores personalizados
+   ============================================ */
+@theme {
+  --color-secondary-500: #b2915b;
+  --color-secondary-600: #9a7b4e;
+  --color-secondary-700: #7f6542;
+}
 
 /* ============================================
    BOTONES PERSONALIZADOS

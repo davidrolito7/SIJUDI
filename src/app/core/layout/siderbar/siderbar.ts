@@ -106,7 +106,6 @@ export class Siderbar {
     this.showMenu.set(false);
     this.selectedModuloId.set(null);
   }
-
   
   get abogadoNombre(): string {
     return this.tokenService.getAbogadoNombre() || 'Abogado';

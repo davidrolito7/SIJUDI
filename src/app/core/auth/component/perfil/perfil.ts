@@ -164,6 +164,7 @@ export class Perfil {
 
     // === CARGA DE PANTALLAS DEL USUARIO ===
     this.cargarPantallasUsuario();
+    
     // Fuerza recarga de módulos/pantallas con el perfil nuevo
     this.menuStore.refresh()
       .pipe(
@@ -345,6 +346,7 @@ export class Perfil {
     }
     this.pantallasService.cargarPantallas().subscribe({
       next: (pantallas) => {
+        console.log('Pantallas cargadas:', pantallas);
       },
       error: (error) => {
         console.error('Error al cargar las vistas:', error);

@@ -7,7 +7,16 @@ import { Component, Input } from '@angular/core';
   styleUrl: './spinner.css',
 })
 export class Spinner {
-  @Input() isLoading: boolean = false; // Controla la visibilidad del spinner
-  @Input() message: string = ''; // Mensaje opcional
+  @Input() message: string = '';
 
+  private _isLoading = false;
+
+  @Input() set isLoading(value: boolean) {
+    this._isLoading = value;
+    document.body.style.cursor = value ? 'wait' : 'default';
+  }
+
+  get isLoading(): boolean {
+    return this._isLoading;
+  }
 }

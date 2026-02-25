@@ -22,10 +22,11 @@ import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { PantallasService } from '../../services/pantallas.service';
+import { Spinner } from "../../../shared/components/spinner/spinner";
 
 @Component({
   selector: 'app-detalle-requerimientos',
-  imports: [PdfDialog, FieldsetModule, CardModule, DatePipe, CommonModule, ConfirmDialogModule, DialogModule, FormsModule, ReactiveFormsModule, ButtonModule, Breadcrub, TableModule, ConfirmDialog, FileUploadModule, SelectModule, InputTextModule, TextareaModule],
+  imports: [PdfDialog, FieldsetModule, CardModule, DatePipe, CommonModule, ConfirmDialogModule, DialogModule, FormsModule, ReactiveFormsModule, ButtonModule, Breadcrub, TableModule, ConfirmDialog, FileUploadModule, SelectModule, InputTextModule, TextareaModule, Spinner],
   templateUrl: './detalle-requerimientos.html',
   styleUrl: './detalle-requerimientos.css',
   providers: [ConfirmationService, MessageService],
@@ -192,12 +193,13 @@ export class DetalleRequerimientos implements OnInit {
 
   mostrarUnaVezEnviadoYRevisado(): boolean {
     let valido = false;
-    if (this.catalogo(this.detalleRequerimiento()) == 3 || this.catalogo(this.detalleRequerimiento()) == 4 || this.catalogo(this.detalleRequerimiento) == 5) {
-      valido = true
+    const estado = this.catalogo(this.detalleRequerimiento());
+    if (estado == 3 || estado == 4 || estado == 5) {
+      valido = true;
     }
     return valido;
   }
-
+  
   mostrarUnaVezEnviado(): boolean {
     let valido = false;
     if (this.catalogo(this.detalleRequerimiento()) == 3) {

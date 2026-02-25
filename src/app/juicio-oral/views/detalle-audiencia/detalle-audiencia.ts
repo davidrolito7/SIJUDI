@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal, ViewChild } from '@angular/core';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { AudienciasResponse, CancelarAudienciaRequest, CatTipoDocumento } from '../../interfaces/juicioenlinea.model';
 import { CommonModule } from '@angular/common';
@@ -15,17 +15,22 @@ import { AuthService } from '../../../core/auth/service/auth.service';
 import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-
+import { PantallasService } from '../../services/pantallas.service';
+import { FileUploadModule } from 'primeng/fileupload';
+import { ToastModule } from 'primeng/toast';
+import { PasswordModule } from 'primeng/password';
+import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
+import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+import { base64ToFile } from '../../../shared/functions/utils';
 @Component({
   selector: 'app-detalle-audiencia',
- imports: [CommonModule,Breadcrub, ButtonModule, DialogModule, ReactiveFormsModule, TooltipModule, ConfirmDialogModule, TableModule, Spinner, TagModule],
-templateUrl: './detalle-audiencia.html',
+  imports: [CommonModule, Breadcrub, ButtonModule, DialogModule, ReactiveFormsModule, TooltipModule, ConfirmDialogModule, TableModule, Spinner, TagModule, FileUploadModule, ToastModule, PasswordModule, PdfDialog, ConfirmDialog],
+  templateUrl: './detalle-audiencia.html',
   styleUrl: './detalle-audiencia.css',
-    providers: [ConfirmationService, MessageService]
+  providers: [ConfirmationService, MessageService]
 
 })
 export class DetalleAudiencia implements OnInit {
- @ViewChild('defaultModal') defaultModal: any;
   isLoading: boolean = false;
 
   documentoBase64: string | null = null;
@@ -43,26 +48,28 @@ export class DetalleAudiencia implements OnInit {
   mostrarInputNombre: boolean = false; // Input de otro* en catalogo tipo documento
   catTipoDocumentos: CatTipoDocumento[] = [];
   acuerdoCancelacion: CancelarAudienciaRequest | null = null; // Para almacenar el acuerdo de cancelación
+  mostrarDocumento = signal(false);
+  nombre = '';
 
   constructor(
     private juicioService: JuicioService,
     private router: Router,
     //    private sanitizer: DomSanitizer,
-   // private flowbiteService: FlowbiteService,
+    // private flowbiteService: FlowbiteService,
     private readonly fb: FormBuilder,
     private messageService: MessageService,
     private sanitizer: DomSanitizer,
     private confirmationService: ConfirmationService,
-   private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private pantallasService: PantallasService
+
 
 
   ) { }
 
 
- /* ngOnInit(): void {
-    //this.flowbiteService.loadFlowbite(() => initFlowbite());
-    console.log('Navegando a detalle de audiencia :', this.idAudiencia);
+  ngOnInit(): void {
 
     const state = window.history.state as { idAudiencia: number; tipoMensaje?: 'crear' | 'actualizar' };
     console.log('Estado recibido:', state);
@@ -86,28 +93,7 @@ export class DetalleAudiencia implements OnInit {
         });
       }
     }
-
     this.anexoForm = this.fb.group({
-      observaciones: ['', [Validators.required, Validators.maxLength(250)]],
-      documento: [null, Validators.required],
-    });
-    this.solicitudForm = this.fb.group({
-      observaciones: ['', [Validators.required, Validators.maxLength(250)]],
-      solicitudDocumento: [null, Validators.required],
-    });
-  }*/
-   ngOnInit(): void {
-
-      const state = window.history.state as { idAudiencia: number };
-   
-    if (state?.idAudiencia) {
-      this.idAudiencia = state.idAudiencia;
-      this.getDetalleExpediente(this.idAudiencia);
-    } else {
-  //   this.router.navigate(['/layout/inicio']);  
-  }
-
-       this.anexoForm = this.fb.group({
       observaciones: ['', [Validators.required, Validators.maxLength(250)]],
       documento: [null, Validators.required],
     });
@@ -123,22 +109,22 @@ export class DetalleAudiencia implements OnInit {
   showModalReqGrabacion() {
     this.visibleSolicitarGrabacion = true;
   }
- mostrarBoton(): boolean {
-  return true;
-  //return this.authService.tienePermiso('audiencias/crear');
- }
- /* getDetalleExpediente(idAudiencia: number): void {
-    this.juicioService.getDetalleAudiencia(idAudiencia).subscribe({
-      next: (response: any) => {
-        console.log('Detalle de la audiencia:', response.data);
-        this.detalleAudiencia = response.data || null;
+  mostrarBoton(): boolean {
 
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      }
-    });
-  }*/
+    return this.pantallasService.tienePermiso('audiencias/crear');
+  }
+  /* getDetalleExpediente(idAudiencia: number): void {
+     this.juicioService.getDetalleAudiencia(idAudiencia).subscribe({
+       next: (response: any) => {
+         console.log('Detalle de la audiencia:', response.data);
+         this.detalleAudiencia = response.data || null;
+ 
+       },
+       error: (error) => {
+         console.error('Error:', error);
+       }
+     });
+   }*/
 
   getDetalleExpediente(idAudiencia: number): void {
     this.juicioService.getDetalleAudiencia(idAudiencia).subscribe({
@@ -162,7 +148,7 @@ export class DetalleAudiencia implements OnInit {
       const [anio, mes, dia] = fecha.split('-'); // Divide la fecha en partes
       const fechaTransformada = `${anio}-${mes}-${dia}`; // Reconstruye la fecha en el formato correcto
 
-      this.router.navigate(['/audiencias/crear'], {
+      this.router.navigate(['/juicioenlinea/audiencias/crear'], {
         state: {
           ...this.detalleAudiencia,
           fecha: fechaTransformada // Asegúrate de enviar la fecha transformada
@@ -206,32 +192,26 @@ export class DetalleAudiencia implements OnInit {
 
       },
       error: (error) => {
-                this.isLoading = false;
+        this.isLoading = false;
 
         console.error('Error al agregar acuerdo de cancelación:', error);
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cancelar la audiencia, contacte con soporte.' });
       }
     });
   }
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.anexoForm.patchValue({
-        documento: file,
-      });
+
+  onFileSelected(event: any): void {
+    const file = event.files[0];
+    if (file) {
+      this.anexoForm.patchValue({ documento: file });
       this.anexoForm.get('documento')?.markAsTouched();
       this.anexoForm.get('documento')?.updateValueAndValidity();
     }
   }
+
   resetAnexoForm() {
     this.anexoForm.reset();
     this.visibleAnexo = false;
-
-    const fileInput = document.getElementById('documento') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = ''; // Restablece el valor del campo de archivo 0.o
-    }
   }
 
   getError(controlName: string, form: FormGroup = this.anexoForm): string {
@@ -259,29 +239,31 @@ export class DetalleAudiencia implements OnInit {
       next: (response) => {
         this.isLoading = false;
 
-        console.log('Respuesta de getDocumento:', response);
-        if (response && response.data && response.data.file) {
-          this.documentoBase64 = response.data.file;
-          this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`data:application/pdf;base64,${this.documentoBase64}`);
-          this.defaultModal.nativeElement.classList.remove('hidden');
-          this.defaultModal.nativeElement.classList.add('flex');
+        if (response?.data?.file) {
+          this.nombre = response.data.nombre ?? 'documento.pdf';
+
+          this.onVerDocumento(response.data.file, `documento_${idDocumento}.pdf`, 'application/pdf');
         } else {
           console.error('No se encontró contenido base64 para el documento');
         }
       },
       error: (error) => {
         this.isLoading = false;
-
         console.error('Error al obtener el documento:', error);
       }
     });
   }
-
-  closeModal(): void {
-    // Cierra el modal
-    this.defaultModal.nativeElement.classList.remove('flex');
-    this.defaultModal.nativeElement.classList.add('hidden');
+  onVerDocumento(fileBase64: string, nombre: string, mime: string): void {
+    const file = base64ToFile(fileBase64, nombre, mime);
+    if (file instanceof File) {
+      const url = URL.createObjectURL(file);
+      this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      this.mostrarDocumento.set(true);
+    } else {
+      console.error('Documento inválido');
+    }
   }
+
   isEnProgreso(start: string | Date, end: string | Date): boolean {
     const now = new Date();
     const inicio = new Date(start);
@@ -303,15 +285,13 @@ export class DetalleAudiencia implements OnInit {
   showPasswords: boolean[] = [];
 
 
-  togglePassword(index: number): void {
+  togglePassword(index: number, password: string): void {
     this.showPasswords[index] = true;
 
-    // Copiar al portapapeles
-    const input = document.getElementById(`password-${index}`) as HTMLInputElement;
-    if (input) {
-      input.select();
-      navigator.clipboard.writeText(input.value);
-    }
+    // Copiar al portapapeles correctamente
+    navigator.clipboard.writeText(password).catch(err => {
+      console.error('Error al copiar:', err);
+    });
 
     // Ocultar después de 3 segundos
     setTimeout(() => {
@@ -361,10 +341,10 @@ export class DetalleAudiencia implements OnInit {
 
         console.error('Error al enviar la solicitud de audiencia:', error);
         this.resetSolicitudForm();
-    // Extraemos el mensaje de la API o usamos un fallback
-    const apiMsg = error?.error?.message 
-      || error?.message 
-      || 'Ya existe una solicitud para esta audiencia.';
+        // Extraemos el mensaje de la API o usamos un fallback
+        const apiMsg = error?.error?.message
+          || error?.message
+          || 'Ya existe una solicitud para esta audiencia.';
 
         if (error.status === 409) {
           this.messageService.add({
@@ -389,26 +369,17 @@ export class DetalleAudiencia implements OnInit {
     });
   }
 
-  onFileSelectedSolicitud(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.solicitudForm.patchValue({
-        solicitudDocumento: file,
-      });
+  onFileSelectedSolicitud(event: any): void {
+    const file = event.files[0];
+    if (file) {
+      this.solicitudForm.patchValue({ solicitudDocumento: file });
       this.solicitudForm.get('solicitudDocumento')?.markAsTouched();
       this.solicitudForm.get('solicitudDocumento')?.updateValueAndValidity();
     }
   }
-
   resetSolicitudForm() {
     this.solicitudForm.reset();
     this.visibleSolicitarGrabacion = false;
-    console.log('Cerrando modal de solicitud de grabación');
-    const fileInput = document.getElementById('solicitudDocumento') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
   }
   isArrayAndNotEmpty(arr: any): boolean {
     return Array.isArray(arr) && arr.length > 0;
@@ -422,7 +393,7 @@ export class DetalleAudiencia implements OnInit {
       reject: () => { }
     });
   }
-    confirmarSolcitudGrabacion(event: Event) {
+  confirmarSolcitudGrabacion(event: Event) {
     this.confirmationService.confirm({
       key: 'solicitudGrabacion',
       target: event.target as EventTarget,
