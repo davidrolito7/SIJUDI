@@ -1,128 +1,71 @@
-<!-- ==================================================
-     Contenedor principal
-     ================================================== -->
-  <div class="px-6 py-4 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
-  
-<!-- Spinner overlay global -->
-  <app-spinner 
-    [isLoading]="isLoading" 
-    message="Generando reporte, espere..." >
-  </app-spinner>
+<app-spinner [isLoading]="isLoading" message="Generando reporte, espere..."></app-spinner>
 
-<!-- Toast para mensajes -->
 <p-toast position="top-right"></p-toast>
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
-  <!-- BREADCRUMB -->
-  <app-breadcrub></app-breadcrub>
-</div>
-<p-card>
 
-  <h2 class="text-xl font-bold mb-4">
-    Reporte de documentos con término
-  </h2>
+<app-breadcrub></app-breadcrub>
 
-  <!-- ==================================================
-       Filtros del reporte
-       ================================================== -->
-  <div class="grid grid-cols-6 gap-4 items-end">
+<div class="mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+
+  <!-- HEADER -->
+  <div class="flex items-start flex-col md:flex-row justify-between mb-4">
+    <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+      Reporte de documentos con término
+    </label>
+
+  </div>
+
+  <!-- FILTROS -->
+  <div class="grid grid-cols-12 gap-4 items-end">
 
     <!-- Instancia -->
-    <div class="col-span-6 sm:col-span-2">
+    <div class="col-span-12 md:col-span-6 lg:col-span-3">
       <label class="block mb-2 text-sm font-medium">Instancia</label>
-      <p-select
-        [options]="instancias"
-        [(ngModel)]="instancia"
-        optionLabel="label"
-        optionValue="value"
-        class="w-full"
-        (onChange)="onInstanciaChange()">
+      <p-select [options]="instancias" [(ngModel)]="instancia" optionLabel="label" optionValue="value" class="w-full"
+        fluid (onChange)="onInstanciaChange()" appendTo="body">
       </p-select>
     </div>
 
     <!-- Juzgado (Primera Instancia) -->
-    <div class="col-span-6 sm:col-span-2" *ngIf="instancia === 'P'">
+    <div class="col-span-12 md:col-span-6 lg:col-span-3" *ngIf="instancia === 'P'">
       <label class="block mb-2 text-sm font-medium">Juzgado</label>
-      <p-select
-        #juzgadoSelect
-        [options]="catalogoJuzgados"
-        [(ngModel)]="juzgado"
-        optionLabel="descripcion"
-        optionValue="cve"
-        placeholder="Selecciona un juzgado"
-        [filter]="true"
-        filterBy="descripcion"
-        class="w-full"
-        appendTo="body"
-        (onChange)="onJuzgadoChange()">
+      <p-select #juzgadoSelect [options]="catalogoJuzgados" [(ngModel)]="juzgado" optionLabel="descripcion"
+        optionValue="cve" placeholder="Selecciona un juzgado" [filter]="true" filterBy="descripcion" class="w-full"
+        fluid appendTo="body" (onChange)="onJuzgadoChange()">
       </p-select>
     </div>
 
     <!-- Sala (Segunda Instancia) -->
-    <div class="col-span-6 sm:col-span-2" *ngIf="instancia === 'S'">
+    <div class="col-span-12 md:col-span-6 lg:col-span-3" *ngIf="instancia === 'S'">
       <label class="block mb-2 text-sm font-medium">Sala</label>
-      <p-select
-        #salaSelect
-        [options]="catalogoSalas"
-        [(ngModel)]="sala"
-        optionLabel="descripcion"
-        optionValue="cve"
-        placeholder="Selecciona una sala"
-        [filter]="true"
-        filterBy="descripcion"
-        class="w-full"
-        appendTo="body"
+      <p-select #salaSelect [options]="catalogoSalas" [(ngModel)]="sala" optionLabel="descripcion" optionValue="cve"
+        placeholder="Selecciona una sala" [filter]="true" filterBy="descripcion" class="w-full" fluid appendTo="body"
         (onChange)="onSalaChange()">
       </p-select>
     </div>
 
     <!-- Fecha inicio -->
-    <div class="col-span-6 sm:col-span-3">
+    <div class="col-span-6 md:col-span-6 lg:col-span-2">
       <label class="block mb-2 text-sm font-medium">De</label>
-      <p-datePicker
-        #fechaInicioInput
-        [(ngModel)]="fechaInicio"
-        dateFormat="yy-mm-dd"
-        class="w-full"
-        appendTo="body"
-        [maxDate]="maxDate">
-        
+      <p-datePicker #fechaInicioInput [(ngModel)]="fechaInicio" dateFormat="yy-mm-dd" class="w-full" fluid
+        appendTo="body" [maxDate]="maxDate">
       </p-datePicker>
     </div>
 
     <!-- Fecha fin -->
-    <div class="col-span-6 sm:col-span-3">
+    <div class="col-span-6 md:col-span-6 lg:col-span-2">
       <label class="block mb-2 text-sm font-medium">A</label>
-      <p-datePicker
-        #fechaFinInput
-        [(ngModel)]="fechaFin"
-        dateFormat="yy-mm-dd"
-        class="w-full"
-        appendTo="body"
+      <p-datePicker #fechaFinInput [(ngModel)]="fechaFin" dateFormat="yy-mm-dd" class="w-full" fluid appendTo="body"
         [maxDate]="maxDate">
       </p-datePicker>
     </div>
 
+    <div class="col-span-3 md:col-span-4 lg:col-span-2 flex gap-4 sm:justify-end md:justify-start">
+      <p-button icon="pi pi-filter-slash" [outlined]="true" (click)="limpiar()" aria-label="Limpiar filtros"></p-button>
+
+      <p-button (click)="generarPdf()" >
+         <i pButtonIcon class="pi  pi-file-pdf" aria-hidden="true"></i>
+        <span pButtonLabel>Generar</span>
+      </p-button>
+    </div>
   </div>
-
-  <!-- ==================================================
-       Acciones
-       ================================================== -->
- <div class="flex justify-end gap-2 mt-6">
-    
-  <button
-    pButton
-    icon="pi pi-file-pdf"
-    label="Generar PDF"
-    class="p-button-success"
-    (click)="generarPdf()">
-  </button>
-
-  <button
-    pButton
-    icon="pi pi-times"
-    label="Limpiar"
-    class="p-button-secondary"
-    (click)="limpiar()">
-  </button>
-
 </div>

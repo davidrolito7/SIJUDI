@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, ViewChild, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
@@ -12,6 +12,10 @@ import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { TerminosService } from '../../service/terminos.service';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { Spinner } from "../../../shared/components/spinner/spinner";
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-buscarTerminos',
@@ -27,8 +31,12 @@ import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
     TableModule,
     MessageModule,
     ToastModule,
-    Breadcrub
-],
+    Breadcrub,
+    IconFieldModule,
+    InputIconModule,
+    Spinner,
+    TooltipModule
+  ],
   templateUrl: './buscar-terminos.html',
   styleUrl: './buscar-terminos.css',
   providers: [MessageService]
@@ -47,6 +55,7 @@ export class buscarTerminosComponent {
   // ==================================================
   resultados: any[] = [];
   busquedaRealizada = false;
+  isLoading: boolean = false;
 
   // ==================================================
   // Expresiones regulares de validación
@@ -85,7 +94,7 @@ export class buscarTerminosComponent {
   // Ejecuta la búsqueda de escritos
   // ==================================================
   buscar(): void {
-
+    this.isLoading = true;
     if (!this.valorBusqueda || !this.valorBusqueda.trim()) {
       this.mostrarErrorBusqueda('Captura un valor para buscar');
       return;
@@ -133,6 +142,8 @@ export class buscarTerminosComponent {
       valor
     }).subscribe({
       next: (res: any) => {
+        this.isLoading = false;
+
         if (res.success) {
           this.resultados = res.data ?? [];
         } else {
@@ -149,6 +160,7 @@ export class buscarTerminosComponent {
       },
       error: err => {
         console.error(err);
+        this.isLoading = false;
 
         this.resultados = [];
         this.busquedaRealizada = true;

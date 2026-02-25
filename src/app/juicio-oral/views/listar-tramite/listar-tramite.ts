@@ -261,7 +261,7 @@ export class ListarTramite implements OnInit {
           });
 
           setTimeout(() => {
-            this.router.navigate(['/juicioenlinea/requerimientos/crear'], {
+            this.router.navigate(['/juicioenlinea/tramites/crear'], {
               state: { idExpediente: expediente.idExpediente },
             });
             this.cerrarModal();

@@ -25,6 +25,7 @@ import { AfterViewInit } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Spinner } from "../../../shared/components/spinner/spinner";
 
 // Definición de tipo para partes y anexos, para mayor claridad en el código. No es estrictamente necesario, pero ayuda a entender mejor qué propiedades se esperan en cada caso.
 type Item = { id: number; nombre: string; cantidad?: number };
@@ -51,10 +52,11 @@ type Item = { id: number; nombre: string; cantidad?: number };
     FieldsetModule,
     DialogModule,
     ConfirmDialog,
-    Breadcrub
-],
+    Breadcrub,
+    Spinner
+  ],
   // Inyección de MessageService para mostrar mensajes al usuario
-  providers: [MessageService,ConfirmationService],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './terminossegundainstancia.html',
   styleUrl: './terminossegundainstancia.css',
 })
@@ -100,7 +102,7 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
 
   // Variable para almacenar las cantidades de anexos, clave: idCatCveAnexos, valor: cantidad
   cantidadesAnexos: Record<number, number | null> = {};
-
+  isLoading: boolean = false;
   constructor(
     // Inyección de servicios a través del constructor
     private fb: FormBuilder,
@@ -420,7 +422,7 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
     // Cambiar a modo nuevo
     this.modo = 'nuevo';
 
-     // Cambiar a false para certificar new
+    // Cambiar a false para certificar new
     this.puedeCertificar = false;
 
     this.esModoEdicion = false;
@@ -468,6 +470,14 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
 
   // -------------------------
   guardar() {
+    this.isLoading = true;
+
+    const ahora = new Date();
+
+    this.terminosForm.patchValue({
+      fecha: ahora,
+      hora: ahora
+    });
 
     // ============================================
     // Sincronizar cantidades antes de enviar
@@ -522,6 +532,7 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
     this.apiService.guardarEscrito(payload).subscribe({
 
       next: (resp: any) => {
+        this.isLoading = false;
 
         // 🔴 Validación lógica backend
         if (!resp.success) {
@@ -550,6 +561,7 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
       },
 
       error: (err) => {
+        this.isLoading = false;
 
         this.isSaving = false;
         this.terminosForm.enable();
@@ -568,6 +580,7 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
 
   // -------------------------
   modificar() {
+    this.isLoading = true;
 
     // ============================================
     // Sincronizar cantidades
@@ -620,6 +633,7 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
     this.apiService.modificarEscrito(form.folio, payload).subscribe({
 
       next: (resp: any) => {
+        this.isLoading = false;
 
         // 🔴 Validación lógica backend
         if (!resp.success) {
@@ -644,16 +658,17 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
           life: 2500
         });
 
-         this.puedeCertificar = true;
+        this.puedeCertificar = true;
 
         setTimeout(() => {
           this.nuevo();
           this.isSaving = false;
-          this.terminosForm.enable();
+          //  this.terminosForm.enable();
         }, 3000);
       },
 
       error: (err) => {
+        this.isLoading = false;
 
         this.isSaving = false;
         this.terminosForm.enable();
@@ -1138,41 +1153,43 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
   // ================================
   // CERTIFICAR ESCRITO
   // ================================
- certificar() {
+  certificar() {
+    this.isLoading = true;
 
-  const folio = this.terminosForm.get('folio')?.value;
-  if (!folio) return;
+    const folio = this.terminosForm.get('folio')?.value;
+    if (!folio) return;
 
-  this.apiService.obtenerCertificacion(folio)
-    .subscribe((pdfBlob: Blob) => {
+    this.apiService.obtenerCertificacion(folio)
+      .subscribe((pdfBlob: Blob) => {
+        this.isLoading = false;
 
-      const blobUrl = URL.createObjectURL(pdfBlob);
+        const blobUrl = URL.createObjectURL(pdfBlob);
 
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = blobUrl;
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = blobUrl;
 
-      document.body.appendChild(iframe);
+        document.body.appendChild(iframe);
 
-      iframe.onload = () => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
+        iframe.onload = () => {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
 
+          setTimeout(() => {
+            URL.revokeObjectURL(blobUrl);
+            document.body.removeChild(iframe);
+          }, 1000);
+        };
+
+        // 🔥 Limpiar formulario después de certificar
         setTimeout(() => {
-          URL.revokeObjectURL(blobUrl);
-          document.body.removeChild(iframe);
-        }, 1000);
-      };
+          this.nuevo();
+          this.isSaving = false;
+          // this.terminosForm.enable();
+        }, 800);
 
-      // 🔥 Limpiar formulario después de certificar
-      setTimeout(() => {
-        this.nuevo();
-        this.isSaving = false;
-        this.terminosForm.enable();
-      }, 800);
-
-    });
-}
+      });
+  }
 
 }
 

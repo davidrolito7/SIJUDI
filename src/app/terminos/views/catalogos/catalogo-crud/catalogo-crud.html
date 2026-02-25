@@ -3,128 +3,72 @@
 <!-- ===================================================== -->
 <p-toast></p-toast>
 
-
 <!-- ===================================================== -->
 <!-- CONFIRMACIONES -->
 <!-- ===================================================== -->
-
-<!-- ================================ -->
-<!-- CONFIRMAR GUARDAR / ACTUALIZAR -->
-<!-- ================================ -->
-<app-confirm-dialog
-  key="guardarCatalogo"
-  title="Confirmación"
-  [message]="modoEdicion 
+<app-confirm-dialog key="guardarCatalogo" title="Confirmación" [message]="modoEdicion 
       ? '¿Está seguro de actualizar la información del registro seleccionado?' 
-      : '¿Está seguro de guardar este nuevo registro en el catálogo?'"
-  icon="pi pi-check"
-  circleClass="bg-primary"
+      : '¿Está seguro de guardar este nuevo registro en el catálogo?'" icon="pi pi-check" circleClass="bg-primary"
   acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 
-<!-- ================================ -->
-<!-- CONFIRMAR ELIMINACIÓN -->
-<!-- ================================ -->
-<app-confirm-dialog
-  key="eliminarCatalogo"
-  title="Confirmación"
+<app-confirm-dialog key="eliminarCatalogo" title="Confirmación"
   message="Esta acción eliminará permanentemente el registro seleccionado. ¿Desea continuar?"
-  icon="pi pi-exclamation-triangle"
-  circleClass="bg-red-500"
-  acceptStyleClass="bg-red-600 border-red-600">
+  icon="pi pi-exclamation-triangle" circleClass="bg-red-500" acceptStyleClass="bg-red-600 border-red-600">
 </app-confirm-dialog>
 
-
-
 <!-- ===================================================== -->
-<!-- CONTENEDOR PRINCIPAL -->
+<!-- BREADCRUMB -->
 <!-- ===================================================== -->
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
-  <!-- BREADCRUMB -->
-  <app-breadcrub></app-breadcrub>
-</div>
-<div class="m-9 bg-surface-50 border border-surface rounded-2xl p-6">
+<app-breadcrub></app-breadcrub>
+<app-spinner [isLoading]="isLoading" ></app-spinner>
 
-  <!-- ================================ -->
-  <!-- FORMULARIO PRINCIPAL -->
-  <!-- ================================ -->
+
+<div class="mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
   <form [formGroup]="form">
 
-    <!-- ========================= -->
-    <!-- PARTE SUPERIOR (FILTROS) -->
-    <!-- ========================= -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
+    <p-table #dt2 [value]="catalogos" selectionMode="single" [(selection)]="selectedItem"
+      (onRowSelect)="seleccionar($event.data)" [scrollable]="true" scrollHeight="400px"
+      [globalFilterFields]="['cve','descripcion']" class="mb-6">
 
-      <!-- ================================ -->
-      <!-- TIPO DE CATÁLOGO -->
-      <!-- ================================ -->
-      <div>
-        <label class="block mb-2 text-sm font-medium">Tipo Catálogo</label>
-        <p-select
-          [options]="tipos"
-          [(ngModel)]="selectedTipo"
-          [ngModelOptions]="{ standalone: true }"
-          (onChange)="onTipoChange()"
-          optionLabel="label"
-          optionValue="value"
-          class="w-full">
-        </p-select>
-      </div>
-
-      <!-- ================================ -->
-      <!-- INSTANCIA (CONDICIONAL) -->
-      <!-- ================================ -->
-      <div *ngIf="mostrarInstancia">
-        <label class="block mb-2 text-sm font-medium">Instancia</label>
-        <p-select
-          [options]="instanciasDisponibles"
-          [(ngModel)]="selectedInstancia"
-          [ngModelOptions]="{ standalone: true }"
-          (onChange)="onInstanciaChange()"
-          optionLabel="label"
-          optionValue="value"
-          class="w-full">
-        </p-select>
-      </div>
-
-    </div>
-
-
-    <!-- ========================= -->
-    <!-- TABLA DE REGISTROS -->
-    <!-- ========================= -->
-    <p-table
-      #dt2
-      [value]="catalogos"
-      selectionMode="single"
-      [(selection)]="selectedItem"
-      (onRowSelect)="seleccionar($event.data)"
-      [scrollable]="true"
-      scrollHeight="400px"
-      [globalFilterFields]="['cve','descripcion']"
-      class="mb-6">
-
-      <!-- ================================ -->
-      <!-- BUSCADOR GLOBAL -->
-      <!-- ================================ -->
       <ng-template pTemplate="caption">
-        <div class="flex">
-          <p-iconfield iconPosition="left" class="ml-auto">
-            <p-inputicon>
-              <i class="pi pi-search"></i>
-            </p-inputicon>
-            <input 
-              pInputText 
-              type="text"
-              (input)="dt2.filterGlobal($any($event.target).value, 'contains')" 
-              placeholder="Buscar..." />
-          </p-iconfield>
+        <div class="font-medium text-2xl mb-4">
+          Términos catálogos
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-end w-full">
+
+          <!-- TIPO DE CATÁLOGO -->
+          <div class="w-full sm:w-auto sm:min-w-48">
+            <label class="block mb-1 text-sm font-medium">Tipo Catálogo</label>
+            <p-select [options]="tipos" [(ngModel)]="selectedTipo" [ngModelOptions]="{ standalone: true }"
+              (onChange)="onTipoChange()" optionLabel="label" optionValue="value" class="w-full" fluid
+              placeholder="Selecciona tipo" appendTo="body">
+            </p-select>
+          </div>
+
+          <!-- INSTANCIA (CONDICIONAL) -->
+          <div class="w-full sm:w-auto sm:min-w-48" *ngIf="mostrarInstancia">
+            <label class="block mb-1 text-sm font-medium">Instancia</label>
+            <p-select [options]="instanciasDisponibles" [(ngModel)]="selectedInstancia"
+              [ngModelOptions]="{ standalone: true }" (onChange)="onInstanciaChange()" optionLabel="label"
+              optionValue="value" class="w-full" fluid placeholder="Selecciona instancia" appendTo="body">
+            </p-select>
+          </div>
+
+          <div class="w-full sm:w-auto sm:ml-auto">
+            <label class="block mb-1 text-sm font-medium opacity-0 sm:block">Buscar</label>
+            <p-iconfield iconPosition="left" class="w-full">
+              <p-inputicon>
+                <i class="pi pi-search"></i>
+              </p-inputicon>
+              <input pInputText type="text" (input)="dt2.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar..." class="w-full" />
+            </p-iconfield>
+          </div>
+
         </div>
       </ng-template>
 
-      <!-- ================================ -->
-      <!-- HEADER -->
-      <!-- ================================ -->
       <ng-template pTemplate="header">
         <tr>
           <th style="width:150px">Clave</th>
@@ -132,9 +76,6 @@
         </tr>
       </ng-template>
 
-      <!-- ================================ -->
-      <!-- BODY -->
-      <!-- ================================ -->
       <ng-template pTemplate="body" let-item>
         <tr [pSelectableRow]="item">
           <td>{{ item.cve || item.clave || item.cveAnexo }}</td>
@@ -144,87 +85,45 @@
 
     </p-table>
 
-
     <!-- ========================= -->
-    <!-- PARTE INFERIOR (FORM INPUTS) -->
+    <!-- FORM INPUTS -->
     <!-- ========================= -->
     <div class="grid grid-cols-4 gap-4">
 
-      <!-- ================================ -->
-      <!-- CAMPO CLAVE -->
-      <!-- ================================ -->
-      <div>
+      <!-- CLAVE -->
+      <div class="col-span-4 sm:col-span-1">
         <label class="block mb-2 text-sm font-medium">Clave</label>
-        <input
-          pInputText
-          maxlength="4"
-          formControlName="cve"
-          class="w-full uppercase"
+        <input pInputText maxlength="4" formControlName="cve" class="w-full uppercase"
           (keydown.enter)="moveNext($event)" />
       </div>
 
-      <!-- ================================ -->
-      <!-- CAMPO DESCRIPCIÓN -->
-      <!-- ================================ -->
-      <div class="col-span-3">
+      <!-- DESCRIPCIÓN -->
+      <div class="col-span-4 sm:col-span-3">
         <label class="block mb-2 text-sm font-medium">Descripción</label>
-        <input
-          pInputText
-          formControlName="descripcion"
-          [attr.maxlength]="getMaxDescripcion()"
-          class="w-full" />
-
-        <!-- CONTADOR DE CARACTERES -->
+        <input pInputText formControlName="descripcion" [attr.maxlength]="getMaxDescripcion()" class="w-full" />
         <small class="text-xs text-gray-500">
-          {{ form.get('descripcion')?.value?.length || 0 }} /
-          {{ getMaxDescripcion() }}
+          {{ form.get('descripcion')?.value?.length || 0 }} / {{ getMaxDescripcion() }}
         </small>
       </div>
 
     </div>
 
 
-    <!-- ========================= -->
-    <!-- BOTONES DE ACCIÓN -->
-    <!-- ========================= -->
-    <div class="flex justify-end gap-3 mt-6 pt-4">
+    <div class="flex flex-wrap justify-end gap-3 mt-6 pt-4">
 
-      <!-- NUEVO -->
-      <p-button
-        label="Nuevo"
-        icon="pi pi-file"
-        class="p-button-secondary"
-        (click)="nuevo()">
+      <p-button label="Nuevo" icon="pi pi-file" (click)="nuevo()">
       </p-button>
 
-      <!-- GUARDAR / ACTUALIZAR -->
-      <p-button
-        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
-        icon="pi pi-save"
-        class="p-button-success"
-        (click)="confirmarGuardar()">
+      <p-button [label]="modoEdicion ? 'Actualizar' : 'Guardar'" icon="pi pi-save" (click)="confirmarGuardar()">
       </p-button>
 
-      <!-- BORRAR -->
-      <p-button
-        label="Borrar"
-        icon="pi pi-trash"
-        class="p-button-danger"
-        (onClick)="confirmarBorrar()"
-        [disabled]="!selectedItem">
+      <p-button label="Borrar" icon="pi pi-trash" (onClick)="confirmarBorrar()" [disabled]="!selectedItem">
       </p-button>
 
-      <!-- CANCELAR -->
-      <p-button
-        label="Cancelar"
-        icon="pi pi-times"
-        class="p-button-secondary"
-        (click)="nuevo()">
+      <p-button label="Cancelar" icon="pi pi-times" styleClass="btn-secondary" (click)="nuevo()">
       </p-button>
 
     </div>
 
   </form>
-
 </div>
-
