@@ -55,6 +55,11 @@ export const routes: Routes = [
           import('./penal/penal.routes')
             .then(m => m.PENAL_ROUTES)
         },
+        {
+          path: 'terminos', loadChildren:()=>
+            import('./terminos/terminos.routes')
+          .then(m=>m.TERMINOS_ROUTES)
+        }
 
     ],
   },
