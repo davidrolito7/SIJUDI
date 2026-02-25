@@ -19,14 +19,16 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { InputMaskModule } from 'primeng/inputmask';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { TooltipModule } from 'primeng/tooltip';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tramites-juicio-oral',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, BreadcrumbModule, AvatarModule, InputMaskModule, ConfirmDialog,
+    Spinner, BreadcrumbModule, AvatarModule, InputMaskModule, ConfirmDialog, TooltipModule,
     Breadcrub
-],
+  ],
   templateUrl: './tramites-juicio-oral.html',
   styleUrl: './tramites-juicio-oral.css',
   providers: [ConfirmationService]
@@ -49,6 +51,7 @@ export class TramitesJuicioOral implements OnInit {
     private readonly fb: FormBuilder,
     private apiService: ApiService,
     private readonly confirmationService: ConfirmationService,
+    private router: Router,
 
 
   ) { }
@@ -130,4 +133,9 @@ export class TramitesJuicioOral implements OnInit {
       }
     );
   }
+
+    detalle(idTramiteElectronicoRecibido: number) {
+    this.router.navigate(['/tramites-juicio-oral/detalle'], { state: { idTramiteElectronicoRecibido } });
+  }
+
 }

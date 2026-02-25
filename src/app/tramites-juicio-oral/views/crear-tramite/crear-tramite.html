@@ -95,8 +95,8 @@
                         </tr>
                     </ng-template>
                 </p-table>
-                <!-- <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-                </app-pdf-dialog> -->
+                <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                </app-pdf-dialog> 
 
             </div>
             }
@@ -123,6 +123,11 @@
     icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Eliminar" acceptStyleClass="btn-rojo">
 </app-confirm-dialog>
 
+<app-confirm-dialog key="promocion" title="Confirmación" message="Confirme la acción para enviar promoción"
+    icon="pi pi-question-circle" circleClass="bg-primary" acceptLabel="Confirmar"
+    acceptStyleClass="bg-primary" rejectLabel="Cancelar">
+</app-confirm-dialog>
+
 <!--* RESPONSE ENVIAR PROMOCION -->
 <app-confirm-dialog key="success" title="Confirmación"
     [message]="'Promoción enviada correctamente al ' + (tramitesElectronicosRecibidos?.juzgado ?? '')"
@@ -130,13 +135,14 @@
     [showReject]="false">
 </app-confirm-dialog>
 
+
 <app-confirm-dialog key="info" title="No hay conincidencias" message="La causa o el juzgado es incorrecto."
     icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
 </app-confirm-dialog>
 
 @if (validarCausaForm.valid && documentosAnexados.length > 0) {
 <div class="flex w-full items-center justify-center mt-4">
-    <p-button label="Enviar Trámite" (click)="onEnviarTramite()">
+    <p-button label="Enviar Trámite" (click)="onEnviarPromocion()">
     </p-button>
 </div>
 }

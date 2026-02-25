@@ -1,6 +1,6 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+<div class="sticky top-0 z-50 flex flex-col gap-4">
 
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
@@ -9,30 +9,33 @@
         <form class="flex flex-col" [formGroup]="validarCausaForm">
 
             <div class="flex items-start flex-col md:flex-row justify-between">
-                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
                     Búsqueda
                 </label>
 
                 <div class="flex items-center">
-                    <p-button (click)="onBuscarTramitesElectronicos()" [disabled]="validarCausaForm.invalid">
-                        <i pButtonIcon class="pi pi-search"></i>
-                        <span pButtonLabel>Buscar</span>
-                    </p-button>
+
                 </div>
             </div>
 
             <div class="grid grid-cols-6 gap-4 w-full items-end">
-                <div class="col-span-6 sm:col-span-3">
+                <div class="col-span-6 md:col-span-2">
                     <label class="block mb-2 text-sm font-medium">Folio</label>
                     <p-inputmask fluid formControlName="numeroCausa" class="uppercase text-sm rounded-lg"
                         mask="9999/9999" placeholder="0001/2026" />
                 </div>
 
-                <div class="col-span-6 sm:col-span-3">
+                <div class="col-span-6 md:col-span-3">
                     <label class="block mb-2 text-sm font-medium">Juzgado</label>
                     <p-select class="w-full" [options]="catJuzgados" formControlName="idJuzgado"
                         optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
                         optionLabel="descripcion" appendTo="body" />
+                </div>
+                <div class="col-span-6 md:col-span-1">
+                    <p-button (click)="onBuscarTramitesElectronicos()" [disabled]="validarCausaForm.invalid">
+                        <i pButtonIcon class="pi pi-search"></i>
+                        <span pButtonLabel>Buscar</span>
+                    </p-button>
                 </div>
 
             </div>
@@ -46,8 +49,8 @@
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
         <div>
-            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
-            <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+            <div class="font-medium text-xl text-surface-900 dark:text-surface-0 ">Resultado</div>
+            <!-- <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
                 <div class="flex items-center gap-2">
                     <i class="pi pi-users text-base! leading-normal!"></i>
                     <span>332 Registros</span>
@@ -60,7 +63,7 @@
                     <i class="pi pi-clock text-base! leading-normal!"></i>
                     <span>2.32m Promedio</span>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -116,12 +119,14 @@
             <ng-template #body let-tramite>
                 <tr>
                     <td>{{ tramite.folio }}</td>
-                    <td>{{ tramite.fechaEnvio | date: 'MM/dd/yyyy' }}</td>
+                    <td>{{ tramite.fechaEnvio | date:'yyyy-MM-dd HH:mm' }} h</td>
                     <td>{{ tramite.observaciones }}</td>
                     <td>{{ tramite.cantidadAnexos }}</td>
-                    <td> <p-button type="button" class="btn-secondary">
-                            <i class="pi pi-edit"></i>
-                        </p-button></td>
+                    <td>
+                        <p-button pTooltip="Ver detalle" (click)="detalle(tramite.idTramiteElectronicoRecibido)" tooltipPosition="top">
+                            <i class="pi pi-eye"></i>
+                        </p-button>
+                    </td>
                 </tr>
             </ng-template>
 

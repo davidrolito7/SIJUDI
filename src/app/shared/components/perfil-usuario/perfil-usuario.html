@@ -1,0 +1,195 @@
+<p-toast />
+<app-breadcrub></app-breadcrub>
+<!-- src/app/components/perfil-usuario/perfil-usuario.component.html -->
+<div class="bg-surface-50 mt-4 p-6 border border-surface rounded-2xl">
+  <!-- Encabezado con foto -->
+   <!--
+  <div class="flex items-center space-x-6 mb-6">
+    <img
+      class="w-28 h-28 rounded-xl object-cover border"
+      [src]="fotoFinal"
+      alt="Foto de perfil"
+      />
+      <div>
+        <h1 class="text-2xl font-bold">{{ usuario.nombre }}</h1>
+        <p class="text-gray-500"></p>
+      </div>
+    </div>
+-->
+    <!-- Tabs -->
+ <div class="card">
+            <div class="flex mb-2 gap-2 justify-end">
+                <p-button (onClick)="value = 0" rounded="true" styleClass="w-8 h-8 p-0" [outlined]="value !== 0" icon="pi pi-user" />
+<p-button (onClick)="value = 1" rounded="true" styleClass="w-8 h-8 p-0" [outlined]="value !== 1" icon="pi pi-id-card" />
+<p-button (onClick)="value = 2" rounded="true" styleClass="w-8 h-8 p-0" [outlined]="value !== 2" icon="pi pi-cloud-upload" />
+            </div>
+            <p-tabs [(value)]="value">
+                <p-tablist>
+                    <p-tab [value]="0">Información de Usuario</p-tab>
+                    <p-tab [value]="1">Datos de Contacto</p-tab>
+                    <p-tab [value]="2">Certificado (.pfx)</p-tab>
+                </p-tablist>
+                <p-tabpanels>
+                    @if (usuario) {
+                    <p-tabpanel [value]="0">
+  <p class="text-base m-0 mb-2"><strong>CURP:</strong> {{ usuario.curp }}</p>
+  <p class="text-base m-0 mb-2"><strong>ID de Usuario:</strong> {{ usuario.folio }}</p>
+  <p class="text-base m-0 mb-2"><strong>No. Empleado:</strong> {{ usuario.noEmpleado }}</p>
+  <p class="text-base m-0 mb-2"><strong>Tipo de Usuario:</strong> {{ usuario.tipoUsuario }}</p>
+  <p class="text-base m-0 mb-2">
+    <strong>Domicilio:</strong>
+    {{ usuario.direccionPart }}
+    {{ usuario.direccionPartNoExt }},
+    {{ usuario.direccionPartNoInt }},
+    {{ usuario.direccionPartCP }},
+    {{ usuario.direccionPartColonia }},
+    {{ usuario.direccionPartMunicipio }},
+    {{ usuario.direccionPartEstado }}
+  </p>
+</p-tabpanel>
+                    
+                    <p-tabpanel [value]="1">
+  <p class="text-base m-0 mb-2"><strong>Tel. Celular:</strong> {{ usuario.celular }}</p>
+  <p class="text-base m-0 mb-2"><strong>Tel. Particular:</strong> {{ usuario.telefono }}</p>
+  <p class="text-base m-0 mb-2"><strong>Correo Personal:</strong> {{ usuario.correoAlterno }}</p>
+  <p class="text-base m-0 mb-2"><strong>Correo Institucional:</strong> {{ usuario.correo }}</p>
+</p-tabpanel>
+                    }
+                    <p-tabpanel [value]="2">
+                        <form [formGroup]="formularioFirma" class="space-y-4">
+        <label class="block font-semibold">Selecciona un archivo .pfx</label>
+       
+          <p-fileupload 
+  #fu 
+  mode="basic" 
+  chooseLabel="Seleccionar .pfx" 
+  chooseIcon="pi pi-upload" 
+  name="file_pfx"
+  accept=".pfx" 
+  maxFileSize="1000000" 
+  (onSelect)="onFileSelected($event)"
+  (onClear)="onFileClear()"
+  [auto]="false"
+></p-fileupload>
+          @if (archivoSeleccionado) {
+            <div class="text-green-700">
+              Archivo seleccionado: {{ archivoSeleccionado.name }}
+            </div>
+          }
+         <label class="block font-semibold">Contraseña del certificado (.pfx)</label>
+
+
+<p-password 
+  formControlName="password" 
+  [feedback]="false" 
+  [toggleMask]="true"
+  styleClass="cursor-pointer" 
+  (keydown.enter)="onUpload()">
+</p-password>
+
+
+           <div>
+
+            <p-button (onClick)="onUpload()" type="button">
+                                    <span pButtonIcon class="pi pi-file-arrow-up"></span>
+                                    <span pButtonLabel>Subir</span>
+                                </p-button>
+            </div>
+            @if (errorMessage) {
+              <p class="text-red-500">{{ errorMessage }}</p>
+            }
+          </form>
+                    </p-tabpanel>
+                </p-tabpanels>
+            </p-tabs>
+        </div>
+
+<!--
+    <div class="border-b mb-4 flex space-x-4">
+      <button
+        class="pb-2 border-b-2"
+        [class.border-blue-500]="selectedTab === 'info'"
+        (click)="selectedTab = 'info'"
+        >
+        
+      </button>
+      <button
+        class="pb-2 border-b-2"
+        [class.border-blue-500]="selectedTab === 'contacto'"
+        (click)="selectedTab = 'contacto'"
+        >
+        
+      </button>
+      <button
+        class="pb-2 border-b-2"
+        [class.border-blue-500]="selectedTab === 'pfx'"
+        (click)="selectedTab = 'pfx'"
+        >
+        Subir Certificado (.pfx)
+      </button>
+    </div>
+-->
+    <!-- Contenido de las tabs -->
+   <!--
+    @if (selectedTab === 'info') {
+      <div class="space-y-3">
+        <p><strong>CURP:</strong> {{ usuario.curp }}</p>
+        <p><strong>ID de Usuario:</strong> {{ usuario.folio }}</p>
+        <p><strong>No. Empleado:</strong> {{ usuario.noEmpleado }}</p>
+        <p><strong>Tipo de Usuario:</strong> {{ usuario.tipoUsuario }}</p>
+        <p><strong>Domicilio:</strong> {{ usuario.direccionPart}}
+        {{usuario.direccionPartNoExt}},
+        {{usuario.direccionPartNoInt}},
+        {{usuario.direccionPartCP}},
+        {{usuario.direccionPartColonia}},
+        {{usuario.direccionPartMunicipio}},
+      {{usuario.direccionPartEstado }}</p>
+    </div>
+  }
+-->
+  <!--
+  @if (selectedTab === 'contacto') {
+    <div class="space-y-3">
+      <p><strong>Tel. Celular:</strong> {{ usuario.celular }}</p>
+      <p><strong>Tel. Particular:</strong> {{ usuario.telefono }}</p>
+      <p><strong>Correo Personal:</strong> {{ usuario.correoAlterno }}</p>
+      <p><strong>Correo Institucional:</strong> {{ usuario.correo }}</p>
+    </div>
+  }
+
+  @if (selectedTab === 'pfx') {
+    <div class="space-y-4">
+      <form [formGroup]="formularioFirma" class="space-y-4">
+        <label class="block font-semibold">Selecciona un archivo .pfx</label>
+        <input
+          type="file"
+          formControlName="file_pfx"
+          accept=".pfx"
+          (change)="onFileSelected($event)"
+          class="block w-full text-sm text-gray-600 border rounded-lg p-2"
+          />
+          @if (archivoSeleccionado) {
+            <div class="text-green-700">
+              Archivo seleccionado: {{ archivoSeleccionado.name }}
+            </div>
+          }
+          <input
+            type="password"
+            placeholder="Contraseña del certificado"
+            formControlName="password"
+            value=""
+            class="block w-full text-sm text-gray-600 border rounded-lg p-2 mt-2" />
+            <button
+              (click)="onUpload()"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow"
+              >
+              Subir
+            </button>
+            @if (errorMessage) {
+              <p class="text-red-500">{{ errorMessage }}</p>
+            }
+          </form>
+        </div>
+      }
+        -->
+    </div>
