@@ -94,7 +94,7 @@ export class buscarTerminosComponent {
   // Ejecuta la búsqueda de escritos
   // ==================================================
   buscar(): void {
-    this.isLoading = true;
+    
     if (!this.valorBusqueda || !this.valorBusqueda.trim()) {
       this.mostrarErrorBusqueda('Captura un valor para buscar');
       return;
@@ -135,6 +135,8 @@ export class buscarTerminosComponent {
 
     this.busquedaRealizada = false;
     this.resultados = [];
+    this.isLoading = true;
+    this.cdr.detectChanges();
 
     this.apiService.buscarEscritos({
       instancia: this.instancia,
@@ -143,6 +145,7 @@ export class buscarTerminosComponent {
     }).subscribe({
       next: (res: any) => {
         this.isLoading = false;
+        this.cdr.detectChanges();
 
         if (res.success) {
           this.resultados = res.data ?? [];

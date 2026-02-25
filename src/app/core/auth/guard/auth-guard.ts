@@ -24,7 +24,7 @@ function checkAuth(tokenService: TokenService,
   if (twoOk && isLogin2fase) return router.parseUrl('/perfil');
 
   const perfilDone = tokenService.isPerfilCompleted();
-  if (twoOk && perfilDone && isPerfil) return router.parseUrl('/tramites-juicio-oral');
+  if (twoOk && perfilDone && isPerfil) return router.parseUrl('/home');
 
   return true;
 }
