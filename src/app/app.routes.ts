@@ -7,6 +7,7 @@ import { Form } from './form/form';
 import { authMatchGuard } from './core/auth/guard/auth-guard';
 import { Perfil } from './core/auth/component/perfil/perfil';
 import { redirectGuard } from './core/auth/guard/redirect-guard';
+import { PerfilUsuario } from './shared/components/perfil-usuario/perfil-usuario';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -20,6 +21,7 @@ export const routes: Routes = [
   },
 
   { path: 'perfil', component: Perfil, canMatch: [authMatchGuard] },
+  
 
   {
     path: '',
@@ -59,7 +61,8 @@ export const routes: Routes = [
           path: 'terminos', loadChildren:()=>
             import('./terminos/terminos.routes')
           .then(m=>m.TERMINOS_ROUTES)
-        }
+        },
+        { path: 'datos-personales', component: PerfilUsuario }
 
     ],
   },
