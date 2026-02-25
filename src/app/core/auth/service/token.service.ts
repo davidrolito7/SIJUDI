@@ -208,7 +208,7 @@ export class TokenService {
     this.clearTwoFactorValidated();
     this.clearPerfilCompleted();
 
-   // this.removeAppSelections();
+    // this.removeAppSelections();
 
     //  borrar usuario recordado también
     // localStorage.removeItem('recordarUsuario');
@@ -217,7 +217,9 @@ export class TokenService {
     // limpia banderas 
     this.setValidacionCompletada(false);
     this.notifySessionExpired();
-  }
+
+    this.limpiarPantallas(); 
+   }
 
   /**
    * Cambiar perfil: mantiene la sesión (tokens), pero obliga a completar perfil otra vez.
@@ -226,7 +228,7 @@ export class TokenService {
     if (!this.isBrowser) return;
 
     this.clearPerfilCompleted();
-   // this.removeAppSelections();
+    // this.removeAppSelections();
   }
 
   private readRemembered(key: string): string {
@@ -256,5 +258,12 @@ export class TokenService {
     if (!b64) return '';
     // viene como JPEG base64
     return `data:image/jpeg;base64,${b64}`;
+  }
+
+  private storageKey = 'pantallas_usuario';
+
+  limpiarPantallas() {
+    localStorage.removeItem(this.storageKey);
+
   }
 }

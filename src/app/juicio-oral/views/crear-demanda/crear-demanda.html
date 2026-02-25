@@ -1,9 +1,13 @@
-<app-breadcrub></app-breadcrub>
 <app-spinner [isLoading]="isLoading"></app-spinner>
-<h2 class="text-2xl font-medium leading-none pt-4 pl-2 tracking-tight text-gray-900 dark:text-white">
-    Captura registro 1° instancia
-</h2>
-<div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
+
+<div class="lg:sticky top-0 z-50  flex flex-col gap-4 bg-surface-0 dark:bg-surface-900">
+    <app-breadcrub></app-breadcrub>
+    <h2 class="text-2xl font-medium leading-none pl-2 mb-4 tracking-tight">
+        Captura registro 1° instancia
+    </h2>
+</div>
+
+<div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
         <div class="font-medium text-xl text-surface-800 dark:text-surface-200  mb-4">Generales</div>
 
@@ -11,22 +15,19 @@
 
     <div class="w-full">
         <!--* FORMULARIO GENERALES  -->
-        <form [formGroup]="formulario">
+        <form [formGroup]="formulario" appendTo="body">
             <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6 sm:col-span-3 grid gap-3 ">
                     <!-- Catálogo de Municipio -->
                     <div id="idCatMunicipio" class="col-span-6 sm:col-span-3 relative">
-                        <label for="idCatMunicipio"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Municipio</label>
-
-                        <p-select fluid="" [options]="catMunicipios" optionValue="idMunicipio"
+                        <label for="idCatMunicipio" class="block mb-2 text-sm font-medium">Municipio</label>
+                        <p-select fluid [options]="catMunicipios" optionValue="idMunicipio"
                             placeholder="Selecciona un municipio" [filter]="true" appendTo="body"
                             optionLabel="Descripcion" />
                     </div>
                     <!-- Catálogo de Materias -->
                     <div class="col-span-6 sm:col-span-3">
-                        <label for="IdCatMateria"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Materia</label>
+                        <label for="IdCatMateria" class="block mb-2 text-sm font-medium  ">Materia</label>
                         <p-select formControlName="idCatMateria" fluid appendTo="body" [options]="catMaterias"
                             optionValue="IdCatMateria" (onChange)="cargarCatalogoVias($event.value)"
                             placeholder="Selecciona una materia" optionLabel="Descripcion" />
@@ -35,8 +36,7 @@
 
                     <!-- Catálogo de Vías -->
                     <div id="idCatTipoVia" class="col-span-6 sm:col-span-3">
-                        <label for="idCatVia"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Vía</label>
+                        <label for="idCatVia" class="block mb-2 text-sm font-medium  ">Vía</label>
 
                         <p-select formControlName="idCatTipoVia" fluid appendTo="body"
                             [disabled]="catTipoVias.length === 0" [options]="catTipoVias" optionValue="idCatTipoVia"
@@ -45,8 +45,7 @@
                 </div>
                 <div class="col-span-6 sm:col-span-3">
                     <div id="descripcionDemanda" class="col-span-6 sm:col-span-6">
-                        <label for="descripcionDemanda"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Descripción</label>
+                        <label for="descripcionDemanda" class="block mb-2 text-sm font-medium  ">Descripción</label>
 
                         <textarea formControlName="descripcionDemanda" rows="8" fluid appendTo="body"
                             placeholder="Resume tu demanda..." pTextarea></textarea>
@@ -266,13 +265,13 @@
         <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
             <div
                 class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
-                <svg class="w-14 h-14 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <svg class="w-14 h-14 text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                    height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                 </svg>
             </div>
-            <p class="text-2xl font-medium mt-2.5 text-gray-900 dark:text-white">
+            <p class="text-2xl font-medium mt-2.5  ">
                 Autorización
             </p>
             <p class="font-medium mb-0">Ingrese su contraseña FIREL para continuar</p>
@@ -314,7 +313,7 @@
 <p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }" [closable]="false">
     <ng-template pTemplate="header">
         <div class="flex justify-between items-center w-full">
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Parte</h2>
+            <h2 class="text-lg font-semibold text-gray-800 ">Parte</h2>
             <div class="flex items-center gap-4" *ngIf="!editandoParte">
                 <p class="inline-flex items-center">Tipo:</p>
                 <label class="inline-flex items-center">
@@ -507,15 +506,14 @@
         <div class="space-y-6">
             <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6 sm:col-span-6">
-                    <label for="idCatTipoDocumento"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipo de documento</label>
+                    <label for="idCatTipoDocumento" class="block mb-2 text-sm font-medium  ">Tipo de documento</label>
                     <p-select formControlName="idCatTipoDocumento" class=" w-full" [filter]="true"
                         [options]="catTipoDocumentos" optionValue="idCatTipoDocumento" appendTo="body"
                         placeholder="Selecciona uno o más anexos" optionLabel="descripcion" />
                 </div>
             </div>
             <div class="col-span-6">
-                <label for="cantidad" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label for="cantidad" class="block mb-2 text-sm font-medium  ">
                     Cantidad
                 </label>
 
@@ -526,7 +524,7 @@
                 </div>
             </div>
             <div class="col-span-6" *ngIf="mostrarInputNombre">
-                <label for="descripcion" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label for="descripcion" class="block mb-2 text-sm font-medium  ">
                     Nombre del documento
                 </label>
                 <input id="descripcion" pInputText type="text" formControlName="descripcion" maxlength="200"
@@ -536,7 +534,7 @@
                 </div>
             </div>
             <div class="col-span-6">
-                <label for="valor" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label for="valor" class="block mb-2 text-sm font-medium  ">
                     Es valor
                 </label>
                 <div class="flex items-center gap-10" style="height: 37.6px;">
@@ -550,7 +548,7 @@
                 </div>
             </div>
             <!-- <div class="col-span-6" *ngIf="mostrarCampoValor">
-                <label for="valor" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label for="valor" class="block mb-2 text-sm font-medium  ">
                     Valor
                 </label>
                 <input id="valor" pInputText type="number" formControlName="valor" maxlength="12" class="block w-full"

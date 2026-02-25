@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
 import { CommonModule, formatDate } from '@angular/common';
@@ -17,6 +17,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
 import { PantallasService } from '../../services/pantallas.service';
+
 @Component({
   selector: 'app-listar-expediente',
   imports: [CommonModule, FormsModule, DatePickerModule, Breadcrub, Spinner, ButtonModule, SelectModule, InputMaskModule, TableModule, IconFieldModule, InputIconModule, TagModule, InputTextModule],
@@ -24,6 +25,7 @@ import { PantallasService } from '../../services/pantallas.service';
   styleUrl: './listar-expediente.css',
 })
 export class ListarExpediente {
+  isLoading = false;
   filtro: { expediente: string; rangeDates: Date[] | '' } = {
     expediente: '',
     rangeDates: ''
@@ -46,13 +48,12 @@ export class ListarExpediente {
     private route: ActivatedRoute,
     private au: AuthService,
     private pantallasService: PantallasService
-
   ) { }
 
-
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.isLoading = true;
 
+    this.route.queryParams.subscribe(params => {
       const currentPage = params['page'] ? +params['page'] : 1;
       this.filtro.expediente = params['expediente'] || '';
 
@@ -66,18 +67,14 @@ export class ListarExpediente {
       }
 
       if (!params['page'] || params['page'] !== currentPage.toString()) {
-        queueMicrotask(() => {
-          this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: { ...params, page: currentPage },
-            queryParamsHandling: 'merge',
-            replaceUrl: true
-          });
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { ...params, page: currentPage },
+          queryParamsHandling: 'merge',
+          replaceUrl: true
         });
         return;
       }
-
-
 
       const requestParams = {
         page: currentPage,
@@ -89,47 +86,15 @@ export class ListarExpediente {
 
       this.juicioService.getListadoExpedientes(requestParams).subscribe({
         next: (response) => {
-          queueMicrotask(() => {
-            this.expedientes.set(response.data);
-            this.pagination = response.pagination;
-          });
+          this.expedientes.set(response.data);
+          this.pagination = response.pagination;
+          this.isLoading = false;
         },
-
         error: (error) => {
+          this.isLoading = false;
           console.error('Error:', error);
         }
       });
-    });
-  }
-
-  getListarExpedientes(): void {
-    const currentParams = this.route.snapshot.queryParams;
-    const page = currentParams['page'] ? +currentParams['page'] : 1;
-
-    const params: any = {
-      page: page,
-      per_page: 1
-
-    };
-
-    if (currentParams['expediente']) {
-      params.expediente = currentParams['expediente'];
-    }
-
-    if (currentParams['fechaInicio'] && currentParams['fechaFinal']) {
-      params.fechaInicio = currentParams['fechaInicio'];
-      params.fechaFinal = currentParams['fechaFinal'];
-    }
-
-    this.juicioService.getListadoExpedientes(params).subscribe({
-      next: (response) => {
-        this.expedientes.set(response.data);
-        this.pagination = response.pagination;
-        console.log('Página actual:', page, 'Datos recibidos:', response.data.length);
-      },
-      error: (error) => {
-        console.error('Error al obtener expedientes:', error);
-      }
     });
   }
 
@@ -138,7 +103,7 @@ export class ListarExpediente {
       expediente: this.filtro.expediente || undefined,
       fechaInicio: undefined,
       fechaFinal: undefined,
-      page: undefined // Resetear a página 1 (no visible en URL)
+      page: undefined
     };
 
     if (this.filtro.rangeDates?.length === 2) {
@@ -152,13 +117,6 @@ export class ListarExpediente {
       queryParamsHandling: 'merge'
     });
 
-    // Cierra el dropdown si está abierto
-    this.mostrarDropdown = false;
-    const dropdown = document.getElementById('dropdownTimepicker');
-    if (dropdown) {
-      dropdown.classList.remove('show');
-      dropdown.classList.add('hidden');
-    }
   }
 
   limpiarFiltros(): void {
@@ -166,7 +124,6 @@ export class ListarExpediente {
       expediente: '',
       rangeDates: ''
     };
-    this.getListarExpedientes();
 
     this.router.navigate([], {
       relativeTo: this.route,
@@ -179,49 +136,30 @@ export class ListarExpediente {
       queryParamsHandling: 'merge'
     });
 
-    // Cierra el dropdown si está abierto
     this.mostrarDropdown = false;
-    const dropdown = document.getElementById('dropdownTimepicker');
-    if (dropdown) {
-      dropdown.classList.remove('show');
-      dropdown.classList.add('hidden');
-    }
   }
 
   detalle(idExpediente: number): void {
     this.router.navigate(['/juicioenlinea/expedientes/detalle'], { state: { idExpediente } });
   }
 
-  mostrarDropdown = false;
-  etiquetaRangoSeleccionado = 'Esta semana';
-  textoRango = '';
-
-
-
-
   cambiarPagina(page: number): void {
-
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: page },
+      queryParams: { page },
       queryParamsHandling: 'merge',
       replaceUrl: true
-    }).then(() => {
-      console.log('URL actualizada a:', this.route.snapshot.queryParams);
     });
   }
 
-
-
   parseDateFromString(dateStr: string): Date {
-    // dateStr debe ser 'yyyy-MM-dd'
     const [year, month, day] = dateStr.split('-').map(Number);
-    // new Date(year, monthIndex, day) -- monthIndex inicia en 0
     return new Date(year, month - 1, day);
   }
 
   mostrarBoton(): boolean {
-
     return this.pantallasService.tienePermiso('requerimiento/crear');
   }
+
+  mostrarDropdown = false;
 }

@@ -1,98 +1,114 @@
 <p-accordion>
     <p-accordion-panel value="0">
 
-        <p-accordion-header>
-            OPCIONES DE BÚSQUEDA
+        <p-accordion-header class="dark:text-surface-0">
+            
+            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 ">
+                    OPCIONES DE BÚSQUEDA
+                </label>
         </p-accordion-header>
 
         <p-accordion-content>
-               <form #myForm="ngForm" (ngSubmit)="BusquedaFiltros()" aria-label="Filtros de búsqueda de apelaciones">
+               <form #myForm="ngForm" (ngSubmit)="BusquedaFiltros()" aria-label="Filtros de búsqueda de apelaciones" >
             <p-fieldset legend="Datos de Apelación">
 
-              
+              <div class=" flex flex-wrap grid-cols-12 gap-4 w-full" >
+
                 <div class="field col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de Oficialia
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de Oficialia</label>
 
-                    <input pInputText [(ngModel)]="filtros.folioOficial"  name="folioOficial" />
+                    <!-- <input pInputText [(ngModel)]="filtros.folioOficial"  name="folioOficial" /> -->
+                    <!-- <p-inputmask  Mask="9999/9999" [unmask]="true" [(ngModel)]="filtros.folioOficial" placeholder="9999/9999"  name="folioOficial"></p-inputmask> -->
+                    <p-inputMask
+  mask="9999/9999"
+  [(ngModel)]="filtros.folioOficial"
+  placeholder="0000/0000"
+  name="folioOficial">
+</p-inputMask>
 
-                    </label>
+
+                    
                 </div>
 
                 <div class="field col-12 md:col-6">
 
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala 
-                    <p-select [options]="catSalas" optionLabel="descripcion" optionValue="idSala" placeholder="Selecciona una sala" appendTo="body" [(ngModel)]="filtros.idSala"  name="idSala"></p-select>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala     </label>
+                    <p-select [options]="catSalas" optionLabel="descripcion" optionValue="idsala" placeholder="Selecciona una sala" appendTo="body" [(ngModel)]="filtros.idSala"  name="idSala"></p-select>
 
-                    </label>
+                
                     
                  
                 </div>
+                
            
                 <div class="field col-12 md:col-6">
 
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">  Nomenclatura 
-                    <p-select [options]="catNomenclatura"   optionLabel="descripcion" optionValue="idNomenclatura"  placeholder="Selecciona tipo de nomenclatura" appendTo="body" [(ngModel)]="filtros.idNomenclatura" name="idNomenclatura"></p-select>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">  Nomenclatura  </label>
+                    <p-select [options]="catNomenclatura"   optionLabel="descripcion" optionValue="idCatNomenclatura"  placeholder="Selecciona tipo de nomenclatura" appendTo="body" [(ngModel)]="filtros.idNomenclatura" name="idNomenclatura"></p-select>
 
-                    </label>
+                   
                 </div>
 
                 <div class="field col-12 md:col-6">
 
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Folio Apelación 
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Folio Apelación  </label>
                     <input pInputText [(ngModel)]="filtros.folioExpediente" name="folioExpediente" />
 
-                    </label>
+                   
                 </div>
 
                 <div class="field col-12 md:col-6">
 
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apelación 
-                    <p-select [options]="catApelaciones" optionLabel="descripcion" optionValue="idApelacion" placeholder="Selecciona tipo de apelación" appendTo="body" [(ngModel)]="filtros.tipoApelacion" name="tipoApelacion"></p-select>
-                </label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apelación </label>
+                    <p-select [options]="catApelaciones" optionLabel="descripcion" optionValue="idCatApelacion" placeholder="Selecciona tipo de apelación" appendTo="body" [(ngModel)]="filtros.tipoApelacion" name="tipoApelacion"></p-select>
+                
                 </div>
 
                 <div class="field col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Exp/Causa 
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Exp/Causa </label>
                     <input pInputText [(ngModel)]="filtros.expedienteCausa" name="expedienteCausa" />
 
-                    </label>
+                    
                 </div>
 
                 <div class="field col-12 md:col-6">
 
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre Parte 
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre Parte </label>
                     <input pInputText [(ngModel)]="filtros.nombreParte" name="nombreParte" />
 
-                    </label>
+                    
                 </div>
 
-
+</div>
 
             </p-fieldset>
 
             <p-fieldset legend="Fecha de Recepción" class="mt-3">
+                <div class="flex flex-wrap grid-cols-12 gap-4 w-full" >
 
                 <div class="col-12 md:col-6">
 
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Inicial 
-                    <p-datepicker [(ngModel)]="filtros.fechaRecepInicial" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" name="fechaRecepInicial" />
-                </label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Inicial </label>
+                    <p-datepicker [(ngModel)]="filtros.fechaRecepInicial" [iconDisplay]="'input'" [showIcon]="true" inputId="fechaRecepInicial" name="fechaRecepInicial" />
+                
 
                 </div>
+                
 
 
                 <div class="col-12 md:col-6">
 
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Final 
-                    <p-datepicker [(ngModel)]="filtros.fechaRecepFinal" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" name="fechaRecepFinal" />
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Final  </label>
+                    <p-datepicker [(ngModel)]="filtros.fechaRecepFinal" [iconDisplay]="'input'" [showIcon]="true" inputId="fechaRecepFinal" name="fechaRecepFinal" />
 
-                    </label>
+                   
+                </div>
                 </div>
 
             </p-fieldset>
 
             <div class="flex justify-content-end gap-2 mt-3">
-                <p-button label="Limpiar" label="Limpiar" severity="secondary" />
+                <p-button label="Limpiar" (click)="limpiar()" severity="secondary" />
                 <p-button type="submit" label="Confirmar" />
 
           </div>
