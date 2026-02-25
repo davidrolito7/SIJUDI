@@ -99,17 +99,17 @@ partes : busquedaPartes[];
  CATALOGOS 
  ######################## */
 export interface CatApelaciones {
-  idApelacion: number;
+  idCatApelacion: number;
   descripcion: string;
 }
 
 export interface Nomenclatura {
-  idNomenclatura: number;
+  idCatNomenclatura: number;
   descripcion: string;
 }
 
 export interface CatSalas {
-  idSala: number;
+  idsala: number;
   descripcion: string;
 }
 

@@ -18,6 +18,7 @@ import { SalasService } from '../../service/salas.service';
 import { MessageService } from 'primeng/api';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'; 
 import { busquedaExpediente, DTABusqueda, responseDataBusqueda } from '../../interface/salas.interface';
+import { InputMaskModule } from 'primeng/inputmask';
 
 @Component({
   selector: 'app-busqueda-apelaciones',
@@ -36,6 +37,7 @@ import { busquedaExpediente, DTABusqueda, responseDataBusqueda } from '../../int
     DrawerModule,
     DatePickerModule,
     SplitterModule,
+    InputMaskModule,
 
   ],
   templateUrl: './busqueda-apelaciones.html',
@@ -49,6 +51,12 @@ export class BusquedaApelaciones implements OnInit  {
   catNomenclatura: Nomenclatura [] = [];
   
   catSalas: CatSalas[] = [];
+
+  //  catApelaciones: any[] = [];
+
+  // catNomenclatura: any [] = [];
+  
+  // catSalas: any[] = [];
 
   ngOnInit(): void {
   //  this.cargarApelaciones();
@@ -64,11 +72,11 @@ export class BusquedaApelaciones implements OnInit  {
   filtros = {
     "idGeneral": 3315,
       "idPantalla": 1,
-    folioOficial: '',
-    idSala: '',
-    idNomenclatura: '',
+    folioOficial: '' as string | null,
+    idSala: null as string | number | null,
+    idNomenclatura: null as string | number | null,
     folioExpediente: '',
-    tipoApelacion: '',
+    tipoApelacion: null as string | null,
     expedienteCausa: '',
     nombreParte: '',
     fechaRecepInicial: null,
@@ -120,10 +128,10 @@ export class BusquedaApelaciones implements OnInit  {
       "idGeneral": 3315,
       "idPantalla": 1,
       folioOficial: '',
-      idSala: '',
-      idNomenclatura: '',
+      idSala: null,
+      idNomenclatura: null,
       folioExpediente: '',
-      tipoApelacion: '',
+      tipoApelacion: null,
       expedienteCausa: '',
       nombreParte: '',
       fechaRecepInicial: null,
@@ -158,6 +166,7 @@ cargarCatalogo() {
     });
 }
 
+// this.selectedSala = this.salas.find(s => s.idsala === 2087);
 cargarCatalogoSalas() {
   this.salasService.getCatalogoSalas()
     .subscribe({
@@ -236,6 +245,11 @@ mostrarTabla: boolean = false;
   "fechaRecepFinal": "",
   "nombreParte": ""
      };
+
+this.filtros.idSala = (this.filtros.idSala !== undefined && this.filtros.idSala !== null&& this.filtros.idSala !== '') ? this.filtros.idSala.toString() : '';
+this.filtros.idNomenclatura = (this.filtros.idNomenclatura !== undefined && this.filtros.idNomenclatura !== null && this.filtros.idNomenclatura !== '') ? this.filtros.idNomenclatura.toString() : '';
+this.filtros.tipoApelacion = (this.filtros.tipoApelacion !== undefined && this.filtros.tipoApelacion !== null && this.filtros.tipoApelacion !== '') ? this.filtros.tipoApelacion.toString() : '';
+
    
      this.salasService.getListadoInicios(this.filtros).subscribe({
       next: (response) => {
