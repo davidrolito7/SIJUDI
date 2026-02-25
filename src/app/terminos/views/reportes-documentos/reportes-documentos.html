@@ -1,0 +1,128 @@
+<!-- ==================================================
+     Contenedor principal
+     ================================================== -->
+  <div class="px-6 py-4 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+  
+<!-- Spinner overlay global -->
+  <app-spinner 
+    [isLoading]="isLoading" 
+    message="Generando reporte, espere..." >
+  </app-spinner>
+
+<!-- Toast para mensajes -->
+<p-toast position="top-right"></p-toast>
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+  <!-- BREADCRUMB -->
+  <app-breadcrub></app-breadcrub>
+</div>
+<p-card>
+
+  <h2 class="text-xl font-bold mb-4">
+    Reporte de documentos con término
+  </h2>
+
+  <!-- ==================================================
+       Filtros del reporte
+       ================================================== -->
+  <div class="grid grid-cols-6 gap-4 items-end">
+
+    <!-- Instancia -->
+    <div class="col-span-6 sm:col-span-2">
+      <label class="block mb-2 text-sm font-medium">Instancia</label>
+      <p-select
+        [options]="instancias"
+        [(ngModel)]="instancia"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+        (onChange)="onInstanciaChange()">
+      </p-select>
+    </div>
+
+    <!-- Juzgado (Primera Instancia) -->
+    <div class="col-span-6 sm:col-span-2" *ngIf="instancia === 'P'">
+      <label class="block mb-2 text-sm font-medium">Juzgado</label>
+      <p-select
+        #juzgadoSelect
+        [options]="catalogoJuzgados"
+        [(ngModel)]="juzgado"
+        optionLabel="descripcion"
+        optionValue="cve"
+        placeholder="Selecciona un juzgado"
+        [filter]="true"
+        filterBy="descripcion"
+        class="w-full"
+        appendTo="body"
+        (onChange)="onJuzgadoChange()">
+      </p-select>
+    </div>
+
+    <!-- Sala (Segunda Instancia) -->
+    <div class="col-span-6 sm:col-span-2" *ngIf="instancia === 'S'">
+      <label class="block mb-2 text-sm font-medium">Sala</label>
+      <p-select
+        #salaSelect
+        [options]="catalogoSalas"
+        [(ngModel)]="sala"
+        optionLabel="descripcion"
+        optionValue="cve"
+        placeholder="Selecciona una sala"
+        [filter]="true"
+        filterBy="descripcion"
+        class="w-full"
+        appendTo="body"
+        (onChange)="onSalaChange()">
+      </p-select>
+    </div>
+
+    <!-- Fecha inicio -->
+    <div class="col-span-6 sm:col-span-3">
+      <label class="block mb-2 text-sm font-medium">De</label>
+      <p-datePicker
+        #fechaInicioInput
+        [(ngModel)]="fechaInicio"
+        dateFormat="yy-mm-dd"
+        class="w-full"
+        appendTo="body"
+        [maxDate]="maxDate">
+        
+      </p-datePicker>
+    </div>
+
+    <!-- Fecha fin -->
+    <div class="col-span-6 sm:col-span-3">
+      <label class="block mb-2 text-sm font-medium">A</label>
+      <p-datePicker
+        #fechaFinInput
+        [(ngModel)]="fechaFin"
+        dateFormat="yy-mm-dd"
+        class="w-full"
+        appendTo="body"
+        [maxDate]="maxDate">
+      </p-datePicker>
+    </div>
+
+  </div>
+
+  <!-- ==================================================
+       Acciones
+       ================================================== -->
+ <div class="flex justify-end gap-2 mt-6">
+    
+  <button
+    pButton
+    icon="pi pi-file-pdf"
+    label="Generar PDF"
+    class="p-button-success"
+    (click)="generarPdf()">
+  </button>
+
+  <button
+    pButton
+    icon="pi pi-times"
+    label="Limpiar"
+    class="p-button-secondary"
+    (click)="limpiar()">
+  </button>
+
+</div>

@@ -6,4 +6,5 @@ export const AMPAROS_ROUTES: Routes = [
     {path: 'detalles-amparo-recibido', loadComponent: () => import('../amparos/recibidos/detalles/detalles-amparo-recibido').then(m => m.DetallesAmparoRecibido)},
     {path: 'respuesta-amparo-recibido', loadComponent: () => import('../amparos/recibidos/respuesta/respuesta-amparo-recibido').then(m => m.RespuestaAmparoRecibido)},
     {path: 'acuerdo', loadComponent: () => import('../amparos/recibidos/acuerdo/acuerdo').then(m => m.Acuerdo)},
+    {path: 'iniciar-acuerdo', loadComponent:()=>import('../amparos/recibidos/iniciar-acuerdo/iniciar-acuerdo').then(m=>m.IniciarAcuerdo)}
 ];

@@ -1,0 +1,129 @@
+<!-- Toast para mensajes globales -->
+<p-toast />
+
+<!-- ==================================================
+     Filtros de búsqueda
+     ================================================== -->
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+  <!-- BREADCRUMB -->
+  <app-breadcrub></app-breadcrub>
+  <div class="m-8 bg-surface-50 dark:bg-surface-900 p-4">
+    <p-card>
+      <h2 class="text-xl font-bold mb-4">
+        Búsqueda de Expedientes con Término
+      </h2>
+
+      <div class="grid grid-cols-6 gap-4 items-end">
+
+        <!-- Instancia -->
+        <div class="col-span-6 sm:col-span-2">
+          <label class="block mb-2 text-sm font-medium">Instancia</label>
+          <p-select
+            [options]="instancias"
+            [(ngModel)]="instancia"
+            [ngModelOptions]="{ standalone: true }"
+            optionLabel="label"
+            optionValue="value"
+            class="w-full">
+          </p-select>
+        </div>
+
+        <!-- Tipo de búsqueda -->
+        <div class="col-span-6 sm:col-span-2">
+          <label class="block mb-2 text-sm font-medium">Buscar por</label>
+          <p-select
+            [options]="tiposBusqueda"
+            [(ngModel)]="tipoBusqueda"
+            [ngModelOptions]="{ standalone: true }"
+            optionLabel="label"
+            optionValue="value"
+            class="w-full">
+          </p-select>
+        </div>
+
+        <!-- Valor de búsqueda -->
+        <div class="col-span-6 sm:col-span-1">
+          <label class="block mb-2 text-sm font-medium">Valor</label>
+          <input
+            pInputText
+            #valorBusquedaInput
+            (keydown.enter)="$event.preventDefault(); buscar()"
+            [(ngModel)]="valorBusqueda"
+            [ngModelOptions]="{ standalone: true }"
+            class="w-full uppercase"
+            placeholder="P-2841/2026 o 0001/2026">
+        </div>
+
+        <!-- Acciones -->
+        <div class="col-span-6 sm:col-span-1 flex gap-2">
+          <button
+            pButton
+            type="button"
+            icon="pi pi-search"
+            label="Buscar"
+            (click)="buscar()">
+          </button>
+
+          <button
+            pButton
+            type="button"
+            icon="pi pi-times"
+            label="Limpiar"
+            class="p-button-secondary"
+            (click)="limpiarFiltros()">
+          </button>
+        </div>
+
+      </div>
+    </p-card>
+  </div>
+</div>
+<!-- ==================================================
+     Resultados de la búsqueda
+     ================================================== -->
+<div class="m-8 bg-surface-50 dark:bg-surface-900 p-4">
+
+  <!-- Tabla de resultados -->
+  <p-table
+    *ngIf="resultados.length > 0"
+    [value]="resultados"
+    [tableStyle]="{ 'min-width': '50rem' }">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Folio</th>
+        <th>Expediente</th>
+        <th>Juzgado</th>
+        <th>Partes</th>
+        <th>Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td>{{ row.folio }}</td>
+        <td>{{ row.expediente }}</td>
+        <td>{{ row.juzgado }}</td>
+        <td>{{ row.partes }}</td>
+        <td>
+          <button
+            pButton
+            icon="pi pi-eye"
+            class="p-button-info p-button-sm"
+            (click)="verEscrito(row.folio)">
+            Ver
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+
+  <!-- Mensaje sin resultados -->
+  <p-message
+    *ngIf="busquedaRealizada && resultados.length === 0"
+    severity="info"
+    text="No se encontraron resultados">
+  </p-message>
+
+</div>

@@ -1,0 +1,37 @@
+.anexos-box {
+  background: #ffffff;
+  border: 1px solid #e5e7eb; /* gris suave */
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.anexos-header {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.anexos-scroll {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.anexos-row {
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.anexos-row:last-child {
+  border-bottom: none;
+}
+:host ::ng-deep .p-datatable td {
+  vertical-align: middle;
+}
+
+:host ::ng-deep .p-datatable td:nth-child(3) {
+  color: #555;
+  font-weight: 600;
+}
+
+
