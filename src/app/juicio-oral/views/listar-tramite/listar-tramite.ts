@@ -30,7 +30,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 // App - feature
 // ============================
 import { JuicioService } from '../../services/juicioenlinea.service';
-import { ListadoTramites } from '../../interfaces/juicioenlinea.model';
+import { Juzgado, ListadoTramites } from '../../interfaces/juicioenlinea.model';
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { PantallasService } from '../../services/pantallas.service';
 
@@ -91,6 +91,7 @@ export class ListarTramite implements OnInit {
   };
 
   expedienteForm!: FormGroup;
+  juzgados: Juzgado[] = [];
 
   // ============================
   // Constructor / DI
@@ -103,9 +104,9 @@ export class ListarTramite implements OnInit {
     private messageService: MessageService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-        private pantallasService: PantallasService
-    
-  ) {}
+    private pantallasService: PantallasService
+
+  ) { }
 
   // ============================
   // Lifecycle
@@ -114,12 +115,17 @@ export class ListarTramite implements OnInit {
     this.expedienteForm = this.fb.group({
       folio: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
       expediente: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
+      juzgado: [null, [Validators.required]]
+
     });
 
     const params = this.route.snapshot.queryParams;
     this.sincronizarFiltrosDesdeURL(params);
     const page = params['page'] ? +params['page'] : 1;
     this.cargarDatos(page);
+
+        this.cargarJuzgados();
+
   }
 
   // ============================
@@ -131,9 +137,9 @@ export class ListarTramite implements OnInit {
     this.filtro.rangeDates =
       params['fechaInicio'] && params['fechaFinal']
         ? [
-            this.parseDateFromString(params['fechaInicio']),
-            this.parseDateFromString(params['fechaFinal']),
-          ]
+          this.parseDateFromString(params['fechaInicio']),
+          this.parseDateFromString(params['fechaFinal']),
+        ]
         : '';
   }
 
@@ -255,7 +261,7 @@ export class ListarTramite implements OnInit {
           });
 
           setTimeout(() => {
-            this.router.navigate(['/tramites/crear'], {
+            this.router.navigate(['/juicioenlinea/requerimientos/crear'], {
               state: { idExpediente: expediente.idExpediente },
             });
             this.cerrarModal();
@@ -302,12 +308,12 @@ export class ListarTramite implements OnInit {
   // ============================
   // Estado helpers para UI tags
   // ============================
-getEstadoDescripcion(tramite: unknown): string | null {
-  const t = tramite as { historial?: Array<{ cat_estado_tramite?: { nombre?: string } }> };
-  const historial = t.historial;
-  if (!historial || historial.length === 0) return null;
-  return historial[historial.length - 1]?.cat_estado_tramite?.nombre ?? null;
-}
+  getEstadoDescripcion(tramite: unknown): string | null {
+    const t = tramite as { historial?: Array<{ cat_estado_tramite?: { nombre?: string } }> };
+    const historial = t.historial;
+    if (!historial || historial.length === 0) return null;
+    return historial[historial.length - 1]?.cat_estado_tramite?.nombre ?? null;
+  }
 
   getEstadoId(tramite: unknown): number | null {
     const t = tramite as { historial?: Array<{ idCatEstadoTramite?: number }> };
@@ -328,5 +334,17 @@ getEstadoDescripcion(tramite: unknown): string | null {
       default:
         return { severity: 'secondary' };
     }
+  }
+
+    cargarJuzgados() {
+    this.juicioService.getJuzgados().subscribe({
+      next: (juzgados) => {
+        this.juzgados = juzgados;
+        console.log('Juzgados:', juzgados);
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      }
+    });
   }
 }

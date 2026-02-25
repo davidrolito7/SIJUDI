@@ -14,12 +14,12 @@
             </div>
 
             @if (mostrarBoton()) {
-                <div class="flex items-center">
-                    <p-button (click)="abrirModal()">
-                        <i pButtonIcon class="pi pi-search"></i>
-                        <span pButtonLabel>Buscar expediente</span>
-                    </p-button>
-                </div>
+            <div class="flex items-center">
+                <p-button (click)="abrirModal()">
+                    <i pButtonIcon class="pi pi-search"></i>
+                    <span pButtonLabel>Buscar expediente</span>
+                </p-button>
+            </div>
             }
         </div>
 
@@ -29,53 +29,31 @@
                 <!-- Folio -->
                 <div class="col-span-12 md:col-span-6 lg:col-span-4 w-full">
                     <label for="folio" class="block mb-2 text-sm font-medium">Folio</label>
-                    <p-inputmask
-                        fluid
-                        [(ngModel)]="filtro.folio"
-                        name="folio"
-                        mask="9999/9999"
+                    <p-inputmask fluid [(ngModel)]="filtro.folio" name="folio" mask="9999/9999"
                         placeholder="0001/2026" />
                 </div>
 
                 <!-- Tipo de trámite -->
                 @if (mostrarBoton()) {
-                    <div class="col-span-12 md:col-span-6 lg:col-span-3 w-full">
-                        <label for="tipo" class="block mb-2 text-sm font-medium">Tipo</label>
-                        <p-select
-                            inputId="tipo"
-                            name="tipo"
-                            class="w-full"
-                            [options]="tipoOptions"
-                            [(ngModel)]="filtro.tipo"
-                            optionLabel="label"
-                            optionValue="value"
-                            appendTo="body"
-                            fluid>
-                        </p-select>
-                    </div>
+                <div class="col-span-12 md:col-span-6 lg:col-span-3 w-full">
+                    <label for="tipo" class="block mb-2 text-sm font-medium">Tipo</label>
+                    <p-select inputId="tipo" name="tipo" class="w-full" [options]="tipoOptions"
+                        [(ngModel)]="filtro.tipo" optionLabel="label" optionValue="value" appendTo="body" fluid>
+                    </p-select>
+                </div>
                 }
 
                 <!-- Fecha -->
                 <div class="col-span-12 md:col-span-8 lg:col-span-3">
                     <label for="rangeDates" class="block mb-2 text-sm font-medium">Fecha</label>
-                    <p-datepicker
-                        inputId="rangeDates"
-                        name="rangeDates"
-                        fluid
-                        placeholder="Selecciona rango"
-                        [(ngModel)]="filtro.rangeDates"
-                        selectionMode="range"
-                        [readonlyInput]="true">
+                    <p-datepicker inputId="rangeDates" name="rangeDates" fluid placeholder="Selecciona rango"
+                        [(ngModel)]="filtro.rangeDates" selectionMode="range" [readonlyInput]="true">
                     </p-datepicker>
                 </div>
 
                 <!-- Botones -->
                 <div class="col-span-12 md:col-span-4 lg:col-span-2 flex gap-4">
-                    <p-button
-                        type="button"
-                        icon="pi pi-filter-slash"
-                        [outlined]="true"
-                        (click)="limpiarFiltros()"
+                    <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
                         aria-label="Limpiar filtros">
                     </p-button>
                     <p-button type="submit" aria-label="Buscar" styleClass="btn-secondary">
@@ -93,12 +71,7 @@
 <!-- TABLA -->
 <div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
     <div class="card">
-        <p-table
-            #dtTramites
-            [value]="tramites"
-            [rows]="10"
-            [rowsPerPageOptions]="[10, 25, 50]"
-            [paginator]="true"
+        <p-table #dtTramites [value]="tramites" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="[
                 'folioOficio',
                 'expediente.NumExpediente',
@@ -111,12 +84,9 @@
                     <div class="font-medium text-xl mb-4">Resultado</div>
                     <p-iconfield iconPosition="left" class="ml-auto">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-                        <input
-                            pInputText
-                            type="text"
+                        <input pInputText type="text"
                             (input)="dtTramites.filterGlobal($any($event.target).value, 'contains')"
-                            placeholder="Buscar una palabra"
-                            aria-label="Buscar" />
+                            placeholder="Buscar una palabra" aria-label="Buscar" />
                     </p-iconfield>
                 </div>
             </ng-template>
@@ -126,7 +96,7 @@
                     <th scope="col">Folio trámite</th>
                     <th scope="col">Expediente</th>
                     @if (mostrarBoton()) {
-                        <th scope="col">Juzgado</th>
+                    <th scope="col">Juzgado</th>
                     }
                     <th scope="col">Tipo trámite</th>
                     <th scope="col">Fecha Creado</th>
@@ -142,26 +112,17 @@
                     </td>
                     <td>{{ tramite.expediente?.NumExpediente }}</td>
                     @if (mostrarBoton()) {
-                        <td>{{ tramite.expediente?.juzgado?.Descripcion }}</td>
+                    <td>{{ tramite.expediente?.juzgado?.Descripcion }}</td>
                     }
                     <td class="uppercase">{{ tramite.cat_tramite?.nombre }}</td>
                     <td>{{ tramite.created_at | date: 'dd/MM/yyyy HH:mm' }} h</td>
                     <td>
-                        <p-tag
-                            [value]="(getEstadoDescripcion(tramite) | uppercase) ?? ''"
-                            [severity]="getEstadoTag(tramite).severity"
-                            [icon]="getEstadoTag(tramite).icon ?? ''" />
+                        <p-tag [value]="(getEstadoDescripcion(tramite) | uppercase) ?? ''"
+                            [severity]="getEstadoTag(tramite).severity" [icon]="getEstadoTag(tramite).icon ?? ''" />
                     </td>
                     <td>
-                        <p-button
-                            (click)="detalle(tramite.idTramite)"
-                            [rounded]="true"
-                            [text]="true"
-                            [raised]="true"
-                            severity="info"
-                            icon="pi pi-eye"
-                            pTooltip="Ver detalle"
-                            tooltipPosition="top"
+                        <p-button (click)="detalle(tramite.idTramite)" [rounded]="true" [text]="true" [raised]="true"
+                            severity="info" icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top"
                             title="Detalle">
                         </p-button>
                     </td>
@@ -179,46 +140,33 @@
 </div>
 
 <!-- MODAL BUSCAR EXPEDIENTE -->
-<p-dialog
-    header="Búsqueda del expediente"
-    [modal]="true"
-    [(visible)]="visible"
-    [style]="{ width: '25rem' }">
+<p-dialog header="Búsqueda del expediente" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
 
     <form [formGroup]="expedienteForm">
         <div class="flex flex-col gap-4">
 
             <div class="flex flex-col gap-1">
                 <label for="folio" class="text-sm font-medium">Folio preregistro</label>
-                <input
-                    pInputText
-                    id="folio"
-                    type="text"
-                    formControlName="folio"
-                    maxlength="9"
+                <input pInputText id="folio" type="text" formControlName="folio" maxlength="9"
                     placeholder="0001/2026" />
             </div>
 
             <div class="flex flex-col gap-1">
                 <label for="numExpediente" class="text-sm font-medium">Número de expediente</label>
-                <input
-                    pInputText
-                    id="numExpediente"
-                    type="text"
-                    formControlName="expediente"
-                    maxlength="9"
+                <input pInputText id="numExpediente" type="text" formControlName="expediente" maxlength="9"
                     placeholder="0001/2026" />
             </div>
-
+            <div class="flex flex-col gap-1">
+                <label for="numExpediente" class="text-sm font-medium">Número de expediente</label>
+                <p-select formControlName="juzgado" [filter]="true" placeholder="Selecciona un juzgado"
+                    [options]="juzgados" optionLabel="Descripcion" optionValue="IdCatJuzgado">
+                </p-select>
+            </div>
         </div>
 
         <div class="flex justify-end gap-2 mt-6">
             <p-button label="Cancelar" severity="secondary" (click)="cerrarModal()" />
-            <p-button
-                type="submit"
-                label="Buscar"
-                [disabled]="expedienteForm.invalid"
-                (onClick)="busqueda()" />
+            <p-button type="submit" label="Buscar" [disabled]="expedienteForm.invalid" (onClick)="busqueda()" />
         </div>
     </form>
 
