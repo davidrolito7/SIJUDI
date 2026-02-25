@@ -20,10 +20,10 @@ export interface TramitesElectronicosRecibidosResponse {
 }
 
 export interface DetalleTramiteElectronicoRecibidoResponse extends TramitesElectronicosRecibidosResponse {
-    anexos: AnexoTramiteElectronicoRecibidoResponse[];
+    archivos: DetalleTramiteElectronicoRecibidoResponse[];
 }
 
-export interface AnexoTramiteElectronicoRecibidoResponse {
+export interface DetalleTramiteElectronicoRecibidoResponse {
     idArchivo: number;
     idTramiteElectronicoRecibido: number;
     url: string;
