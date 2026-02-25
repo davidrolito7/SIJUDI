@@ -1155,39 +1155,46 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
   // ================================
   certificar() {
     this.isLoading = true;
+    this.cdr.detectChanges();
 
     const folio = this.terminosForm.get('folio')?.value;
     if (!folio) return;
 
     this.apiService.obtenerCertificacion(folio)
-      .subscribe((pdfBlob: Blob) => {
-        this.isLoading = false;
+      .subscribe({
+        next:(pdfBlob: Blob)=>{
+          this.isLoading = false;
+          this.cdr.detectChanges();
 
-        const blobUrl = URL.createObjectURL(pdfBlob);
+          const blobUrl = URL.createObjectURL(pdfBlob);
 
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = blobUrl;
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = blobUrl;
 
-        document.body.appendChild(iframe);
+          document.body.appendChild(iframe);
 
-        iframe.onload = () => {
-          iframe.contentWindow?.focus();
-          iframe.contentWindow?.print();
+          iframe.onload = () => {
+            iframe.contentWindow?.focus();
+            iframe.contentWindow?.print();
 
+            setTimeout(() => {
+              URL.revokeObjectURL(blobUrl);
+              document.body.removeChild(iframe);
+            }, 1000);
+          };
+
+          // 🔥 Limpiar formulario después de certificar
           setTimeout(() => {
-            URL.revokeObjectURL(blobUrl);
-            document.body.removeChild(iframe);
-          }, 1000);
-        };
-
-        // 🔥 Limpiar formulario después de certificar
-        setTimeout(() => {
-          this.nuevo();
-          this.isSaving = false;
-          // this.terminosForm.enable();
-        }, 800);
-
+            this.nuevo();
+            this.isSaving = false;
+            // this.terminosForm.enable();
+          }, 800);
+        },
+        error:(e)=>{
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }
       });
   }
 
