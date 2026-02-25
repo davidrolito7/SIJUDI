@@ -67,9 +67,9 @@ export class Siderbar {
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (mods) => {
-          if (!this.selectedModuloId() && mods.length > 0) {
-            this.selectedModuloId.set(mods[0].idSistemaModulo);
-          }
+          // if (!this.selectedModuloId() && mods.length > 0) {
+          //   this.selectedModuloId.set(mods[0].idSistemaModulo);
+          // }
         },
       });
 
