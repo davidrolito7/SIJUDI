@@ -59,4 +59,9 @@ visibleDrawer: boolean = false;
 
     this.router.navigate(['/perfil'], { replaceUrl: true });
   }
+
+  
+  verPerfil(): void {
+    this.router.navigate(['/datos-personales'], { replaceUrl: true });
+  }
 }
