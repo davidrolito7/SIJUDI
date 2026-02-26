@@ -243,8 +243,9 @@
 
             <div class="mt-10 flex flex-col gap-2">
                 @for (mod of modulos(); track mod.idSistemaModulo ?? $index) {
+                    <!--{{mod.idSistemaModulo}}-->
                 <button type="button" [pTooltip]="mod.nombre" tooltipPosition="right"
-                    class="w-12 h-12 p-0 inline-flex items-center justify-center rounded-lg transition-all select-none text-primary hover:bg-emphasis bg-transparent"
+                    class="w-12 h-12 p-0 inline-flex items-center cursor-pointer justify-center rounded-lg transition-all select-none text-primary hover:bg-emphasis bg-transparent"
                     (click)="toggleModulo(mod)" [attr.aria-pressed]="selectedModuloId() === mod.idSistemaModulo"
                     [attr.aria-label]="'Abrir módulo ' + mod.nombre">
                     <img class="w-7 h-7 block" [src]="svgSrcForModulo(mod)" alt="" aria-hidden="true" />

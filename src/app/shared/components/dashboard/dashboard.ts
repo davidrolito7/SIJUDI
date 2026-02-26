@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { Breadcrub } from "../breadcrub/breadcrub";
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [Breadcrub],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
