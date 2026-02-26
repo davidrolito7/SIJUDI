@@ -29,61 +29,61 @@ export interface ApiResponse<T> {
 
 
 export interface busquedaExpediente {
-     FoliodeOficialia : string;
-FoliodeApelacion: string;
-FoliodeApelacionAnterior: string;
-IdExpediente: string;
-IdCatTipoTramite: string;
-Tramite: string;
-IdSala: string;
-Sala :string;
-IdSalaAnterior: string;
-SalaAnterior :string;
-IdCatApelacion : string;
-Apelacion: string;
-IdCatTipoApelacion :string;
-TipodeApelacion: string;
-FechadeAuto: string;
-Expediente_Causa: string;
-IdCatTipoEscrito :string;
-TipodeEscrito :string;
-FoliodelOficio :string;
-NoFojas :string;
-ExpedienteAcumulado :string;
+     foliodeOficialia : string;
+foliodeApelacion: string;
+foliodeApelacionAnterior: string;
+idExpediente: string;
+idCatTipoTramite: string;
+tramite: string;
+idSala: string;
+sala :string;
+idSalaAnterior: string;
+salaAnterior :string;
+idCatApelacion : string;
+apelacion: string;
+idCatTipoApelacion :string;
+tipodeApelacion: string;
+fechadeAuto: string;
+expediente_Causa: string;
+idCatTipoEscrito :string;
+tipodeEscrito :string;
+foliodelOficio :string;
+noFojas :string;
+expedienteAcumulado :string;
                                
-IdCatJuzgadoOrigen : string;
-JuzgadoOrigen :string;
-FechadeRecepcion :string;
-ObservacionesdelaApelacion :string;
-FechadeIngresoaSala :string;
-EsReposicion :string
-Anexos : string
+idCatJuzgadoOrigen : string;
+juzgadoOrigen :string;
+fechadeRecepcion :string;
+observacionesdelaApelacion :string;
+fechadeIngresoaSala :string;
+esReposicion :string
+anexos : string
 
 }
 
 export interface busquedaPartes {
-    IdExpedienteParte : string;
-IdExpediente : string;
-IdCatParte : string;
-Parte : string;
-Nombre : string;
-Direccion : string;
-MenorEdad : string;
-IdCatSexo : string;
-Sexo : string;
+    idExpedienteParte : string;
+idExpediente : string;
+idCatParte : string;
+parte : string;
+nombre : string;
+direccion : string;
+menorEdad : string;
+idCatSexo : string;
+sexo : string;
 }
 
 export interface busquedaAnexos{
 
-   IdTramiteAnexoOtro : string;
-TipoTramite : string;
-IdExpediente : string;
-IdCatAnexo : string;
-Anexo : string;
-EsValor : string;
-MontoAnexo : string;
-Cantidad : string;
-Orden : string; 
+   idTramiteAnexoOtro : string;
+tipoTramite : string;
+idExpediente : string;
+idCatAnexo : string;
+anexo : string;
+esValor : string;
+montoAnexo : string;
+cantidad : string;
+orden : string; 
 
 }
 
