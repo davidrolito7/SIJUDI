@@ -16,6 +16,7 @@ import { ButtonModule } from 'primeng/button';
 import { AppIcon } from "./icon/app-icon.component";
 import { StyleClassModule } from 'primeng/styleclass';
 import { RippleModule } from 'primeng/ripple';
+import { DrawerService } from '../../../shared/service/drawer.service';
 @Component({
   selector: 'app-siderbar',
   imports: [
@@ -40,6 +41,8 @@ export class Siderbar {
   private readonly tokenService = inject(TokenService);
   private readonly authService = inject(AuthService);
   private readonly menuStore = inject(UserMenuStore);
+  readonly drawerService = inject(DrawerService);
+  
       visibleDrawer: boolean = false;
 
   readonly svgSrcForPantalla = svgSrcForPantalla;

@@ -1,12 +1,6 @@
-<!-- ===== BOTÓN HAMBURGUESA MÓVIL ===== -->
-<button type="button"
-    class="sm:hidden fixed top-8 left-8 z-998 w-10 h-10 flex items-center justify-center rounded-lg bg-primary-50 dark:bg-surface-800 shadow-md hover:bg-emphasis transition-all"
-    (click)="visibleDrawer = true" aria-label="Abrir menú">
-    <i class="pi pi-bars text-primary"></i>
-</button>
 
 <!-- ===== DRAWER MÓVIL ===== -->
-<p-drawer [(visible)]="visibleDrawer" styleClass="sm:hidden w-72 z-999">
+<p-drawer [(visible)]="drawerService.visible"  (visibleChange)="drawerService.visible.set($event)" styleClass="sm:hidden w-72 z-999">
     <ng-template #headless>
         <div class="flex flex-col h-full">
 
@@ -45,7 +39,7 @@
                 </div>
                 <button type="button"
                     class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-emphasis transition-all"
-                    (click)="visibleDrawer = false" aria-label="Cerrar menú">
+                    (click)="drawerService.close()" aria-label="Cerrar menú">
                     <i class="pi pi-times text-sm"></i>
                 </button>
             </div>
@@ -73,8 +67,8 @@
                             <li class="px-4">
                                 <a pRipple class="flex items-center gap-2 cursor-pointer px-6 py-2.5 rounded-lg 
             text-surface-700 dark:text-surface-100 hover:bg-emphasis duration-150
-            transition-colors p-ripple" [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis"
-                                    (click)="visibleDrawer = false">
+            transition-colors p-ripple" [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis"  (click)="drawerService.close()"
+                                    >
                                     <img class="w-4 h-4" [src]="svgSrcForPantalla(p)" alt="" aria-hidden="true" />
                                     <span class="font-medium text-sm uppercase">{{ p.nombre }}</span>
                                 </a>

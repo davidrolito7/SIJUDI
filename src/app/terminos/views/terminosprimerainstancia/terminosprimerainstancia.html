@@ -146,7 +146,7 @@
             <!-- TRASLADOS -->
             <div class="col-span-4 sm:col-span-2">
                 <label class="block mb-2 text-sm font-medium">Traslados</label>
-                <p-inputNumber #trasladosInput formControlName="traslados" class="w-full" fluid [min]="1" [max]="99999"
+                <p-inputNumber #trasladosInput formControlName="traslados" class="w-full" fluid [min]="0" [max]="99999"
                     [allowEmpty]="true" [useGrouping]="false" (keydown.enter)="moveNext($event)"></p-inputNumber>
             </div>
 

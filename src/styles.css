@@ -109,3 +109,17 @@
   z-index: 9999 !important;
 }
 
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #contentToPrint, #contentToPrint * {
+    visibility: visible;
+  }
+  #contentToPrint {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

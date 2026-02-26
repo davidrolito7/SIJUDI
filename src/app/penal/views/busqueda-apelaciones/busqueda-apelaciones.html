@@ -1,15 +1,24 @@
-<p-accordion>
+  <app-spinner [isLoading]="isLoading"></app-spinner>
+  
+  <!-- HEADER -->
+    <app-breadcrub></app-breadcrub>
+
+<!-- <div class="card flex justify-center mt-4 "> -->
+ <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+<p-accordion [(value)]="activeIndex"  >
     <p-accordion-panel value="0">
 
         <p-accordion-header class="dark:text-surface-0">
             
             <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 ">
-                    OPCIONES DE BÚSQUEDA
+                    Opciones de búsqueda
                 </label>
         </p-accordion-header>
 
         <p-accordion-content>
                <form #myForm="ngForm" (ngSubmit)="BusquedaFiltros()" aria-label="Filtros de búsqueda de apelaciones" >
+
+                <div class="card">
             <p-fieldset legend="Datos de Apelación">
 
               <div class=" flex flex-wrap grid-cols-12 gap-4 w-full" >
@@ -17,8 +26,7 @@
                 <div class="field col-12 md:col-6">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de Oficialia</label>
 
-                    <!-- <input pInputText [(ngModel)]="filtros.folioOficial"  name="folioOficial" /> -->
-                    <!-- <p-inputmask  Mask="9999/9999" [unmask]="true" [(ngModel)]="filtros.folioOficial" placeholder="9999/9999"  name="folioOficial"></p-inputmask> -->
+                    
                     <p-inputMask
   mask="9999/9999"
   [(ngModel)]="filtros.folioOficial"
@@ -52,7 +60,13 @@
                 <div class="field col-12 md:col-6">
 
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Folio Apelación  </label>
-                    <input pInputText [(ngModel)]="filtros.folioExpediente" name="folioExpediente" />
+                    
+                     <p-inputMask
+  mask="9999/9999"
+  [(ngModel)]="filtros.folioExpediente"
+  placeholder="0000/0000"
+  name="folioExpediente">
+</p-inputMask>
 
                    
                 </div>
@@ -83,7 +97,12 @@
 
             </p-fieldset>
 
-            <p-fieldset legend="Fecha de Recepción" class="mt-3">
+            
+
+            
+          </div>
+          <div class="card mt-4">
+            <p-fieldset legend="Fecha de Recepción" class="mt-5">
                 <div class="flex flex-wrap grid-cols-12 gap-4 w-full" >
 
                 <div class="col-12 md:col-6">
@@ -106,8 +125,8 @@
                 </div>
 
             </p-fieldset>
-
-            <div class="flex justify-content-end gap-2 mt-3">
+            </div>
+          <div class="flex justify-end gap-2 mt-3">
                 <p-button label="Limpiar" (click)="limpiar()" severity="secondary" />
                 <p-button type="submit" label="Confirmar" />
 
@@ -121,12 +140,43 @@
     </p-accordion-panel>
 
 </p-accordion>
+</div>
 
 
-
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+    <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div>
+            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
+            <!-- <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-users text-base! leading-normal!"></i>
+                    <span>332 Registros</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-globe text-base! leading-normal!"></i>
+                    <span>9.402 Sesiones</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-clock text-base! leading-normal!"></i>
+                    <span>2.32m Promedio</span>
+                </div>
+            </div> -->
+        </div>
+    </div>
 <!-- TABLA -->
-<div class="col-12 md:col-9">
-    <p-table [value]="listaapelaciones?.expediente || []" [tableStyle]="{'min-width':'100%'}">
+<div class="col-12 md:col-9 mt-4">
+    <p-table #dt1 [value]="listaapelaciones?.expediente || []" [tableStyle]="{'min-width':'100%'}"
+         [globalFilterFields]="['foliodeOficialia','foliodeApelacion','sala','apelacion','tipodeApelacion','expediente_Causa','foliodelOficio']" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,20,50]" [scrollable]="true" scrollHeight="400px" >
+            <ng-template #caption>
+                <div class="flex">
+                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash"(click)="clear(dt1)"  />
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Buscar una palabra" />
+                    </p-iconfield>
+                </div>
+            </ng-template>
         <ng-template pTemplate="header">
             <tr>
                 <th>Folio de Oficialia.</th>
@@ -150,8 +200,19 @@
                 <td>{{expediente?.tipodeApelacion}}</td>
                 <td>{{expediente?.expediente_Causa}}</td>
                  <td>{{expediente?.foliodelOficio}}</td>
-                  <td><p-button label="Ver Detalle" icon="pi pi-eye" severity="info" size="small" /></td>
+                  <td>
+                    <!-- <p-button label="Ver Detalle" icon="pi pi-eye" severity="info" size="small" /> -->
+                 <p-button  [rounded]="true"
+                            [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
+                            pTooltip="Ver detalle" tooltipPosition="top" (click)="verDetalleApelacion(expediente?.idExpediente)"></p-button>
+                        </td>
             </tr>
         </ng-template>
+        <ng-template #emptymessage>
+                <tr>
+                    <td colspan="8">Sin resultados.</td>
+                </tr>
+            </ng-template>
     </p-table>
+</div>
 </div>
