@@ -1,6 +1,5 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
-
-
+<p-button (click)="abrirModal()">Abrir modal</p-button>
 <div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
   <!-- BREADCRUMB -->
   <app-breadcrub></app-breadcrub>
@@ -908,119 +907,113 @@
 <!--modal de la confirmacion al enviar los archivos-->
 
 <div class="z-50">
-  <app-modal-component id="modal2" class="z-40" (modalClosed)="modalClosed(idExhorto)">
-    <div class="relative z-20 p-4 w-full max-w-md max-h-full">
-      <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-        <div class="panel-body p-3">
-          <div class="flex flex-col space-y-2">
-            <div class="overflow-x-auto" style="overflow-y: auto;"> <!-- Contenedor responsivo -->
-              <div class="overflow-x-auto p-4">
-                <div class="text-center">
-                  <button (click)="printDivContent()">Imprimir Contenido</button>
-                </div>
-                <div id="contentToPrint" #contentToPrint class="panel border bg-white">
-                  <div class="panel-heading bg-morado hover:bg-morado_hover rounded-lg">
-                    <h3 class="pt-3 font-weight-bold">Información origen</h3>
-                  </div>
-                  <div class="panel-body p-3">
-                    <div class="flex flex-col space-y-2">
-                      <div class="overflow-x-auto"> <!-- Contenedor responsivo -->
-                        @if (archivoRecibidoConAcuse) {
-                        <table class="table-auto md:table-fixed w-full">
-                          <tr>
-                            <td class="col1">
-                              <p class="text-gray-700 dark:text-gray-300"><b>Exhorto origen: </b></p>
-                            </td>
-                            <td class="col2">{{ archivoRecibidoConAcuse.acuse.exhortoOrigenId || 'No disponible' }}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="col1">
-                              <p class="text-gray-700 dark:text-gray-300"><b>Número exhorto: </b></p>
-                            </td>
-                            <td class="col2">{{ numeroExhorto }}</td>
-                          </tr>
-                        </table>
-                        }
-                      </div>
-                    </div>
-                  </div>
+<app-modal-component id="modal2" (modalClosed)="modalClosed(idExhorto)">
+  <div class="flex flex-col gap-4 p-4">
 
-                  <div class="panel-heading bg-morado hover:bg-morado_hover rounded-lg">
-                    <h3 class="pt-3 font-weight-bold">Información destino</h3>
-                  </div>
-                  <div class="panel-body p-3">
-                    <div class="flex flex-col space-y-2">
-                      <div class="overflow-x-auto"> <!-- Contenedor responsivo -->
-                        @if (archivoRecibidoConAcuse) {
-                        <table class="table-auto md:table-fixed w-full">
-                          <!--INFORMACION DESTINO-->
-                          <tr>
-                            <td class="col1">
-                              <p class="text-gray-700 dark:text-gray-300"><b>Folio seguimiento: </b></p>
-                            </td>
-                            <td class="col2">{{ archivoRecibidoConAcuse.acuse.folioSeguimiento || 'No disponible' }}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="col1">
-                              <p class="text-gray-700 dark:text-gray-300"><b>Fecha recepción: </b></p>
-                            </td>
-                            <td class="col2">{{ (archivoRecibidoConAcuse.acuse.fechaHoraRecepcion ) || 'No disponible'
-                              }}</td>
-                          </tr>
-                          <tr>
-                            <td class="col1">
-                              <p class="text-gray-700 dark:text-gray-300"><b>Estado destino: </b></p>
-                            </td>
-                            <td class="col2">{{ exhortosForm.value.estadoDestino?.descripcion || 'No disponible' }}</td>
-                          </tr>
-                          <tr>
-                            <td class="col1">
-                              <p class="text-gray-700 dark:text-gray-300"><b>Municipio destino: </b></p>
-                            </td>
-                            <td class="col2">{{ exhortosForm.value.municipioDestino?.descripcion }}</td>
-                          </tr>
-                          <tr>
-                            <td class="col1">
-                              <p class="text-gray-700 dark:text-gray-300"><b>Municipio turnado: </b></p>
-                            </td>
-                            <td class="col2">{{ archivoRecibidoConAcuse.acuse.municipioAreaRecibeNombre || 'No disponible' }}</td>
-                          </tr>
-                          <tr>
-                            <td class="col1">
-                              <p class="text-gray-700 dark:text-gray-300"><b>Juzgado turnado: </b></p>
-                            </td>
-                            <td class="col2">{{ archivoRecibidoConAcuse.acuse.areaRecibeNombre || 'No disponible' }}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="text-center" colspan="2">
-                              <p class="text-gray-700 dark:text-gray-300"><b>URL: </b></p>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class=" text-center" colspan="2">
-                              @if (archivoRecibidoConAcuse.acuse.urlInfo) {
-                              <app-qr-generator-component class="centrar-qr"
-                                [qrData]="archivoRecibidoConAcuse.acuse.urlInfo"></app-qr-generator-component>
-                              }
-                            </td>
-                          </tr>
-                        </table>
-                        }
-                      </div>
-                    </div>
-                  </div>
+    <div id="contentToPrint" #contentToPrint class="flex flex-col gap-4">
 
-                </div>
-              </div>
-            </div>
+      <!-- Sección origen -->
+      <div class="border border-surface rounded-2xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-surface bg-surface-50 dark:bg-surface-800">
+          <span class="font-semibold text-sm uppercase tracking-wider text-surface-600 dark:text-surface-200">
+            Información de Origen
+          </span>
+        </div>
+        <div class="p-4">
+          @if (archivoRecibidoConAcuse) {
+          <div class="grid grid-cols-2 gap-y-3 text-sm">
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Exhorto origen:</span>
+            <span class="text-surface-700 dark:text-surface-200">
+              {{ archivoRecibidoConAcuse.acuse.exhortoOrigenId || 'SIN ESPECIFICAR' }}
+            </span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Número de exhorto:</span>
+            <span class="text-surface-700 dark:text-surface-200">
+              {{ numeroExhorto || 'SIN ESPECIFICAR' }}
+            </span>
           </div>
+          } @else {
+          <div class="grid grid-cols-2 gap-y-3 text-sm">
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Exhorto origen:</span>
+            <span class="text-surface-700 dark:text-surface-200">SIN ESPECIFICAR</span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Número de exhorto:</span>
+            <span class="text-surface-700 dark:text-surface-200">SIN ESPECIFICAR</span>
+          </div>
+          }
         </div>
       </div>
+
+      <!-- Sección destino -->
+      <div class="border border-surface rounded-2xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-surface bg-surface-50 dark:bg-surface-800">
+          <span class="font-semibold text-sm uppercase tracking-wider text-surface-600 dark:text-surface-200">
+            Información de Destino
+          </span>
+        </div>
+        <div class="p-4">
+          @if (archivoRecibidoConAcuse) {
+          <div class="grid grid-cols-2 gap-y-3 text-sm">
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Folio de seguimiento:</span>
+            <span class="text-surface-700 dark:text-surface-200">
+              {{ archivoRecibidoConAcuse.acuse.folioSeguimiento || 'SIN ESPECIFICAR' }}
+            </span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Fecha de recepción:</span>
+            <span class="text-surface-700 dark:text-surface-200">
+              {{ archivoRecibidoConAcuse.acuse.fechaHoraRecepcion || 'SIN ESPECIFICAR' }}
+            </span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Estado destino:</span>
+            <span class="text-surface-700 dark:text-surface-200">
+              {{ exhortosForm.value.estadoDestino?.descripcion || 'SIN ESPECIFICAR' }}
+            </span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Municipio destino:</span>
+            <span class="text-surface-700 dark:text-surface-200">
+              {{ exhortosForm.value.municipioDestino?.descripcion || 'SIN ESPECIFICAR' }}
+            </span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Municipio turnado:</span>
+            <span class="text-surface-700 dark:text-surface-200">
+              {{ archivoRecibidoConAcuse.acuse.municipioAreaRecibeNombre || 'SIN ESPECIFICAR' }}
+            </span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Juzgado turnado:</span>
+            <span class="text-surface-700 dark:text-surface-200">
+              {{ archivoRecibidoConAcuse.acuse.areaRecibeNombre || 'SIN ESPECIFICAR' }}
+            </span>
+          </div>
+          } @else {
+          <div class="grid grid-cols-2 gap-y-3 text-sm">
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Folio de seguimiento:</span>
+            <span class="text-surface-700 dark:text-surface-200">SIN ESPECIFICAR</span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Fecha de recepción:</span>
+            <span class="text-surface-700 dark:text-surface-200">SIN ESPECIFICAR</span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Estado destino:</span>
+            <span class="text-surface-700 dark:text-surface-200">SIN ESPECIFICAR</span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Municipio destino:</span>
+            <span class="text-surface-700 dark:text-surface-200">SIN ESPECIFICAR</span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Municipio turnado:</span>
+            <span class="text-surface-700 dark:text-surface-200">SIN ESPECIFICAR</span>
+            <span class="text-surface-500 dark:text-surface-400 font-medium">Juzgado turnado:</span>
+            <span class="text-surface-700 dark:text-surface-200">SIN ESPECIFICAR</span>
+          </div>
+          }
+
+          <!-- QR -->
+          <div class="mt-4 flex flex-col items-center gap-2 border-t border-surface pt-4">
+            <span class="text-surface-500 dark:text-surface-400 font-medium text-sm">Código QR de verificación</span>
+            @if (archivoRecibidoConAcuse?.acuse?.urlInfo) {
+            <app-qr-generator-component [qrData]="archivoRecibidoConAcuse.acuse.urlInfo" />
+            } @else {
+            <app-qr-generator-component qrData="https://tribunaloaxaca.gob.mx" />
+            }
+          </div>
+
+        </div>
+      </div>
+    <!-- Botón imprimir -->
+    <div class="flex justify-end">
+      <p-button icon="pi pi-print" label="Imprimir" severity="secondary" [outlined]="true"
+        (click)="printDivContent()" />
     </div>
-  </app-modal-component>
+    </div>
+  </div>
+</app-modal-component>
 </div>
 
 <!--*DIALOG PARA AGREGAR PARTES-->
