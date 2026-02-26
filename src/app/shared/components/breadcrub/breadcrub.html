@@ -1,10 +1,18 @@
-<header
-    class="border border-surface rounded-2xl  flex items-center justify-between overflow-hidden">
-    <p-breadcrumb class="hidden lg:block"[home]="home"
-        [model]="items" />
+<header class="border border-surface rounded-2xl  flex items-center justify-between overflow-hidden">
+    <!-- <p-breadcrumb class="hidden lg:block"[home]="home"
+        [model]="items" /> -->
+    <div class="flex items-center gap-2 pl-4">
+        <!-- Botón hamburguesa — solo en móvil -->
+        <p-button
+            class="sm:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-emphasis transition-all"
+            (click)="drawerService.open()" aria-label="Abrir menú">
+            <i class="pi pi-bars "></i>
+        </p-button>
 
+        <img src="logo.png" alt="Logo" class="h-12 w-auto" />
+    </div>
     <div class="ml-auto flex items-center gap-3 pr-4 pt-2 pb-2">
-        <div class="flex flex-col leading-tight text-right">
+        <div class="hidden sm:flex flex-col leading-tight text-right">
             <span class="text-base font-semibold text-surface-700 dark:text-surface-200">
                 {{ abogadoNombre }}
             </span>
@@ -26,8 +34,8 @@
     </div>
 </header>
 
-<p-drawer [(visible)]="visibleDrawer" position="right" appendTo="body" styleClass="!w-full sm:!w-[30rem]">
-    <ng-template #headless>
+<p-drawer [(visible)]="visibleDrawer" position="right" appendTo="body" styleClass="!w-4/5 sm:!w-[30rem]"> <ng-template
+        #headless>
         <form class="flex flex-col">
 
             <div class="flex align-items-center gap-3 p-6">
@@ -44,13 +52,25 @@
                 <p-button (onClick)="onLogout()" pTooltip="Cerrar Sesión" tooltipPosition="left" icon="pi pi-sign-out"
                     text="" rounded="" severity="secondary" pc1574="" data-pc-section="host"></p-button>
             </div>
-            <div class="bg-surface-50 border border-surface-0 m-6 rounded-lg  flex items-center justify-between p-1 ">
+            <div
+                class="bg-surface-50 dark:bg-surface-800 border border-surface-0 dark:border-surface-900 mr-6 ml-6 rounded-lg  flex items-center justify-between p-1 ">
                 <label class="text-sm font-medium text-color pl-2">Perfil</label>
 
                 <button type="button"
                     class="px-3 py-2 cursor-pointer rounded-lg bg-primary-400 hover:bg-primary text-surface-0 dark:text-surface-200 text-sm font-normal transition-all"
                     (click)="onChangeProfile()">
                     Cambiar de perfil
+                </button>
+            </div>
+
+            <div
+                class="bg-surface-50 dark:bg-surface-800 border border-surface-0 dark:border-surface-900 m-6 rounded-lg  flex items-center justify-between p-1 ">
+                <label class="text-sm font-medium text-color pl-2">Datos Personales</label>
+
+                <button type="button"
+                    class="px-3 py-2 cursor-pointer rounded-lg bg-primary-400 hover:bg-primary text-surface-0 dark:text-surface-200 text-sm font-normal transition-all"
+                    (click)="verPerfil()">
+                    Ver
                 </button>
             </div>
         </form>

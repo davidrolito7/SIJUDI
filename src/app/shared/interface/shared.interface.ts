@@ -6,3 +6,24 @@ export interface GenericResponse<T>{
     data:T;
 }
 
+  export interface usuario  {
+    nombre: string,
+    curp?: string,
+    folio: string,
+    noEmpleado: string,
+    tipoUsuario: string,
+    //domicilio: string,
+    celular?: string,
+    telefono: string,
+    correoAlterno: string,
+    correo: string,
+    direccionPart: string,
+    direccionPartNoExt: string,
+    direccionPartNoInt: string,
+    direccionPartCP: string,
+    direccionPartColonia: string,
+    direccionPartMunicipio: string,
+    direccionPartEstado: string,
+    foto : string
+
+  }

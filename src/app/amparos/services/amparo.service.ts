@@ -33,7 +33,17 @@ import { ListadoAmparosRecibidosI,
           CatalogoTipoCuaderno,
           CatalogoOrganoDestino,
           PromocionGeneralesUpdate,
-          guardaFirmaTmpRequest} from '../interfaces/amparos.models';
+          guardaFirmaTmpRequest,
+          CatalogoAmbito,
+          CatalogoClasificacionResponse,
+          CatalogoCircuitoResponse,
+          CatalogoEstadoResponse,
+          CatalogoTipoOrganoResponse,
+          CatalogoMateriasResponse,
+          CatalogoOrganoResponse,
+          CatalogoTipoAsuntoResponse,
+          NotifiViaConsultaAsuntoResponse,
+          ConsultarAsuntoRequest} from '../interfaces/amparos.models';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 import { GenericResponse } from '../../shared/interface/shared.interface';
 import { environment } from '../../../environments/environment';
@@ -48,6 +58,7 @@ export class AmparosService {
    private efirma:string= environment.urlApiAmparosPJF+"/EFirma/";
    private turnos:string= environment.urlApiAmparosPJF+"/Turnos/";
    private catalogoUrl:string= environment.urlApiAmparosPJF+"/Catalogo/";
+   private catalogoCFJurl:string = environment.urlApiAmparosPJF+"/CatalogoCJF/"
 
   
 
@@ -159,50 +170,50 @@ export class AmparosService {
     // Realiza la solicitud GET
     return this.http.get<any>(url,{context:checkToken()});
   }
- /*
+ 
 //<<<<<<<<<<<<<<<<<Catalogos de expediente fisico para CFJ>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   getCatalogoAmbito(): Observable<GenericResponse<CatalogoAmbito[]>> {
-    return this.http.post<GenericResponse<CatalogoAmbito[]>>(`${this.catalogoCFJurl}/ambito`,{},{context:checkToken()});
+    return this.http.post<GenericResponse<CatalogoAmbito[]>>(`${this.catalogoCFJurl}ambito`,{},{context:checkToken()});
   }
   getCatalogoClasificacion(idAmbito: number): Observable<CatalogoClasificacionResponse[]> {
     // CatalogoClasificacionRequest para enviar el idAmbito a la API
-    return this.http.post<CatalogoClasificacionResponse[]>(`${this.catalogoCFJurl}/clasificacion`, { idAmbito },{context:checkToken()});
+    return this.http.post<CatalogoClasificacionResponse[]>(`${this.catalogoCFJurl}clasificacion`, { idAmbito },{context:checkToken()});
   }
   getCatalogoCircuito( idAmbito: number, idClasificacion: number): Observable<CatalogoCircuitoResponse[]> {
-    return this.http.post<CatalogoCircuitoResponse[]>(`${this.catalogoCFJurl}/circuirto`, { idAmbito, idClasificacion },{context:checkToken()});
+    return this.http.post<CatalogoCircuitoResponse[]>(`${this.catalogoCFJurl}circuirto`, { idAmbito, idClasificacion },{context:checkToken()});
   }
   getCatalogoEstado( idAmbito: number, idClasificacion: number, idCircuito: number): Observable<CatalogoEstadoResponse[]> {
-    return this.http.post<CatalogoEstadoResponse[]>(`${this.catalogoCFJurl}/estado`, { idAmbito, idClasificacion, idCircuito },{context:checkToken()});
+    return this.http.post<CatalogoEstadoResponse[]>(`${this.catalogoCFJurl}estado`, { idAmbito, idClasificacion, idCircuito },{context:checkToken()});
   }
   getCatalogoTipoOrgano( idAmbito: number, idClasificacion: number, idCircuito: number, idTipoFiltro: number): Observable<CatalogoTipoOrganoResponse[]> {
-    return this.http.post<CatalogoTipoOrganoResponse[]>(`${this.catalogoCFJurl}/TipoOrgano`, { idAmbito, idClasificacion, idCircuito, idTipoFiltro },{context:checkToken()});
+    return this.http.post<CatalogoTipoOrganoResponse[]>(`${this.catalogoCFJurl}TipoOrgano`, { idAmbito, idClasificacion, idCircuito, idTipoFiltro },{context:checkToken()});
   }
   getCatalogoMaterias( idAmbito: number, idClasificacion: number, idCircuito: number, idTipoFiltro: number, idEstado: number, idTipoOrganismo:number): Observable<CatalogoMateriasResponse[]> {
-    return this.http.post<CatalogoMateriasResponse[]>(`${this.catalogoCFJurl}/Materias`, { idAmbito, idClasificacion, idCircuito, idTipoFiltro,idEstado, idTipoOrganismo },{context:checkToken()});
+    return this.http.post<CatalogoMateriasResponse[]>(`${this.catalogoCFJurl}Materias`, { idAmbito, idClasificacion, idCircuito, idTipoFiltro,idEstado, idTipoOrganismo },{context:checkToken()});
   }
   getCatalogoOrgano( idAmbito: number, idClasificacion: number, idCircuito: number, idTipoFiltro: number, idEstado: number, idTipoOrganismo:number, idMateria: number  ): Observable<CatalogoOrganoResponse[]> {
-    return this.http.post<CatalogoOrganoResponse[]>(`${this.catalogoCFJurl}/Organo`, { idAmbito, idClasificacion, idCircuito, idTipoFiltro,idEstado, idTipoOrganismo, idMateria },{context:checkToken()});
+    return this.http.post<CatalogoOrganoResponse[]>(`${this.catalogoCFJurl}Organo`, { idAmbito, idClasificacion, idCircuito, idTipoFiltro,idEstado, idTipoOrganismo, idMateria },{context:checkToken()});
   }
   getCatalogoTipoAsunto( idAmbito: number, idClasificacion: number, idCircuito: number, idTipoFiltro: number, idEstado: number, idTipoOrganismo:number, idMateria: number, idOrgano: number  ): Observable<CatalogoTipoAsuntoResponse[]> {
-    return this.http.post<CatalogoTipoAsuntoResponse[]>(`${this.catalogoCFJurl}/TipoAsunto`, { idAmbito, idClasificacion, idCircuito, idTipoFiltro,idEstado, idTipoOrganismo, idMateria, idOrgano },{context:checkToken()});
+    return this.http.post<CatalogoTipoAsuntoResponse[]>(`${this.catalogoCFJurl}TipoAsunto`, { idAmbito, idClasificacion, idCircuito, idTipoFiltro,idEstado, idTipoOrganismo, idMateria, idOrgano },{context:checkToken()});
   }
 
 
 
-    // Método para obtener el catálogo de órganos destino
-    getNotificacionesViaConsultaAsunto(): Observable<NotifiViaConsultaAsuntoResponse[]> {
-      return this.http.get<NotifiViaConsultaAsuntoResponse[]>(`${this.baseUrl}NotificacionesViaConsultaAsunto`,{context:checkToken()});
-    }
+  // Método para obtener el catálogo de órganos destino
+  getNotificacionesViaConsultaAsunto(): Observable<NotifiViaConsultaAsuntoResponse[]> {
+    return this.http.get<NotifiViaConsultaAsuntoResponse[]>(`${this.ApiNotificacion}NotificacionesViaConsultaAsunto`,{context:checkToken()});
+  }
 
 
       //Método para guardar documento de la promocion
   consultarAsunto( params: ConsultarAsuntoRequest ): Observable<any> {
-    return this.http.post(`${this.apiUrlPromocion}/ConsultarAsunto`, params,{context:checkToken()});
+    return this.http.post(`${this.apiUrlPromocion}ConsultarAsunto`, params,{context:checkToken()});
   }
   guardarAsunto( params: ConsultarAsuntoRequest ): Observable<any> {
-    return this.http.post(`${this.apiUrlPromocion}/GuardarAsunto`, params,{context:checkToken()});
+    return this.http.post(`${this.apiUrlPromocion}GuardarAsunto`, params,{context:checkToken()});
   }
-
+/*
   //Método para Firmar documento
   firmarDocumento(formData: FormData): Observable<any> {
     console.log("Firmando.")

@@ -1,0 +1,489 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
+<p-toast></p-toast>
+
+<div class="lg:sticky top-0 z-50 flex flex-col gap-4 bg-surface-0 dark:bg-surface-900">
+    <app-breadcrub></app-breadcrub>
+    <h2 class="text-2xl font-medium leading-none pl-2 mb-4 tracking-tight">
+        Crear trámite
+    </h2>
+</div>
+
+<!--* DETALLES DEL EXPEDIENTE -->
+<div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
+    <div class="flex items-start flex-col md:justify-between md:flex-row">
+        <div class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Detalles del expediente</div>
+
+        @if (detalleExpediente && mostrarBoton()) {
+            <div class="flex items-center gap-3">
+                <label class="text-sm font-medium">Tipo de trámite</label>
+                <p-select
+                    [options]="tipoOptions"
+                    [(ngModel)]="tipoSeleccionado"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Selecciona una opción"
+                    appendTo="body"
+                    [style]="{ width: '200px' }">
+                </p-select>
+                @if (tipoSeleccionado === '' && mostrarAlerta) {
+                    <small class="text-red-500">⚠️ Debes seleccionar un tipo de trámite</small>
+                }
+            </div>
+        }
+    </div>
+
+    @if (detalleExpediente) {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col space-y-2">
+                <p><span class="font-semibold">Número de expediente:</span> {{ expediente?.NumExpediente }}</p>
+                <p><span class="font-semibold">Fecha asignación:</span> {{ expediente?.fechaResponse | date: 'dd/MM/yyyy' }}</p>
+                <p class="break-words whitespace-pre-line max-w-full">
+                    <span class="font-semibold">Síntesis del expediente:</span> {{ preRegistro?.descripcionDemanda }}
+                </p>
+            </div>
+            <div class="flex flex-col space-y-2">
+                <p><span class="font-semibold">Juzgado asignado:</span> {{ expediente?.juzgado?.Descripcion }}</p>
+                <p><span class="font-semibold">Materia:</span> {{ preRegistro?.cat_via_materia?.cat_materia?.Descripcion }}</p>
+                <p><span class="font-semibold">Vía:</span> {{ preRegistro?.cat_via_materia?.cat_via?.descripcion }}</p>
+            </div>
+        </div>
+    }
+</div>
+
+<form [formGroup]="tramite!">
+
+    <!--* GENERALES DEL TRÁMITE -->
+    <div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
+        <div class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Generales del trámite</div>
+        @if (detalleExpediente) {
+            <div class="grid grid-cols-6 gap-6">
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="sintesis" class="block mb-2 text-sm font-medium">Síntesis</label>
+                    <textarea pTextarea id="sintesis" formControlName="sintesis" rows="3" fluid
+                        maxlength="255" placeholder="Escribe un resumen del trámite..." class="uppercase"></textarea>
+                    @if (shouldShowError('sintesis')) {
+                        <small class="text-red-500 mt-1 block">{{ getError('sintesis') }}</small>
+                    }
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="observaciones" class="block mb-2 text-sm font-medium">Observaciones</label>
+                    <textarea pTextarea id="observaciones" formControlName="observaciones" rows="3" fluid
+                        maxlength="255" placeholder="Escribe tus observaciones..." class="uppercase"></textarea>
+                    @if (shouldShowError('observaciones')) {
+                        <small class="text-red-500 mt-1 block">{{ getError('observaciones') }}</small>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <!--* TABLA PARTES (PROMOCIÓN) -->
+    @if (detalleExpediente && tipoSeleccionado === 'promocion') {
+        <div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
+            <p-table
+                [value]="todasLasPartes"
+                stripedRows
+                [scrollable]="true"
+                scrollHeight="flex"
+                scrollDirection="both"
+                [tableStyle]="{ 'min-width': '100%', width: 'max-content' }">
+                <ng-template #caption>
+                    <div class="flex">
+                        <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Partes</div>
+                        <p-button icon="pi pi-users" class="ml-auto" label="Agregar" (click)="showDialog()" />
+                    </div>
+                </ng-template>
+                <ng-template #header>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Estatus</th>
+                        <th>Género</th>
+                        <th>Tipo parte</th>
+                        <th>Correo</th>
+                        <th>Menor de edad</th>
+                        <th>Dirección</th>
+                        <th pFrozenColumn alignFrozen="right">Acciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-parte let-i="rowIndex">
+                    <tr>
+                        <td class="font-semibold">
+                            {{ parte.nombre }} {{ parte.apellidoPaterno }} {{ parte.apellidoMaterno }}
+                        </td>
+                        <td>
+                            @if (parte.idUsr) {
+                                <p-tag severity="success" value="VERIFICADO" />
+                            } @else {
+                                <p-tag severity="danger" value="NO VERIFICADO" />
+                            }
+                        </td>
+                        <td>{{ parte.idCatSexo == 1 ? 'HOMBRE' : parte.idCatSexo == 2 ? 'MUJER' : 'OTRO' }}</td>
+                        <td>{{ parte.descripcionTipoParte ?? parte.cat_tipo_parte?.descripcion }}</td>
+                        <td>
+                            <div class="font-semibold">{{ parte.correo }}</div>
+                            <div class="text-xs text-surface-500">{{ parte.correoAlterno }}</div>
+                        </td>
+                        <td>
+                            @if (parte.esMenorEdad) {
+                                <p-tag severity="success" value="SI" />
+                            } @else {
+                                <p-tag severity="danger" value="NO" />
+                            }
+                        </td>
+                        <td>{{ parte.direccion }}</td>
+                        <td pFrozenColumn alignFrozen="right">
+                            <div class="flex gap-2">
+                                @if (i >= partes.length) {
+                                    <p-button icon="pi pi-pencil" [rounded]="true" [raised]="true" [text]="true"
+                                        severity="info" (click)="editarParte(i - partes.length)"
+                                        pTooltip="Actualizar" tooltipPosition="top" />
+                                    <p-button icon="pi pi-trash" [rounded]="true" [raised]="true" [text]="true"
+                                        severity="danger" (click)="confirm1($event, i - partes.length)"
+                                        pTooltip="Eliminar" tooltipPosition="top" />
+                                } @else {
+                                    <p-button icon="pi pi-trash" [rounded]="true" [raised]="true" [text]="true"
+                                        severity="danger" (click)="confirmPartes($event, i)"
+                                        pTooltip="Eliminar" tooltipPosition="top" />
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="8" class="text-center p-4">No hay partes registradas.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    }
+
+    <!--* REMITENTE (OFICIO - SECRETARIO) -->
+    @if (detalleExpediente && mostrarBoton() && tipoSeleccionado === 'oficio') {
+        <div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
+            <div class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Remitente</div>
+            <form [formGroup]="remitente">
+                <div class="grid grid-cols-6 gap-6">
+                    <div class="col-span-6 sm:col-span-2">
+                        <label class="block mb-2 text-sm font-medium">Categoría</label>
+                        <input pInputText [value]="remitenteSeleccionado?.categoria ?? ''" readonly fluid />
+                    </div>
+                    <div class="col-span-6 md:col-span-4">
+                        <label class="block mb-2 text-sm font-medium">Dependencia</label>
+                        <input pInputText [value]="remitenteSeleccionado?.dependencia ?? ''" readonly fluid />
+                    </div>
+                    <div class="col-span-6">
+                        <label class="block mb-2 text-sm font-medium">Remitente</label>
+                        <p-inputgroup>
+                            <input pInputText [value]="remitenteSeleccionado?.remitente ?? ''" readonly />
+                            <p-inputgroup-addon>
+                                <p-button icon="pi pi-search" (click)="abrirModal()" [text]="true" />
+                            </p-inputgroup-addon>
+                        </p-inputgroup>
+                    </div>
+                    <div class="col-span-6">
+                        <label class="block mb-2 text-sm font-medium">Cargo</label>
+                        <input pInputText [value]="remitenteSeleccionado?.cargo ?? ''" readonly fluid />
+                    </div>
+                </div>
+            </form>
+        </div>
+    }
+
+    <!--* SUBIR ACUERDO -->
+    @if (detalleExpediente) {
+        <div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
+            <div class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Subir Acuerdo</div>
+            @if (!nombreArchivo) {
+                <label class="block mb-2 text-sm font-medium">Seleccionar documento:</label>
+                <input #fileInput type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                    (change)="onFileChange($event)"
+                    class="block w-full text-sm text-surface-600 border border-surface rounded-lg cursor-pointer bg-surface-50 dark:bg-surface-800 dark:text-surface-400 focus:outline-none" />
+                <small class="mt-1 text-surface-500 dark:text-surface-400 block">Subir en formato PDF (solo 1 archivo)</small>
+                @if (shouldShowError('documentoTramite')) {
+                    <small class="text-red-500 mt-1 block">{{ getError('documentoTramite') }}</small>
+                }
+            } @else {
+                <div class="flex flex-col gap-2 mt-2">
+                    <span class="text-sm">Archivo seleccionado: <strong>{{ nombreArchivo }}</strong></span>
+                    <div class="flex gap-3 mt-1">
+                        <p-button icon="pi pi-times" label="Quitar archivo" severity="danger"
+                            [outlined]="true" size="small" (click)="quitarArchivo()" />
+                        <p-button icon="pi pi-eye" label="Ver documento" severity="info"
+                            [outlined]="true" size="small" (click)="verDocumentoTramite()" />
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!--* BOTONES ENVIAR -->
+    @if (detalleExpediente && !mostrarBoton() && !tramite.invalid && validarPartes()) {
+        <section class="flex justify-center mb-4">
+            <p-button icon="pi pi-upload" label="Enviar trámite" [disabled]="tramite.invalid" (onClick)="confirm()"
+                styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:enabled:bg-[#ff830a]/80 disabled:opacity-50 disabled:cursor-not-allowed" />
+        </section>
+    }
+    @if (detalleExpediente && mostrarBoton() && !tramite.invalid && remitenteValido() && tipoSeleccionado === 'oficio') {
+        <section class="flex justify-center mb-4">
+            <p-button icon="pi pi-upload" label="Enviar trámite" (onClick)="confirm()"
+                styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:enabled:bg-[#ff830a]/80" />
+        </section>
+    }
+    @if (detalleExpediente && mostrarBoton() && !tramite.invalid && validarPartes() && tipoSeleccionado === 'promocion') {
+        <section class="flex justify-center mb-4">
+            <p-button icon="pi pi-upload" label="Enviar trámite" (onClick)="confirm()"
+                styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:enabled:bg-[#ff830a]/80" />
+        </section>
+    }
+
+</form>
+
+<!--* CONFIRMACIONES -->
+<app-confirm-dialog key="parte" title="Confirmación" message="¿Está seguro de eliminar esta parte?"
+    icon="pi pi-question-circle" circleClass="bg-surface-900 dark:bg-surface-0"
+    acceptLabel="Eliminar" acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
+</app-confirm-dialog>
+
+<app-confirm-dialog key="tramite" title="Confirmación" message="Confirmar pre-registro de trámite"
+    icon="pi pi-question-circle" circleClass="bg-blue-500"
+    acceptLabel="Confirmar" acceptStyleClass="bg-blue-600 border-blue-600" rejectLabel="Cancelar">
+</app-confirm-dialog>
+
+<!--* MODAL VER DOCUMENTO -->
+@if (documentoUrl) {
+<app-pdf-dialog [header]="nombre" [url]="documentoUrl" [visible]="visibleDocumento()"
+    (visibleChange)="visibleDocumento.set($event)">
+</app-pdf-dialog>
+}
+
+<!--* MODAL BUSCAR REMITENTE -->
+<p-dialog header="Remitentes del juzgado" [modal]="true" [(visible)]="visibleM" [style]="{ width: '50rem' }">
+    <div class="mb-4">
+        <p-iconfield iconPosition="left">
+            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+            <input pInputText type="text" [(ngModel)]="busqueda" (ngModelChange)="getRemitentes()"
+                placeholder="Buscar remitente..." fluid />
+        </p-iconfield>
+    </div>
+    <p-table [value]="remitentes" [scrollable]="true" scrollHeight="320px">
+        <ng-template #header>
+            <tr>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Dependencia</th>
+                <th>Cargo</th>
+                <th>Acciones</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-r>
+            <tr>
+                <td>{{ r.remitente }}</td>
+                <td>{{ r.categoria }}</td>
+                <td>{{ r.dependencia }}</td>
+                <td>{{ r.cargo }}</td>
+                <td>
+                    <p-button icon="pi pi-check" label="Seleccionar" size="small" (click)="seleccionar(r)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="5" class="text-center p-4">No se encontraron remitentes.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>
+
+<!--* MODAL AGREGAR PARTES — igual que crear-demanda -->
+<p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }" [closable]="false">
+    <ng-template pTemplate="header">
+        <div class="flex justify-between items-center w-full">
+            <h2 class="text-lg font-semibold text-gray-800">Parte</h2>
+            <div class="flex items-center gap-4" *ngIf="!editandoParte">
+                <p class="inline-flex items-center">Tipo:</p>
+                <label class="inline-flex items-center">
+                    <p-radiobutton type="radio" name="filtro" value="busqueda" [(ngModel)]="filtroParte"
+                        (ngModelChange)="actualizarValidadores()"
+                        [ngClass]="{
+                            'cursor-pointer': !(editandoParte && filtroParte === 'manual'),
+                            'cursor-not-allowed': editandoParte && filtroParte === 'manual'
+                        }" />
+                    <span class="ml-2 text-sm font-medium">Búsqueda</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <p-radiobutton type="radio" name="filtro" value="manual" [(ngModel)]="filtroParte"
+                        (change)="actualizarValidadores()"
+                        [ngClass]="{
+                            'cursor-pointer': !(editandoParte && filtroParte === 'busqueda'),
+                            'cursor-not-allowed': editandoParte && filtroParte === 'busqueda'
+                        }" />
+                    <span class="ml-2 text-sm font-medium">Manual</span>
+                </label>
+            </div>
+        </div>
+    </ng-template>
+
+    <!--* FORMULARIO BUSCAR USUARIO -->
+    <form [formGroup]="buscarUsr" (ngSubmit)="onBuscarUsuario()"
+        *ngIf="!editandoParte && filtroParte === 'busqueda'"
+        class="grid grid-cols-6 gap-4 mb-2 mt-2 pb-4 border-b border-surface">
+
+        <!-- Tipo de búsqueda -->
+        <div class="col-span-6">
+            <label for="tipoBusqueda" class="block mb-2 text-sm font-medium">Tipo de búsqueda</label>
+            <p-select inputId="tipoBusqueda" formControlName="tipoBusqueda" (onChange)="onTipoBusquedaChange()"
+                [options]="[
+                    { label: 'Por ID General del usuario (número entero)', value: '1' },
+                    { label: 'Por Folio de registro RUNE (formato 00001/2025)', value: '2' },
+                    { label: 'Por Código de llave (8 caracteres alfanuméricos)', value: '3' },
+                    { label: 'Por Número de empleado (4 dígitos)', value: '4' }
+                ]"
+                optionLabel="label" optionValue="value"
+                placeholder="Seleccione el tipo de búsqueda"
+                appendTo="body" fluid />
+        </div>
+
+        <!-- CURP -->
+        <div class="col-span-6 sm:col-span-3">
+            <label for="curp" class="block mb-2 text-sm font-medium">CURP</label>
+            <input id="curp" pInputText type="text" formControlName="curp" maxlength="18"
+                placeholder="CURP" class="w-full uppercase" />
+            <div *ngIf="shouldShowError('curp', buscarUsr)" class="text-red-500 text-sm mt-1">
+                {{ getError('curp', buscarUsr) }}
+            </div>
+        </div>
+
+        <!-- Usuario + Botón buscar -->
+        <div class="col-span-6 sm:col-span-3">
+            <label for="usuario" class="block mb-2 text-sm font-medium">Usuario</label>
+            <p-inputgroup class="w-full">
+                <input id="usuario" pInputText type="text" formControlName="usuario" maxlength="30"
+                    [placeholder]="getPlaceholder()" (input)="aplicarMascaraBusqueda($event)" class="w-full" />
+                <p-inputgroup-addon>
+                    <p-button type="submit" icon="pi pi-search" [disabled]="buscarUsr.invalid" />
+                </p-inputgroup-addon>
+            </p-inputgroup>
+            <div *ngIf="shouldShowError('usuario', buscarUsr)" class="text-red-500 text-sm mt-1">
+                {{ getError('usuario', buscarUsr) }}
+            </div>
+        </div>
+    </form>
+
+    <!--* FORMULARIO DATOS DE LA PARTE -->
+    <form [formGroup]="parteForm" (ngSubmit)="agregarParte()">
+        <div class="grid grid-cols-6 gap-4">
+
+            <!-- Nombre completo (búsqueda) -->
+            <div class="col-span-6" *ngIf="filtroParte === 'busqueda'">
+                <label for="nombre" class="block mb-2 text-sm font-medium">Nombre Completo</label>
+                <input id="nombre" pInputText type="text" formControlName="nombre"
+                    placeholder="EJ. ANA MARIA PEREZ GARCIA" class="w-full uppercase" />
+            </div>
+
+            <!-- Nombre (manual) -->
+            <div class="col-span-6 sm:col-span-3" *ngIf="filtroParte === 'manual'">
+                <label for="nombre" class="block mb-2 text-sm font-medium">Nombre</label>
+                <input id="nombre" pInputText type="text" formControlName="nombre"
+                    maxlength="100" placeholder="Bonnie" class="w-full uppercase" />
+                <div *ngIf="shouldShowError('nombre')" class="text-red-500 text-sm mt-1">
+                    {{ getError('nombre') }}
+                </div>
+            </div>
+
+            <!-- Apellido Paterno (manual) -->
+            <div class="col-span-6 sm:col-span-3" *ngIf="filtroParte === 'manual'">
+                <label for="apellidoPaterno" class="block mb-2 text-sm font-medium">Apellido Paterno</label>
+                <input id="apellidoPaterno" pInputText type="text" formControlName="apellidoPaterno"
+                    maxlength="100" placeholder="Green" class="w-full uppercase" />
+                <div *ngIf="shouldShowError('apellidoPaterno')" class="text-red-500 text-sm mt-1">
+                    {{ getError('apellidoPaterno') }}
+                </div>
+            </div>
+
+            <!-- Apellido Materno (manual) -->
+            <div class="col-span-6 sm:col-span-3" *ngIf="filtroParte === 'manual'">
+                <label for="apellidoMaterno" class="block mb-2 text-sm font-medium">Apellido Materno</label>
+                <input id="apellidoMaterno" pInputText type="text" formControlName="apellidoMaterno"
+                    maxlength="100" placeholder="Green" class="w-full uppercase" />
+                <div *ngIf="shouldShowError('apellidoMaterno')" class="text-red-500 text-sm mt-1">
+                    {{ getError('apellidoMaterno') }}
+                </div>
+            </div>
+
+            <!-- Género -->
+            <div class="col-span-6 sm:col-span-3">
+                <label for="idCatSexo" class="block mb-2 text-sm font-medium">Género</label>
+                <p-select inputId="idCatSexo" formControlName="idCatSexo" [options]="catSexos"
+                    optionValue="idCatSexo" optionLabel="descripcion"
+                    placeholder="Selecciona un género" appendTo="body" fluid />
+                <div *ngIf="shouldShowError('idCatSexo')" class="text-red-500 text-sm mt-1">
+                    {{ getError('idCatSexo') }}
+                </div>
+            </div>
+
+            <!-- Tipo parte -->
+            <div [ngClass]="filtroParte === 'busqueda' ? 'col-span-3' : 'col-span-6'">
+                <label for="idCatTipoParte" class="block mb-2 text-sm font-medium">Tipo parte</label>
+                <p-select inputId="idCatTipoParte" formControlName="idCatTipoParte" [options]="catTipoPartes"
+                    optionValue="idCatTipoParte" optionLabel="descripcion"
+                    placeholder="Selecciona un tipo" appendTo="body" fluid />
+                <div *ngIf="shouldShowError('idCatTipoParte')" class="text-red-500 text-sm mt-1">
+                    {{ getError('idCatTipoParte') }}
+                </div>
+            </div>
+
+            <!-- Correo electrónico -->
+            <div class="col-span-6">
+                <label for="correo" class="block mb-2 text-sm font-medium">Correo electrónico</label>
+                <input id="correo" pInputText type="email" formControlName="correo" maxlength="250"
+                    [readonly]="filtroParte === 'busqueda'" placeholder="ejemplo@gmail.com"
+                    class="w-full uppercase" />
+                <div *ngIf="shouldShowError('correo') && filtroParte !== 'busqueda'"
+                    class="text-red-500 text-sm mt-1">
+                    {{ getError('correo') }}
+                </div>
+            </div>
+
+            <!-- Correo alterno -->
+            <div class="col-span-4">
+                <label for="correoAlterno" class="block mb-2 text-sm font-medium">Correo alterno</label>
+                <input id="correoAlterno" pInputText type="email" formControlName="correoAlterno"
+                    maxlength="250" [readonly]="filtroParte === 'busqueda'"
+                    placeholder="ejemplo@gmail.com" class="w-full uppercase" />
+                <div *ngIf="shouldShowError('correoAlterno')" class="text-red-500 text-sm mt-1">
+                    {{ getError('correoAlterno') }}
+                </div>
+                <div *ngIf="parteForm.errors?.['correosIguales'] && filtroParte === 'manual'"
+                    class="text-red-500 text-sm mt-1">
+                    El correo alterno debe ser diferente al correo principal.
+                </div>
+            </div>
+
+            <!-- Menor de edad -->
+            <div class="col-span-2 flex items-end mb-2.5">
+                <div class="flex items-center gap-3">
+                    <p-toggleswitch formControlName="esMenorEdad" />
+                    <span class="text-sm font-medium">Menor de edad</span>
+                </div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="col-span-6">
+                <label for="direccion" class="block mb-2 text-sm font-medium">Dirección</label>
+                <textarea id="direccion" pTextarea formControlName="direccion"
+                    [readonly]="filtroParte === 'busqueda'" maxlength="250" rows="4"
+                    placeholder="Escribe tu dirección aquí" class="w-full uppercase"></textarea>
+                <div *ngIf="shouldShowError('direccion') && filtroParte !== 'busqueda'"
+                    class="text-red-500 text-sm mt-1">
+                    {{ getError('direccion') }}
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-2 mt-4">
+            <p-button label="Cancelar" severity="secondary" (click)="resetParteForm()" />
+            <p-button type="submit" label="Guardar" [disabled]="parteForm.invalid" />
+        </div>
+    </form>
+</p-dialog>

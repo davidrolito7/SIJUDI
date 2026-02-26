@@ -31,7 +31,9 @@
                             <th>Órgano impartidor</th>
                             <th>Expediente </th>
                             <th>Url EE </th>
+                            <th>Estatus</th>
                             <th>Cuaderno</th>
+                            <th class="text-center">Acciones</th>
                             <!--<th class="px-2 py-2">Acciones</th>-->
                           </tr>
                         </ng-template>
@@ -48,9 +50,10 @@
                             <td style="font-size: small;">{{ promocion.organoImpartidorJusticia.descripcion }}</td>
                             <td style="font-size: small;">{{ promocion.numeroExpedienteOIJ }}</td>
                             <td style="font-size: small;">{{ promocion.urlEE }}</td>
+                            <td style="font-size: small;">{{ promocion.estatus.nombre}}</td>
                             <td style="font-size: small;">{{ promocion.tipoCuaderno }}</td>
                             <td style="font-size: small;">
-                              @if(promocion.estatus !==3 && promocion.estatus !== 4){
+                              @if(promocion.estatus.idEstatus !==3 && promocion.estatus.idEstatus !== 4){
                                 <div class="flex justify-center gap-3">
                                   <div class="relative">
                                     <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
@@ -70,7 +73,7 @@
                           <!-- Expanded row details -->
                           @if (expandedRows[promocion.idRespuesta]) {
                             <tr class="bg-gray-50 dark:bg-gray-800">
-                              <td colspan="6" class="px-4 py-4">
+                              <td colspan="8" class="px-4 py-4">
 
                                 @if (promocion.archivos) {
                                   <p-table [value]="promocion.archivos" dataKey="idDetalleActo"
@@ -83,16 +86,18 @@
                                     <ng-template pTemplate="header">
                                       <tr class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-600 dark:text-gray-400">
                                         <th>Nombre del documento</th>
-                                        <th>PKCS7</th>
+                                        <th>Clasificación</th>
                                         <th>Firmado</th>
-                                        <th>Fecha</th>
-                                        <th>Acciones</th>
+                                        <th>Fecha firmado</th>
+                                        <th>Firmantes</th>
+                                        <th>Tamaño</th>
+                                        <th class="text-center">Acciones</th>
                                       </tr>
                                     </ng-template>
                                     <ng-template pTemplate="body" let-archivo>
                                       <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
                                         <td style="font-size: small;">{{ archivo.nombreDocumento }}</td>
-                                        <td style="font-size: small;">{{ archivo.nombrePKCS7 }}</td>
+                                        <td style="font-size: small;">{{ archivo.clasificacionArchivo.descripcion }}</td>
                                         <td style="font-size: small;">
                                           @if(archivo.firmado){
                                             <p>Si</p>
@@ -101,11 +106,30 @@
                                           <p>No</p>
                                         }
                                       </td>
-                                      <td class="text-center">{{ archivo.fechaFirmado }}</td>
+                                      <td class="text-center">{{ archivo.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                      <td>
+                                        <table>
+                                            @for (firmante of archivo.firmantes; track firmante) {
+                                              <tr>
+                                                @if(firmante != undefined)
+                                                  {
+                                                  <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
+                                                  @if(!archivo.firmado){
+                                                    <td class="px-4">
+                                                      <!--<a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">Eliminar</a>-->
+                                                      <!--<p-button  (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true" icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>-->
+                                                    </td>
+                                                  }
+                                                }
+                                              </tr>
+                                            }
+                                        </table>
+                                      </td>
+                                      <td>{{ ((archivo.longitud / 1024)/1024) | number:'1.0-2' }} MB</td>
                                       <td>
                                         <p-button (click)="mostrarArchivo(archivo)" type="button" icon="pi pi-file-pdf"  [rounded]="true">
                                         </p-button>
-                                          @if(promocion.estatus !==3 && promocion.estatus !== 4){
+                                          @if(promocion.estatus.idEstatus !==3 && promocion.estatus.idEstatus !== 4){
                                             <p-button (click)="eliminarDocumento(archivo)" type="button" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                                               data-modal-toggle="popup-modal">
                                              

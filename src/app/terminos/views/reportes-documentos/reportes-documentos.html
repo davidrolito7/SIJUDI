@@ -1,0 +1,71 @@
+<app-spinner [isLoading]="isLoading" message="Generando reporte, espere..."></app-spinner>
+
+<p-toast position="top-right"></p-toast>
+
+<app-breadcrub></app-breadcrub>
+
+<div class="mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+
+  <!-- HEADER -->
+  <div class="flex items-start flex-col md:flex-row justify-between mb-4">
+    <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+      Reporte de documentos con término
+    </label>
+
+  </div>
+
+  <!-- FILTROS -->
+  <div class="grid grid-cols-12 gap-4 items-end">
+
+    <!-- Instancia -->
+    <div class="col-span-12 md:col-span-6 lg:col-span-3">
+      <label class="block mb-2 text-sm font-medium">Instancia</label>
+      <p-select [options]="instancias" [(ngModel)]="instancia" optionLabel="label" optionValue="value" class="w-full"
+        fluid (onChange)="onInstanciaChange()" appendTo="body">
+      </p-select>
+    </div>
+
+    <!-- Juzgado (Primera Instancia) -->
+    <div class="col-span-12 md:col-span-6 lg:col-span-3" *ngIf="instancia === 'P'">
+      <label class="block mb-2 text-sm font-medium">Juzgado</label>
+      <p-select #juzgadoSelect [options]="catalogoJuzgados" [(ngModel)]="juzgado" optionLabel="descripcion"
+        optionValue="cve" placeholder="Selecciona un juzgado" [filter]="true" filterBy="descripcion" class="w-full"
+        fluid appendTo="body" (onChange)="onJuzgadoChange()">
+      </p-select>
+    </div>
+
+    <!-- Sala (Segunda Instancia) -->
+    <div class="col-span-12 md:col-span-6 lg:col-span-3" *ngIf="instancia === 'S'">
+      <label class="block mb-2 text-sm font-medium">Sala</label>
+      <p-select #salaSelect [options]="catalogoSalas" [(ngModel)]="sala" optionLabel="descripcion" optionValue="cve"
+        placeholder="Selecciona una sala" [filter]="true" filterBy="descripcion" class="w-full" fluid appendTo="body"
+        (onChange)="onSalaChange()">
+      </p-select>
+    </div>
+
+    <!-- Fecha inicio -->
+    <div class="col-span-6 md:col-span-6 lg:col-span-2">
+      <label class="block mb-2 text-sm font-medium">De</label>
+      <p-datePicker #fechaInicioInput [(ngModel)]="fechaInicio" dateFormat="yy-mm-dd" class="w-full" fluid
+        appendTo="body" [maxDate]="maxDate">
+      </p-datePicker>
+    </div>
+
+    <!-- Fecha fin -->
+    <div class="col-span-6 md:col-span-6 lg:col-span-2">
+      <label class="block mb-2 text-sm font-medium">A</label>
+      <p-datePicker #fechaFinInput [(ngModel)]="fechaFin" dateFormat="yy-mm-dd" class="w-full" fluid appendTo="body"
+        [maxDate]="maxDate">
+      </p-datePicker>
+    </div>
+
+    <div class="col-span-3 md:col-span-4 lg:col-span-2 flex gap-4 sm:justify-end md:justify-start">
+      <p-button icon="pi pi-filter-slash" [outlined]="true" (click)="limpiar()" aria-label="Limpiar filtros"></p-button>
+
+      <p-button (click)="generarPdf()" >
+         <i pButtonIcon class="pi  pi-file-pdf" aria-hidden="true"></i>
+        <span pButtonLabel>Generar</span>
+      </p-button>
+    </div>
+  </div>
+</div>

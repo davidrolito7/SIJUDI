@@ -7,6 +7,8 @@ import { Form } from './form/form';
 import { authMatchGuard } from './core/auth/guard/auth-guard';
 import { Perfil } from './core/auth/component/perfil/perfil';
 import { redirectGuard } from './core/auth/guard/redirect-guard';
+import { Dashboard } from './shared/components/dashboard/dashboard';
+import { PerfilUsuario } from './shared/components/perfil-usuario/perfil-usuario';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -20,6 +22,7 @@ export const routes: Routes = [
   },
 
   { path: 'perfil', component: Perfil, canMatch: [authMatchGuard] },
+  
 
   {
     path: '',
@@ -27,8 +30,10 @@ export const routes: Routes = [
     canMatch: [authMatchGuard],
     children: [
       { path: 'form', component: Form },
+      { path: '', component:Dashboard },
+      { path:'home', component:Dashboard },
       {
-        path: 'tramites-juicio-oral', loadChildren: () =>
+        path: 'juicio-oral', loadChildren: () =>
           import('./tramites-juicio-oral/tramites-juicio-oral.routes')
             .then(m => m.TRAMITES_JUICIO_ORAL_ROUTES)
       },
@@ -55,6 +60,12 @@ export const routes: Routes = [
           import('./penal/penal.routes')
             .then(m => m.PENAL_ROUTES)
         },
+        {
+          path: 'terminos', loadChildren:()=>
+            import('./terminos/terminos.routes')
+          .then(m=>m.TERMINOS_ROUTES)
+        },
+        { path: 'datos-personales', component: PerfilUsuario }
 
     ],
   },

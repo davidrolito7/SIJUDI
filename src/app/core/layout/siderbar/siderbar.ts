@@ -14,7 +14,9 @@ import { AuthService } from '../../auth/service/auth.service';
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { AppIcon } from "./icon/app-icon.component";
-
+import { StyleClassModule } from 'primeng/styleclass';
+import { RippleModule } from 'primeng/ripple';
+import { DrawerService } from '../../../shared/service/drawer.service';
 @Component({
   selector: 'app-siderbar',
   imports: [
@@ -27,7 +29,10 @@ import { AppIcon } from "./icon/app-icon.component";
     AvatarModule,
     DrawerModule,
     ButtonModule,
-],
+    StyleClassModule,
+    RippleModule
+
+  ],
   templateUrl: './siderbar.html',
   styleUrl: './siderbar.css',
 })
@@ -36,6 +41,9 @@ export class Siderbar {
   private readonly tokenService = inject(TokenService);
   private readonly authService = inject(AuthService);
   private readonly menuStore = inject(UserMenuStore);
+  readonly drawerService = inject(DrawerService);
+  
+      visibleDrawer: boolean = false;
 
   readonly svgSrcForPantalla = svgSrcForPantalla;
   readonly svgSrcForModulo = svgSrcForModulo;
@@ -62,9 +70,9 @@ export class Siderbar {
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (mods) => {
-          if (!this.selectedModuloId() && mods.length > 0) {
-            this.selectedModuloId.set(mods[0].idSistemaModulo);
-          }
+          // if (!this.selectedModuloId() && mods.length > 0) {
+          //   this.selectedModuloId.set(mods[0].idSistemaModulo);
+          // }
         },
       });
 
@@ -106,7 +114,11 @@ export class Siderbar {
     this.showMenu.set(false);
     this.selectedModuloId.set(null);
   }
-  
+  // Agrega junto a los otros métodos
+  pantallasDeModulo(mod: ModulosUsuario) {
+    return (mod.pantallas ?? []).filter((p) => p.visibleMenu);
+  }
+
   get abogadoNombre(): string {
     return this.tokenService.getAbogadoNombre() || 'Abogado';
   }

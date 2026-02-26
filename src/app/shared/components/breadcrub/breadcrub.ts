@@ -7,6 +7,7 @@ import { DrawerModule } from "primeng/drawer";
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { Router } from '@angular/router';
 import { Button } from "primeng/button";
+import { DrawerService } from '../../service/drawer.service';
 
 @Component({
   selector: 'app-breadcrub',
@@ -20,6 +21,7 @@ visibleDrawer: boolean = false;
   home: MenuItem = { icon: 'pi pi-home', routerLink: '/' };
   private readonly tokenService = inject(TokenService);
   private readonly authService = inject(AuthService);
+  readonly drawerService = inject(DrawerService);
     private readonly router = inject(Router);
 
   get abogadoNombre(): string {
@@ -58,5 +60,10 @@ visibleDrawer: boolean = false;
    // this.showMenu.set(false);
 
     this.router.navigate(['/perfil'], { replaceUrl: true });
+  }
+
+  
+  verPerfil(): void {
+    this.router.navigate(['/datos-personales'], { replaceUrl: true });
   }
 }

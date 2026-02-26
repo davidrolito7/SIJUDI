@@ -8,6 +8,7 @@ import { Spinner } from "../../../shared/components/spinner/spinner";
 import { Router } from '@angular/router';
 import { AmparosService } from '../../services/amparo.service';
 import { Button } from "primeng/button";
+import {CommonModule} from '@angular/common';
 import { base64ToFile, downloadBase64 } from '../../../shared/functions/utils';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
@@ -15,7 +16,7 @@ import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm
 
 @Component({
   selector: 'app-RespuestaAmparoRecibido',
-  imports: [Toast, TableModule, Breadcrub, Spinner, Button, PdfDialog, ConfirmDialog],
+  imports: [Toast, TableModule, Breadcrub, Spinner, Button, PdfDialog, ConfirmDialog,CommonModule],
   templateUrl: './respuesta-amparo-recibido.html',
   styleUrl: './respuesta-amparo-recibido.css',
   providers:[MessageService, ConfirmationService]

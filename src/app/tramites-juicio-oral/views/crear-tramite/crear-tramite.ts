@@ -27,8 +27,9 @@ import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
   selector: 'app-crear-tramite',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, TextareaModule, FileUploadModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Breadcrub
-  ],
+    Spinner, TextareaModule, FileUploadModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Breadcrub,
+    PdfDialog
+],
   templateUrl: './crear-tramite.html',
   styleUrl: './crear-tramite.css',
   providers: [ConfirmationService]
@@ -140,6 +141,14 @@ export class CrearTramite {
     this.confirmationService.confirm({
       key: 'anexo',
       accept: () => this.onEliminarDocumento(index),
+      reject: () => { }
+    });
+
+  }
+    onEnviarPromocion() {
+    this.confirmationService.confirm({
+      key: 'promocion',
+      accept: () => this.onEnviarTramite(),
       reject: () => { }
     });
 
