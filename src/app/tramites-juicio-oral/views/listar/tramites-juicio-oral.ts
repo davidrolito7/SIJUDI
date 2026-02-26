@@ -135,7 +135,7 @@ export class TramitesJuicioOral implements OnInit {
   }
 
     detalle(idTramiteElectronicoRecibido: number) {
-    this.router.navigate(['/tramites-juicio-oral/detalle'], { state: { idTramiteElectronicoRecibido } });
+    this.router.navigate(['/juicio-oral/detalle'], { state: { idTramiteElectronicoRecibido } });
   }
 
 }
