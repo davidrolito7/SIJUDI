@@ -113,7 +113,7 @@ export class Perfil {
     this.perfilNombreSeleccionado.set(selected?.descripcion ?? '');
   }
 
-  continuar(): void {
+continuar(): void {
     if (!this.canContinue()) {
       this.messageService.add({
         severity: 'error',
@@ -123,24 +123,20 @@ export class Perfil {
       return;
     }
 
+    // 1. Primero guardar "recordar" para que PantallasService sepa qué storage usar
+    localStorage.setItem('recordarUsuario', this.recordar ? 'true' : 'false');
+
     const store = this.recordar ? localStorage : sessionStorage;
     const other = this.recordar ? sessionStorage : localStorage;
-
-    localStorage.setItem('recordarUsuario', this.recordar ? 'true' : 'false');
 
     store.setItem('areaSeleccionada', String(this.areaSeleccionada()));
     store.setItem('perfilSeleccionado', String(this.perfilSeleccionado()));
     store.setItem('perfilSeleccionadoDesc', this.perfilNombreSeleccionado());
     store.setItem('idAreaSistemaUsuario', String(this.idAreaSistemaUsuario()));
 
-    // === NUEVO: guardar texto del área (AreaUsuarioSistema) ===
     const areaObj = this.listaAreas().find(a => a.idArea === this.areaSeleccionada());
     store.setItem('AreaName', areaObj?.area ?? '');
-
-    // === NUEVO: guardar nombre del abogado ===
     store.setItem('AbogadoNombre', this.abogadoNombre());
-
-    // === NUEVO: foto (mejor en sessionStorage por tamaño) ===
     sessionStorage.setItem('AbogadoFotoBase64', this.abogadoFotoBase64());
 
     other.removeItem('areaSeleccionada');
@@ -150,8 +146,7 @@ export class Perfil {
     other.removeItem('AreaName');
     other.removeItem('AreaBd');
     other.removeItem('AbogadoNombre');
-
-    // foto también se limpia del otro storage (por si acaso)
+    other.removeItem('pantallas_usuario'); // limpia del storage que no se usa
     localStorage.removeItem('AbogadoFotoBase64');
 
     this.messageService.add({
@@ -162,10 +157,13 @@ export class Perfil {
 
     this.tokenService.setPerfilCompleted(true);
 
-    // === CARGA DE PANTALLAS DEL USUARIO ===
+    // 2. Limpiar memoria + storage ANTES de cargar para forzar HTTP
+    this.pantallasService.limpiarPantallas();
+
+    // 3. Cargar pantallas frescas
     this.cargarPantallasUsuario();
-    
-    // Fuerza recarga de módulos/pantallas con el perfil nuevo
+
+    // 4. Navegar
     this.menuStore.refresh()
       .pipe(
         catchError(() => of([])),
@@ -174,6 +172,25 @@ export class Perfil {
       .subscribe(() => {
         this.router.navigate(['/home'], { replaceUrl: true });
       });
+  }
+
+  onLogout(): void {
+    this.tokenService.logout();
+    this.pantallasService.limpiarPantallas(); // limpia memoria + ambos storages
+    this.router.navigate(['/login'], { replaceUrl: true });
+  }
+
+  //! QUITAR ESTO POSTERIOMENTE (DAVID RODRIGUEZ)
+  private cargarPantallasUsuario(): void {
+    // No revisar caché aquí — ya se limpió con limpiarPantallas() antes de llamar esto
+    this.pantallasService.cargarPantallas().subscribe({
+      next: (pantallas) => {
+        console.log('Pantallas cargadas:', pantallas.length);
+      },
+      error: (error) => {
+        console.error('Error al cargar las vistas:', error);
+      }
+    });
   }
 
   // --------------------
@@ -332,25 +349,5 @@ export class Perfil {
     return Number.isFinite(n) ? n : 0;
   }
 
-  onLogout(): void {
-    this.tokenService.logout();
-
-    this.router.navigate(['/login'], { replaceUrl: true });
-  }
-
-  //! QUITAR ESTO POSTERIOMENTE (DAVID RODRIGUEZ)
-  private cargarPantallasUsuario(): void {
-    const cache = this.pantallasService.getPantallas();
-    if (cache) {
-      return;
-    }
-    this.pantallasService.cargarPantallas().subscribe({
-      next: (pantallas) => {
-        console.log('Pantallas cargadas:', pantallas);
-      },
-      error: (error) => {
-        console.error('Error al cargar las vistas:', error);
-      }
-    });
-  }
+ 
 }
