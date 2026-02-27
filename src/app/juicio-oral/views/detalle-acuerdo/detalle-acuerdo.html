@@ -7,12 +7,9 @@
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
             <div
-                class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
-                <svg class="w-14 h-14 text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                    height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
+                class="rounded-full bg-secondary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                                <i class="pi pi-key text-white" style="font-size: 3rem"></i>
+
             </div>
             <p class="text-2xl font-medium mt-2.5  ">
                 FIREL
@@ -31,7 +28,7 @@
              
             </div>
             <div class="flex items-center gap-2 mt-6">
-                <p-button label="Autorizar" (onClick)="onAccept()" />
+                <p-button label="Continuar" (onClick)="onAccept()" />
                 <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" />
             </div>
         </div>
@@ -53,7 +50,7 @@
             </label>
 
             @if (!mostrarBoton() && detalleAcuerdo.ultimo_estado?.estado?.idCatEstadoAcuerdo !== 4) {
-            <p-button icon="pi pi-shield" label="Firma FIREL" (click)="autorizarFirel($event)"></p-button>
+            <p-button icon="pi pi-key" label="Firma FIREL" styleClass="btn-tertiary" (click)="autorizarFirel($event)"></p-button>
             }
         </div>
 

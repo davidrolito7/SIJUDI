@@ -30,7 +30,7 @@ import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
     ToastModule,
     Spinner,
     Breadcrub
-],
+  ],
   templateUrl: './reportes-documentos.html',
   styleUrls: ['./reportes-documentos.css'],
   providers: [MessageService]
@@ -53,7 +53,7 @@ export class ReportesDocumentosComponent implements OnInit {
 
   /** Controla el estado de carga mientras se genera el reporte */
   isLoading = false;
-  
+
   // ==================================================
   // Filtros del reporte
   // ==================================================
@@ -185,105 +185,87 @@ export class ReportesDocumentosComponent implements OnInit {
    */
 generarPdf(): void {
 
-    // 🔎 Validación
-    if (!this.fechaInicio || !this.fechaFin) {
+  // 🔎 Validación
+  if (!this.fechaInicio || !this.fechaFin) {
 
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Fechas requeridas',
-        detail: 'Debes seleccionar un rango de fechas',
-        life: 4000
-      });
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Fechas requeridas',
+      detail: 'Debes seleccionar un rango de fechas',
+      life: 4000
+    });
 
-      setTimeout(() => {
-        if (!this.fechaInicio) {
-          this.fechaInicioInput.nativeElement
-            .querySelector('input')
-            ?.focus();
+    setTimeout(() => {
+      if (!this.fechaInicio) {
+        this.fechaInicioInput.nativeElement
+          .querySelector('input')
+          ?.focus();
+      } else {
+        this.fechaFinInput.nativeElement
+          .querySelector('input')
+          ?.focus();
+      }
+    });
+
+    return;
+  }
+
+  // 🔄 Activamos loading
+  this.isLoading = true;
+  this.cdr.markForCheck();
+
+  const params = {
+    instancia: this.instancia,
+    juzgado: this.instancia === 'P' ? this.juzgado ?? '' : '',
+    sala: this.instancia === 'S' ? this.sala ?? '' : '',
+    fechaInicio: this.formatDate(this.fechaInicio),
+    fechaFin: this.formatDate(this.fechaFin)
+  };
+
+  this.apiService.generarReporteDocumentosPdf(params)
+    .subscribe({
+
+      next: (response: Blob) => {
+
+        if (response.type === 'application/pdf') {
+
+          const blobUrl = window.URL.createObjectURL(response);
+
+          // 🔥 Abrimos directamente el PDF (visor nativo)
+          window.open(blobUrl, '_blank');
+
         } else {
-          this.fechaFinInput.nativeElement
-            .querySelector('input')
-            ?.focus();
-        }
-      });
-
-      return;
-    }
-
-    // 🔄 Activamos loading
-    this.isLoading = true;
-    this.cdr.markForCheck();
-
-    const params = {
-      instancia: this.instancia,
-      juzgado: this.instancia === 'P' ? this.juzgado ?? '' : '',
-      sala: this.instancia === 'S' ? this.sala ?? '' : '',
-      fechaInicio: this.formatDate(this.fechaInicio),
-      fechaFin: this.formatDate(this.fechaFin)
-    };
-
-    this.apiService.generarReporteDocumentosPdf(params)
-      .subscribe({
-
-        next: (response: Blob) => {
-
-          if (response.type === 'application/pdf') {
-
-            const blobUrl = window.URL.createObjectURL(response);
-
-            const nuevaVentana = window.open('', '_blank');
-
-            if (nuevaVentana) {
-              nuevaVentana.document.write(`
-              <html>
-                <head>
-                  <title>Reporte ${params.instancia} ${params.fechaInicio} - ${params.fechaFin}</title>
-                </head>
-                <body style="margin:0">
-                  <iframe 
-                    src="${blobUrl}" 
-                    frameborder="0" 
-                    style="width:100%; height:100vh;">
-                  </iframe>
-                </body>
-              </html>
-            `);
-              nuevaVentana.document.close();
-            }
-
-          } else {
-
-            this.messageService.add({
-              severity: 'info',
-              summary: 'Sin resultados',
-              detail: 'No se encontraron registros para los filtros seleccionados.',
-              life: 4000
-            });
-
-          }
-
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        },
-
-        error: err => {
-
-          console.error(err);
 
           this.messageService.add({
-            severity: 'error',
-            summary: 'Error del sistema',
-            detail: 'Ocurrió un problema al generar el reporte.',
+            severity: 'info',
+            summary: 'Sin resultados',
+            detail: 'No se encontraron registros para los filtros seleccionados.',
             life: 4000
           });
 
-          this.isLoading = false;
-          this.cdr.markForCheck();
         }
 
-      });
-  }
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      },
 
+      error: err => {
+
+        console.error(err);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error del sistema',
+          detail: 'Ocurrió un problema al generar el reporte.',
+          life: 4000
+        });
+
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
+
+    });
+}
   /**
    * Restablece todos los filtros del formulario a su estado inicial.
    */
