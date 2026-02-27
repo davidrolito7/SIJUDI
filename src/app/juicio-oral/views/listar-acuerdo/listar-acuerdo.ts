@@ -193,7 +193,7 @@ export class ListarAcuerdos implements OnInit {
   }
 
   detalle(idAcuerdo: number): void {
-    this.router.navigate(['/acuerdo/detalle'], { state: { idAcuerdo } });
+    this.router.navigate(['/juicioenlinea/acuerdos/detalle'], { state: { idAcuerdo } });
   }
 
   // ============================

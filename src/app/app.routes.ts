@@ -22,7 +22,7 @@ export const routes: Routes = [
   },
 
   { path: 'perfil', component: Perfil, canMatch: [authMatchGuard] },
-  
+
 
   {
     path: '',
@@ -30,10 +30,11 @@ export const routes: Routes = [
     canMatch: [authMatchGuard],
     children: [
       { path: 'form', component: Form },
-      { path: '', component:Dashboard },
-      { path:'home', component:Dashboard },
+      { path: '', component: Dashboard },
+      { path: 'home', component: Dashboard },
       {
-        path: 'juicio-oral', loadChildren: () =>
+        path: 'juicio-oral', data: { title: 'Tramites Juicio Oral' },
+        loadChildren: () =>
           import('./tramites-juicio-oral/tramites-juicio-oral.routes')
             .then(m => m.TRAMITES_JUICIO_ORAL_ROUTES)
       },
@@ -43,29 +44,32 @@ export const routes: Routes = [
             .then(m => m.EXHORTOS_ROUTES)
       },
       {
-        path:'catalogos',loadChildren:() =>
+        path: 'catalogos', loadChildren: () =>
           import('./catalogos/catalogos.route')
-            .then(m=>m.CATALOGOS_ROUTES)
+            .then(m => m.CATALOGOS_ROUTES)
       },
-        {path: 'juicioenlinea', loadChildren: () =>
+      {
+        path: 'juicioenlinea', loadChildren: () =>
           import('./juicio-oral/jucio-oral.routes')
             .then(m => m.JUICIO_ORAL_ROUTES)
-        },
-        {
-          path: 'amparos', loadChildren: () =>
-            import('./amparos/amparos.routes')
-              .then(m => m.AMPAROS_ROUTES)
-        },
-        {path: 'penal', loadChildren: () =>
+      },
+      {
+        path: 'amparos', loadChildren: () =>
+          import('./amparos/amparos.routes')
+            .then(m => m.AMPAROS_ROUTES)
+      },
+      {
+        path: 'penal', loadChildren: () =>
           import('./penal/penal.routes')
             .then(m => m.PENAL_ROUTES)
-        },
-        {
-          path: 'terminos', loadChildren:()=>
-            import('./terminos/terminos.routes')
-          .then(m=>m.TERMINOS_ROUTES)
-        },
-        { path: 'datos-personales', component: PerfilUsuario }
+      },
+      {
+        path: 'terminos', data: { title: 'Terminos' },
+        loadChildren: () =>
+          import('./terminos/terminos.routes')
+            .then(m => m.TERMINOS_ROUTES)
+      },
+      { path: 'datos-personales', component: PerfilUsuario }
 
     ],
   },

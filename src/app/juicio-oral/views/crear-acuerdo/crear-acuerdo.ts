@@ -13,7 +13,8 @@ import { TableModule } from 'primeng/table';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 // Shared
 import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
 import { Spinner } from '../../../shared/components/spinner/spinner';
@@ -38,6 +39,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     TextareaModule,
     ToastModule,
     TooltipModule,
+    InputGroupModule,
+    InputGroupAddonModule,
     // Shared
     Breadcrub,
     Spinner,

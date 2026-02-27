@@ -37,7 +37,7 @@
             <div class="flex flex-col space-y-2">
                 <p><span class="font-semibold">Número de expediente:</span> {{ expediente?.NumExpediente }}</p>
                 <p><span class="font-semibold">Fecha asignación:</span> {{ expediente?.fechaResponse | date: 'dd/MM/yyyy' }}</p>
-                <p class="break-words whitespace-pre-line max-w-full">
+                <p class="wrap-break-word whitespace-pre-line max-w-full">
                     <span class="font-semibold">Síntesis del expediente:</span> {{ preRegistro?.descripcionDemanda }}
                 </p>
             </div>
