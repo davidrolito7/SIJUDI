@@ -408,7 +408,7 @@ export class JuicioService {
 
     getTramitesExpediente(idExpediente: number): Observable<ApiResponse<DetalleExpedienteResponse>> {
         const url = `${this.tramites + 'Expediente'}/${idExpediente}`;
-        return this.http.post<ApiResponse<DetalleExpedienteResponse>>(url, { context: checkToken() });
+        return this.http.post<ApiResponse<DetalleExpedienteResponse>>(url,null, { context: checkToken() });
     }
 
     enviarAcuerdo(formData: FormData): Observable<ApiResponse<any>> {

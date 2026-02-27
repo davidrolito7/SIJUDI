@@ -3,13 +3,13 @@
 
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
+<!-- BREADCRUMB -->
+<app-breadcrub></app-breadcrub>
+
 <!-- ==================================================
        Filtros de búsqueda
      ================================================== -->
 <div class="sticky top-0 z-50 bg-surface-0 dark:bg-surface-900 flex flex-col gap-4">
-
-  <!-- BREADCRUMB -->
-  <app-breadcrub></app-breadcrub>
 
   <!-- BÚSQUEDA -->
   <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4 ">
@@ -128,8 +128,8 @@
           <td>{{ row.juzgado }}</td>
           <td>{{ row.partes }}</td>
           <td>
-            <p-button type="button" icon="pi pi-eye" [rounded]="true" size="small" pTooltip="Ver detalle" tooltipPosition="top"
-              (click)="verEscrito(row.folio)">
+            <p-button type="button" icon="pi pi-eye" [rounded]="true" size="small" pTooltip="Ver detalle"
+              tooltipPosition="top" (click)="verEscrito(row.folio)">
               <span pButtonLabel>Ver</span>
             </p-button>
           </td>

@@ -1,8 +1,8 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<div class="lg:sticky top-0 z-50  flex flex-col gap-4 bg-surface-0 dark:bg-surface-900">
+<div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-900">
     <app-breadcrub></app-breadcrub>
-    <h2 class="text-2xl font-medium leading-none pl-2 mb-4 tracking-tight">
+    <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 pl-2 mb-2 tracking-tight">
         Captura registro 1° instancia
     </h2>
 </div>
@@ -299,7 +299,7 @@
 
 <!--* DIALOGO DE CONFIRMACION ENVIAR DEMANDA -->
 <app-confirm-dialog key="demanda" title="Confirmación" message="Confirme la acción para enviar demanda"
-    icon="pi pi-question-circle" circleClass="bg-green-600" acceptLabel="Confirmar"
+    icon="pi pi pi-send" circleClass="bg-green-600" acceptLabel="Confirmar"
     acceptStyleClass="bg-green-600 border-green-600" rejectLabel="Cancelar">
 </app-confirm-dialog>
 

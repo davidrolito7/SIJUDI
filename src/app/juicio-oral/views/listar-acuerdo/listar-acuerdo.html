@@ -1,0 +1,129 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
+<p-toast></p-toast>
+
+<div class="lg:sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-900">
+
+    <!-- BREADCRUMB -->
+    <app-breadcrub></app-breadcrub>
+
+    <!-- FILTROS -->
+    <div class="border border-surface rounded-2xl p-4">
+
+        <div class="flex items-start flex-col md:flex-row justify-between">
+            <div class="font-medium text-2xl mb-4 md:mb-0">
+                Acuerdos recibidos
+            </div>
+        </div>
+
+        <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de acuerdos">
+            <div class="grid grid-cols-12 gap-4 w-full items-end mt-4">
+
+                <!-- Folio -->
+                <div class="col-span-12 md:col-span-6 lg:col-span-3">
+                    <label class="block mb-2 text-sm font-medium">Folio</label>
+                    <input pInputText fluid [(ngModel)]="filtro.folio" name="folio" class="w-full uppercase text-sm"
+                        maxlength="9" placeholder="0001/2026"
+                        (ngModelChange)="limpiarEspaciosFolio($event)"
+                        (keypress)="validarCaracteres($event)" />
+                </div>
+
+                <!-- Tipo -->
+                <div class="col-span-12 md:col-span-6 lg:col-span-2">
+                    <label class="block mb-2 text-sm font-medium">Tipo</label>
+                    <p-select name="tipo" class="w-full" fluid
+                        [options]="tipoOptions"
+                        [(ngModel)]="filtro.tipo"
+                        optionLabel="label" optionValue="value"
+                        appendTo="body">
+                    </p-select>
+                </div>
+
+                <!-- Fecha -->
+                <div class="col-span-12 md:col-span-8 lg:col-span-4">
+                    <label class="block mb-2 text-sm font-medium">Fecha</label>
+                    <p-datepicker name="rangeDates" fluid placeholder="Selecciona rango"
+                        [(ngModel)]="filtro.rangeDates" selectionMode="range" [readonlyInput]="true">
+                    </p-datepicker>
+                </div>
+
+                <!-- Botones -->
+                <div class="col-span-12 md:col-span-4 lg:col-span-3 flex gap-2">
+                    <p-button type="button" icon="pi pi-filter-slash" [outlined]="true"
+                        (click)="limpiarFiltros()" aria-label="Limpiar filtros"></p-button>
+
+                    <p-button type="submit" aria-label="Buscar">
+                        <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
+                        <span pButtonLabel>Buscar</span>
+                    </p-button>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+<!-- TABLA -->
+<div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
+    <div class="card">
+        <p-table #dtAcuerdos [value]="acuerdos" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [globalFilterFields]="['folio', 'expediente.NumExpediente', 'ultimo_estado.estado.descripcion']">
+
+            <ng-template #caption>
+                <div class="flex">
+                    <div class="font-medium text-xl mb-4">Resultado</div>
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text"
+                            (input)="dtAcuerdos.filterGlobal($any($event.target).value, 'contains')"
+                            placeholder="Buscar una palabra" aria-label="Buscar" />
+                    </p-iconfield>
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <tr>
+                    <th scope="col">Folio</th>
+                    <th scope="col">Expediente</th>
+                    <th scope="col">Fecha Acuerdo</th>
+                    <th scope="col">Estatus</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-acuerdo>
+                <tr>
+                    <td>
+                        # <span>{{ acuerdo.folio }}</span>
+                    </td>
+                    <td>
+                        {{ acuerdo.expediente?.NumExpediente }}
+                    </td>
+                    <td>
+                        {{ acuerdo.fechaAcuerdo | date: 'dd/MM/yyyy HH:mm' }} h
+                    </td>
+                    <td>
+                        <p-tag
+                            [value]="(getEstadoDescripcion(acuerdo) | uppercase) ?? ''"
+                            [severity]="getEstadoTag(acuerdo).severity"
+                            [icon]="getEstadoTag(acuerdo).icon" />
+                    </td>
+                    <td>
+                        <p-button (click)="detalle(acuerdo.idAcuerdo)" [rounded]="true" [text]="true"
+                            [raised]="true" severity="info" icon="pi pi-eye"
+                            pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                        </p-button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="5">Sin registros</td>
+                </tr>
+            </ng-template>
+
+        </p-table>
+    </div>
+</div>

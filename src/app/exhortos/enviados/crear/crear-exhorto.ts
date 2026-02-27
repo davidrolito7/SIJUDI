@@ -1634,9 +1634,7 @@ export class CrearExhortoComponent {
     }
   }*/
   // ...existing code...
-  abrirModal() {
-    this.modalService.open('modal2');
-  }
+
   // ...existing code...
   enviarArchivos() {
     this.confirmationService.confirm({
