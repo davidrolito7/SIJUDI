@@ -14,6 +14,8 @@ import { ListarSolicitud } from './views/listar-solicitud/listar-solicitud';
 import { ListarTramite } from './views/listar-tramite/listar-tramite';
 import { CrearTramite } from './views/crear-tramite/crear-tramite';
 import { DetalleTramite } from './views/detalle-tramite/detalle-tramite';
+import { ListarAcuerdos } from './views/listar-acuerdo/listar-acuerdo';
+import { CrearAcuerdo } from './views/crear-acuerdo/crear-acuerdo';
 
 export const JUICIO_ORAL_ROUTES: Routes = [
 
@@ -60,6 +62,14 @@ export const JUICIO_ORAL_ROUTES: Routes = [
             {path: 'crear', component: CrearTramite},
             {path: 'listar', component: ListarTramite},
             {path: 'detalle', component: DetalleTramite}
+        ]
+    },
+    {
+        path: 'acuerdos',
+        children:[
+            {path: 'listar', component: ListarAcuerdos},
+            {path: 'crear', component: CrearAcuerdo}
+
         ]
     }
 ];

@@ -166,7 +166,7 @@ export class DetalleTramite implements OnInit {
   // Navegación
   // ============================
   detalle(idExpediente: number): void {
-    this.router.navigate(['/acuerdo/crear'], { state: { idExpediente } });
+    this.router.navigate(['/juicioenlinea/acuerdos/crear'], { state: { idExpediente } });
   }
 
   // ============================

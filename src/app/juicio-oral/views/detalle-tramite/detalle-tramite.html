@@ -10,7 +10,7 @@
     <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl">
 
         <div class="flex items-start flex-col md:flex-row justify-between">
-            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 p-4">
                 Trámite - {{ detalleTramite?.cat_tramite?.nombre }} #{{ detalleTramite?.folioOficio }}
             </label>
             @if (mostrarBoton() && detalleTramite?.idAcuerdo == null) {
