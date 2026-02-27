@@ -36,6 +36,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { validarFirmasUsuarioExEnviado } from '../../functions/firmas';
 interface FileUploadSelectEvent {
   files: File[];
 }
@@ -1063,11 +1064,22 @@ export class CrearExhortoComponent {
     this.ExhortosService.getExhortosEnviadosDetalle(idExhortoEnviado).subscribe({
       next: (response) => {
         if (response.success && response.data.archivos.length > 0) {
-          this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
+          //obtenemos el idUsuario del token
+            const userData = this.tokenService.getUserFromToken();
+            var idUsuario=0;
+            if(userData !== null){
+              idUsuario = userData.idGeneral;
+            }
+          const documentosValidados = validarFirmasUsuarioExEnviado(response.data.archivos,idUsuario);
+          this.listaDocumentos.set(documentosValidados.map((archivo:any)=>({
+            ...archivo,
+            tam:archivo.tamaño
+          })));
+          /*this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
             ...archivo,
             tam: archivo.tamaño
-          })));
-          console.log(this.listaDocumentos()[0].tipoDocumento);
+          })));*/
+          //console.log(this.listaDocumentos()[0].tipoDocumento);
         } else {
           this.listaDocumentos.set([]);
           this.messageService.add({
@@ -2056,6 +2068,17 @@ export class CrearExhortoComponent {
             if (indexFirmas !== -1) {
               // Elimina el elemento del arreglo
               this.listaDocumentos()[index].firmantes.splice(indexFirmas, 1);
+              //obtenemos el idUsuario del token
+              const userData = this.tokenService.getUserFromToken();
+              var idUsuario=0;
+              if(userData !== null){
+                idUsuario = userData.idGeneral;
+              }
+              const documentosValidados = validarFirmasUsuarioExEnviado(this.listaDocumentos(),idUsuario);
+              this.listaDocumentos.set(documentosValidados.map((archivo:any)=>({
+                ...archivo,
+                tam:archivo.tamaño
+              })));
 
             }
           }
@@ -2184,7 +2207,8 @@ export class CrearExhortoComponent {
         activo: true,
         selecParaFirma: false,
         firmantes: [],
-        file: file
+        file: file,
+        usrYaFirmo:false
       };
 
       // Añadir campo auxiliar `tam` que se usa en otras partes del componente

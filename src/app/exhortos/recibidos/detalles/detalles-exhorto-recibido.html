@@ -7,7 +7,7 @@
     <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
         <div class="flex items-start flex-col md:flex-row justify-between">
             <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-                    Búsqueda 
+                    Detalle de exhorto recibido 
             </label>
              @if (tienePermisoReasignarExhorto()) {
                 <div class="relative">
@@ -89,7 +89,7 @@
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
      <div class="flex items-start flex-col md:justify-between md:flex-row">
         <div>
-            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Generales</div>
+            <!--<div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Generales</div>-->
             <div class="p-1 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- empieza panel izquierdo -->
@@ -460,7 +460,7 @@
                                 <th>
                                     <div class="flex items-center justify-between">Enviada</div>
                                 </th>
-                                <th scope="col" class="px-4 py-3">
+                                <th>
                                     <span class="sr-only">Acciones</span>
                                 </th>
   
@@ -474,9 +474,9 @@
                                 <td style="font-size: small;">{{item?.descripcion}}</td>
                                 <td style="font-size: small;">{{ item?.nombreUsuarioActualizo }}</td>
                                 <td style="font-size: small;"> {{item?.enviado }}</td>
-                                <td class="text-center">
+                                <td >
                                     @if(item.enviado == 'No'){
-                                        <p-button  type="button" (click)="enviarActualizacion(item.idActualizacion)" icon="pi pi-send"
+                                        <p-button  (click)="enviarActualizacion(item.idActualizacion)" 
                                         >Enviar Actualización</p-button>
                                     }
                                 </td>
