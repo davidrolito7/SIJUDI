@@ -31,35 +31,40 @@ export const routes: Routes = [
     children: [
       { path: 'form', component: Form },
       { path: '', component: Dashboard },
-      { path: 'home', component: Dashboard },
+      { path: 'home', data: { title: 'Inicio' },  component: Dashboard },
       {
-        path: 'juicio-oral', data: { title: 'Tramites Juicio Oral' },
+        path: 'juicio-oral', data: { title: 'Juicio Oral' },
         loadChildren: () =>
           import('./tramites-juicio-oral/tramites-juicio-oral.routes')
             .then(m => m.TRAMITES_JUICIO_ORAL_ROUTES)
       },
       {
-        path: 'exhortos', loadChildren: () =>
+        path: 'exhortos', data: { title: 'Exhortos' },
+         loadChildren: () =>
           import('./exhortos/exhortos.routes')
             .then(m => m.EXHORTOS_ROUTES)
       },
       {
-        path: 'catalogos', loadChildren: () =>
+        path: 'catalogos', data: { title: 'Catálagos' },
+         loadChildren: () =>
           import('./catalogos/catalogos.route')
             .then(m => m.CATALOGOS_ROUTES)
       },
       {
-        path: 'juicioenlinea', loadChildren: () =>
+        path: 'juicioenlinea', data: { title: 'Juicio en Línea' },
+        loadChildren: () =>
           import('./juicio-oral/jucio-oral.routes')
             .then(m => m.JUICIO_ORAL_ROUTES)
       },
       {
-        path: 'amparos', loadChildren: () =>
+        path: 'amparos', data: { title: 'Amparos' },
+         loadChildren: () =>
           import('./amparos/amparos.routes')
             .then(m => m.AMPAROS_ROUTES)
       },
       {
-        path: 'penal', loadChildren: () =>
+        path: 'penal', data: { title: 'Penal' },
+         loadChildren: () =>
           import('./penal/penal.routes')
             .then(m => m.PENAL_ROUTES)
       },

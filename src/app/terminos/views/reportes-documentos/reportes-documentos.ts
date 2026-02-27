@@ -183,9 +183,9 @@ export class ReportesDocumentosComponent implements OnInit {
    * 4. Descarga el archivo si es válido.
    * 5. Muestra mensajes informativos o de error.
    */
-  generarPdf(): void {
+generarPdf(): void {
 
-    // Validación antes de activar loading
+    // 🔎 Validación
     if (!this.fechaInicio || !this.fechaFin) {
 
       this.messageService.add({
@@ -210,10 +210,8 @@ export class ReportesDocumentosComponent implements OnInit {
       return;
     }
 
-    // ! Activamos loading para evitar múltiples clics mientras se genera el reporte
-      this.isLoading = true;
-
-    // * Necesario si el componente usa ChangeDetectionStrategy.OnPush
+    // 🔄 Activamos loading
+    this.isLoading = true;
     this.cdr.markForCheck();
 
     const params = {
@@ -226,16 +224,32 @@ export class ReportesDocumentosComponent implements OnInit {
 
     this.apiService.generarReporteDocumentosPdf(params)
       .subscribe({
+
         next: (response: Blob) => {
 
           if (response.type === 'application/pdf') {
 
-            const url = window.URL.createObjectURL(response);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Reporte_${params.instancia}_${params.fechaInicio}_${params.fechaFin}.pdf`;
-            a.click();
-            window.URL.revokeObjectURL(url);
+            const blobUrl = window.URL.createObjectURL(response);
+
+            const nuevaVentana = window.open('', '_blank');
+
+            if (nuevaVentana) {
+              nuevaVentana.document.write(`
+              <html>
+                <head>
+                  <title>Reporte ${params.instancia} ${params.fechaInicio} - ${params.fechaFin}</title>
+                </head>
+                <body style="margin:0">
+                  <iframe 
+                    src="${blobUrl}" 
+                    frameborder="0" 
+                    style="width:100%; height:100vh;">
+                  </iframe>
+                </body>
+              </html>
+            `);
+              nuevaVentana.document.close();
+            }
 
           } else {
 
@@ -245,6 +259,7 @@ export class ReportesDocumentosComponent implements OnInit {
               detail: 'No se encontraron registros para los filtros seleccionados.',
               life: 4000
             });
+
           }
 
           this.isLoading = false;
@@ -265,6 +280,7 @@ export class ReportesDocumentosComponent implements OnInit {
           this.isLoading = false;
           this.cdr.markForCheck();
         }
+
       });
   }
 
