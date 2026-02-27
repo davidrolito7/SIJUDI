@@ -1,4 +1,6 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
 <!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
+
 <div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
 
     <!-- HEADER -->
@@ -45,7 +47,7 @@
 
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
 
-        <p-table #dt1  [value]="listaConfiJuzgado" dataKey="idConfiguracion" [rows]="10"
+        <p-table #dt1  [value]="listaConfiJuzgado()" dataKey="idConfiguracion" [rows]="10"
             [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="['region','municipio','materia','juzgado']">
             <ng-template #caption>

@@ -17,6 +17,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { CatJuzgado } from '../../../catalogos/interface/catalogo.model';
 import { InputIconModule } from 'primeng/inputicon'
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
+import { Spinner } from "../../../shared/components/spinner/spinner";
 
 @Component({
   selector: 'app-ambitos-de-competencia',
@@ -31,9 +32,9 @@ import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm
     ButtonModule,
     DrawerModule,
     InputIconModule,
-    ConfirmDialog
-
-  ], templateUrl: './ambitos-de-competencia.html',
+    ConfirmDialog,
+    Spinner
+], templateUrl: './ambitos-de-competencia.html',
   styleUrl: './ambitos-de-competencia.css',
   providers: [MessageService, ConfirmationService]
 
@@ -57,7 +58,7 @@ export class AmbitosDeCompetencia {
   listaMateria: CatalogoMateria[] = [];
   listaMunicipiosOaxaca: CatalogoMunicipioDestino[] = [];
   listaMatJuz: ConfigMateriaJuzgado[] = [];
-  listaConfiJuzgado: ConfigMateriaJuzgado[] = [];
+  listaConfiJuzgado= signal<ConfigMateriaJuzgado[]>([]);
   selectedMunicipio: CatalogoMunicipioDestino | null = null
   isHeightExpanded = false;
   visible: boolean = false;
@@ -65,7 +66,7 @@ export class AmbitosDeCompetencia {
   formSubmitted: boolean = false;
   confirmacionEliminarJuzgado: boolean = false
 
-  loading: boolean = false;
+  isLoading: boolean = false;
   visibleDrawer: boolean = false;
   //Asignar el id de la pantalla, para poder obtener las secciones(permisos) de esta pantalla
   idPantalla = 14147;
@@ -175,23 +176,28 @@ export class AmbitosDeCompetencia {
     });
   }
   getConfigMuncipioJuzgado(): void {
-
+    this.isLoading=true;
     this.ExhortosService.getConfigMunicipioMateriaJuzgado(0, 0)
       .subscribe({
         next: (response: any) => {
           if (response.success) {
-            this.listaConfiJuzgado = response.data ? [...response.data] : []; // nueva referencia
+            this.listaConfiJuzgado.set(response.data ? [...response.data] : []); // nueva referencia
           } else {
             this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
           }
+          this.isLoading=false;
         },
         error: () => {
+          this.isLoading=false;
           this.cd.detectChanges();
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
             detail: 'Error al cargar el catálogo de configuraciones'
           });
+        },
+        complete:()=>{
+
         }
       });
   }
@@ -205,7 +211,7 @@ export class AmbitosDeCompetencia {
     const tieneFiltrosActivos = this.tieneFiltrosActivos(dt);
     const data: any[] = (tieneFiltrosActivos && dt?.filteredValue?.length)
       ? dt.filteredValue
-      : (this.listaConfiJuzgado ?? []);
+      : (this.listaConfiJuzgado() ?? []);
 
     if (!data.length) {
       this.messageService.add({
@@ -262,8 +268,12 @@ export class AmbitosDeCompetencia {
 
   GetSeccionesUsuario(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const idAreaSistemaUsuario = localStorage.getItem('idAreaSistemaUsuario');
-      const perfilSeleccionado = localStorage.getItem('perfilSeleccionado');
+
+      const idAreaSistemaUsuario = this.authService.getAreaSistemaUsuario(); // Obtener perfil del servicio
+      const perfilSeleccionado = this.authService.getPerfilSeleccionado();
+      this.isLoading=true
+      //const idAreaSistemaUsuario = localStorage.getItem('idAreaSistemaUsuario');
+      //const perfilSeleccionado = localStorage.getItem('perfilSeleccionado');
       this.authService.GetSeccionesUsuario(idAreaSistemaUsuario, this.idPantalla.toString(), perfilSeleccionado)
         .subscribe({
           next: (res) => {
@@ -284,11 +294,11 @@ export class AmbitosDeCompetencia {
             } else {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor." });
             }
-            this.loading = false;
+            this.isLoading = false;
           },
           error: (err) => {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
-            this.loading = false;
+            this.isLoading = false;
           }
         });
     });
