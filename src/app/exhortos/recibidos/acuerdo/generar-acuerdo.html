@@ -10,19 +10,19 @@
     <div class="flex items-start flex-col md:flex-row justify-between">
       <div>
         <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-          Crear acuerdo
+          Crear acuerdo de exhorto recibido
         </label>
 
         <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
           <div class="flex items-center gap-2">
             <i class="pi pi-users text-base! leading-normal!"></i>
-            <span>Caprura del acuerdo</span>
+            <span>Captura del acuerdo</span>
           </div>
         </div>
       </div>
 
       <div class="mt-6 md:mt-0 flex items-center">
-          {{detallesAcuerdo()?.generales?.idEstatus}}
+          
             @if (tienePermisoGuardar()) {
                 <div class="relative">
                     @if ([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)) {
@@ -89,14 +89,19 @@
           <div class="flex items-center">
             @if([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)){
               @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
-                  <p-button 
-                    (click)="openNewFirma()"
-                    severity="warn">Firmar
-                  </p-button>
+                  <div class="relative" style="margin-right: 1rem;">
+                    <p-button type="button"
+                      (click)="openNewFirma()"
+                      severity="warn"
+                      >Firmar
+                    </p-button>
+                  </div>
                 }
-                <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
-                    accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
-                    chooseLabel="Agregar documento" />
+                <div class="relative">
+                  <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
+                      accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
+                      chooseLabel="Agregar documento" />
+                </div>
             }
           </div>
       </div>
@@ -121,7 +126,7 @@
                       </ng-template>
                       <ng-template #body let-documento let-i="rowIndex">
                           <tr>
-                              <td>@if(!documento.firmado){
+                              <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo ){
                                 <input  (change)="archivo_seleccionado(documento)"
                                         [id]="documento.selecParaFirma"
                                         type="checkbox" [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma"/>
@@ -230,3 +235,27 @@
 <app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro que desea eliminar el archivo?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
+
+<!--*DIALOG PARA FIRMAR-->
+<p-dialog [(visible)]="firmaDialog" [style]="{ width: '600px' }" header="Firmado de documento" [modal]="true">
+  <form [formGroup]="formularioFirma">
+    <div class="grid grid-cols-6 gap-4 w-full items-end">
+
+      <!-- Nombre del promovente -->
+      <div class="col-span-6 sm:col-span-3 w-full">
+        <label class="block mb-2 text-sm font-medium">Contraseña de su firma*</label>
+        <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'" formControlName="password" class="w-full" maxlength="20" />
+        <p-inputicon class="cursor-pointer text-white/70! hover:text-white!" (click)="togglePasswordVisibility()">
+            <i [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+        </p-inputicon>
+      </div>
+    </div>
+  </form>
+
+  <ng-template #footer>
+    <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogFirma()" />
+    <p-button label="Firmar" icon="pi pi-check" (click)="iniciarFirmaDocumentos()" />
+  </ng-template>
+</p-dialog>
+<p-confirmdialog [style]="{ width: '600px' }" />
+<p-toast></p-toast>

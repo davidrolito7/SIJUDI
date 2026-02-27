@@ -508,8 +508,7 @@
                                     <td style="font-size: small;">{{item?.actualizacionOrigenId }}</td>
                                     <td style="font-size: small;">{{ item?.tipoActualizacionNombre }}</td>
                                     <td style="font-size: small;">{{item?.fechaHora | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                                    <td style="font-size: small;">{{ item?.fechaHoraRecibido | date:'yyyy-MM-dd
-                                        HH:mm:ss' }}
+                                    <td style="font-size: small;">{{ item?.fechaHoraRecibido | date:'yyyy-MM-dd HH:mm:ss' }}
                                     </td>
                                     <td class="text-center"> {{item?.descripcion }}</td>
 
@@ -558,7 +557,7 @@
                                     <th>
                                         <div class="flex items-center justify-between">Observaciones</div>
                                     </th>
-                                    <th style="min-width: 5rem">
+                                    <th >
                                         <div class="flex items-center justify-between">Acciones</div>
                                     </th>
 
@@ -585,27 +584,32 @@
                                     <td class="text-center">
                                         @if(item.fechaHora == null){
                                         @if(tienePermisoPromocionEditar()){
-                                        <p-button
-                                            (onClick)="redirectToPromocion(idExhortoEnviado, item.idPromocionEnviado)"
-                                            severity="success">Editar
-                                        </p-button>
+                                        <div class="relative">
+                                            <p-button type="button" severity="warn"
+                                                (onClick)="redirectToPromocion(idExhortoEnviado, item.idPromocionEnviado)"
+                                                >Editar
+                                            </p-button>
+                                        </div>
                                         }
                                         @if(tienePermisoPromocionEnviarGenerales()){
                                         <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                                        <p-button (onClick)="enviarPromocionGenerales( item.idPromocionEnviado)"
-                                            icon="pi pi-send" severity="success"> Enviar generales
-                                        </p-button>
-
+                                        <div class="relative">
+                                            <p-button type="button" (onClick)="enviarPromocionGenerales( item.idPromocionEnviado)"
+                                                 > Enviar generales
+                                            </p-button>
+                                        </div>
                                         }
                                         }
                                         @if(item.fechaRecepcion == null && item.fechaHora != null){
-                                        @if(tienePermisoPromocionEnviarArchivos()){
-                                        <p-button type="button"
-                                            (click)="enviarPromocionArchivos(item.idPromocionEnviado)" icon="pi pi-send"
-                                            severity="success"> Enviar archivos
-                                        </p-button>
+                                            @if(tienePermisoPromocionEnviarArchivos()){
+                                            <div class="relative">
+                                                <p-button type="button"
+                                                    (click)="enviarPromocionArchivos(item.idPromocionEnviado)" 
+                                                    > Enviar archivos
+                                                </p-button>
+                                            </div>
 
-                                        }
+                                            }
                                         }
                                     </td>
                                 </tr>

@@ -367,10 +367,12 @@
 
           <div class="flex items-center">
              @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
-                <p-button 
-                  (click)="openNewFirma()"
-                  severity="warn">Firmar
-                </p-button>
+                <div class="relative" style="margin-right: 1rem;">
+                  <p-button 
+                    (click)="openNewFirma()"
+                    severity="warn">Firmar
+                  </p-button>
+                </div>
               }
               <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
                   accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
@@ -408,7 +410,7 @@
                       </ng-template>
                       <ng-template #body let-documento let-i="rowIndex">
                           <tr>
-                              <td>@if(!documento.firmado){
+                              <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo){
                                 <input  (change)="archivo_seleccionado(documento)"
                                         [id]="documento.selecParaFirma"
                                         type="checkbox" [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma"/>

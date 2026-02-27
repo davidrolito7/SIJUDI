@@ -212,6 +212,7 @@ export interface archivos{
     selecParaFirma: boolean;
     firmantes:Firmantes[];
     file: File;
+    usrYaFirmo:boolean;
 }
 
 //Interfaz de las promociones de exhortos recibidos
@@ -517,6 +518,7 @@ export interface archivoExhortoEnviado{
     selecParaFirma: boolean;
     firmantes:Firmantes[];
     file:File;
+    usrYaFirmo:boolean;
 }
 
 export interface AgregarJuzgado{
@@ -731,7 +733,8 @@ export interface archivoPromocionExhortoEnviado{
     activo: boolean
     selecParaFirma: boolean
     firmantes:Firmantes[],
-    file:File
+    file:File,
+    usrYaFirmo:boolean
 }
 export interface videosExhortosEnviadosrespuesta
 {

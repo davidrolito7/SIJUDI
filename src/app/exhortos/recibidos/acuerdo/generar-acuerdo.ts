@@ -6,6 +6,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
 import {SelectModule} from 'primeng/select';
 import { TextareaModule} from 'primeng/textarea';
+import {InputTextModule} from 'primeng/inputtext';
 import { ExhortosService } from '../../services/exhorto.service';
 import { TokenService } from '../../../core/auth/service/token.service';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
@@ -22,10 +23,15 @@ import { Button } from "primeng/button";
 import { FileSelectEvent, FileUpload } from "primeng/fileupload";
 import { TableModule } from "primeng/table";
 import { base64ToFile, downloadBase64, downloadFile, validaPdf } from '../../../shared/functions/utils';
+import {validarFirmasUsuario} from '../../functions/firmas';
+import { DialogModule } from "primeng/dialog";
+import { InputIconModule } from "primeng/inputicon";
+import { ConfirmDialogModule } from "primeng/confirmdialog";
+import { ToastModule } from "primeng/toast";
 
 @Component({
   selector: 'app-GenerarAcuerdo',
-  imports: [ConfirmDialog, Breadcrub, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule],
+  imports: [ConfirmDialog, Breadcrub, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule,InputTextModule],
   templateUrl: './generar-acuerdo.html',
   styleUrl: './generar-acuerdo.css',
   providers: [MessageService,ConfirmationService]
@@ -70,13 +76,20 @@ export class GenerarAcuerdo {
   mostrarDocumento = signal<boolean>(false);
   seleccionadosParaFirma = signal(false);
 
-   acuerdosForm = new FormGroup({
+  acuerdosForm = new FormGroup({
       tipoDiligenciado: new FormControl(null as ListadoCatalogoTipoDiligenciado | null, Validators.required),
       observaciones: new FormControl('')
     });
-     doctosForm= new FormGroup({
-      tipoDocumento: new FormControl(null as ListadoCatalogoTipoDocumento | null,Validators.required),
-    });
+  doctosForm= new FormGroup({
+    tipoDocumento: new FormControl(null as ListadoCatalogoTipoDocumento | null,Validators.required),
+  });
+  formularioFirma = new FormGroup({
+    password: new FormControl('', Validators.required),
+    file_pfx: new FormControl(''),
+
+  });
+ 
+   showPassword: boolean = false;
 
   constructor(
     //private confirmationService: ConfirmationService,
@@ -203,10 +216,18 @@ export class GenerarAcuerdo {
             }
 
             if (response.data.archivos.length > 0) {
-              this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
+              //obtenemos el idUsuario del token
+              const userData = this.tokenService.getUserFromToken();
+              var idUsuario=0;
+              if(userData !== null){
+                idUsuario = userData.idGeneral;
+              }
+              const documentosValidados = validarFirmasUsuario(response.data.archivos,idUsuario);
+              this.listaDocumentos.set(documentosValidados);
+              /*this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
                 ...archivo
-              })));
-              //console.log(this.listaDocumentos()[0].tipoDocumento);
+              })));*/
+              
             } else {
               this.listaDocumentos.set([]);
               this.messageService.add({
@@ -523,7 +544,8 @@ export class GenerarAcuerdo {
         activo: true,
         selecParaFirma: false,
         firmantes: [],
-        file:file
+        file:file,
+        usrYaFirmo:false
       };
 
       // Añadir campo auxiliar `tam` que se usa en otras partes del componente
@@ -552,6 +574,14 @@ export class GenerarAcuerdo {
             if (indexFirmas !== -1) {
               // Elimina el elemento del arreglo
               this.listaDocumentos()[index].firmantes.splice(indexFirmas, 1);
+              //obtenemos el idUsuario del token
+              const userData = this.tokenService.getUserFromToken();
+              var idUsuario=0;
+              if(userData !== null){
+                idUsuario = userData.idGeneral;
+              }
+              const documentosValidados = validarFirmasUsuario(this.listaDocumentos(),idUsuario);
+              this.listaDocumentos.set(documentosValidados);
 
             }
           }
@@ -737,56 +767,164 @@ export class GenerarAcuerdo {
   onEliminarIndex(index: number): void {
       this.listaDocumentos().splice(index, 1);
     } 
-   eliminarDocumento(documento: archivos,tipoDocumento: number, index:number) {
-    //tipoDocumento=2 que son archivos de exhortos enviados
-      this.confirmationService.confirm({
-        key: 'eliminarArchivo',
-        accept: () => this.onEliminarDocumento(documento,tipoDocumento,index),
-        reject: () => { }
+  eliminarDocumento(documento: archivos,tipoDocumento: number, index:number) {
+  //tipoDocumento=2 que son archivos de exhortos enviados
+    this.confirmationService.confirm({
+      key: 'eliminarArchivo',
+      accept: () => this.onEliminarDocumento(documento,tipoDocumento,index),
+      reject: () => { }
+    });
+  }
+  
+  onEliminarDocumento(documento: archivos, tipoDocumento: number,index:number) {
+    //validamos si idArchivo no trae nada, quiere decir que son archivos nuevos que no se han guardado y se 
+    //eliminan solo en el array, sin llamar la api
+    if(documento.idArchivo == 0)
+    {
+      this.onEliminarIndex(index);
+    }
+    else{
+      // Llamada al servicio para eliminar el documento
+      this.exhortosService.eliminarArchivo(documento.idArchivo, tipoDocumento).subscribe({
+        next: (response:any )=> {
+          //console.log('¿Se eliminó archivo?:', response);
+          //console.log('ID archivo:', idArchivo);
+          //console.log('Tipo documento:', tipoDocumento);
+          if (response.success) {
+            // Encuentra el índice del documento que quieres eliminar
+            const index = this.listaDocumentos().findIndex(doc => doc.idArchivo === documento.idArchivo);
+            if (index !== -1) {
+              // Elimina el elemento del arreglo
+              this.listaDocumentos().splice(index, 1);
+              this.cd.detectChanges(); // Asegura que la vista se actualice después de modificar el arreglo
+            }
+            //console.log("Documento eliminado");
+            this.messageService.add({ severity: 'success', summary: 'Error', detail: 'Documento eliminado' });
+          } else {
+            //console.error('Error al eliminar el archivo:', response.message);
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+          }
+        },
+        error:(error) => {
+          //console.error('Error en la petición eliminar:', error);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+        },
+        complete:()=>{
+          //this.idArchivo=null;
+        }
       });
     }
-  
-    onEliminarDocumento(documento: archivos, tipoDocumento: number,index:number) {
-      //validamos si idArchivo no trae nada, quiere decir que son archivos nuevos que no se han guardado y se 
-      //eliminan solo en el array, sin llamar la api
-      if(documento.idArchivo == 0)
-      {
-        this.onEliminarIndex(index);
-      }
-      else{
-        // Llamada al servicio para eliminar el documento
-        this.exhortosService.eliminarArchivo(documento.idArchivo, tipoDocumento).subscribe({
-          next: (response:any )=> {
-            //console.log('¿Se eliminó archivo?:', response);
-            //console.log('ID archivo:', idArchivo);
-            //console.log('Tipo documento:', tipoDocumento);
-            if (response.success) {
-              // Encuentra el índice del documento que quieres eliminar
-              const index = this.listaDocumentos().findIndex(doc => doc.idArchivo === documento.idArchivo);
-              if (index !== -1) {
-                // Elimina el elemento del arreglo
-                this.listaDocumentos().splice(index, 1);
-                this.cd.detectChanges(); // Asegura que la vista se actualice después de modificar el arreglo
-              }
-              //console.log("Documento eliminado");
-              this.messageService.add({ severity: 'success', summary: 'Error', detail: 'Documento eliminado' });
-            } else {
-              //console.error('Error al eliminar el archivo:', response.message);
-              this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
-            }
-          },
-          error:(error) => {
-            //console.error('Error en la petición eliminar:', error);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-          },
-          complete:()=>{
-            //this.idArchivo=null;
+    //this.confirmacionEliminarDocumento = false
+  }
+  async iniciarFirmaDocumentos() {
+    this.isLoading = true;
+    if (this.formularioFirma.valid) {
+      const esvalido = await this.validarContraseñaPFX(this.formularioFirma.value.password as string);
+      if (esvalido) {
+        //if(this.archivo_pfx_valido){
+        var userData = this.tokenService.getUserFromToken();
+        const seleccionado = this.listaDocumentos().filter(item => item.selecParaFirma);
+        if (seleccionado.length > 0) {
+          for (let i = 0; i < seleccionado.length; i++) {
+            seleccionado[i].idArchivo;
+            //this.FirmarDocumentos(seleccionado[i].idArchivo);
+            await this.FirmarDocumentos(userData.idGeneral, seleccionado[i].idArchivo, 2, this.formularioFirma.value.password as string);
           }
-        });
-      }
-      //this.confirmacionEliminarDocumento = false
+          this.seleccionadosParaFirma.set(false); //apagamos la señal para ocultar el boton firmar
+          this.verRespuestaExhortoRecibido(this.idExhortoRecibido);
+          //this.modalService.close('modal1');
+          this.firmaDialog = false;
+        }
+        else {
+          this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Selecciona el o los archivos que deseas firmar.' });
+        }
+
+      }/*else{
+        this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Archivo PFX invalido.' });
+      }*/
     }
+    else {
+      ValidateForm.validateAllFormFields(this.formularioFirma);
+      this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ingrese la contraseña.' });
+    }
+    this.isLoading = false;
+  }
+  validarContraseñaPFX(password: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      //validamos que la contraseña sea correcta
+      //validaFirma(formData: FormData)
+      var userData = this.tokenService.getUserFromToken();
+      const validaFirmaRequest = {
+        idUsuario: userData.idGeneral,
+        password: password
+      };
+
+      //Validar contraseña PFX
+      this.exhortosService.validaFirmaPFX(validaFirmaRequest).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            //this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Documento firmado exitosamente' });
+            resolve(true); //resolve cuando se requiere que el flujo continue
+
+          } else {
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+            reject(false); //reject es cuando se desea sali del flujo, ya no requere que se continue.
+            
+          }
+        },
+        error: (e) => {
+          //console.error('Error al guardar el documento Firmado en el NAS', error);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          reject(false);
+        },
+        complete: () => {
+
+        }
+      });
+    });
+  }
+  //Nueva funcion para firmar documentos, solo se debe de guardar el id de documento que se va a firmar,
+  // y el idGeneral del usuario que firma
+  FirmarDocumentos(idUsuario: number, idArchivo: number, idClasificacionArchivo: number, password: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const guardaFirmaTmpRequest = {
+        idUsuario: idUsuario,
+        idArchivo: idArchivo,
+        idClasificacionArchivo: idClasificacionArchivo,
+        passwordFirma: password
+      };
+      //console.log(guardaFirmaTmpRequest);
+      this.exhortosService.guardaFirmaTemporal(guardaFirmaTmpRequest).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+
+            this.messageService.add({ severity: 'success', summary: 'éxito', detail: 'Firma temporal aplicada' });
+            resolve(true);
+          }
+          else {
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+            resolve(false);
+          }
+        },
+        error: (e) => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          reject(false);
+        },
+        complete: () => {
+
+        }
+      })
+
+    })
+  }
   openNewFirma(){
     this.firmaDialog = true;
+  }
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+  hideDialogFirma() {
+    this.firmaDialog = false;
+
   }
 }
