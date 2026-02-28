@@ -1,6 +1,6 @@
-
 <!-- ===== DRAWER MÓVIL ===== -->
-<p-drawer [(visible)]="drawerService.visible"  (visibleChange)="drawerService.visible.set($event)" styleClass="sm:hidden w-72 z-999">
+<p-drawer [(visible)]="drawerService.visible" (visibleChange)="drawerService.visible.set($event)"
+    styleClass="sm:hidden w-72 z-999">
     <ng-template #headless>
         <div class="flex flex-col h-full">
 
@@ -67,8 +67,8 @@
                             <li class="px-4">
                                 <a pRipple class="flex items-center gap-2 cursor-pointer px-6 py-2.5 rounded-lg 
             text-surface-700 dark:text-surface-100 hover:bg-emphasis duration-150
-            transition-colors p-ripple" [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis"  (click)="drawerService.close()"
-                                    >
+            transition-colors p-ripple" [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis"
+                                    (click)="drawerService.close()">
                                     <img class="w-4 h-4" [src]="svgSrcForPantalla(p)" alt="" aria-hidden="true" />
                                     <span class="font-medium text-sm uppercase">{{ p.nombre }}</span>
                                 </a>
@@ -237,13 +237,14 @@
 
             <div class="mt-10 flex flex-col gap-2">
                 @for (mod of modulos(); track mod.idSistemaModulo ?? $index) {
-                    <!--{{mod.idSistemaModulo}}-->
                 <button type="button" [pTooltip]="mod.nombre" tooltipPosition="right"
-                    class="w-12 h-12 p-0 inline-flex items-center cursor-pointer justify-center rounded-lg transition-all select-none text-primary hover:bg-emphasis bg-transparent"
+                    class="w-12 h-14 p-0 inline-flex flex-col items-center cursor-pointer justify-center rounded-lg transition-all select-none text-primary hover:bg-emphasis bg-transparent overflow-hidden"
                     (click)="toggleModulo(mod)" [attr.aria-pressed]="selectedModuloId() === mod.idSistemaModulo"
                     [attr.aria-label]="'Abrir módulo ' + mod.nombre">
-                    <img class="w-7 h-7 block" [src]="svgSrcForModulo(mod)" alt="" aria-hidden="true" />
-                    <span class="sr-only">{{ mod.nombre }}</span>
+                    <img class="w-7 h-7 block shrink-0" [src]="svgSrcForModulo(mod)" alt="" aria-hidden="true" />
+                    <span class="w-full text-center truncate px-1 leading-none mt-0.5" style="font-size: 0.6rem">
+                        {{ mod.nombre }}
+                    </span>
                 </button>
                 }
             </div>
@@ -306,41 +307,44 @@
     </div>
     }
 
-<main class="flex-1 min-w-0 h-[calc(100vh-2rem)] overflow-hidden">
-    <div class="h-full overflow-auto flex flex-col">
-        <div class="flex-1">
-            <router-outlet></router-outlet>
-        </div>
-
-        <!-- FOOTER -->
-        <footer class="border-t border-surface px-6 py-3 flex items-center justify-between flex-wrap gap-2 text-xs text-surface-600 dark:text-surface-500">
-            
-            <!-- Izquierda -->
-            <span>© 2026 Tribunal de Oaxaca · Todos los derechos reservados</span>
-
-            <!-- Derecha -->
-            <div class="flex items-center gap-4">
-                <a href="#" class="hover:text-primary transition-colors">
-                    Términos y condiciones
-                </a>
-                <a href="#" class="hover:text-primary transition-colors">
-                    Privacidad
-                </a>
-                <!-- Facebook -->
-                <a href="#" aria-label="Facebook" class="hover:text-primary transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                        <path d="M22.676 0H1.324C.593 0 0 .593 0 1.324v21.352C0 23.408.593 24 1.324 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24h-1.918c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.592 1.323-1.324V1.324C24 .593 23.408 0 22.676 0"/>
-                    </svg>
-                </a>
-                <!-- Twitter/X -->
-                <a href="#" aria-label="Twitter" class="hover:text-primary transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.629L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                </a>
+    <main class="flex-1 min-w-0 h-[calc(100vh-2rem)] overflow-hidden">
+        <div class="h-full overflow-auto flex flex-col">
+            <div class="flex-1">
+                <router-outlet></router-outlet>
             </div>
 
-        </footer>
-    </div>
-</main>
+            <!-- FOOTER -->
+            <footer
+                class="border-t border-surface px-6 py-3 flex items-center justify-between flex-wrap gap-2 text-xs text-surface-600 dark:text-surface-500">
+
+                <!-- Izquierda -->
+                <span>© 2026 Poder Judicial del Estado de Oaxaca · Todos los derechos reservados</span>
+
+                <!-- Derecha -->
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-primary transition-colors">
+                        Términos y condiciones
+                    </a>
+                    <a href="#" class="hover:text-primary transition-colors">
+                        Privacidad
+                    </a>
+                    <!-- Facebook -->
+                    <a href="#" aria-label="Facebook" class="hover:text-primary transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M22.676 0H1.324C.593 0 0 .593 0 1.324v21.352C0 23.408.593 24 1.324 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24h-1.918c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.592 1.323-1.324V1.324C24 .593 23.408 0 22.676 0" />
+                        </svg>
+                    </a>
+                    <!-- Twitter/X -->
+                    <a href="#" aria-label="Twitter" class="hover:text-primary transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.629L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                    </a>
+                </div>
+
+            </footer>
+        </div>
+    </main>
 </div>

@@ -1017,19 +1017,16 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
     }
 
     //  Validar Traslados
-    if (
-      !this.terminosForm.get('traslados')?.value ||
-      this.terminosForm.get('traslados')?.value < 0
-    ) {
+    const traslados = this.terminosForm.get('traslados')?.value;
+
+    if (traslados == null || traslados < 0) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Formulario incompleto',
         detail: 'Debe capturar el número de traslados'
       });
-      // Marcar el campo como tocado para mostrar validación
-      this.terminosForm.get('traslados')?.markAsTouched();
 
-      // Llevas el foco ahí
+      this.terminosForm.get('traslados')?.markAsTouched();
       this.focusCampo(this.trasladosInput);
 
       return false;
@@ -1162,7 +1159,7 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
 
     this.apiService.obtenerCertificacion(folio)
       .subscribe({
-        next:(pdfBlob: Blob)=>{
+        next: (pdfBlob: Blob) => {
           this.isLoading = false;
           this.cdr.detectChanges();
 
@@ -1191,7 +1188,7 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
             // this.terminosForm.enable();
           }, 800);
         },
-        error:(e)=>{
+        error: (e) => {
           this.isLoading = false;
           this.cdr.detectChanges();
         }

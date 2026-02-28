@@ -17,6 +17,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 import { ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-crear-requerimiento',
@@ -26,7 +27,8 @@ import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm
     SelectModule, InputTextModule, TextareaModule,
     DatePickerModule, FileUploadModule,
     Spinner, PdfDialog,
-    ConfirmDialog
+    ConfirmDialog,
+    Breadcrub
 ],
   templateUrl: './crear-requerimiento.html',
   styleUrl: './crear-requerimiento.css',

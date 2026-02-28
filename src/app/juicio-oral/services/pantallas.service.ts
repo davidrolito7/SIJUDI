@@ -9,41 +9,41 @@ import { checkToken } from '../../core/auth/interceptor/token.interceptor';
 @Injectable({ providedIn: 'root' })
 export class PantallasService {
   private pantallas: SistemaModuloResponse[] | null = null;
-  private permisos = 'http://10.1.10.50:81/api/Permisos/';
-  private storageKey = 'pantallas_usuario';
-
-  // --- vigilancia ---
+  private readonly storageKey = 'pantallas_usuario';
   private lastSnapshot = '';
   private watcherStarted = false;
 
   constructor(private http: HttpClient) {}
 
+  private get storage(): Storage {
+    const recordar = localStorage.getItem('recordarUsuario') === 'true';
+    return recordar ? localStorage : sessionStorage;
+  }
+
   getPantallas(): SistemaModuloResponse[] | null {
     if (!this.pantallas && typeof window !== 'undefined') {
-      const stored = localStorage.getItem(this.storageKey);
-      if (stored) {
-        this.loadFromStorage(stored);
-      }
+      const stored = this.storage.getItem(this.storageKey);
+      if (stored) this.loadFromStorage(stored);
     }
     return this.pantallas;
   }
 
   cargarPantallas(): Observable<SistemaModuloResponse[]> {
-    if (this.pantallas) {
-      return of(this.pantallas);
-    }
+    if (this.pantallas) return of(this.pantallas);
+
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(this.storageKey);
+      const stored = this.storage.getItem(this.storageKey);
       if (stored) {
         this.loadFromStorage(stored);
         return of(this.pantallas ?? []);
       }
     }
+
     return this.getPatallasUsuario().pipe(
       tap(res => {
         this.pantallas = res.data;
         if (typeof window !== 'undefined') {
-          localStorage.setItem(this.storageKey, JSON.stringify(res.data));
+          this.storage.setItem(this.storageKey, JSON.stringify(res.data));
           this.saveSnapshot();
         }
       }),
@@ -52,14 +52,14 @@ export class PantallasService {
   }
 
   getPatallasUsuario(): Observable<ApiResponse<SistemaModuloResponse[]>> {
-    const url = `${this.permisos}ModulosYPantallas`;
+    const url = `http://10.1.10.50:81/api/Permisos/ModulosYPantallas`;
     return this.http.get<ApiResponse<SistemaModuloResponse[]>>(url, { context: checkToken() });
   }
 
   setPantallas(data: SistemaModuloResponse[]) {
     this.pantallas = data;
     if (typeof window !== 'undefined') {
-      localStorage.setItem(this.storageKey, JSON.stringify(data));
+      this.storage.setItem(this.storageKey, JSON.stringify(data));
       this.saveSnapshot();
     }
   }
@@ -68,22 +68,24 @@ export class PantallasService {
     this.pantallas = null;
     if (typeof window !== 'undefined') {
       localStorage.removeItem(this.storageKey);
+      sessionStorage.removeItem(this.storageKey);
       this.lastSnapshot = '';
     }
   }
- tienePermiso(rutaPantalla: string): boolean {
-  const modulos = this.getPantallas();
-  if (!modulos) return false;
 
-  return modulos.some(modulo =>
-    modulo.pantallas?.some(p => p.descripcion === rutaPantalla)
-  );
-}
-  // --- iniciar watcher (llamar una sola vez tras login) ---
+  tienePermiso(rutaPantalla: string): boolean {
+    const modulos = this.getPantallas();
+    if (!modulos) return false;
+    return modulos.some(modulo =>
+      modulo.pantallas?.some(p => p.descripcion === rutaPantalla)
+    );
+  }
+
   startIntegrityWatcher(onTamper: () => void) {
     if (this.watcherStarted || typeof window === 'undefined') return;
     this.watcherStarted = true;
 
+    // Escucha cambios desde otras pestañas
     window.addEventListener('storage', e => {
       if (e.key === this.storageKey) {
         if (!this.isSnapshotValid(e.newValue)) {
@@ -94,8 +96,9 @@ export class PantallasService {
       }
     });
 
+    // Vigilancia local cada 2s — usa el storage correcto
     setInterval(() => {
-      const current = localStorage.getItem(this.storageKey) || '';
+      const current = this.storage.getItem(this.storageKey) || '';
       if (current !== this.lastSnapshot) {
         if (!this.isSnapshotValid(current)) {
           onTamper();
@@ -106,7 +109,6 @@ export class PantallasService {
     }, 2000);
   }
 
-  // --- helpers ---
   private loadFromStorage(raw: string) {
     try {
       const parsed = JSON.parse(raw);
@@ -122,7 +124,8 @@ export class PantallasService {
   }
 
   private saveSnapshot() {
-    this.lastSnapshot = localStorage.getItem(this.storageKey) || '';
+    // Guarda el snapshot desde el storage correcto
+    this.lastSnapshot = this.storage.getItem(this.storageKey) || '';
   }
 
   private isSnapshotValid(raw: string | null): boolean {
@@ -135,10 +138,8 @@ export class PantallasService {
     }
   }
 
-  // Validación mínima (ajusta a tus campos reales)
   private isShapeValid(obj: any): boolean {
     if (!Array.isArray(obj)) return false;
-    // Ejemplo: cada item al menos objeto
     return obj.every(it => typeof it === 'object' && it !== null);
   }
 }

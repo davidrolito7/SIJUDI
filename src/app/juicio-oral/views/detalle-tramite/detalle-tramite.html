@@ -1,7 +1,7 @@
 <app-spinner [isLoading]="isLoading" message="" />
 <p-toast></p-toast>
 
-<div class="lg:sticky top-0 z-50 flex flex-col gap-4">
+<div class="lg:sticky top-0 z-50 flex flex-col">
 
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
@@ -10,7 +10,7 @@
     <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl">
 
         <div class="flex items-start flex-col md:flex-row justify-between">
-            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 p-4">
                 Trámite - {{ detalleTramite?.cat_tramite?.nombre }} #{{ detalleTramite?.folioOficio }}
             </label>
             @if (mostrarBoton() && detalleTramite?.idAcuerdo == null) {
@@ -47,7 +47,7 @@
                         </p>
                         <p class="text-surface-600 dark:text-surface-200 wrap-break-word">
                             <b>Síntesis: </b>
-                            <span class="whitespace-pre-line break-words overflow-x-auto max-w-full uppercase">
+                            <span class="whitespace-pre-line wrap-break-word overflow-x-auto max-w-full uppercase">
                                 {{ detalleTramite.sintesis }}
                             </span>
                         </p>

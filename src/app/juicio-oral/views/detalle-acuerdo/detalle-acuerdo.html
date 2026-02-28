@@ -1,0 +1,198 @@
+<app-spinner [isLoading]="isLoading" message=""></app-spinner>
+<p-toast></p-toast>
+
+<!-- Confirmación FIREL -->
+<!--* DIALOGO DE CONFIRMACION VALIDAR FIREL -->
+<p-confirmdialog key="firma">
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+            <div
+                class="rounded-full bg-secondary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                                <i class="pi pi-key text-white" style="font-size: 3rem"></i>
+
+            </div>
+            <p class="text-2xl font-medium mt-2.5  ">
+                FIREL
+            </p>
+            <p class="font-medium mb-0">Ingrese su contraseña FIREL para continuar</p>
+            <div class="w-full mt-2">
+                <p-inputgroup>
+                    <input id="password_Efirma" pInputText [type]="showPassword ? 'text' : 'password'"
+                        formControlName="password_Efirma" maxlength="20" placeholder="Contraseña FIREL"
+                        class="w-full" />
+                    <p-inputgroup-addon>
+                        <p-button [icon]="showPassword ? 'pi pi-eye' : 'pi pi-eye-slash'" [text]="true"
+                            (onClick)="showPassword = !showPassword" [tabindex]="-1" />
+                    </p-inputgroup-addon>
+                </p-inputgroup>
+             
+            </div>
+            <div class="flex items-center gap-2 mt-6">
+                <p-button label="Continuar" (onClick)="onAccept()" />
+                <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" />
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>
+
+<div class="lg:sticky top-0 z-50 flex flex-col">
+
+    <!-- BREADCRUMB -->
+    <app-breadcrub></app-breadcrub>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl">
+
+        <!-- Título + Botón FIREL -->
+        <div class="flex items-start flex-col md:flex-row justify-between p-4">
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+                Detalle del acuerdo #{{ detalleAcuerdo.folio }}
+            </label>
+
+            @if (!mostrarBoton() && detalleAcuerdo.ultimo_estado?.estado?.idCatEstadoAcuerdo !== 4) {
+            <p-button icon="pi pi-key" label="Firma FIREL" styleClass="btn-tertiary" (click)="autorizarFirel($event)"></p-button>
+            }
+        </div>
+
+        <!-- ── SECCIÓN: Datos generales ── -->
+        <div
+            class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 transition delay-100 duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.01]">
+            <span class="flex items-center">
+                <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                    height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd"
+                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm9.408-5.5a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2h-.01ZM10 10a1 1 0 1 0 0 2h1v3h-1a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2h-1v-4a1 1 0 0 0-1-1h-2Z"
+                        clip-rule="evenodd" />
+                </svg>
+                Datos generales
+            </span>
+        </div>
+
+        <div class="p-5 w-full">
+            @if (detalleAcuerdo) {
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                <!-- Columna 1 -->
+                <div class="flex flex-col space-y-2">
+                    <p class="text-surface-600 dark:text-surface-200 text-sm">
+                        <b>Número de expediente: </b>{{ detalleAcuerdo.expediente?.NumExpediente }}
+                    </p>
+                    <p class="text-surface-600 dark:text-surface-200 text-sm">
+                        <b>Fecha creación: </b>{{ detalleAcuerdo.fechaAcuerdo | date: 'dd/MM/yyyy HH:mm' }} h
+                    </p>
+                    <p class="text-surface-600 dark:text-surface-200 text-sm">
+                        <b>Estado: </b>
+                        @switch (detalleAcuerdo.ultimo_estado?.estado?.idCatEstadoAcuerdo) {
+                            @case (1) {
+                                <span class="ml-2 bg-green-100 text-green-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-green-400 border border-green-500">
+                                    {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
+                                </span>
+                            }
+                            @case (2) {
+                                <span class="ml-2 bg-red-100 text-red-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-red-400 border border-red-400">
+                                    {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
+                                </span>
+                            }
+                            @case (3) {
+                                <span class="ml-2 bg-orange-100 text-orange-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-orange-300 border border-orange-300">
+                                    {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
+                                </span>
+                            }
+                            @case (4) {
+                                <span class="ml-2 bg-purple-100 text-purple-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-purple-400 border border-purple-500">
+                                    {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
+                                </span>
+                            }
+                            @default {
+                                <span>{{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}</span>
+                            }
+                        }
+                    </p>
+                </div>
+
+                <!-- Columna 2 -->
+                <div class="flex flex-col space-y-2">
+                    <p class="text-surface-600 dark:text-surface-200 text-sm">
+                        <b>Síntesis: </b>
+                        <span class="uppercase wrap-break-word whitespace-pre-line">{{ detalleAcuerdo.sintesis }}</span>
+                    </p>
+                    <p class="text-surface-600 dark:text-surface-200 text-sm">
+                        <b>Observaciones: </b>
+                        <span class="uppercase wrap-break-word whitespace-pre-line">{{ detalleAcuerdo.observaciones }}</span>
+                    </p>
+                </div>
+
+                <!-- Columna 3: Ver documento del acuerdo -->
+                <div class="flex items-center justify-center">
+                    <div class="border border-surface rounded-xl p-4 flex flex-col items-center gap-3 w-full">
+                        <span class="font-semibold text-surface-700 dark:text-surface-200">📬 Documento del acuerdo</span>
+                        <p-button icon="pi pi-file-pdf" label="Ver documento" severity="info"
+                            (click)="openModal(detalleAcuerdo.idAcuerdo)" pTooltip="Ver PDF" tooltipPosition="top">
+                        </p-button>
+                    </div>
+                </div>
+
+            </div>
+            }
+        </div>
+
+        <!-- ── SECCIÓN: Promociones ── -->
+        <div
+            class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 transition delay-100 duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.01]">
+            <span class="flex items-center">
+                <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                    height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd"
+                        d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-1.5 8a4 4 0 0 0-4 4 2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-3Zm6.82-3.096a5.51 5.51 0 0 0-2.797-6.293 3.5 3.5 0 1 1 2.796 6.292ZM19.5 18h.5a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-1.1a5.503 5.503 0 0 1-.471.762A5.998 5.998 0 0 1 19.5 18ZM4 7.5a3.5 3.5 0 0 1 5.477-2.889 5.5 5.5 0 0 0-2.796 6.293A3.501 3.501 0 0 1 4 7.5ZM7.1 12H6a4 4 0 0 0-4 4 2 2 0 0 0 2 2h.5a5.998 5.998 0 0 1 3.071-5.238A5.505 5.505 0 0 1 7.1 12Z"
+                        clip-rule="evenodd" />
+                </svg>
+                Promociones
+            </span>
+        </div>
+
+        <div class="p-3">
+            <p-table [value]="detalleAcuerdo.tramites ?? []" [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template #header>
+                    <tr>
+                        <th>Folio</th>
+                        <th>Fecha creado</th>
+                        <th>Síntesis</th>
+                        <th>Observaciones</th>
+                        <th>Documento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-tramite>
+                    <tr>
+                        <td class="font-semibold">{{ tramite.folioOficio }}</td>
+                        <td>{{ tramite.created_at | date: 'dd/MM/yyyy HH:mm' }} h</td>
+                        <td>{{ tramite.sintesis }}</td>
+                        <td>{{ tramite.observaciones }}</td>
+                        <td>
+                            @if (tramite.idDocumentoTramite) {
+                            <p-button icon="pi pi-file-pdf" [rounded]="true" [raised]="true" severity="warn"
+                                (click)="openModal(tramite.idDocumentoTramite)" pTooltip="Ver PDF"
+                                tooltipPosition="top">
+                            </p-button>
+                            }
+                        </td>
+                        <td>
+                            <p-button [rounded]="true" [text]="true" [raised]="true" severity="info" icon="pi pi-eye"
+                                pTooltip="Ver detalle" tooltipPosition="top" (click)="detalle(tramite.idTramite)">
+                            </p-button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="6" class="text-center p-4">No hay promociones registradas.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+    </div>
+</div>
+
+<!-- Visor PDF -->
+<app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento"></app-pdf-dialog>

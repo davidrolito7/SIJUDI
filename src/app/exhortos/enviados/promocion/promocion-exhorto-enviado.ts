@@ -28,13 +28,16 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SafeResourceUrl,DomSanitizer } from '@angular/platform-browser';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
+import { InputIconModule } from "primeng/inputicon";
+import { ConfirmDialogModule } from "primeng/confirmdialog";
+import { validarFirmasUsuarioPromEnviado } from '../../functions/firmas';
 
 
 
 
 @Component({
   selector: 'app-PromocionExhortoEnviadoComponent',
-  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, PdfDialog],
+  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, PdfDialog, InputIconModule, ConfirmDialogModule],
   templateUrl: './promocion-exhorto-enviado.html',
   styleUrl: './promocion-exhorto-enviado.css',
   providers:[MessageService,ConfirmationService]
@@ -659,7 +662,17 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
         this.observaciones=responsePromocion.data.observaciones;
         this.fojas = responsePromocion.data.fojas;
         this.provomenteExhortoEnviado=responsePromocion.data.promoventes;
-        this.listaDocumentos.set(responsePromocion.data.archivos);
+
+        //obtenemos el idUsuario del token
+        const userData = this.tokenService.getUserFromToken();
+        var idUsuario=0;
+        if(userData !== null){
+          idUsuario = userData.idGeneral;
+        }
+        const documentosValidados = validarFirmasUsuarioPromEnviado(responsePromocion.data.archivos,idUsuario);
+        this.listaDocumentos.set(documentosValidados);
+
+        //this.listaDocumentos.set(responsePromocion.data.archivos);
         this.fechaHora = responsePromocion.data.fechaHora
         this.fechaRecepcion = responsePromocion.data.fechaRecepcion
         //console.log('Respuesta de promocion'+responsePromocion)
@@ -797,7 +810,7 @@ validarContraseñaPFX(password : string): Promise<boolean> {
           idUsuario: userData.idGeneral,
           password: password
         };
-
+        this.isLoading=true;
         //Validar contraseña PFX
         this.ExhortosService.validaFirmaPFX(validaFirmaRequest).subscribe({
           next:(response:any) =>{
@@ -815,16 +828,17 @@ validarContraseñaPFX(password : string): Promise<boolean> {
           error:(e) => {
             //console.error('Error al guardar el documento Firmado en el NAS', error);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+            this.isLoading=false
             reject(false);
           },
           complete:()=>{
-
+            this.isLoading=false
           }
         });
       });
   }
 async iniciarFirmaDocumentos(){
-  this.isLoading = true;
+
   this.archivos_firmados = 0;
   if(this.formularioFirma.valid)
     {
@@ -832,7 +846,7 @@ async iniciarFirmaDocumentos(){
       //if(this.archivo_pfx_valido){
       if(esvalido){
         var userData = this.tokenService.getUserFromToken();
-        const FormValues = this.formDocumentos.value;
+        //const FormValues = this.formDocumentos.value;
         const seleccionado = this.listaDocumentos().filter(item => item.selecParaFirma); //Obtenemos los checkbox seleccinados para firmar
         if(seleccionado.length >0 ){
           this.contador_firmas = seleccionado.length;
@@ -846,6 +860,7 @@ async iniciarFirmaDocumentos(){
             this.seleccionadosParaFirma.set(false); //apagamos la señal para ocultar el boton firmar
             this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado, this.idPromocionEnviado);
             //this.cerrarVentanaModal();
+            this.firmaDialog=false;
 
         }
         else{
@@ -859,7 +874,7 @@ async iniciarFirmaDocumentos(){
     else{
       this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ingrese la información solicitada.' });
     }
-    this.isLoading = false;
+
 
 
 }
@@ -873,6 +888,7 @@ return new Promise((resolve, reject) => {
       idClasificacionArchivo: idClasificacionArchivo,
       passwordFirma: password
   };
+  this.isLoading=true;
   //console.log(guardaFirmaTmpRequest);
   this.ExhortosService.guardaFirmaTemporal(guardaFirmaTmpRequest).subscribe({
     next:(response:any)=>{
@@ -890,10 +906,11 @@ return new Promise((resolve, reject) => {
     },
     error:(e)=>{
       this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+      this.isLoading=false;
       reject(false);
     },
     complete:()=>{
-
+      this.isLoading=false;
     }
   })
 
@@ -1038,6 +1055,7 @@ showDialog(idArchivo: number): void {
     });
   }
    eliminarFirma(idFirmaTmp:number, idArchivo:number){
+    this.isLoading=true;
     this.ExhortosService.eliminarUnaFirma(idFirmaTmp).subscribe({
       next:(response:any)=>{
           if(response.success)
@@ -1050,6 +1068,14 @@ showDialog(idArchivo: number): void {
               {
                 // Elimina el elemento del arreglo
                 this.listaDocumentos()[index].firmantes.splice(indexFirmas, 1);
+                //obtenemos el idUsuario del token
+                const userData = this.tokenService.getUserFromToken();
+                var idUsuario=0;
+                if(userData !== null){
+                  idUsuario = userData.idGeneral;
+                }
+                const documentosValidados = validarFirmasUsuarioPromEnviado(this.listaDocumentos(),idUsuario);
+                this.listaDocumentos.set(documentosValidados);
 
               }
             }
@@ -1061,9 +1087,10 @@ showDialog(idArchivo: number): void {
       },
       error:(e)=>{
         this.messageService.add({ severity: 'error', summary: 'error', detail: e.message });
+        this.isLoading=false;
       },
       complete:()=>{
-
+        this.isLoading=false;
       }
     });
   }
@@ -1071,14 +1098,14 @@ showDialog(idArchivo: number): void {
     this.idArchivo=idArchivo;
 
   }*/
- aplicarFirmas(idArchivo:number) {
+ /*aplicarFirmas(idArchivo:number) {
     this.confirmationService.confirm({
       key: 'aplicarFirmas',
       accept: () => this.onAplicarFirmas(idArchivo),
       reject: () => { }
     });
-  }
-  onaplicarFirmas(idArchivo:number){
+  }*/
+  aplicarFirmas(idArchivo:number){
     if(idArchivo ===null)
       return;
 
@@ -1153,7 +1180,8 @@ showDialog(idArchivo: number): void {
           activo: true,
           selecParaFirma: false,
           firmantes: [],
-          file:file
+          file:file,
+          usrYaFirmo:false
         };
   
         // Añadir campo auxiliar `tam` que se usa en otras partes del componente

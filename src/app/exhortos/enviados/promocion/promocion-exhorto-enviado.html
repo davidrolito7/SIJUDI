@@ -10,19 +10,22 @@
             <div class="flex items-center">
                 @if(fechaHora == null){
                     @if(tienePermisoGuardar()){
+                      <div class="relative">
                         <p-button (onClick)="guardarPromocion(myForm)" icon="">
                             Guardar
                         </p-button>
-                    
+                      </div>
                 }
                 @if(!hayCambiosSinGuardar){
 
                     @if(fechaHora == null){
                         @if(tienePermisoEnviarGenerales()){
                             <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                            <p-button (onClick)="enviarPromocionGenerales(idExhortoEnviado)" icon="">
-                                Enviar
-                            </p-button>
+                            <div class="relative">
+                              <p-button (onClick)="enviarPromocionGenerales(idExhortoEnviado)" icon="">
+                                  Enviar
+                              </p-button>
+                            </div>
                         }
                         
                     }   
@@ -170,10 +173,12 @@
 
             <div class="flex items-center">
               @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
-                  <p-button 
-                    (click)="openNewFirma()"
-                    severity="warn">Firmar
-                  </p-button>
+                  <div class="relative" style="margin-right: 1rem;">
+                    <p-button 
+                      (click)="openNewFirma()"
+                      severity="warn">Firmar
+                    </p-button>
+                  </div>
                 }
                 <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
                     accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
@@ -211,7 +216,7 @@
                         </ng-template>
                         <ng-template #body let-documento let-i="rowIndex">
                             <tr>
-                                <td>@if(!documento.firmado && documento.idArchivo !==0){
+                                <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo){
                                   <input  (change)="archivo_seleccionado(documento)"
                                           [id]="documento.selecParaFirma"
                                           type="checkbox" [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma"/>
@@ -451,3 +456,25 @@
     <p-button label="Agregar" icon="pi pi-check" (click)="AgregarPromovente()" />
   </ng-template>
 </p-dialog>
+<!--*DIALOG PARA FIRMAR-->
+<p-dialog [(visible)]="firmaDialog" [style]="{ width: '600px' }" header="Firmado de documento" [modal]="true">
+  <form [formGroup]="formularioFirma">
+    <div class="grid grid-cols-6 gap-4 w-full items-end">
+
+      <!-- Nombre del promovente -->
+      <div class="col-span-6 sm:col-span-3 w-full">
+        <label class="block mb-2 text-sm font-medium">Contraseña de su firma*</label>
+        <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'" formControlName="password" class="w-full" maxlength="20" />
+        <p-inputicon class="cursor-pointer text-white/70! hover:text-white!" (click)="togglePasswordVisibility()">
+            <i [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+        </p-inputicon>
+      </div>
+    </div>
+  </form>
+
+  <ng-template #footer>
+    <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogFirma()" />
+    <p-button label="Firmar" icon="pi pi-check" (click)="iniciarFirmaDocumentos()" />
+  </ng-template>
+</p-dialog>
+<p-confirmdialog [style]="{ width: '600px' }" />

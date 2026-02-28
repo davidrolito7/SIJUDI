@@ -1,8 +1,8 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<div class="lg:sticky top-0 z-50  flex flex-col gap-4 bg-surface-0 dark:bg-surface-900">
+<div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-900">
     <app-breadcrub></app-breadcrub>
-    <h2 class="text-2xl font-medium leading-none pl-2 mb-4 tracking-tight">
+    <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 pl-2 mb-2 tracking-tight">
         Captura registro 1° instancia
     </h2>
 </div>
@@ -248,8 +248,8 @@
 <!--* BOTÓN AUTORIZAR FIREL -->
 <section class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
     <p-button *ngIf="!firmaVerificada" (onClick)="autorizarFirel($event)" [disabled]="!canEnviar()"
-        icon="pi pi-verified" label="Autorizar FIREL"
-        styleClass="bg-[#301A80] border-[#301A80] text-surface-0 hover:enabled:bg-[#301A80]/80 hover:enabled:border-[#301A80]/80 disabled:opacity-50 disabled:cursor-not-allowed" />
+        icon="pi pi-key" label="Firma FIREL"
+        styleClass="btn-tertiary disabled:opacity-50 disabled:cursor-not-allowed" />
 </section>
 
 <!--* BOTÓN ENVIAR DEMANDA -->
@@ -264,7 +264,7 @@
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
             <div
-                class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                class="rounded-full bg-secondary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
                 <svg class="w-14 h-14 text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                     height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -272,7 +272,7 @@
                 </svg>
             </div>
             <p class="text-2xl font-medium mt-2.5  ">
-                Autorización
+                Continuar
             </p>
             <p class="font-medium mb-0">Ingrese su contraseña FIREL para continuar</p>
             <div class="w-full mt-2">
@@ -290,8 +290,8 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 mt-6">
-                <p-button label="Autorizar" (onClick)="onAccept()" />
-                <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" />
+                <p-button label="Continuar" styleClass="btn-secondary" (onClick)="onAccept()" />
+                <p-button label="Cancelar" styleClass="btn-secondary" [outlined]="true" (onClick)="onReject()" />
             </div>
         </div>
     </ng-template>
@@ -299,7 +299,7 @@
 
 <!--* DIALOGO DE CONFIRMACION ENVIAR DEMANDA -->
 <app-confirm-dialog key="demanda" title="Confirmación" message="Confirme la acción para enviar demanda"
-    icon="pi pi-question-circle" circleClass="bg-green-600" acceptLabel="Confirmar"
+    icon="pi pi pi-send" circleClass="bg-green-600" acceptLabel="Confirmar"
     acceptStyleClass="bg-green-600 border-green-600" rejectLabel="Cancelar">
 </app-confirm-dialog>
 

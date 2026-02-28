@@ -1,17 +1,15 @@
-<app-breadcrub></app-breadcrub>
-
-<div class="px-4 mb-4">
-    <div class="flex items-center justify-between pt-4">
-
-        <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 tracking-tight">
+<div class="lg:sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-900">
+    <app-breadcrub></app-breadcrub>
+        <div class="flex items-center justify-between pl-2 mb-2">
+            <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 tracking-tight">
             {{ esEdicionAudiencia ? 'Reprogramar audiencia' : 'Planificar una audiencia' }}
-        </h2>
-
-        <span class="text-surface-500 dark:text-surface-400 font-medium text-lg">
-            Expediente: {{ NumExpediente }}
-        </span>
-    </div>
+            </h2>
+            <span class="text-surface-500 dark:text-surface-400 font-medium text-lg">
+                Expediente: {{ NumExpediente }}
+            </span>
+        </div>
 </div>
+
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
 
@@ -370,15 +368,15 @@
     icon="pi pi-question-circle" circleClass="bg-surface-900 dark:bg-surface-0" acceptLabel="Eliminar"
     acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
 </app-confirm-dialog>
-<!--* DIALOGO DE CONFIRMACION ENVIAR DEMANDA -->
+<!--* DIALOGO DE CONFIRMACION ENVIAR AUDIENCIA -->
 <app-confirm-dialog key="audiencia" title="Confirmación" message="Confirma para programar la audiencia"
-    icon="pi pi-question-circle" circleClass="bg-green-600" acceptLabel="Confirmar"
+    icon="pi pi pi-send" circleClass="bg-green-600" acceptLabel="Confirmar"
     acceptStyleClass="bg-green-600 border-green-600" rejectLabel="Cancelar">
 </app-confirm-dialog>
 
 <!--* DIALOGO DE CONFIRMACION ACTUALIZAR AUDIENCIA -->
 <app-confirm-dialog key="actualizarAudiencia" title="Confirmación" message="Confirma para reprogramar la audiencia"
-    icon="pi pi-question-circle" circleClass="bg-secundary" acceptLabel="Confirmar"
+    icon="pi pi-sync" circleClass="bg-secundary" acceptLabel="Confirmar"
     acceptStyleClass="bg-secundary border-bg-secundary" rejectLabel="Cancelar">
 </app-confirm-dialog>
 

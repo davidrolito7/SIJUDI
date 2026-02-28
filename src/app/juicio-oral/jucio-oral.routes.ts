@@ -14,52 +14,70 @@ import { ListarSolicitud } from './views/listar-solicitud/listar-solicitud';
 import { ListarTramite } from './views/listar-tramite/listar-tramite';
 import { CrearTramite } from './views/crear-tramite/crear-tramite';
 import { DetalleTramite } from './views/detalle-tramite/detalle-tramite';
+import { ListarAcuerdos } from './views/listar-acuerdo/listar-acuerdo';
+import { CrearAcuerdo } from './views/crear-acuerdo/crear-acuerdo';
+import { DetalleAcuerdo } from './views/detalle-acuerdo/detalle-acuerdo';
 
 export const JUICIO_ORAL_ROUTES: Routes = [
 
     {
         path: 'demandas',
+        data: { title: 'Demandas' },
         children: [
-            { path: 'listar', component: ListarDemanda },
-            { path: 'detalle', component: DetalleDemanda },
-            { path: 'crear', component: CrearDemanda }
+            { path: 'listar', component: ListarDemanda, data: { title: 'Listar' } },
+            { path: 'detalle', component: DetalleDemanda, data: { title: 'Detalle' } },
+            { path: 'crear', component: CrearDemanda, data: { title: 'Crear' } }
         ]
     },
     {
         path: 'expedientes',
+        data: { title: 'Expedientes' },
         children: [
-            { path: 'listar', component: ListarExpediente },
-            { path: 'detalle', component: DetalleExpediente },
+            { path: 'listar', component: ListarExpediente, data: { title: 'Listar' } },
+            { path: 'detalle', component: DetalleExpediente, data: { title: 'Detalle' } },
         ]
     },
     {
         path: 'audiencias',
+        data: { title: 'Audiencias' },
         children: [
-            { path: 'listar', component: ListarAudiencias },
-            { path: 'detalle', component: DetalleAudiencia },
-            { path: 'crear', component: CrearAudiencia}
+            { path: 'listar', component: ListarAudiencias, data: { title: 'Listar' } },
+            { path: 'detalle', component: DetalleAudiencia, data: { title: 'Detalle' } },
+            { path: 'crear', component: CrearAudiencia, data: { title: 'Crear' } }
         ]
     },
     {
         path: 'requerimientos',
+        data: { title: 'Requerimientos' },
         children: [
-            { path: 'listar', component: ListarRequerimientos },
-            { path: 'detalle', component: DetalleRequerimientos },
-            {path: 'crear', component: CrearRequerimiento}
+            { path: 'listar', component: ListarRequerimientos, data: { title: 'Listar' } },
+            { path: 'detalle', component: DetalleRequerimientos, data: { title: 'Detalle' } },
+            { path: 'crear', component: CrearRequerimiento, data: { title: 'Crear' } }
         ]
     },
     {
         path: 'solicitudes',
-        children:[
-            {path: 'listar', component: ListarSolicitud}
+        data: { title: 'Solicitudes' },
+        children: [
+            { path: 'listar', component: ListarSolicitud, data: { title: 'Listar' } }
         ]
     },
     {
         path: 'tramites',
-        children:[
-            {path: 'crear', component: CrearTramite},
-            {path: 'listar', component: ListarTramite},
-            {path: 'detalle', component: DetalleTramite}
+        data: { title: 'Trámites' },
+        children: [
+            { path: 'crear', component: CrearTramite, data: { title: 'Crear' } },
+            { path: 'listar', component: ListarTramite, data: { title: 'Listar' } },
+            { path: 'detalle', component: DetalleTramite, data: { title: 'Detalle' } }
+        ]
+    },
+    {
+        path: 'acuerdos',
+        data: { title: 'Acuerdos' },
+        children: [
+            { path: 'listar', component: ListarAcuerdos, data: { title: 'Listar' } },
+            { path: 'crear', component: CrearAcuerdo, data: { title: 'Crear' } },
+            { path: 'detalle', component: DetalleAcuerdo, data: { title: 'Detalle' } }
         ]
     }
 ];
