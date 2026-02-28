@@ -20,10 +20,10 @@
               
             
             <div class="cardflex items-start flex-col md:flex-row justify-between">
-               
+               <p-card class="m-5">
                 <div class="grid grid-cols-12 gap-4 w-full items-end p-4">
                      
-                    @for (item of apelacion; track item.numeroExpediente) {
+                    @for (item of apelacion; track item.idExpediente) {
                         <div class="col-span-6 md:col-span-3">
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de oficialia:</label>
                         @if(item.foliodeOficialia == null) {
@@ -101,8 +101,9 @@
                         @if(item.fechadeAuto == null || item.fechadeAuto == '') {
                             <span class="text-gray-600">---</span>
                         } @else {
-                            <span class="text-gray-600">{{item.fechadeAuto}}</span>
+                            <span class="text-gray-600">{{ item.fechadeAuto.split(' ')[0]  }}</span>
                         } 
+                        
                               </div>
                                 <div class="col-span-6 md:col-span-3">
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Expediente/Causa:</label>
@@ -142,10 +143,10 @@
                                        <div class="col-span-6 md:col-span-3">
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Expediete acumulado:</label>
 
-                     @if(item.expedieteAcumulado == null || item.expedieteAcumulado == '') {
+                     @if(item.expedienteAcumulado == null || item.expedienteAcumulado == '') {
                             <span class="text-gray-600">---</span>
                         } @else {
-                            <span class="text-gray-600">{{item.expedieteAcumulado}}</span>
+                            <span class="text-gray-600">{{item.expedienteAcumulado}}</span>
                         }
                                         </div> 
                                          <div class="col-span-6 md:col-span-3">
@@ -163,31 +164,24 @@
                      @if(item.fechadeRecepcion == null || item.fechadeRecepcion == '') {
                             <span class="text-gray-600">---</span>
                         } @else {
-                            <span class="text-gray-600">{{item.fechadeRecepcion}}</span>
+                            <span class="text-gray-600">{{ item.fechadeRecepcion.split(' ')[0]}}</span>
                         }
                                              </div>  
-                                             <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Observaciones de la apelación:</label>
-                     @if(item.observacionesdelaApelacion == null || item.observacionesdelaApelacion == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.observacionesdelaApelacion}}</span>
-                        }
-                                               </div>  
+                                              
                                                <div class="col-span-6 md:col-span-3">
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha de Ingreso a sala:</label>
                      @if(item.fechadeIngresoaSala == null || item.fechadeIngresoaSala == '') {
                             <span class="text-gray-600">---</span>
                         } @else {
-                            <span class="text-gray-600">{{item.fechadeIngresoaSala}}</span>
+                            <span class="text-gray-600">{{item.fechadeIngresoaSala.split(' ')[0] }}</span>
                         }
                                                  </div>  
                                                  <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Es recepción:</label>
-                     @if(item.esRecepcion == null || item.esRecepcion == '') {
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Es reposición:</label>
+                     @if(item.esReposicion == null || item.esReposicion == '') {
                             <span class="text-gray-600">---</span>
                         } @else {
-                            <span class="text-gray-600">{{item.esRecepcion}}</span>
+                            <span class="text-gray-600">{{item.esReposicion}}</span>
                         }
                                                    </div>  
                                                    <div class="col-span-6 md:col-span-3">
@@ -198,26 +192,37 @@
                             <span class="text-gray-600">{{item.anexos}}</span>
                         }
                                                    </div>  
-                                                   <div class="col-span-6 md:col-span-3">
+                                                   <!-- <div class="col-span-6 md:col-span-3">
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Partes:</label>
                         @if(item.partes == null || item.partes == '') {
                             <span class="text-gray-600">---</span>
                         } @else {
                             <span class="text-gray-600">{{item.partes}}</span>
                         }
-                                                      </div>  
-                                                      <div class="col-span-6 md:col-span-3">
+                                                      </div>   -->
+                                                      <!-- <div class="col-span-6 md:col-span-3">
                                                       
-                    </div>
+                    </div> -->
+                     <div class="col-span-12 md:col-span-12">
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Observaciones de la apelación:</label>
+                     @if(item.observacionesdelaApelacion == null || item.observacionesdelaApelacion == '') {
+                            <span class="text-gray-600">---</span>
+                        } @else {
+                            <span class="text-gray-600">{{item.observacionesdelaApelacion}}</span>
+                        }
+                                               </div>
                 }
+               
                 </div>
+ </p-card>
                 <div class="ml-5 mr-5"><p-divider  /></div>
                 </div>
 
                 <div class="card">
             <div class="flex-col md:flex-row">
-                <div class="w-full md:w-11/12 flex flex-col items-center justify-center gap-3 py-5">
-                    <div class="card p-5">
+                <!-- <div class="w-full md:w-11/12 flex flex-col items-center justify-center gap-3 py-5"> -->
+                    <div class="card">
+                        <p-card class="m-5">
             <p-table [value]="partes" [tableStyle]="{ 'min-width': '50rem' }">
                 <ng-template #caption>
                     <div class="flex items-center justify-between">
@@ -256,15 +261,17 @@
                 </tr>
             </ng-template>
             </p-table>
+            </p-card>
         </div>
-                </div>
+                <!-- </div> -->
                 <div class="ml-5 mr-5"><p-divider  /></div>
                 <!-- <div class="w-full md:w-2/12">
                     <p-divider layout="vertical" class="!hidden md:!flex"><b>OR</b></p-divider>
                     <p-divider layout="horizontal" class="!flex md:!hidden" align="center"><b>OR</b></p-divider>
                 </div> -->
-                <div class="w-full md:w-11/12 flex items-center justify-center py-5">
-                     <div class="card p-5">
+                <!-- <div class="w-full md:w-110/12 flex items-center justify-center py-5"> -->
+                     <div class="card">
+                        <p-card class="m-5">
             <p-table [value]="anexos" [tableStyle]="{ 'min-width': '50rem' }">
                 <ng-template #caption>
                     <div class="flex items-center justify-between">
@@ -280,10 +287,7 @@
                 </ng-template>
                 <ng-template #header>
                     <tr>
-                        <!-- <th>Id tramite anexo otro</th>
-                        <th>Tipo tramite</th>
-                        <th>IdExpediente</th>
-                        <th>IdCatAnexo</th> -->
+                        
                         <th>Anexo</th>
                         <th>Es valor</th>
                         <th>Monto anexo</th>
@@ -293,10 +297,7 @@
                 </ng-template>
                 <ng-template #body let-anexos>
                     <tr>
-                        <!-- <td>{{ anexos.idTramiteAnexoOtro }}</td>
-                        <td>{{ anexos.tipoTramite }}</td>
-                        <td>{{ anexos.idExpediete }}</td>
-                        <td>{{ anexos.idCatAnexo }}</td> -->
+                        
                           <td>{{ anexos.anexo }}</td>
                             <td>{{ anexos.esValor }}</td>
                               <td>{{ anexos.montoAnexo }}</td>
@@ -310,8 +311,9 @@
                 </tr>
             </ng-template>
             </p-table>
+            </p-card>
         </div>
-                </div>
+                <!-- </div> -->
             </div>
         </div>
           
