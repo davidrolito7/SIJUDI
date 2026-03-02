@@ -24,7 +24,7 @@ private catalogos = 'https://localhost:7240/api/Catalogos/';
         getListadoInicios(params?: any): Observable<ApiResponse<responseDataBusqueda[]>> {
             console.log('Parámetros enviados al servicio:', params);
             return this.http.post<ApiResponse<responseDataBusqueda[]>>(
-                `${this.BusquedaApelaciones}`,  params,{} 
+                `${this.BusquedaApelaciones}`,  params,{ context: checkToken()} 
             );}
 
 
