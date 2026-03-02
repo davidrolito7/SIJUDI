@@ -20,7 +20,7 @@
                   }
                 </div>
               }
-              @if (tienePermisoRecibir() && tienePermisoDeclararIncompetencia()) {
+              @if (tienePermisoRecibir() && tienePermisoDeclararIncompetencia() && detallesExhortos()?.actualizaciones?.length==0) {
                 <div  class="relative">
                   @if (detallesExhortos() !== undefined ? detallesExhortos()?.generales?.estatus=='Recibido': false) {
                     <p-button 
@@ -665,7 +665,7 @@
                                 <td style="font-size: small;">{{ item?.fechaTurnado | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                                 <td style="font-size: small;">{{item?.nombreUsuarioRecibe }}</td>
                                 <td style="font-size: small;">{{ item?.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                <td class="text-center"> {{item?.movimiento }}</td>
+                                <td style="font-size: small;"> {{item?.movimiento }}</td>
                                 
                             </tr>
                         </ng-template>
@@ -686,7 +686,7 @@
 
 
 <!--* MODAL DE CONFIRMACION PARA RECIBIR EL EXHORTO -->
-<app-confirm-dialog key="recibirExhorto" title="Confirmación" message="¿Está seguro de que desea recibir el exhorto?"
+<app-confirm-dialog key="recibirExhorto" title="Confirmación" [message]="mensajeRecibirExhorto()"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA TURNAR UN EXHORTO -->
