@@ -252,7 +252,7 @@ export class ListaExhortosEnviados implements OnInit {
             {
               //console.log('Datos recibidos del catálogo:', response);
               this.listadoEstatus = response.data;
-              this.selectedEstatus = this.listadoEstatus.find(f=>f.idEstatus=2);
+              this.selectedEstatus = this.listadoEstatus.find(f=>f.idEstatus==2);
               this.ListaExhortosEnviados();
               //console.log(this.listadoEstatus);
             }

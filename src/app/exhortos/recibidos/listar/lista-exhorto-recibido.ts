@@ -65,7 +65,7 @@ export class ListaExhortosRecibidos implements OnInit {
    secciones : secciones[] = [] ;
   listadoEstatus: ListadoEstatus[] = [];
   //selectedEstatus : number=5; ///se ponme en 5 por que es el valor del estatus "recibidos"
-  selectedEstatus : ListadoEstatus | undefined;
+  selectedEstatus: ListadoEstatus | undefined;
 
 
   constructor(
@@ -143,6 +143,7 @@ export class ListaExhortosRecibidos implements OnInit {
       estatus : this.selectedEstatus?.idEstatus,
       IdAreaAdminAplicaciones : area 
     };
+    console.log(this.selectedEstatus?.idEstatus);
 
     this.cd.detectChanges();
 
@@ -267,9 +268,11 @@ export class ListaExhortosRecibidos implements OnInit {
             {
               //console.log('Datos recibidos del catálogo:', response);
               this.listadoEstatus = response.data;
-              this.selectedEstatus = this.listadoEstatus.find(f=>f.idEstatus=5);
+              //var todos = { "idEstatus": 0, "descripcion": "Todos", "Activo":true, "idTipoTramite":1 };
+              //this.listadoEstatus.push(todos);
+              this.selectedEstatus=this.listadoEstatus.find(f=>f.idEstatus==5);
                this.ListaExhortos();
-              //console.log(this.listadoEstatus);
+              console.log(this.listadoEstatus);
             }
             else
             {
