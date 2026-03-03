@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { BusquedaApelaciones } from "./views/busqueda-apelaciones/busqueda-apelaciones";
-import { DetalleBusqueda } from './views/detalle-busqueda/detalle-busqueda/detalle-busqueda';
+import { DetalleBusqueda } from './views/detalle-busqueda/detalle-busqueda';
 
 
 

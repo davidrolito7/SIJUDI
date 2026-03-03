@@ -72,6 +72,7 @@ export class DetallesExhortoRecibido {
     private messageService: MessageService,
     private cd: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
+    private confirmationService:ConfirmationService
   ){
     
   }
@@ -127,10 +128,27 @@ export class DetallesExhortoRecibido {
     this.router.navigate(['/exhortos/respuesta-exhorto-recibido'], { state: { idExhortoRecibido } });
 
   }
+  //personalizar el mensaje cuando Oficialia recibe.
+  mensajeRecibirExhorto(): string
+  {
+    const perfil = this.authService.getRoleNameUsuario(); // Obtener perfil del servicio
+    if(perfil ==='Oficialia') {
+      return "NOTA: ¡IMPORTANTE! Antes de recibir, verifique que sea competente para este asunto. Pulse [ACEPTAR] si quiere recibir. pulse [CANCELAR] si quiere verificar";
+    }else{
+      return "¿Está seguro de que desea recibir el exhorto?"
+    }
+  }
+  recibir() {
+    this.confirmationService.confirm({
+      key: 'recibirExhorto',
+      accept: () => this.onRecibir(),
+      reject: () => { }
+    });
+  }
   /*
     RECIBIR EL EXHORTO
   */
-  recibir()
+  onRecibir()
   {
       if(this.idExhortoRecibido !== undefined)
       {
@@ -185,9 +203,9 @@ export class DetallesExhortoRecibido {
   }
   setBanderasUltimoMovimiento(){
     const perfil = this.authService.getRoleNameUsuario(); 
-    if(this.movimientos.length > 0)
+
+    if(this.movimientos().length > 0)
     {
-      this.puedeRevocar.set(true);
       this.puedeRecibir.set((this.movimientos()[this.movimientos().length-1].cargoDestino == perfil) && (this.movimientos()[this.movimientos().length-1].fechaRecepcion == null ));
       this.puedeTurnar.set((this.movimientos()[this.movimientos().length-1].cargoDestino == perfil) && (this.movimientos()[this.movimientos().length-1].fechaRecepcion != null )) ;
       if (this.movimientos()[this.movimientos().length-1].idMovimiento == 8)
@@ -199,10 +217,22 @@ export class DetallesExhortoRecibido {
       {
         this.habilitarparaacordar.set((this.movimientos()[this.movimientos().length-1].idMovimiento > 8) && (!this.existeacuerdo()))
       } 
+    }
+    // Nadie puede revocar el primer movimiento, por eso se valida que si ya tiene mas de 1 movimiento entonces se
+    //habilita el boton de revocar. El primer movimiento es cuando el juzgado exhortante turna a oficialia y aqui no podemos revocar
+    if(this.movimientos().length>1)
+    {
+        this.puedeRevocar.set(this.puedeRecibir());
     }  
   }
-
-  enviarActualizacion(idActualizacion: number){
+  enviarActualizacion(idActualizacion: number) {
+    this.confirmationService.confirm({
+      key: 'enviarActualizacion',
+      accept: () => this.onEnviarActualizacion(idActualizacion),
+      reject: () => { }
+    });
+  }
+  onEnviarActualizacion(idActualizacion: number){
     if(idActualizacion!== undefined){
       this.isLoading=true;
       this.cd.detectChanges();
@@ -258,7 +288,14 @@ export class DetallesExhortoRecibido {
             }
         });
   }
-  turnar(){
+  turnar() {
+    this.confirmationService.confirm({
+      key: 'turnarExhorto',
+      accept: () => this.onTurnar(),
+      reject: () => { }
+    });
+  }
+  onTurnar(){
       if(this.idExhortoRecibido !== undefined)
       {
         var idE = this.idExhortoRecibido;
@@ -301,7 +338,14 @@ export class DetallesExhortoRecibido {
       }
     }
   }
-  revocar(){
+  revocar() {
+    this.confirmationService.confirm({
+      key: 'revocarTurno',
+      accept: () => this.onRevocar(),
+      reject: () => { }
+    });
+  }
+  onRevocar(){
       if(this.idExhortoRecibido !== undefined)
       {
         this.isLoading=true;

@@ -23,6 +23,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { Spinner } from "../../../shared/components/spinner/spinner";
+import {AuthService} from '../../../core/auth/service/auth.service';
 
 @Component({
   selector: 'app-busqueda-apelaciones',
@@ -68,17 +69,17 @@ export class BusquedaApelaciones implements OnInit  {
   resultados: any[] = [];
 
   filtros = {
-    "idGeneral": 3315,
-      "idPantalla": 1,
-    folioOficial: '' as string | null,
-    idSala: null as string | number | null,
-    idNomenclatura: null as string | number | null,
-    folioExpediente: '',
-    tipoApelacion: null as string | null,
-    expedienteCausa: '',
-    nombreParte: '',
-    fechaRecepInicial: null,
-    fechaRecepFinal: null,
+    "IdGeneral": 3315,
+      "IdPantalla": 1,
+    FolioOficialia: '' as string | null,
+    IdSala: null as string | number | null,
+    IdNomenclatura: null as string | number | null,
+    FolioExpediente: '',
+    TipoApelacion: null as string | null,
+    ExpedienteCausa: '',
+    NombreParte: '',
+    FechaRecepInicial: null,
+    FechaRecepFinal: null,
   };
 
 
@@ -115,11 +116,13 @@ ngOnInit(): void {
   //  this.cargarSalas();
   this.cargarCatalogoSalas();
     this.cargarCatalogo();
+    this.cargarDatos();
     this.activeIndex = (0).toString(); // Establece el primer panel como activo
   }
 
    constructor(
     private salasService: SalasService,
+    public authService: AuthService,
     private messageService: MessageService,
     private router: Router,
     private route: ActivatedRoute,
@@ -134,17 +137,17 @@ ngOnInit(): void {
 
   limpiar() {
     this.filtros = {
-      "idGeneral": 3315,
-      "idPantalla": 1,
-      folioOficial: '',
-      idSala: null,
-      idNomenclatura: null,
-      folioExpediente: '',
-      tipoApelacion: null,
-      expedienteCausa: '',
-      nombreParte: '',
-      fechaRecepInicial: null,
-      fechaRecepFinal: null,
+      "IdGeneral": 3315,
+      "IdPantalla": 1,
+      FolioOficialia: '',
+      IdSala: null,
+      IdNomenclatura: null,
+      FolioExpediente: '',
+      TipoApelacion: null,
+      ExpedienteCausa: '',
+      NombreParte: '',
+      FechaRecepInicial: null,
+      FechaRecepFinal: null,
     };
   }
   
@@ -263,9 +266,11 @@ mostrarTabla: boolean = false;
   // "nombreParte": ""
   //    };
 
-this.filtros.idSala = (this.filtros.idSala !== undefined && this.filtros.idSala !== null&& this.filtros.idSala !== '') ? this.filtros.idSala.toString() : '';
-this.filtros.idNomenclatura = (this.filtros.idNomenclatura !== undefined && this.filtros.idNomenclatura !== null && this.filtros.idNomenclatura !== '') ? this.filtros.idNomenclatura.toString() : '';
-this.filtros.tipoApelacion = (this.filtros.tipoApelacion !== undefined && this.filtros.tipoApelacion !== null && this.filtros.tipoApelacion !== '') ? this.filtros.tipoApelacion.toString() : '';
+// this.filtros.IdSala = (this.filtros.IdSala !== undefined && this.filtros.IdSala !== null&& this.filtros.IdSala !== '') ? this.filtros.IdSala.toString() : '';
+// this.filtros.IdNomenclatura = (this.filtros.IdNomenclatura !== undefined && this.filtros.IdNomenclatura !== null && this.filtros.IdNomenclatura !== '') ? this.filtros.IdNomenclatura.toString() : '';
+// this.filtros.TipoApelacion = (this.filtros.TipoApelacion !== undefined && this.filtros.TipoApelacion !== null && this.filtros.TipoApelacion !== '') ? this.filtros.TipoApelacion.toString() : '';
+const idAreaSistemaUsuario = this.authService.getAreaSistemaUsuario(); // Obtener perfil del servicio
+      const perfilSeleccionado = this.authService.getPerfilSeleccionado();
 
    this.isLoading=true;
      this.salasService.getListadoInicios(this.filtros).subscribe({
@@ -273,8 +278,10 @@ this.filtros.tipoApelacion = (this.filtros.tipoApelacion !== undefined && this.f
         
         this.listaapelaciones = response?.data[0] ?? null;
         console.log('Respuesta de la API:', this.listaapelaciones?.expediente);
-       
-        this.activeIndex = null; // cierra todo panel  activo
+       if (this.listaapelaciones?.expediente && this.listaapelaciones?.expediente.length > 0) {
+        this.activeIndex = null;
+        }
+         // cierra todo panel  activo
         this.isLoading=false;
         this.cdr.markForCheck();
         this.cdr.detectChanges(); // 👈 fuerza sincronización 
@@ -310,5 +317,20 @@ this.filtros.tipoApelacion = (this.filtros.tipoApelacion !== undefined && this.f
       partes,
       anexos} });
   }
+
+
+  
+parseDate(fechaStr: string): Date | null {
+  if (!fechaStr) return null;
+  
+  // Reemplaza "p. m." por "PM" y "a. m." por "AM"
+  fechaStr = fechaStr.replace('p. m.', 'PM').replace('a. m.', 'AM');
+
+  // Usa moment.js o Date.parse con cuidado
+  const parsedDate = new Date(fechaStr);
+  
+  return isNaN(parsedDate.getTime()) ? null : parsedDate;
+}
+
 
 }

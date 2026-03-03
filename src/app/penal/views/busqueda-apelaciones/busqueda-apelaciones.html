@@ -1,145 +1,161 @@
-  <app-spinner [isLoading]="isLoading"></app-spinner>
-  
-  <!-- HEADER -->
-    <app-breadcrub></app-breadcrub>
+<app-spinner [isLoading]="isLoading"></app-spinner>
+
+<!-- HEADER -->
+<app-breadcrub></app-breadcrub>
 
 <!-- <div class="card flex justify-center mt-4 "> -->
- <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
-<p-accordion [(value)]="activeIndex"  >
-    <p-accordion-panel value="0">
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+    <div class="card ">
+    <p-accordion [(value)]="activeIndex" class="p-accordioncontent-content-0" >
+        <p-accordion-panel value="0" >
 
-        <p-accordion-header class="dark:text-surface-0">
-            
-            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 ">
+            <p-accordion-header class="dark:text-surface-0">
+
+                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 ">
                     Opciones de búsqueda
                 </label>
-        </p-accordion-header>
+            </p-accordion-header>
 
-        <p-accordion-content>
-               <form #myForm="ngForm" (ngSubmit)="BusquedaFiltros()" aria-label="Filtros de búsqueda de apelaciones" >
+            <p-accordion-content>
+                <form #myForm="ngForm" (ngSubmit)="BusquedaFiltros()" aria-label="Filtros de búsqueda de apelaciones">
 
-                <div class="card">
-            <p-fieldset legend="Datos de Apelación">
+                    <div class="card">
+                        <p-fieldset legend="Datos de Apelación">
 
-              <div class=" flex flex-wrap grid-cols-12 gap-4 w-full" >
+                            <div class=" flex flex-wrap grid-cols-12 gap-4 w-full">
 
-                <div class="field col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de Oficialia</label>
-
-                    
-                    <p-inputMask
-  mask="9999/9999"
-  [(ngModel)]="filtros.folioOficial"
-  placeholder="0000/0000"
-  name="folioOficial">
-</p-inputMask>
+                                <div class="field col-12 md:col-6">
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de
+                                        Oficialia</label>
 
 
-                    
-                </div>
-
-                <div class="field col-12 md:col-6">
-
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala     </label>
-                    <p-select [options]="catSalas" optionLabel="descripcion" optionValue="idsala" placeholder="Selecciona una sala" appendTo="body" [(ngModel)]="filtros.idSala"  name="idSala"></p-select>
-
-                
-                    
-                 
-                </div>
-                
-           
-                <div class="field col-12 md:col-6">
-
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">  Nomenclatura  </label>
-                    <p-select [options]="catNomenclatura"   optionLabel="descripcion" optionValue="idCatNomenclatura"  placeholder="Selecciona tipo de nomenclatura" appendTo="body" [(ngModel)]="filtros.idNomenclatura" name="idNomenclatura"></p-select>
-
-                   
-                </div>
-
-                <div class="field col-12 md:col-6">
-
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Folio Apelación  </label>
-                    
-                     <p-inputMask
-  mask="9999/9999"
-  [(ngModel)]="filtros.folioExpediente"
-  placeholder="0000/0000"
-  name="folioExpediente">
-</p-inputMask>
-
-                   
-                </div>
-
-                <div class="field col-12 md:col-6">
-
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apelación </label>
-                    <p-select [options]="catApelaciones" optionLabel="descripcion" optionValue="idCatApelacion" placeholder="Selecciona tipo de apelación" appendTo="body" [(ngModel)]="filtros.tipoApelacion" name="tipoApelacion"></p-select>
-                
-                </div>
-
-                <div class="field col-12 md:col-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Exp/Causa </label>
-                    <input pInputText [(ngModel)]="filtros.expedienteCausa" name="expedienteCausa" />
-
-                    
-                </div>
-
-                <div class="field col-12 md:col-6">
-
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre Parte </label>
-                    <input pInputText [(ngModel)]="filtros.nombreParte" name="nombreParte" />
-
-                    
-                </div>
-
-</div>
-
-            </p-fieldset>
-
-            
-
-            
-          </div>
-          <div class="card mt-4">
-            <p-fieldset legend="Fecha de Recepción" class="mt-5">
-                <div class="flex flex-wrap grid-cols-12 gap-4 w-full" >
-
-                <div class="col-12 md:col-6">
-
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Inicial </label>
-                    <p-datepicker [(ngModel)]="filtros.fechaRecepInicial" [iconDisplay]="'input'" [showIcon]="true" inputId="fechaRecepInicial" name="fechaRecepInicial" />
-                
-
-                </div>
-                
-
-
-                <div class="col-12 md:col-6">
-
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha Final  </label>
-                    <p-datepicker [(ngModel)]="filtros.fechaRecepFinal" [iconDisplay]="'input'" [showIcon]="true" inputId="fechaRecepFinal" name="fechaRecepFinal" />
-
-                   
-                </div>
-                </div>
-
-            </p-fieldset>
-            </div>
-          <div class="flex justify-end gap-2 mt-3">
-                <p-button label="Limpiar" (click)="limpiar()" severity="secondary" />
-                <p-button type="submit" label="Confirmar" />
-
-          </div>
-          </form>
+                                    <p-inputMask mask="9999/9999" [(ngModel)]="filtros.FolioOficialia"
+                                        placeholder="0000/0000" name="FolioOficialia">
+                                    </p-inputMask>
 
 
 
-        </p-accordion-content>
+                                </div>
 
-    </p-accordion-panel>
+                                <div class="field col-12 md:col-6">
 
-</p-accordion>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala
+                                    </label>
+                                    <p-select [options]="catSalas" optionLabel="descripcion" optionValue="idsala"
+                                        placeholder="Selecciona una sala" appendTo="body" [(ngModel)]="filtros.IdSala"
+                                        name="idSala"></p-select>
+
+
+
+
+                                </div>
+
+
+                                <div class="field col-12 md:col-6">
+
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        Nomenclatura </label>
+                                    <p-select [options]="catNomenclatura" optionLabel="descripcion"
+                                        optionValue="idCatNomenclatura" placeholder="Selecciona tipo de nomenclatura"
+                                        appendTo="body" [(ngModel)]="filtros.IdNomenclatura"
+                                        name="idNomenclatura"></p-select>
+
+
+                                </div>
+
+                                <div class="field col-12 md:col-6">
+
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"> Folio
+                                        Apelación </label>
+
+                                    <p-inputMask mask="9999/9999" [(ngModel)]="filtros.FolioExpediente"
+                                        placeholder="0000/0000" name="folioExpediente">
+                                    </p-inputMask>
+
+
+                                </div>
+
+                                <div class="field col-12 md:col-6">
+
+                                    <label
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apelación
+                                    </label>
+                                    <p-select [options]="catApelaciones" optionLabel="descripcion"
+                                        optionValue="idCatApelacion" placeholder="Selecciona tipo de apelación"
+                                        appendTo="body" [(ngModel)]="filtros.TipoApelacion"
+                                        name="tipoApelacion"></p-select>
+
+                                </div>
+
+                                <div class="field col-12 md:col-6">
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        Exp/Causa </label>
+                                    <input pInputText [(ngModel)]="filtros.ExpedienteCausa" name="expedienteCausa" />
+
+
+                                </div>
+
+                                <div class="field col-12 md:col-6">
+
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre
+                                        Parte </label>
+                                    <input pInputText [(ngModel)]="filtros.NombreParte" name="nombreParte" />
+
+
+                                </div>
+
+                            </div>
+
+                        </p-fieldset>
+
+
+
+
+                    </div>
+                    <div class="card mt-4">
+                        <p-fieldset legend="Fecha de Recepción" class="mt-5">
+                            <div class="flex flex-wrap grid-cols-12 gap-4 w-full">
+
+                                <div class="col-12 md:col-6">
+
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha
+                                        Inicial </label>
+                                    <p-datepicker [(ngModel)]="filtros.FechaRecepInicial" [iconDisplay]="'input'" 
+                                        [showIcon]="true" inputId="fechaRecepInicial" name="fechaRecepInicial" />
+
+
+                                </div>
+
+
+
+                                <div class="col-12 md:col-6">
+
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha
+                                        Final </label>
+                                    <p-datepicker [(ngModel)]="filtros.FechaRecepFinal" [iconDisplay]="'input'"
+                                        [showIcon]="true" inputId="fechaRecepFinal" name="fechaRecepFinal" />
+
+
+                                </div>
+                            </div>
+
+                        </p-fieldset>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-3">
+                        <p-button label="Limpiar" (click)="limpiar()" severity="secondary" />
+                        <p-button type="submit" label="Confirmar" />
+
+                    </div>
+                </form>
+
+
+
+            </p-accordion-content>
+
+        </p-accordion-panel>
+
+    </p-accordion>
+    </div>
 </div>
 
 
@@ -163,13 +179,14 @@
             </div> -->
         </div>
     </div>
-<!-- TABLA -->
-<div class="col-12 md:col-9 mt-4">
-    <p-table #dt1 [value]="listaapelaciones?.expediente || []" [tableStyle]="{'min-width':'100%'}"
-         [globalFilterFields]="['foliodeOficialia','foliodeApelacion','sala','apelacion','tipodeApelacion','expediente_Causa','foliodelOficio']" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,20,50]" [scrollable]="true" scrollHeight="400px" >
+    <!-- TABLA -->
+    <div class="col-12 md:col-9 mt-4">
+        <p-table #dt1 [value]="listaapelaciones?.expediente || []" [tableStyle]="{'min-width':'100%'}"
+            [globalFilterFields]="['foliodeOficialia','foliodeApelacion','sala','apelacion','tipodeApelacion','expediente_Causa','foliodelOficio']"
+            [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,20,50]">
             <ng-template #caption>
                 <div class="flex">
-                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash"(click)="clear(dt1)"  />
+                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
                     <p-iconfield iconPosition="left" class="ml-auto">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
                         <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
@@ -177,42 +194,44 @@
                     </p-iconfield>
                 </div>
             </ng-template>
-        <ng-template pTemplate="header">
-            <tr>
-                <th>Folio de Oficialia.</th>
-                <th>Folio de Apelación</th>
-                <th>Sala</th>
-                <th>Apelación</th>
-                <th>Tipo de Apelación</th>
-                <th>Expediente Causa</th>
-                <th>Folio</th>
-                  <th>Acciones</th>
-            </tr>
-        </ng-template>
-        <!-- <ng-template pTemplate="body" let-lstapelaciones let-i="rowIndex"> -->
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Folio de Oficialia.</th>
+                    <th>Folio de Apelación</th>
+                    <th>Sala</th>
+                    <th>Apelación</th>
+                    <th>Tipo de Apelación</th>
+                    <th>Expediente Causa</th>
+                    <th>Folio</th>
+                    <th>Fecha Recepción</th>
+                    <th>Acciones</th>
+                </tr>
+            </ng-template>
+            <!-- <ng-template pTemplate="body" let-lstapelaciones let-i="rowIndex"> -->
             <ng-template #body let-expediente let-i="rowIndex">
-            <tr>
-                <!-- <td>{{i+1}}</td> -->
-                <td>{{expediente?.foliodeOficialia}}</td>
-                <td>{{expediente?.foliodeApelacion}}</td>
-                <td>{{expediente?.sala}}</td>
-                <td>{{expediente?.apelacion}}</td>
-                <td>{{expediente?.tipodeApelacion}}</td>
-                <td>{{expediente?.expediente_Causa}}</td>
-                 <td>{{expediente?.foliodelOficio}}</td>
-                  <td>
-                    <!-- <p-button label="Ver Detalle" icon="pi pi-eye" severity="info" size="small" /> -->
-                 <p-button  [rounded]="true"
-                            [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
-                            pTooltip="Ver detalle" tooltipPosition="top" (click)="verDetalleApelacion(expediente?.idExpediente)"></p-button>
-                        </td>
-            </tr>
-        </ng-template>
-        <ng-template #emptymessage>
+                <tr>
+                    <!-- <td>{{i+1}}</td> -->
+                    <td>{{expediente?.foliodeOficialia}}</td>
+                    <td>{{expediente?.foliodeApelacion}}</td>
+                    <td>{{expediente?.sala}}</td>
+                    <td>{{expediente?.apelacion}}</td>
+                    <td>{{expediente?.tipodeApelacion}}</td>
+                    <td>{{expediente?.expediente_Causa}}</td>
+                    <td>{{expediente?.foliodelOficio}}</td>
+                    <td>{{expediente?.fechadeRecepcion.split(' ')[0]}}</td>
+                    <td>
+                        <!-- <p-button label="Ver Detalle" icon="pi pi-eye" severity="info" size="small" /> -->
+                        <p-button [rounded]="true" [text]="true" [raised]="true" severity="info" [rounded]="true"
+                            icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top"
+                            (click)="verDetalleApelacion(expediente?.idExpediente)"></p-button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
                 <tr>
                     <td colspan="8">Sin resultados.</td>
                 </tr>
             </ng-template>
-    </p-table>
-</div>
+        </p-table>
+    </div>
 </div>
