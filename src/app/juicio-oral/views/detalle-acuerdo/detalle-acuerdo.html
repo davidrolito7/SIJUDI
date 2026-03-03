@@ -28,8 +28,8 @@
              
             </div>
             <div class="flex items-center gap-2 mt-6">
-                <p-button label="Continuar" (onClick)="onAccept()" />
-                <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" />
+                <p-button label="Continuar" styleClass="btn-secondary" (onClick)="onAccept()" />
+                <p-button label="Cancelar" styleClass="btn-secondary" [outlined]="true" (onClick)="onReject()" />
             </div>
         </div>
     </ng-template>
@@ -40,10 +40,7 @@
     <!-- BREADCRUMB -->
     <app-breadcrub></app-breadcrub>
 
-    <!-- CONTENEDOR PRINCIPAL -->
     <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl">
-
-        <!-- Título + Botón FIREL -->
         <div class="flex items-start flex-col md:flex-row justify-between p-4">
             <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
                 Detalle del acuerdo #{{ detalleAcuerdo.folio }}
