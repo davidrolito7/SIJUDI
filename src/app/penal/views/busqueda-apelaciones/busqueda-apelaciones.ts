@@ -23,6 +23,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { Spinner } from "../../../shared/components/spinner/spinner";
+import {AuthService} from '../../../core/auth/service/auth.service';
 
 @Component({
   selector: 'app-busqueda-apelaciones',
@@ -121,6 +122,7 @@ ngOnInit(): void {
 
    constructor(
     private salasService: SalasService,
+    public authService: AuthService,
     private messageService: MessageService,
     private router: Router,
     private route: ActivatedRoute,
@@ -267,6 +269,8 @@ mostrarTabla: boolean = false;
 // this.filtros.IdSala = (this.filtros.IdSala !== undefined && this.filtros.IdSala !== null&& this.filtros.IdSala !== '') ? this.filtros.IdSala.toString() : '';
 // this.filtros.IdNomenclatura = (this.filtros.IdNomenclatura !== undefined && this.filtros.IdNomenclatura !== null && this.filtros.IdNomenclatura !== '') ? this.filtros.IdNomenclatura.toString() : '';
 // this.filtros.TipoApelacion = (this.filtros.TipoApelacion !== undefined && this.filtros.TipoApelacion !== null && this.filtros.TipoApelacion !== '') ? this.filtros.TipoApelacion.toString() : '';
+const idAreaSistemaUsuario = this.authService.getAreaSistemaUsuario(); // Obtener perfil del servicio
+      const perfilSeleccionado = this.authService.getPerfilSeleccionado();
 
    this.isLoading=true;
      this.salasService.getListadoInicios(this.filtros).subscribe({

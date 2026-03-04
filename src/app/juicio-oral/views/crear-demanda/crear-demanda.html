@@ -78,10 +78,11 @@
             <ng-template #header>
                 <tr>
                     <th>Nombre</th>
-                    <th>Estatus</th>
+                    <!-- <th>Estatus</th> -->
                     <th>Género</th>
                     <th>Tipo parte</th>
                     <th>Correo</th>
+                    <th>Curp</th>
                     <th>Menor de edad</th>
                     <th>Dirección</th>
                     <th pFrozenColumn alignFrozen="right">Acciones </th>
@@ -92,13 +93,13 @@
                     <td class="font-semibold">
                         {{ parte.nombre }} {{ parte.apellidoPaterno }} {{ parte.apellidoMaterno }}
                     </td>
-                    <td>
+                    <!-- <td>
                         @if (parte.idUsr) {
                         <p-tag severity="success" value="VERIFICADO" />
                         } @else {
                         <p-tag severity="danger" value="NO VERIFICADO" />
                         }
-                    </td>
+                    </td> -->
                     <td>
                         {{ parte.idCatSexo == 1 ? "HOMBRE" : parte.idCatSexo == 2 ? "MUJER" : "OTRO" }}
                     </td>
@@ -108,10 +109,13 @@
                         <div class="text-xs text-surface-500">{{ parte.correoAlterno }}</div>
                     </td>
                     <td>
+                        {{ parte.curp }}
+                    </td>
+                    <td>
                         @if (parte.esMenorEdad) {
                         <p-tag severity="success" value="SI" />
                         } @else {
-                        <p-tag severity="danger" value="NO" />
+                        <p-tag severity="warn" value="NO" />
                         }
                     </td>
                     <td>{{ parte.direccion }}</td>
@@ -245,16 +249,15 @@
     </app-confirm-dialog>
 </div>
 
-<!--* BOTÓN AUTORIZAR FIREL -->
-<section class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
-    <p-button *ngIf="!firmaVerificada" (onClick)="autorizarFirel($event)" [disabled]="!canEnviar()"
-        icon="pi pi-key" label="Firma FIREL"
-        styleClass="btn-tertiary disabled:opacity-50 disabled:cursor-not-allowed" />
+<!--* BOTÓN AUTORIZAR FIREL — solo si algún documento requiere firma y aún no se ha verificado -->
+<section *ngIf="requiereFirma && !firmaVerificada" class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
+    <p-button (onClick)="autorizarFirel($event)" [disabled]="!canEnviar()" icon="pi pi-key"
+        label="Firma FIREL" styleClass="btn-tertiary disabled:opacity-50 disabled:cursor-not-allowed" />
 </section>
 
-<!--* BOTÓN ENVIAR DEMANDA -->
-<section class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
-    <p-button *ngIf="firmaVerificada" (onClick)="enviarDemanda($event)" [disabled]="!canEnviar()" icon="pi pi-upload"
+<!--* BOTÓN ENVIAR DEMANDA — si no requiere firma, o ya fue verificada -->
+<section *ngIf="!requiereFirma || firmaVerificada" class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
+    <p-button (onClick)="enviarDemanda($event)" [disabled]="!canEnviar()" icon="pi pi-upload"
         label="Enviar demanda"
         styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:enabled:bg-[#ff830a]/80 hover:enabled:border-[#ff830a]/80 disabled:opacity-50 disabled:cursor-not-allowed" />
 </section>
@@ -308,95 +311,20 @@
     icon="pi pi-check" circleClass="bg-primary" acceptLabel="Ver pre-registro" acceptStyleClass="bg-primary"
     rejectLabel="Cerrar">
 </app-confirm-dialog>
-
 <!--* MODAL PARA AGREGAR PARTES -->
 <p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }" [closable]="false">
     <ng-template pTemplate="header">
         <div class="flex justify-between items-center w-full">
-            <h2 class="text-lg font-semibold text-gray-800 ">Parte</h2>
-            <div class="flex items-center gap-4" *ngIf="!editandoParte">
-                <p class="inline-flex items-center">Tipo:</p>
-                <label class="inline-flex items-center">
-                    <p-radiobutton type="radio" name="filtro" value="busqueda" [(ngModel)]="filtroParte"
-                        (ngModelChange)="actualizarValidadores()" [ngClass]="{
-              'cursor-pointer': !(editandoParte && filtroParte === 'manual'),
-              'cursor-not-allowed': editandoParte && filtroParte === 'manual'
-            }" class="text-blue-600 border-gray-300 focus:ring-blue-500" />
-                    <span class="ml-2 text-sm font-medium ">Búsqueda</span>
-                </label>
-
-                <label class="inline-flex items-center">
-                    <p-radiobutton type="radio" name="filtro" value="manual" [(ngModel)]="filtroParte"
-                        (change)="actualizarValidadores()" [ngClass]="{
-              'cursor-pointer': !(editandoParte && filtroParte === 'busqueda'),
-              'cursor-not-allowed': editandoParte && filtroParte === 'busqueda'
-            }" class="text-blue-600 border-gray-300 focus:ring-blue-500" />
-
-                    <span class="ml-2 text-sm font-medium ">Manual</span>
-                </label>
-            </div>
+            <h2 class="text-lg font-semibold text-gray-800">Parte</h2>
         </div>
     </ng-template>
-
-    <!--  FORMULARIO BUSCAR USUARIO -->
-    <form [formGroup]="buscarUsr" (ngSubmit)="onBuscarUsuario()" *ngIf="!editandoParte && filtroParte === 'busqueda'"
-        class="grid grid-cols-6 gap-4 mb-2 mt-2 pb-4 border-b border-surface">
-
-        <!-- Tipo de búsqueda -->
-        <div class="col-span-6">
-            <label for="tipoBusqueda" class="block mb-2 text-sm font-medium">Tipo de búsqueda</label>
-            <p-select inputId="tipoBusqueda" formControlName="tipoBusqueda" (onChange)="onTipoBusquedaChange()"
-                [options]="[
-                    { label: 'Por ID General del usuario (número entero)', value: '1' },
-                    { label: 'Por Folio de registro RUNE (formato 00001/2025)', value: '2' },
-                    { label: 'Por Código de llave (8 caracteres alfanuméricos)', value: '3' },
-                    { label: 'Por Número de empleado (4 dígitos)', value: '4' }
-                ]" optionLabel="label" optionValue="value" placeholder="Seleccione el tipo de búsqueda" appendTo="body"
-                fluid />
-        </div>
-
-        <!-- CURP -->
-        <div class="col-span-6 sm:col-span-3">
-            <label for="curp" class="block mb-2 text-sm font-medium">CURP</label>
-            <input id="curp" pInputText type="text" formControlName="curp" maxlength="18" placeholder="CURP"
-                class="w-full uppercase" />
-            <div *ngIf="shouldShowError('curp', buscarUsr)" class="text-red-500 text-sm mt-1">
-                {{ getError("curp", buscarUsr) }}
-            </div>
-        </div>
-
-        <!-- Usuario + Botón buscar -->
-        <div class="col-span-6 sm:col-span-3">
-            <label for="usuario" class="block mb-2 text-sm font-medium">Usuario</label>
-            <p-inputgroup class="w-full">
-                <input id="usuario" pInputText type="text" formControlName="usuario" maxlength="30"
-                    [placeholder]="getPlaceholder()" (input)="aplicarMascaraBusqueda($event)" class="w-full" />
-                <p-inputgroup-addon>
-                    <p-button type="submit" icon="pi pi-search" [disabled]="buscarUsr.invalid" />
-                </p-inputgroup-addon>
-            </p-inputgroup>
-
-
-            <div *ngIf="shouldShowError('usuario', buscarUsr)" class="text-red-500 text-sm mt-1">
-                {{ getError("usuario", buscarUsr) }}
-            </div>
-        </div>
-    </form>
 
     <!-- FORMULARIO DATOS DE LA PARTE -->
     <form [formGroup]="parteForm" (ngSubmit)="agregarParte()">
         <div class="grid grid-cols-6 gap-4">
 
-            <!-- Nombre completo (búsqueda) -->
-            <div class="col-span-6" *ngIf="filtroParte === 'busqueda'">
-                <label for="nombre" class="block mb-2 text-sm font-medium">Nombre Completo</label>
-                <input id="nombre" pInputText type="text" formControlName="nombre"
-                    placeholder="EJ. ANA MARIA PEREZ GARCIA" class="w-full uppercase " />
-
-            </div>
-
-            <!-- Nombre (manual) -->
-            <div class="col-span-6 sm:col-span-3" *ngIf="filtroParte === 'manual'">
+            <!-- Nombre -->
+            <div class="col-span-6 sm:col-span-3">
                 <label for="nombre" class="block mb-2 text-sm font-medium">Nombre</label>
                 <input id="nombre" pInputText type="text" formControlName="nombre" maxlength="100" placeholder="Bonnie"
                     class="w-full uppercase" />
@@ -405,8 +333,8 @@
                 </div>
             </div>
 
-            <!-- Apellido Paterno (manual) -->
-            <div class="col-span-6 sm:col-span-3" *ngIf="filtroParte === 'manual'">
+            <!-- Apellido Paterno -->
+            <div class="col-span-6 sm:col-span-3">
                 <label for="apellidoPaterno" class="block mb-2 text-sm font-medium">Apellido Paterno</label>
                 <input id="apellidoPaterno" pInputText type="text" formControlName="apellidoPaterno" maxlength="100"
                     placeholder="Green" class="w-full uppercase" />
@@ -415,8 +343,8 @@
                 </div>
             </div>
 
-            <!-- Apellido Materno (manual) -->
-            <div class="col-span-6 sm:col-span-3" *ngIf="filtroParte === 'manual'">
+            <!-- Apellido Materno -->
+            <div class="col-span-6 sm:col-span-3">
                 <label for="apellidoMaterno" class="block mb-2 text-sm font-medium">Apellido Materno</label>
                 <input id="apellidoMaterno" pInputText type="text" formControlName="apellidoMaterno" maxlength="100"
                     placeholder="Green" class="w-full uppercase" />
@@ -436,7 +364,7 @@
             </div>
 
             <!-- Tipo parte -->
-            <div [ngClass]="filtroParte === 'busqueda' ? 'col-span-3' : 'col-span-6'">
+            <div class="col-span-6 sm:col-span-3">
                 <label for="idCatTipoParte" class="block mb-2 text-sm font-medium">Tipo parte</label>
                 <p-select inputId="idCatTipoParte" formControlName="idCatTipoParte" [options]="catTipoPartes"
                     optionValue="idCatTipoParte" optionLabel="descripcion" placeholder="Selecciona un tipo"
@@ -445,13 +373,21 @@
                     {{ getError("idCatTipoParte") }}
                 </div>
             </div>
+            <div class="col-span-6 sm:col-span-3">
+                <label for="curp" class="block mb-2 text-sm font-medium">CURP</label>
+                <input id="curp" pInputText type="text" formControlName="curp" maxlength="18" placeholder="CURP"
+                    class="w-full uppercase" />
+                <div *ngIf="shouldShowError('curp')" class="text-red-500 text-sm mt-1">
+                    {{ getError("curp") }}
+                </div>
+            </div>
 
             <!-- Correo electrónico -->
             <div class="col-span-6">
                 <label for="correo" class="block mb-2 text-sm font-medium">Correo electrónico</label>
                 <input id="correo" pInputText type="email" formControlName="correo" maxlength="250"
-                    [readonly]="filtroParte === 'busqueda'" placeholder="ejemplo@gmail.com" class="w-full uppercase" />
-                <div *ngIf="shouldShowError('correo') && filtroParte !== 'busqueda'" class="text-red-500 text-sm mt-1">
+                    placeholder="ejemplo@gmail.com" class="w-full uppercase" />
+                <div *ngIf="shouldShowError('correo')" class="text-red-500 text-sm mt-1">
                     {{ getError("correo") }}
                 </div>
             </div>
@@ -460,12 +396,11 @@
             <div class="col-span-4">
                 <label for="correoAlterno" class="block mb-2 text-sm font-medium">Correo alterno</label>
                 <input id="correoAlterno" pInputText type="email" formControlName="correoAlterno" maxlength="250"
-                    [readonly]="filtroParte === 'busqueda'" placeholder="ejemplo@gmail.com" class="w-full uppercase" />
+                    placeholder="ejemplo@gmail.com" class="w-full uppercase" />
                 <div *ngIf="shouldShowError('correoAlterno')" class="text-red-500 text-sm mt-1">
                     {{ getError("correoAlterno") }}
                 </div>
-                <div *ngIf="parteForm.errors?.['correosIguales'] && filtroParte === 'manual'"
-                    class="text-red-500 text-sm mt-1">
+                <div *ngIf="parteForm.errors?.['correosIguales']" class="text-red-500 text-sm mt-1">
                     El correo alterno debe ser diferente al correo principal.
                 </div>
             </div>
@@ -481,11 +416,9 @@
             <!-- Dirección -->
             <div class="col-span-6">
                 <label for="direccion" class="block mb-2 text-sm font-medium">Dirección</label>
-                <textarea id="direccion" pTextarea formControlName="direccion" [readonly]="filtroParte === 'busqueda'"
-                    maxlength="250" rows="4" placeholder="Escribe tu dirección aquí"
-                    class="w-full uppercase"></textarea>
-                <div *ngIf="shouldShowError('direccion') && filtroParte !== 'busqueda'"
-                    class="text-red-500 text-sm mt-1">
+                <textarea id="direccion" pTextarea formControlName="direccion" maxlength="250" rows="4"
+                    placeholder="Escribe tu dirección aquí" class="w-full uppercase"></textarea>
+                <div *ngIf="shouldShowError('direccion')" class="text-red-500 text-sm mt-1">
                     {{ getError("direccion") }}
                 </div>
             </div>

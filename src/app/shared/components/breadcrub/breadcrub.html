@@ -1,4 +1,4 @@
-<header class="border border-surface rounded-2xl flex items-center justify-between overflow-hidden">
+<header class="lg:sticky top-0 z-50 border border-surface rounded-2xl flex items-center justify-between overflow-hidden">
     <div class="flex items-center gap-2 ml-4">
         <p-button
             class="sm:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-emphasis transition-all"
@@ -19,12 +19,10 @@
                 {{ perfilNombre ? ('Perfil: ' + perfilNombre) : '' }}
             </span>
         </div>
-        <button type="button" (click)="visibleDrawer = true" class="rounded-xl cursor-pointer"
-            aria-label="Abrir menú de usuario">
-            <p-avatar [image]="abogadoFotoUrl" size="large" shape="circle"
-                class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component">
+
+            <p-avatar [image]="abogadoFotoUrl" (click)="visibleDrawer = true" size="large" shape="circle"
+                class="cursor-pointer">
             </p-avatar>
-        </button>
     </div>
 </header>
 
@@ -70,11 +68,9 @@
 <p-drawer [(visible)]="visibleDrawer" position="right" appendTo="body" styleClass="!w-4/5 sm:!w-[30rem]"> <ng-template
         #headless>
         <form class="flex flex-col">
-
             <div class="flex align-items-center gap-3 p-6">
-                <p-avatar [image]="abogadoFotoUrl" size="large"
-                    class="rounded-xl overflow-hidden p-avatar p-avatar-image p-avatar-lg p-component"
-                    data-p="square large" pc1573="" data-pc-section="root" data-pc-name="avatar">
+                <p-avatar [image]="abogadoFotoUrl" size="xlarge"
+                   shape="circle">
                 </p-avatar>
                 <div class="flex-1">
                     <div class="leading-6 text-color font-medium">{{abogadoNombre}}</div>

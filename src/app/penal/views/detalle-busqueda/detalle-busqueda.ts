@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Breadcrub } from "../../../../shared/components/breadcrub/breadcrub";
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { DividerModule } from 'primeng/divider';
 import { Table, TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
-import { Spinner } from "../../../../shared/components/spinner/spinner";
+import { Spinner } from "../../../shared/components/spinner/spinner";
 import {  CommonModule,formatDate,DatePipe } from '@angular/common';
-import { busquedaExpediente, DTABusqueda, responseDataBusqueda } from '../../../interface/salas.interface';
+import { busquedaExpediente, DTABusqueda, responseDataBusqueda } from '../../interface/salas.interface';
 import { CardModule  } from 'primeng/card';
 
 @Component({
