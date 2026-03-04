@@ -79,6 +79,15 @@
                                         </tr>
                                         <tr>
                                             <td class="col1">
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Número de expediente:
+                                                    </b>
+                                                </p>
+                                            </td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                detallesNotificacion()?.generales?.numeroExpediente }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col1">
                                                 <p class="text-surface-600  dark:text-surface-300"><b>Fecha de envío:
                                                     </b>
                                                 </p>
@@ -121,21 +130,19 @@
 
                                         <tr>
                                             <td class="col1">
-                                                <p class="text-surface-600  dark:text-surface-300"><b>Número de expediente:
-                                                    </b>
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Tipo cuaderno: </b>
                                                 </p>
                                             </td>
                                             <td class="col2 text-surface-700 dark:text-surface-200">{{
-                                                detallesNotificacion()?.generales?.numeroExpediente }}</td>
+                                                    detallesNotificacion()?.generales?.tipoCuaderno }}</td>
                                         </tr>
                                         <tr>
                                             <td class="col1">
                                                 <p class="text-surface-600  dark:text-surface-300"><b>Órgano destino: </b>
                                                 </p>
                                             </td>
-                                            <td class="col2 text-surface-700 dark:text-surface-200"><span
-                                                    class="text-red-500 font-bold">{{
-                                                    detallesNotificacion()?.generales?.organo_impartidor_justicia }}</span></td>
+                                            <td class="col2 text-surface-700 dark:text-surface-200">{{
+                                                    detallesNotificacion()?.generales?.organo_impartidor_justicia }}</td>
                                         </tr>
                                         <tr>
                                             <td class="col1">

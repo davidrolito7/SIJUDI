@@ -163,20 +163,27 @@ export class DetallesAmparoRecibido {
     showDialog(id: number){}
     //Llamada el servicio para obtener los detalles de la notifiacion
     cargarDetallesNotificacion(idNotificacion: number): void {
-        this.amparosService.getDetallesNotificacion(idNotificacion).subscribe(
-            (response) => {
-                //console.log('Datos recibidos:', response);
-                this.detallesNotificacion.set(response.data); // Almacena los datos recibidos en la variable
-                this.puedeRecibir.set(!this.detallesNotificacion()?.generales.recibido);
-                //Solo puede turnar si ya fue recibido
-                this.puedeTurnarRevocar.set(this.detallesNotificacion()?.generales?.recibido ?? false);
-
-
+        this.isLoading=true;
+        this.amparosService.getDetallesNotificacion(idNotificacion).subscribe({
+            next: (response:any) => {
+                if(response.success) {
+                    //console.log('Datos recibidos:', response);
+                    this.detallesNotificacion.set(response.data); // Almacena los datos recibidos en la variable
+                    this.puedeRecibir.set(!this.detallesNotificacion()?.generales.recibido);
+                    //Solo puede turnar si ya fue recibido
+                    this.puedeTurnarRevocar.set(this.detallesNotificacion()?.generales?.recibido ?? false);
+                }else{
+                    this.messageService.add({severity: 'error', summary: response.message, detail:response.message})
+                }
             },
-            (error) => {
-                console.error('Error al cargar detalle de notificación', error);
+            error:(e) => {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el detalle' });
+                this.isLoading=false;
+            },
+            complete:()=>{
+                this.isLoading=false;
             }
-        );
+    });
     }
     obtenerMovimientos(idNotificacion: number) {
         this.amparosService.getMovimientos(idNotificacion).subscribe(

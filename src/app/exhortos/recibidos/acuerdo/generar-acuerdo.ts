@@ -52,6 +52,7 @@ export class GenerarAcuerdo {
   datosExhortoRecibido! : ListadoExhortosRecibidosI;
   acuseEnviarAcuerdoArchivos! : EnviadoRespuestaArchivosResponse;
   detallesAcuerdo =signal<respuestaExhorto>(<respuestaExhorto>{});
+  puedeEnviarGenerales = signal<boolean>(false);
   //acuerdo!: generales; 
   //responseRespuestaExhortos!: GenericResponse<respuestaExhorto>;
 
@@ -224,11 +225,23 @@ export class GenerarAcuerdo {
               }
               const documentosValidados = validarFirmasUsuario(response.data.archivos,idUsuario);
               this.listaDocumentos.set(documentosValidados);
-              /*this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
-                ...archivo
-              })));*/
+
+              // Buscar si existe un archivo con idTipoDocumento = 2
+              const archivoTipo2 = this.listaDocumentos().find(a => a.idTipoDocumento === 2);
+
+              // Validar que ese archivo tenga exactamente dos firmantes
+              const tieneDosFirmas = archivoTipo2?.firmantes?.length === 2;
+              // se puede empezar enviar la respuesta con la condicion de que:
+              // se debe tener un documento de tipo=2 Acuerdo
+              // el documento de tipo 2 debe tener al menos dos firmas: del secretario y del juez
+              this.puedeEnviarGenerales.set(tieneDosFirmas);
+                //this.puedeEnviarGenerales.set(this.listaDocumentos().some(doc => doc.idTipoDocumento==2));
+                /*this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
+                  ...archivo
+                })));*/
               
             } else {
+              this.puedeEnviarGenerales.set(false);
               this.listaDocumentos.set([]);
               this.messageService.add({
                 severity: 'warn',

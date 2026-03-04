@@ -33,25 +33,27 @@
                 </div>
             }
             <td class="px-2 py-2">
-            @if (tienePermisoEnviarGenerales()) {
-                <div class="relative">
-                <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                @if (detallesAcuerdo()?.generales?.idEstatus === 11 ) {
-                    <p-button type="button" (click)="enviarAcuerdoGenerales(this.idExhortoRecibido)"
-                    ><i class="bi bi-send"></i> Enviar Generales</p-button>
-                    }
+              @if (tienePermisoEnviarGenerales()) {
+                @if(puedeEnviarGenerales()){
+                  <div class="relative">
+                  <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
+                  @if (detallesAcuerdo()?.generales?.idEstatus === 11 ) {
+                      <p-button type="button" (click)="enviarAcuerdoGenerales(this.idExhortoRecibido)"
+                      ><i class="bi bi-send"></i> Enviar Generales</p-button>
+                      }
 
-                </div>
+                  </div>
                 }
-                @if (tienePermisoEnviarArchvios()) {
-                <div class="relative">
-                    @if (detallesAcuerdo()?.generales?.idEstatus === 12) {
-                    <p-button type="button" (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"
-                        ><i class="bi bi-send"></i> Enviar Archivos</p-button>
-                    }
+              }
+              @if (tienePermisoEnviarArchvios()) {
+              <div class="relative">
+                  @if (detallesAcuerdo()?.generales?.idEstatus === 12) {
+                  <p-button type="button" (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"
+                      ><i class="bi bi-send"></i> Enviar Archivos</p-button>
+                  }
 
-                    </div>
-                }
+                  </div>
+              }
             </td>
             <div class="relative">
 
@@ -97,11 +99,15 @@
                     </p-button>
                   </div>
                 }
+            }
+            @if(tienePermisoCargarArchivo()){
+              @if(idRespuesta !==0){
                 <div class="relative">
                   <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
                       accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
                       chooseLabel="Agregar documento" />
                 </div>
+              }
             }
           </div>
       </div>

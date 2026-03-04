@@ -56,6 +56,7 @@ export class RespuestaExhortoRecibido {
   tienePermisoEnviarGenerales = signal<boolean>(false);
   tienePermisoEnviarArchivos= signal<boolean>(false);
   tienePermisoEliminarArchivo =signal<boolean>(false);
+  puedeEnviarGenerales= signal<boolean>(false);
   private perfilSeleccionadoService = inject(AuthService);
   perfilSeleccionado! : Signal<string>;
   enviadoRespuestaArchivosResponse! : EnviadoRespuestaArchivosResponse ;
@@ -201,6 +202,18 @@ export class RespuestaExhortoRecibido {
             if(this.detallesAcuerdo.generales.fechaHoraRecepcion!=null){
               this.archivosEnviado=true;
             }
+          }
+          if(this.detallesAcuerdo.archivos.length>0)
+          {
+            // Buscar si existe un archivo con idTipoDocumento = 2
+            const archivoTipo2 = this.detallesAcuerdo.archivos.find(a => a.idTipoDocumento === 2);
+
+            // Validar que ese archivo tenga exactamente dos firmantes
+            const tieneDosFirmas = archivoTipo2?.firmantes?.length === 2;
+            // se puede empezar enviar la respuesta con la condicion de que:
+            // se debe tener un documento de tipo=2 Acuerdo
+            // el documento de tipo 2 debe tener al menos dos firmas: del secretario y del juez
+            this.puedeEnviarGenerales.set(tieneDosFirmas);
           }
           //console.log(this.detallesAcuerdo);
           //this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });

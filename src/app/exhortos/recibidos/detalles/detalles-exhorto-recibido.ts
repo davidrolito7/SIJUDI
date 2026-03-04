@@ -17,6 +17,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { Toast } from "primeng/toast";
 import { Spinner } from "../../../shared/components/spinner/spinner";
+import { TokenService } from '../../../core/auth/service/token.service';
 
 @Component({
   selector: 'app-detallesExhortosRecibidos',
@@ -72,7 +73,8 @@ export class DetallesExhortoRecibido {
     private messageService: MessageService,
     private cd: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
-    private confirmationService:ConfirmationService
+    private confirmationService:ConfirmationService,
+    private tokenService : TokenService,
   ){
     
   }
@@ -208,12 +210,32 @@ export class DetallesExhortoRecibido {
     {
       this.puedeRecibir.set((this.movimientos()[this.movimientos().length-1].cargoDestino == perfil) && (this.movimientos()[this.movimientos().length-1].fechaRecepcion == null ));
       this.puedeTurnar.set((this.movimientos()[this.movimientos().length-1].cargoDestino == perfil) && (this.movimientos()[this.movimientos().length-1].fechaRecepcion != null )) ;
-      if (this.movimientos()[this.movimientos().length-1].idMovimiento == 8)
+      if (this.movimientos()[this.movimientos().length-1].idMovimiento == 8 && (perfil == 'Secretario'))
       {
         //si ya fue recibido por el secretario puede acordarlo
         this.habilitarparaacordar.set((this.movimientos()[this.movimientos().length-1].fechaRecepcion != null )&& (!this.existeacuerdo()))
+        this.puedeTurnar.set(this.existeacuerdo() );
       }
-      else 
+      else if (this.movimientos()[this.movimientos().length-1].idMovimiento == 9 && (perfil == 'Juez'))
+      {
+        //obtenemos el idUsuario del token
+        const userData = this.tokenService.getUserFromToken();
+        var idUsuario=0;
+        if(userData !== null){
+          idUsuario = userData.idGeneral;
+        }
+        // Validar si ya firmó en un archivo tipo 2
+        const yaFirmoEnTipo2 = this.respuesta.some(r =>
+          r.archivos.some(a =>
+            a.idTipoDocumento === 2 &&
+            a.firmantes.some(f => f.idUsuario === idUsuario)
+          )
+        );
+        //en el perfil del juez nos aseguramos que ua haya firmado en el acuerdo para poder turnar al secretario
+        this.puedeTurnar.set(yaFirmoEnTipo2);
+
+      }
+      else
       {
         this.habilitarparaacordar.set((this.movimientos()[this.movimientos().length-1].idMovimiento > 8) && (!this.existeacuerdo()))
       } 
@@ -537,6 +559,7 @@ export class DetallesExhortoRecibido {
             this.cd.detectChanges();
          },
          complete:()=>{
+            this.setBanderasUltimoMovimiento();
             this.isLoading=false;
             this.cd.detectChanges();
          }

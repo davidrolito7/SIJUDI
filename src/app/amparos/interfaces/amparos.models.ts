@@ -43,12 +43,14 @@ export interface generales{
     fec_envio:string;
     estatus:string;
     materia:string;
+    tipoMateria:number;
     organoOrigen:string;
     numPromociones: number;
     expFisico:boolean;
     recibido:boolean;
     idEstatus:number;
     neun:number;
+    tipoCuaderno:string;
 }
 export interface actosReclamados {
     idActoReclamado: number;
