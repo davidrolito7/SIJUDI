@@ -11,7 +11,7 @@ import { ExhortosService } from '../../services/exhorto.service';
 import { TokenService } from '../../../core/auth/service/token.service';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
-import { archivos, EnviadoRespuestaArchivosResponse, generales, guardaExhortoRespuesta, ListadoCatalogoTipoDiligenciado, ListadoCatalogoTipoDocumento, ListadoExhortosRecibidosI, respuestaExhorto } from '../../interfaces/exhortos.model';
+import { archivos, EnviadoRespuestaArchivosResponse, generales, guardaExhortoRespuesta, ListadoCatalogoTipoDiligenciado, ListadoCatalogoTipoDocumento, ListadoExhortosRecibidosI, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
@@ -28,10 +28,12 @@ import { DialogModule } from "primeng/dialog";
 import { InputIconModule } from "primeng/inputicon";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { ToastModule } from "primeng/toast";
+import { ModalComponent } from "../../../shared/components/modal-component/modal-component";
+import { ModalService } from '../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-GenerarAcuerdo',
-  imports: [ConfirmDialog, Breadcrub, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule,InputTextModule],
+  imports: [ConfirmDialog, Breadcrub, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent],
   templateUrl: './generar-acuerdo.html',
   styleUrl: './generar-acuerdo.css',
   providers: [MessageService,ConfirmationService]
@@ -45,6 +47,9 @@ export class GenerarAcuerdo {
   tienePermisoCargarArchivo = signal<boolean>(false);
   tienePermisoFirmarArchivo = signal<boolean>(false);
   tienePermisoEliminarArchivo = signal<boolean>(false);
+  movimientos = signal<VerMovimientosResponse[]>([]);
+  tienePermisoEliminarFirma = signal<boolean>(false);
+  tienePermisoAplicarFirma = signal<boolean>(false);
 
   listadoTipoDiligenciado = signal<ListadoCatalogoTipoDiligenciado[]>([]);
   listadoTipoDocumento = signal<ListadoCatalogoTipoDocumento[]>([]);
@@ -100,7 +105,7 @@ export class GenerarAcuerdo {
     private router: Router,
     private messageService: MessageService,
     private tokenService : TokenService,
-    //public modalService : ModalService,
+    public modalService : ModalService,
     private qrService : QrService,
     public authService: AuthService,
     private confirmationService: ConfirmationService,
@@ -131,7 +136,7 @@ export class GenerarAcuerdo {
 
       this.GetSeccionesUsuario();
       this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccionado());
-
+      this.obtenerMovimientos(this.idExhortoRecibido);
     });
   }
   getListadoTipoDiligenciado():Promise<void> {
@@ -234,11 +239,13 @@ export class GenerarAcuerdo {
               // se puede empezar enviar la respuesta con la condicion de que:
               // se debe tener un documento de tipo=2 Acuerdo
               // el documento de tipo 2 debe tener al menos dos firmas: del secretario y del juez
-              this.puedeEnviarGenerales.set(tieneDosFirmas);
+              //this.puedeEnviarGenerales.set(tieneDosFirmas);
                 //this.puedeEnviarGenerales.set(this.listaDocumentos().some(doc => doc.idTipoDocumento==2));
                 /*this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
                   ...archivo
                 })));*/
+              const maxId = Math.max(...this.movimientos().map(m => m.idMovimiento));
+              this.puedeEnviarGenerales.set(tieneDosFirmas && maxId>9 ? true:false);
               
             } else {
               this.puedeEnviarGenerales.set(false);
@@ -421,7 +428,7 @@ export class GenerarAcuerdo {
           this.acuseEnviarAcuerdoArchivos=response.data;
           this.detallesAcuerdo().generales.idEstatus = 13; // respuesta enviada completamente
             //this.sendQRData();
-            //this.modalService.open('modal2');
+            this.modalService.open('modal2');
           // Aquí podrías actualizar la lista de documentos si es necesario
         }
         else{
@@ -504,6 +511,8 @@ export class GenerarAcuerdo {
                 this.tienePermisoCargarArchivo.set(false);
                 this.tienePermisoFirmarArchivo.set(false);
                 this.tienePermisoEliminarArchivo.set(false);
+                this.tienePermisoEliminarFirma.set(false);
+                this.tienePermisoAplicarFirma.set(false);
 
               }
               else if (this.secciones.length > 0) {
@@ -514,7 +523,8 @@ export class GenerarAcuerdo {
                 this.tienePermisoCargarArchivo.set(this.secciones.some(s => s.descripcion === 'CargarArchivo'));
                 this.tienePermisoFirmarArchivo.set(this.secciones.some(s => s.descripcion === 'FirmarArchivo'));
                 this.tienePermisoEliminarArchivo.set(this.secciones.some(s => s.descripcion === 'EliminarArchivo'));
-
+                this.tienePermisoEliminarFirma.set(this.secciones.some(s => s.descripcion === 'EliminarFirma'));
+                this.tienePermisoAplicarFirma.set(this.secciones.some(s => s.descripcion === 'AplicarFirma'));
               }
             } else {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor." });
@@ -939,5 +949,26 @@ export class GenerarAcuerdo {
   hideDialogFirma() {
     this.firmaDialog = false;
 
+  }
+  obtenerMovimientos(idExhortoRecibido: number) {
+    this.exhortosService.getMovimientos(idExhortoRecibido).subscribe({
+        next:(response => {
+            //console.log('Datos recibidos:', response);
+            this.movimientos.set(response.data); // Almacena los datos recibidos en la variable
+           
+          }),
+        error:(error) => {
+            //console.error('Error al cargar los movimientos del exhorto', error);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+        }
+    });
+  }
+  modalClosed(id: number) {
+    //cuando se cierra la modal de confirmacion de envio de archivos, redireccionamos a la busqueda principal
+    //console.log(id)
+    this.router.navigate(['/exhortos/lista-exhortos-recibidos'], { state: { id } });
+  }
+  printDivContent(): void {
+    window.print();
   }
 }

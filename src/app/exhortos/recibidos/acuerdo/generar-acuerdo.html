@@ -169,7 +169,7 @@
                                         @if(firmante != undefined)
                                           {
                                           <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
-                                          @if(!documento.firmado){
+                                          @if(!documento.firmado && tienePermisoEliminarFirma()){
                                             <td class="px-4">
                                               <!--<a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">Eliminar</a>-->
                                               <p-button  (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true" icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>
@@ -189,7 +189,7 @@
                                   </p-button>
                                 }
                                   <!--APLICAR FIRMAS-->
-                                @if(!documento.firmado && documento.firmantes.length>0 ){
+                                @if(!documento.firmado && documento.firmantes.length>0 && tienePermisoAplicarFirma() ){
                                     <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
                                       icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                                     </p-button>
@@ -241,6 +241,10 @@
 <app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro que desea eliminar el archivo?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
+<!-- MODAL DE CONFIRMACION PARA ELIMINAR UN ARCHIVO -->
+<app-confirm-dialog key="aplicarFirmas" title="Confirmación" message="¿Está seguro que desea aplicar la firma?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
 
 <!--*DIALOG PARA FIRMAR-->
 <p-dialog [(visible)]="firmaDialog" [style]="{ width: '600px' }" header="Firmado de documento" [modal]="true">
@@ -265,3 +269,78 @@
 </p-dialog>
 <p-confirmdialog [style]="{ width: '600px' }" />
 <p-toast></p-toast>
+
+<div class="z-50">
+ @if (acuseEnviarAcuerdoArchivos) {
+      <app-modal-component id="modal2" (modalClosed)="modalClosed(idExhortoRecibido)">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+          <div  class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+            <div class="panel-body p-3">
+              <div class="flex flex-col space-y-2">
+                <div class="overflow-x-auto"  style="overflow-y: auto;"> <!-- Contenedor responsivo -->
+                  <div class="overflow-x-auto p-4">
+                    <div class="text-center">
+                      <button (click)="printDivContent()">Imprimir Contenido</button>
+                    </div>
+                    <div id="contentToPrint" #contentToPrint  class="panel border bg-white">
+                      <div  class="panel-heading bg-morado hover:bg-morado_hover rounded-lg">
+                        <h3 class="pt-3 font-weight-bold">Información destino</h3>
+                      </div>
+                      <div class="panel-body p-3">
+                        <div class="flex flex-col space-y-2">
+                          <div class="overflow-x-auto"> <!-- Contenedor responsivo -->
+                            <table  class="table-auto md:table-fixed w-full">
+                              <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Exhorto id: </b></p></td>
+                                <td class="col2">{{ acuseEnviarAcuerdoArchivos.acuse.exhortoId || 'No disponible' }}</td>
+                              </tr>
+                              <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Respuesta Oorigen id: </b></p></td>
+                                <td class="col2">{{ acuseEnviarAcuerdoArchivos.acuse.respuestaOrigenId || 'No disponible' }}</td>
+                              </tr>
+                              <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Fecha recepción : </b></p></td>
+                                <td class="col2">{{ acuseEnviarAcuerdoArchivos.acuse.fechaHoraRecepcion || 'No disponible' }}</td>
+                              </tr>
+                              <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Estado : </b></p></td>
+                                <td class="col2">{{ datosExhortoRecibido.estadoOrigen || 'No disponible' }}</td>
+                              </tr>
+                              <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Juzgado : </b></p></td>
+                                <td class="col2">{{ datosExhortoRecibido.juzgadoOrigenNombre || 'No disponible' }}</td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="panel-heading bg-morado hover:bg-morado_hover rounded-lg">
+                        <h3 class="pt-3 font-weight-bold">Información origen</h3>
+                      </div>
+                      <div class="panel-body p-3">
+                        <div class="flex flex-col space-y-2">
+                          <div class="overflow-x-auto"> <!-- Contenedor responsivo -->
+                            <table  class="table-auto md:table-fixed w-full">
+                              <!--INFORMACION ORIGEN-->
+                              <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Municipio: </b></p></td>
+                                <td class="col2">{{ datosExhortoRecibido.municipioDestino || 'No disponible' }}</td>
+                              </tr>
+                              <tr>
+                                <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Materia: </b></p></td>
+                                <td class="col2">{{ datosExhortoRecibido.materiaNombre || 'No disponible' }}</td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </app-modal-component>
+    }
+</div>

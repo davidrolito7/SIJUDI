@@ -69,6 +69,8 @@ export class DetallesAmparoRecibido {
     {
         if(this.idNotificacion !== undefined)
         {
+            this.isLoading=true;
+            this.cd.detectChanges();
             this.amparosService.recibir(this.idNotificacion).subscribe({
                 next:(response =>{
                         if(response.success){
@@ -83,9 +85,13 @@ export class DetallesAmparoRecibido {
                 }),
                 error:(err => {
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+                    this.isLoading=false;
+                    this.cd.detectChanges();
                 }),
                 complete:()=>{
                     //console.log('fin');
+                    this.isLoading=false;
+                    this.cd.detectChanges();
                 }
 
             });
@@ -95,6 +101,7 @@ export class DetallesAmparoRecibido {
     turnar(){
         if(this.idNotificacion !== undefined)
         {
+            this.isLoading=true;
             this.amparosService.Turnar(this.idNotificacion).subscribe({
                 next:(response =>{
                     if(response.success){
@@ -110,9 +117,10 @@ export class DetallesAmparoRecibido {
                 }),
                 error:(err=>{
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+                    this.isLoading=false;
                 }),
                 complete:()=>{
-
+                    this.isLoading=false;
                 }
 
             });
@@ -121,6 +129,7 @@ export class DetallesAmparoRecibido {
     revocar(){
         if(this.idNotificacion !== undefined)
         {
+            this.isLoading=true;
             this.amparosService.revocar(this.idNotificacion).subscribe({
                 next:(response=>{
                     if(response.success){
@@ -136,9 +145,10 @@ export class DetallesAmparoRecibido {
                 }),
                 error:(err=>{
                     this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+                    this.isLoading=false;
                 }),
                 complete:()=>{
-
+                    this.isLoading=false;
                 }
 
             });
