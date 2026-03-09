@@ -27,18 +27,20 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { PasswordModule } from 'primeng/password';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+
 @Component({
   selector: 'app-crear-demanda',
   imports: [CommonModule, FormsModule, ToastModule, SelectModule, DialogModule, ButtonModule,
-    InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule, InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule, TableModule, TagModule, Breadcrub, InputGroupModule, InputGroupAddonModule, Spinner, PasswordModule, ConfirmDialog],
+    InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule,
+    InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule, TableModule,
+    TagModule, Breadcrub, InputGroupModule, InputGroupAddonModule, Spinner, PasswordModule, ConfirmDialog],
   templateUrl: './crear-demanda.html',
   styleUrl: './crear-demanda.css',
   providers: [ConfirmationService, MessageService]
-
 })
-export class CrearDemanda {
+export class CrearDemanda implements OnInit {
+
   //* === DATOS DEL USUARIO Y CATÁLOGOS ===
-  usrData: DatosUsuarioResponse | null = null;
   catMaterias: CatMateria[] = [];
   catTipoVias: CatTipoVia[] = [];
   catTipoDocumentos: CatTipoDocumento[] = [];
@@ -51,7 +53,6 @@ export class CrearDemanda {
   parteForm!: FormGroup;
   declaracionAnexoForm!: FormGroup;
   anexoForm!: FormGroup;
-  buscarUsr!: FormGroup;
   firmaForm!: FormGroup;
 
   //* === LISTAS Y DATOS TEMPORALES ===
@@ -71,53 +72,36 @@ export class CrearDemanda {
 
   //* === FLAGS Y VARIABLES DE CONTROL ===
   formEnviado: boolean = false;
-  filtroParte: 'busqueda' | 'manual' = 'busqueda';
   editandoParte: boolean = false;
   indiceParteEditando: number = -1;
 
-  mostrarCampoValor: boolean = false; // Nueva propiedad para controlar la visibilidad del campo "valor"
-  mostrarInputNombre: boolean = false; // Input de "otro" en catálogo tipo documento
+  mostrarCampoValor: boolean = false;
+  mostrarInputNombre: boolean = false;
 
   folio: string | null = null;
-  tipoBusqueda: string | null = null;
   firmaVerificada: boolean = false;
   showPassword = false;
 
-
   constructor(
-    //  private readonly flowbiteService: FlowbiteService,
     private readonly fb: FormBuilder,
     private readonly confirmationService: ConfirmationService,
     private readonly sanitizer: DomSanitizer,
     private juicioService: JuicioService,
     private router: Router,
     private messageService: MessageService,
-
-  ) {
-
-  }
+  ) { }
 
   ngOnInit(): void {
-    //this.cargarLocalStorage();
-    //  this.flowbiteService.loadFlowbite(() => initFlowbite());
-    this.cargarCatalogoMunicipios(); // cat
-    this.cargarCatalogoMaterias(); // cat
-    this.cargarCatTipoDocumento(); // cat
-    this.cargarCatalogoSexos(); // cat
-    this.cargarCatalogoTipoPartes(); // cat
-    // this.startTutorial();
+    this.cargarCatalogoMunicipios();
+    this.cargarCatalogoMaterias();
+    this.cargarCatTipoDocumento();
+    this.cargarCatalogoSexos();
+    this.cargarCatalogoTipoPartes();
 
     this.formulario = this.fb.group({
-      // folioPreregistro: ['00010/2025', Validators.required],
-      // idCatMunicipio: [null, Validators.required],
       idCatMateria: [null, Validators.required],
       idCatTipoVia: [{ value: null, disabled: true }, Validators.required],
       descripcionDemanda: ['', [Validators.required, Validators.maxLength(250)]],
-      //observaciones: ['', [Validators.required, Validators.maxLength(250)]],
-      // partes: this.fb.array([]),
-      // documentos: this.fb.array([]),
-      // archivoPfx_Efirma: ['', Validators.required],
-      // password_Efirma: ['', Validators.required]
     });
 
     this.parteForm = this.fb.group({
@@ -128,31 +112,24 @@ export class CrearDemanda {
       direccion: ['', [Validators.required, Validators.maxLength(250)]],
       correo: ['', [Validators.required, Validators.email, Validators.maxLength(250)]],
       correoAlterno: ['', [Validators.email, Validators.maxLength(250)]],
-      esMenorEdad: [false], // valor por defecto: false (no menor de edad)
+      esMenorEdad: [false],
       idCatSexo: [null, Validators.required],
       idCatTipoParte: [null, Validators.required],
+      curp: ['', [Validators.required, Validators.maxLength(18), Validators.pattern(/^[A-Z0-9]{18}$/)]],
     }, { validators: this.correosDiferentesValidator.bind(this) });
 
     this.declaracionAnexoForm = this.fb.group({
       idCatTipoDocumento: [null, Validators.required],
-      descripcion: [''], // se vuelve requerido solo si es "Otro"
+      descripcion: [''],
       cantidad: [1, [Validators.required, Validators.min(1)]],
       esValor: [false],
-      valor: [null] // <-- necesitas este control si lo vas a usar en el modal
-
+      valor: [null]
     });
+
     this.anexoForm = this.fb.group({
       nombre: [''],
       documento: ['', Validators.required],
-      //  valor: [null],
-      // idCatTipoDocumento: [null, Validators.required],
       firmaDigital: [0]
-    });
-
-    this.buscarUsr = this.fb.group({
-      tipoBusqueda: [null, Validators.required],
-      curp: ['', [Validators.required, Validators.maxLength(18)]],
-      usuario: [null, [Validators.required, Validators.maxLength(20)]],
     });
 
     this.firmaForm = this.fb.group({
@@ -161,10 +138,8 @@ export class CrearDemanda {
 
     const alerta = history.state.alerta;
     if (alerta) {
-      this.messageService.add(alerta)
+      this.messageService.add(alerta);
     }
-
-    //!console.log('Alerta en estado:', history.state);
 
     this.formulario.get('idCatMateria')?.valueChanges.subscribe(val => {
       const viaCtrl = this.formulario.get('idCatTipoVia');
@@ -174,20 +149,18 @@ export class CrearDemanda {
         this.catTipoVias = [];
       } else {
         viaCtrl?.setValue(null, { emitEvent: false });
-        viaCtrl?.disable({ emitEvent: false }); // Mantén deshabilitado hasta que llegue el response
+        viaCtrl?.disable({ emitEvent: false });
         this.catTipoVias = [];
+        this.cargarCatalogoVias(val);
       }
     });
 
     this.declaracionAnexoForm.get('idCatTipoDocumento')?.valueChanges.subscribe((val) => {
       const selectedValue = Number(val);
-
-      // === DESCRIPCION (último = Otro) ===
       const ultimo = this.catTipoDocumentos?.[this.catTipoDocumentos.length - 1];
       const esOtro = !!ultimo && selectedValue === Number(ultimo.idCatTipoDocumento);
 
       this.mostrarInputNombre = esOtro;
-
       const descCtrl = this.declaracionAnexoForm.get('descripcion');
 
       if (esOtro) {
@@ -198,7 +171,6 @@ export class CrearDemanda {
         const tipoSel = this.catTipoDocumentos.find(t => Number(t.idCatTipoDocumento) === selectedValue);
         this.declaracionAnexoForm.patchValue({ descripcion: tipoSel ? tipoSel.descripcion : '' }, { emitEvent: false });
       }
-
       descCtrl?.updateValueAndValidity({ emitEvent: false });
     });
 
@@ -210,192 +182,35 @@ export class CrearDemanda {
         valorCtrl.setValidators([Validators.required]);
       } else {
         valorCtrl.clearValidators();
-        valorCtrl.reset(null, { emitEvent: false });  // limpia el valor
-        valorCtrl.markAsPristine();                  // quita dirty
+        valorCtrl.reset(null, { emitEvent: false });
+        valorCtrl.markAsPristine();
         valorCtrl.markAsUntouched();
       }
-
-      valorCtrl?.updateValueAndValidity({ emitEvent: false });
+      valorCtrl.updateValueAndValidity({ emitEvent: false });
     });
-
   }
-  // Listener para el evento beforeunload
+
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: Event): void {
     if (this.formulario.dirty) {
-      // Muestra el mensaje de confirmación nativo del navegador
       event.preventDefault();
       (event as BeforeUnloadEvent).returnValue = 'Si realizas esta acción, los cambios se perderán.';
     }
   }
-  // Método para actualizar validadores
-  actualizarValidadores() {
-    const camposReadonly = ['nombre', 'correo', 'correoAlterno', 'direccion'];
 
-    if (this.filtroParte === 'manual') {
-      this.parteForm.get('nombre')?.setValidators([Validators.required, Validators.maxLength(100)]);
-      this.parteForm.get('apellidoPaterno')?.setValidators([Validators.required]);
-      this.parteForm.get('apellidoMaterno')?.setValidators([Validators.required]);
-      this.parteForm.reset();
+  // =============================================
+  // PARTES — solo modo manual
+  // =============================================
 
-      // Habilitar campos en modo manual
-      camposReadonly.forEach(campo => {
-        this.parteForm.get(campo)?.enable({ emitEvent: false });
-      });
-    } else {
-      this.parteForm.get('nombre')?.setValidators([Validators.required, Validators.maxLength(90)]);
-      this.parteForm.get('apellidoPaterno')?.clearValidators();
-      this.parteForm.get('apellidoMaterno')?.clearValidators();
-      this.parteForm.get('apellidoPaterno')?.setValue('');
-      this.parteForm.get('apellidoMaterno')?.setValue('');
-      this.parteForm.reset();
-      this.buscarUsr.reset();
-
-      // Deshabilitar campos en modo búsqueda
-      camposReadonly.forEach(campo => {
-        this.parteForm.get(campo)?.disable({ emitEvent: false });
-      });
-    }
-    this.parteForm.get('nombre')?.updateValueAndValidity();
-    this.parteForm.get('apellidoPaterno')?.updateValueAndValidity();
-    this.parteForm.get('apellidoMaterno')?.updateValueAndValidity();
-  }
-
-  // get partes(): FormArray {
-  //   return this.formulario.get('partes') as FormArray;
-  // }
-
-  // get documentos(): FormArray {
-  //   return this.formulario.get('documentos') as FormArray;
-  // }
-
-  onTipoBusquedaChange() {
-    this.tipoBusqueda = this.buscarUsr.get('tipoBusqueda')?.value;
-    this.buscarUsr.get('usuario')?.setValue('');
-    this.buscarUsr.clearValidators();
-  }
-
-  getPlaceholder() {
-    switch (this.tipoBusqueda) {
-      case "2": return '00000/2025';
-      case "1": return 'ID General';
-      case "3": return 'Código de llave';
-      case "4": return 'Número de empleado';
-      default: return '';
-    }
-  }
-
-  aplicarMascaraBusqueda(event: Event) {
-    const input = event.target as HTMLInputElement;
-    let valor = input.value;
-
-    if (this.tipoBusqueda === "2") {
-      // Solo números y agrega slash después de 5 dígitos
-      valor = valor.replace(/\D/g, '').slice(0, 9);
-      if (valor.length > 5) {
-        valor = valor.slice(0, 5) + '/' + valor.slice(5, 9);
-      }
-    } else if (this.tipoBusqueda === "1") {
-      // Solo números, máximo 6 dígitos
-      valor = valor.replace(/\D/g, '').slice(0, 6);
-    } else if (this.tipoBusqueda === "3") {
-      // Solo alfanumérico, máximo 8
-      valor = valor.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
-    } else if (this.tipoBusqueda === "4") {
-      // Solo números, máximo 4 dígitos
-      valor = valor.replace(/[^0-9]/g, '').slice(0, 4);
-    }
-
-    this.buscarUsr.get('usuario')?.setValue(valor, { emitEvent: false });
-  }
-
-  onBuscarUsuario() {
-    this.parteForm.reset();
-    this.isLoading = true; // Activa el spinner
-    const datosParte = this.buscarUsr.value;
-
-    const request = {
-      usuario: datosParte.usuario,
-      curp: datosParte.curp,
-      tipoBusqueda: datosParte.tipoBusqueda
-    };
-
-    this.juicioService.getDatosUsuario(request).subscribe({
-      next: (response) => {
-        this.isLoading = false; // Desactiva el spinner al recibir respuesta
-        if (response && response.success) {
-          this.usrData = response.data;
-          // Habilitar temporalmente para patchValue, luego deshabilitar
-          const camposReadonly = ['nombre', 'correo', 'correoAlterno', 'direccion'];
-          camposReadonly.forEach(campo => {
-            this.parteForm.get(campo)?.enable({ emitEvent: false });
-          });
-
-          this.parteForm.patchValue({
-            idUsr: this.usrData.idUsr,
-            nombre: this.usrData.nombre,
-            correo: this.usrData.correo,
-            correoAlterno: this.usrData.correoAlterno,
-            direccion: this.usrData.direccion
-          });
-          // Volver a deshabilitar
-          camposReadonly.forEach(campo => {
-            this.parteForm.get(campo)?.disable({ emitEvent: false });
-          });
-          this.messageService.add({ severity: 'success', summary: 'Datos encontrados', detail: "Verifique si los datos son correctos" });
-
-        } else {
-          this.messageService.add({ severity: 'info', summary: 'Verifique la información', detail: response.message });
-        }
-      },
-      error: (error) => {
-        this.isLoading = false; 
-        this.messageService.add({ severity: 'warn', summary: 'Ocurrió un error inesperado', detail: "Intente mas tarde" });
-
-        console.error('Error al obtener los datos del usuario:', error);
-      }
+  showDialog() {
+    this.editandoParte = false;
+    this.indiceParteEditando = -1;
+    this.parteForm.reset({
+      esMenorEdad: false,
+      idUsr: ''
     });
-
-  }
-
-  onVerificarFirma() {
-    this.isLoading = true;
-    const values = this.firmaForm.value;
-    const request = {
-      password_Efirma: values.password_Efirma
-    };
-
-    this.juicioService.verificarFirma(request).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        this.visibleFirma = false;
-        if (response && response.success) {
-          this.firmaVerificada = true;
-          this.messageService.add({ severity: 'success', summary: 'Firma verificada', detail: 'La firma digital es válida.' });
-        } else {
-          this.messageService.add({ severity: 'info', summary: 'Lo sentimos', detail: response?.message });
-          this.resetFirmaForm();
-
-        }
-      },
-      error: (error) => {
-        this.isLoading = false;
-        this.visibleFirma = false;
-        this.resetFirmaForm();
-
-      }
-    });
-  }
-
-  resetFirmaForm() {
-    this.firmaForm.reset();
-    this.visibleFirma = false;
-
-    // Restablece manualmente el campo de archivo
-    const fileInput = document.getElementById('firma') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
+    this.formEnviado = false;
+    this.visible = true;
   }
 
   agregarParte() {
@@ -417,28 +232,48 @@ export class CrearDemanda {
       direccion: (valores.direccion ?? '').toUpperCase(),
       correo: (valores.correo ?? '').toUpperCase(),
       correoAlterno: (valores.correoAlterno ?? '').toUpperCase(),
-      filtroParte: this.filtroParte,
+      filtroParte: 'manual',
     };
 
-    // Validación para evitar duplicados por idUsr
+    // Normaliza el nombre completo quitando espacios extra para comparar
+    const normalizar = (s: string) => (s ?? '').replace(/\s+/g, ' ').trim().toUpperCase();
+    const nombreCompleto = normalizar(
+      `${nuevaParte.nombre} ${nuevaParte.apellidoPaterno} ${nuevaParte.apellidoMaterno}`
+    );
+
+    const duplicado = this.listaPartes.some((p: PartesRequest, idx: number) => {
+      if (idx === this.indiceParteEditando) return false;
+      const nombreExistente = normalizar(
+        `${p.nombre} ${p.apellidoPaterno} ${p.apellidoMaterno}`
+      );
+      return nombreExistente === nombreCompleto;
+    });
+
+    if (duplicado) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Parte duplicada',
+        detail: 'Ya existe una parte con el mismo nombre completo.'
+      });
+      this.formEnviado = false;
+      this.parteForm.markAsUntouched();
+      return;
+    }
+
+    // Validar duplicado por correo
     if (
-      nuevaParte.idUsr &&
+      nuevaParte.correo &&
       this.listaPartes.some((p: PartesRequest, idx: number) =>
-        p.idUsr === nuevaParte.idUsr && idx !== this.indiceParteEditando
+        p.correo === nuevaParte.correo && idx !== this.indiceParteEditando
       )
     ) {
       this.messageService.add({
         severity: 'warn',
-        summary: 'Usuario duplicado',
-        detail: 'Este usuario ya fue agregado como parte.'
+        summary: 'Correo duplicado',
+        detail: 'Ya existe una parte con este correo electrónico.'
       });
-
       this.formEnviado = false;
-
-      //this.parteForm.markAsPristine();
       this.parteForm.markAsUntouched();
-      this.parteForm.updateValueAndValidity({ emitEvent: false });
-
       return;
     }
 
@@ -455,15 +290,11 @@ export class CrearDemanda {
       this.indiceParteEditando = -1;
     } else {
       this.listaPartes.push({ ...nuevaParte });
-      console.log('Parte agregada:', this.listaPartes);
     }
 
-    //  this.sincronizarFormArrayPartes();
     this.visible = false;
-    this.parteForm.reset();
+    this.parteForm.reset({ esMenorEdad: false, idUsr: '' });
     this.formEnviado = false;
-    //this.formulario.get('partes')?.updateValueAndValidity();
-    this.resetAnexoForm();
   }
 
   editarParte(index: number) {
@@ -471,31 +302,43 @@ export class CrearDemanda {
     this.indiceParteEditando = index;
 
     const parte = this.listaPartes[index];
-    // Asigna el filtro según cómo fue creada la parte
-    this.filtroParte = parte.filtroParte || (
-      (!parte.apellidoPaterno && !parte.apellidoMaterno) ? 'busqueda' : 'manual'
-    );
-    this.buscarUsr.reset(); // Limpia el formulario de búsqueda de usuario
-    this.actualizarValidadores(); // Asegura validadores correctos
+    this.parteForm.reset({ esMenorEdad: false, idUsr: '' });
     this.parteForm.patchValue(parte);
+    this.formEnviado = false;
     this.visible = true;
-
-    this.resetAnexoForm(); // Resetea el formulario de anexos
   }
 
   eliminarParte(index: number) {
     this.listaPartes.splice(index, 1);
-    //  this.sincronizarFormArrayPartes();
-    // Notifica al formulario que se ha actualizado el array de partes
-    //  this.formulario.get('partes')?.updateValueAndValidity();
-
   }
 
   resetParteForm() {
-    this.buscarUsr.reset(); // Limpia el formulario de búsqueda de usuario
-    this.parteForm.reset(); // Limpia el formulario de partes
-    this.visible = false;   // Cierra el modal de partes
-    this.formEnviado = false; // Resetea el estado de envío
+    this.parteForm.reset({ esMenorEdad: false, idUsr: '' });
+    this.editandoParte = false;
+    this.indiceParteEditando = -1;
+    this.formEnviado = false;
+    this.visible = false;
+  }
+
+  confirm1(event: Event, index: number) {
+    this.confirmationService.confirm({
+      key: 'parte',
+      target: event.target as EventTarget,
+      accept: () => this.eliminarParte(index),
+      reject: () => { }
+    });
+  }
+
+  // =============================================
+  // ANEXOS / DOCUMENTOS
+  // =============================================
+
+  showModalAnexo() {
+    this.visibleAnexo = true;
+  }
+
+  showModalListAnexo() {
+    this.visibleListAnexo = true;
   }
 
   agregarListAnexo() {
@@ -506,33 +349,25 @@ export class CrearDemanda {
 
     const raw = this.declaracionAnexoForm.getRawValue();
     const id = Number(raw.idCatTipoDocumento);
-
     const cantidadNueva = Number(raw.cantidad ?? 0);
     const valorNuevo = raw.valor != null && raw.valor !== '' ? Number(raw.valor) : undefined;
     const descripcionNueva = (raw.descripcion ?? '').toString().trim();
 
-    // Regla:
-    //  Si trae "valor" => siempre agregar como nuevo
-    //  Si NO trae "valor" => evitar duplicado por id, sumando cantidad
     if (valorNuevo === undefined) {
       const idxExistente = this.anexosDeclarados.findIndex(a =>
         Number(a.idCatTipoDocumento) === id && (a.valor == null)
       );
-
       if (idxExistente !== -1) {
         this.anexosDeclarados[idxExistente] = {
           ...this.anexosDeclarados[idxExistente],
           cantidad: Number(this.anexosDeclarados[idxExistente].cantidad ?? 0) + cantidadNueva,
-          // si la descripción existente está vacía, toma la nueva
           descripcion: (this.anexosDeclarados[idxExistente].descripcion ?? '').toString().trim() || descripcionNueva
         };
-
         this.resetDeclaracionAnexoForm();
         return;
       }
     }
 
-    // Si trae valor insertar nuevo
     this.anexosDeclarados.push({
       idCatTipoDocumento: id,
       descripcion: descripcionNueva,
@@ -543,86 +378,28 @@ export class CrearDemanda {
     this.resetDeclaracionAnexoForm();
   }
 
-  onToggleFirmaDigital(event: Event) {
-    const checked = (event.target as HTMLInputElement).checked;
-    this.anexoForm.patchValue({ firmaDigital: checked ? 1 : 0 });
-  }
-
-  resetAnexoForm() {
-    this.anexoForm.reset(); // Reinicia el formulario
-
-    this.mostrarInputNombre = false; // Oculta el campo de texto personalizado
-    this.mostrarCampoValor = false;  // Oculta el campo de "valor"
-
-    // Limpia validadores del campo "valor"
-    const valorCtrl = this.anexoForm.get('valor');
-    valorCtrl?.clearValidators();
-    valorCtrl?.updateValueAndValidity();
-
-    this.visibleAnexo = false; // Cierra el modal
-
-    // Restablece manualmente el campo de archivo
-    const fileInput = document.getElementById('documento') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = ''; // Restablece el valor del campo de archivo
-    }
-  }
-
-  resetDeclaracionAnexoForm() {
-    this.declaracionAnexoForm.reset({
-      cantidad: 1,     // <- vuelve al default
-    });
-    this.visibleListAnexo = false;
-  }
-
-  eliminarAnexoDeclarado(index: number) {
-    this.anexosDeclarados.splice(index, 1);
-    //    this.sincronizarFormArrayDocumentos(); // <-- sincroniza el FormArray
-
-    // Notifica al formulario que se ha actualizado el array de documentos
-    //this.formulario.get('documentos')?.updateValueAndValidity();
-
-  }
-  eliminarAnexo(index: number) {
-    this.listaAnexos.splice(index, 1);
-    //    this.sincronizarFormArrayDocumentos(); // <-- sincroniza el FormArray
-
-    // Notifica al formulario que se ha actualizado el array de documentos
-    //this.formulario.get('documentos')?.updateValueAndValidity();
-
-  }
-
   onAnexosSelect(event: any): void {
     const files: File[] = event?.files ?? event?.currentFiles ?? [];
-
     if (!files.length) return;
 
     for (const file of files) {
       if (!(file instanceof File)) continue;
-
       const nuevoAnexo: DocumentosRequest = {
         nombre: file.name,
         documento: file,
-        firmaDigital: 0,   // pendiente
+        firmaDigital: 0,
         peso: file.size
       };
-
-      console.log('Archivo seleccionado:', nuevoAnexo);
       this.listaAnexos.push(nuevoAnexo);
     }
-
-    // limpia el selector para poder volver a elegir el mismo archivo si hace falta
-    //this.fu?.clear();
-
-    // opcional: cerrar modal al seleccionar
     this.visibleAnexo = false;
   }
 
   onFirmaDigitalChange(index: number, checked: boolean): void {
     if (index < 0 || index >= this.listaAnexos.length) return;
     this.listaAnexos[index].firmaDigital = checked ? 1 : 0;
-    console.log('Cambio firmaDigital en índice', index, 'a', this.listaAnexos);
   }
+
   verDocumento(anexo: DocumentosRequest): void {
     if (anexo?.documento instanceof File) {
       const url = URL.createObjectURL(anexo.documento);
@@ -634,28 +411,37 @@ export class CrearDemanda {
     }
   }
 
-  showDialog() {
-    this.buscarUsr.reset();
-    this.editandoParte = false;
-    this.visible = true;
-    this.formEnviado = false; // <-- reset para el siguiente uso
-    this.actualizarValidadores(); // <-- ¡Agrega esto!
+  resetAnexoForm() {
+    this.anexoForm.reset();
+    this.mostrarInputNombre = false;
+    this.mostrarCampoValor = false;
 
+    const valorCtrl = this.anexoForm.get('valor');
+    valorCtrl?.clearValidators();
+    valorCtrl?.updateValueAndValidity();
+
+    this.visibleAnexo = false;
+
+    const fileInput = document.getElementById('documento') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
   }
 
-  showModalAnexo() {
-    this.visibleAnexo = true;
+  resetDeclaracionAnexoForm() {
+    this.declaracionAnexoForm.reset({ cantidad: 1 });
+    this.visibleListAnexo = false;
   }
-  showModalListAnexo() {
-    this.visibleListAnexo = true;
+
+  eliminarAnexoDeclarado(index: number) {
+    this.anexosDeclarados.splice(index, 1);
   }
-  confirm1(event: Event, index: number) {
-    this.confirmationService.confirm({
-      key: 'parte',
-      target: event.target as EventTarget,
-      accept: () => this.eliminarParte(index),
-      reject: () => { }
-    });
+
+  eliminarAnexo(index: number) {
+    this.listaAnexos.splice(index, 1);
+  }
+
+  onToggleFirmaDigital(event: Event) {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.anexoForm.patchValue({ firmaDigital: checked ? 1 : 0 });
   }
 
   confirm2(event: Event, index: number) {
@@ -668,6 +454,7 @@ export class CrearDemanda {
       reject: () => { }
     });
   }
+
   confirm3(event: Event, index: number) {
     this.confirmationService.confirm({
       key: 'declarado',
@@ -677,33 +464,79 @@ export class CrearDemanda {
     });
   }
 
+  // =============================================
+  // FIRMA FIEL
+  // =============================================
+
+  /** Devuelve true si al menos un documento requiere firma digital */
+  get requiereFirma(): boolean {
+    return this.listaAnexos.some(a => a.firmaDigital === 1);
+  }
+
   autorizarFirel(event: Event) {
     this.confirmationService.confirm({
       key: 'firma',
       target: event.target as EventTarget,
-      accept: () => this.onVerificarFirma(),
+      accept: () => this.visibleFirma = true,
       reject: () => { }
     });
   }
 
-  // ...existing code...
-  enviarDemanda(event: Event) {
-      this.confirmationService.confirm({
-        key: 'demanda',
-        target: event.target as EventTarget,
-        accept: () => this.enviarFormulario(),
-        reject: () => {
-          this.formulario.reset();
-          this.listaPartes = [];
-          this.listaAnexos = [];
-          this.anexosDeclarados = [];
-        }
-      });
+  onVerificarFirma() {
+    if (this.firmaForm.invalid) {
+      this.firmaForm.markAllAsTouched();
+      return;
     }
-  // ...existing code...
+
+    this.isLoading = true;
+    const values = this.firmaForm.value;
+
+    this.juicioService.verificarFirma({ password_Efirma: values.password_Efirma }).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.visibleFirma = false;
+        if (response && response.success) {
+          this.firmaVerificada = true;
+          this.messageService.add({ severity: 'success', summary: 'Firma verificada', detail: 'La firma digital es válida.' });
+        } else {
+          this.messageService.add({ severity: 'info', summary: 'Lo sentimos', detail: response?.message });
+          this.resetFirmaForm();
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+        this.visibleFirma = false;
+        this.resetFirmaForm();
+      }
+    });
+  }
+
+  resetFirmaForm() {
+    this.firmaForm.reset();
+    this.visibleFirma = false;
+    this.firmaVerificada = false;
+  }
+
+  // =============================================
+  // ENVÍO
+  // =============================================
+
+  /**
+   * Botón principal:
+   *  - Si hay documentos con firma y aún no se verificó → muestra modal de firma
+   *  - Si no hay documentos con firma (o ya se verificó) → confirma y envía
+   */
+  enviarDemanda(event: Event) {
+    this.confirmationService.confirm({
+      key: 'demanda',
+      target: event.target as EventTarget,
+      accept: () => this.enviarFormulario(),
+      reject: () => this.limpiarTodo()
+    });
+  }
 
   enviarFormulario() {
-    this.isLoading = true; // Activa el spinner
+    this.isLoading = true;
 
     const formValue = this.formulario.getRawValue();
     const data = {
@@ -716,33 +549,26 @@ export class CrearDemanda {
 
     const formData = new FormData();
 
-    formData.append('password_Efirma', this.firmaForm.value.password_Efirma);
-    console.log('data a enviar:', data);
-    console.log('Datos a enviar:', data);
+    if (this.firmaVerificada) {
+      formData.append('password_Efirma', this.firmaForm.value.password_Efirma ?? '');
+    }
+
     Object.keys(data).forEach(key => {
-      if (Array.isArray(data[key])) {
+      if (Array.isArray((data as any)[key])) {
         if (key === 'partes') {
-          data[key].forEach((parte, index) => {
+          (data as any)[key].forEach((parte: any, index: number) => {
             const { descripcionTipoParte, ...parteSinDescripcion } = parte;
             Object.keys(parteSinDescripcion).forEach(subKey => {
-              // Si el campo es apellidoPaterno, apellidoMaterno o idUsr y está vacío, NO lo envíes
               if (
-                (
-                  subKey === 'apellidoPaterno' ||
-                  subKey === 'apellidoMaterno' ||
-                  subKey === 'idUsr'
-                ) &&
+                (subKey === 'apellidoPaterno' || subKey === 'apellidoMaterno' || subKey === 'idUsr') &&
                 (!parteSinDescripcion[subKey] || parteSinDescripcion[subKey].toString().trim() === '')
-              ) {
-                // No hacer append, omitir el campo
-                return;
-              }
+              ) return;
               formData.append(`partes[${index}][${subKey}]`, parteSinDescripcion[subKey]);
             });
           });
         }
         if (key === 'documentos') {
-          data[key].forEach((documento, index) => {
+          (data as any)[key].forEach((documento: any, index: number) => {
             Object.keys(documento).forEach(subKey => {
               if (subKey === 'documento' && documento[subKey] instanceof File) {
                 formData.append(`documentos[${index}][${subKey}]`, documento[subKey]);
@@ -760,141 +586,59 @@ export class CrearDemanda {
           });
         }
       } else {
-        formData.append(key, data[key]);
+        formData.append(key, (data as any)[key]);
       }
     });
-    console.log('Datos a enviar:', formData);
 
     this.juicioService.crearInicio(formData).subscribe({
       next: (respuesta) => {
-        this.isLoading = false; // Desactiva el spinner al recibir respuesta
+        this.isLoading = false;
         if (respuesta && respuesta.success) {
           this.folio = respuesta.data.folio;
           const idPreregistro = respuesta.data.idPreregistro;
           this.confirmationService.confirm({
             key: 'success',
-            accept: () => {
-              this.detalle(idPreregistro);
-            },
-            reject: () => {
-              this.formulario.reset();
-              this.listaPartes = [];
-              this.listaAnexos = [];
-              this.anexosDeclarados = [];
-            }
+            accept: () => this.detalle(idPreregistro),
+            reject: () => this.limpiarTodo()
           });
         }
       },
-      error: (error) => {
-        this.isLoading = false; // Desactiva el spinner si hay error
-        this.messageService.add({ severity: 'warn', summary: 'Error', detail: "Ocurrió un error" });
+      error: () => {
+        this.isLoading = false;
+        this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ocurrió un error' });
       }
     });
+  }
+
+  /** Limpia todos los formularios y listas */
+  limpiarTodo() {
+    this.formulario.reset();
+    this.parteForm.reset({ esMenorEdad: false, idUsr: '' });
+    this.firmaForm.reset();
+    this.declaracionAnexoForm.reset({ cantidad: 1 });
+    this.anexoForm.reset();
+    this.listaPartes = [];
+    this.listaAnexos = [];
+    this.anexosDeclarados = [];
+    this.firmaVerificada = false;
+    this.editandoParte = false;
+    this.indiceParteEditando = -1;
+    this.formEnviado = false;
+    this.folio = null;
   }
 
   detalle(idInicio: number) {
-    console.log('Navegando a detalle:', idInicio);
     this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idInicio } });
   }
 
-  getError(controlName: string, form: FormGroup = this.parteForm): string {
-    const control = form.get(controlName);
-
-    if (control?.hasError('required')) {
-      return 'Este campo es obligatorio';
-    } else if (control?.hasError('pattern')) {
-      return 'Formato inválido';
-    } else if (control?.hasError('maxlength')) {
-      return 'Se excedió el número máximo de caracteres';
-    }
-
-    return '';
-  }
-  shouldShowError(controlName: string, form: FormGroup = this.parteForm): boolean {
-    const control = form.get(controlName);
-    return control ? control.invalid && (control.dirty || control.touched || this.formEnviado) : false;
-  }
-
-  cargarCatalogoMaterias() {
-    this.juicioService.getCatalogoMaterias().subscribe({
-      next: (materias) => {
-        this.catMaterias = materias;
-      },
-      error: (error) => {
-        console.error('Error al cargar el catálogo de materias:', error);
-      }
-    });
-  }
-
-  cargarCatalogoVias(idCatMateria: number | null) {
-    const viaCtrl = this.formulario.get('idCatTipoVia');
-
-    // Limpia siempre 
-    this.catTipoVias = [];
-    viaCtrl?.setValue(null, { emitEvent: false });
-    viaCtrl?.disable({ emitEvent: false });
-
-    if (idCatMateria == null) return;
-
-    this.juicioService.getCatalogoVias(idCatMateria).subscribe({
-      next: (vias) => {
-        this.catTipoVias = vias ?? [];
-        viaCtrl?.enable({ emitEvent: false });
-      },
-      error: (error) => {
-        // ya quedó limpio y deshabilitado arriba
-        console.error('Error al cargar el catálogo de vías:', error);
-      }
-    });
-  }
-  cargarCatalogoSexos() {
-    this.juicioService.getCatalogoSexos().subscribe({
-      next: (response) => {
-        this.catSexos = response.data;
-      },
-      error: (error) => {
-        console.error('Error al cargar el catálogo de materias:', error);
-      }
-    });
-  }
-
-  cargarCatalogoTipoPartes() {
-    this.juicioService.getCatalogoTipoPartes().subscribe({
-      next: (response) => {
-        this.catTipoPartes = response;
-      },
-      error: (error) => {
-        console.error('Error al cargar el catálogo de materias:', error);
-      }
-    });
-  }
-  cargarCatalogoMunicipios() {
-    this.juicioService.getCatalogoMunicipios().subscribe({
-      next: (response) => {
-        this.catMunicipios = response;
-      },
-      error: (error) => {
-        console.error('Error al cargar el catálogo de materias:', error);
-      }
-    });
-  }
-  cargarCatTipoDocumento() {
-    this.juicioService.getCatTipoDocumento().subscribe({
-      next: (tipoDocumento) => {
-        this.catTipoDocumentos = tipoDocumento;
-        console.log('Cataolog documentos cargados:', this.catTipoDocumentos);
-      },
-      error: (error) => {
-        console.error('Error al cargar el catálogo de materias:', error);
-      }
-    });
-  }
+  // =============================================
+  // VALIDACIONES
+  // =============================================
 
   private validarPartesYDocumentosListas(): boolean {
     const partes = this.listaPartes ?? [];
     const documentos = this.listaAnexos ?? [];
 
-    // regla: mínimo 1 y 1
     if (partes.length < 1 || documentos.length < 1) return false;
 
     const actores = [1, 2, 3, 4, 5, 21, 22, 24, 25];
@@ -906,38 +650,91 @@ export class CrearDemanda {
     return tieneActor && tieneDemandado;
   }
 
+  /** Habilita el botón de acción principal (enviar o firma) */
   canEnviar(): boolean {
     return this.formulario.valid && this.validarPartesYDocumentosListas();
   }
+
+  /**
+   * Texto e ícono del botón principal según estado:
+   *  - requiere firma y no verificada → "Autorizar Firma"
+   *  - no requiere firma o ya verificada → "Enviar Demanda"
+   */
   correosDiferentesValidator(form: FormGroup) {
-    // Solo aplica en modo manual
-    if (this.filtroParte === 'manual') {
-      const correo = form.get('correo')?.value?.toLowerCase().trim();
-      const correoAlterno = form.get('correoAlterno')?.value?.toLowerCase().trim();
-      if (correo && correoAlterno && correo === correoAlterno) {
-        return { correosIguales: true };
-      }
+    const correo = form.get('correo')?.value?.toLowerCase().trim();
+    const correoAlterno = form.get('correoAlterno')?.value?.toLowerCase().trim();
+    if (correo && correoAlterno && correo === correoAlterno) {
+      return { correosIguales: true };
     }
     return null;
   }
 
-  // startTutorial() {
-  //   const driverObj = driver({
-  //     nextBtnText: 'Siguiente',
-  //     prevBtnText: 'Atrás',
-  //     doneBtnText: 'Finalizar',
-  //     showProgress: true,
-  //     showButtons: ['next', 'previous'],
-  //     steps: [
-  //       { element: '#idCatMunicipio', popover: { title: 'Selecciona un municipio', description: 'Haz clic aquí y elige el municipio donde quieras llevar a cabo tu proceso.', side: "left", align: 'start' } },
-  //       { element: '#idCatMateria', popover: { title: 'Selecciona la materia del caso', description: 'Haz clic aquí y elige la materia a la que pertenece tu demanda.', side: "left", align: 'start' } },
-  //       { element: '#idCatTipoVia', popover: { title: 'Elige la vía correspondiente', description: 'Después de seleccionar la materia, selecciona la vía que aplique a tu demanda.', side: "bottom", align: 'start' } },
-  //       { element: '#descripcionDemanda', popover: { title: 'Describe brevemente tu demanda', description: 'Escribe un resumen corto que explique el motivo o el contexto de la demanda.', side: "bottom", align: 'start' } },
-  //       { element: '#agregarParte', popover: { title: 'Agrega una parte al expediente', description: 'Presiona este botón para añadir una persona u organización relacionada con la demanda .', side: "left", align: 'start' } },
-  //       { element: '#listadoPartes', popover: { title: 'Listado de partes agregadas', description: 'Aquí verás todas las partes que hayas agregado. Puedes editarlas o eliminarlas si es necesario', side: "left", align: 'start' } },
-  //     ]
-  //   });
+  getError(controlName: string, form: FormGroup = this.parteForm): string {
+    const control = form.get(controlName);
+    if (control?.hasError('required')) return 'Este campo es obligatorio';
+    if (control?.hasError('pattern')) return 'Formato inválido';
+    if (control?.hasError('maxlength')) return 'Se excedió el número máximo de caracteres';
+    return '';
+  }
 
-  //   driverObj.drive();
-  // }
+  shouldShowError(controlName: string, form: FormGroup = this.parteForm): boolean {
+    const control = form.get(controlName);
+    return control ? control.invalid && (control.dirty || control.touched || this.formEnviado) : false;
+  }
+
+  // =============================================
+  // CATÁLOGOS
+  // =============================================
+
+  cargarCatalogoMaterias() {
+    this.juicioService.getCatalogoMaterias().subscribe({
+      next: (materias) => { this.catMaterias = materias; },
+      error: (error) => { console.error('Error al cargar materias:', error); }
+    });
+  }
+
+  cargarCatalogoVias(idCatMateria: number | null) {
+    const viaCtrl = this.formulario.get('idCatTipoVia');
+    this.catTipoVias = [];
+    viaCtrl?.setValue(null, { emitEvent: false });
+    viaCtrl?.disable({ emitEvent: false });
+
+    if (idCatMateria == null) return;
+
+    this.juicioService.getCatalogoVias(idCatMateria).subscribe({
+      next: (vias) => {
+        this.catTipoVias = vias ?? [];
+        viaCtrl?.enable({ emitEvent: false });
+      },
+      error: (error) => { console.error('Error al cargar vías:', error); }
+    });
+  }
+
+  cargarCatalogoSexos() {
+    this.juicioService.getCatalogoSexos().subscribe({
+      next: (response) => { this.catSexos = response.data; },
+      error: (error) => { console.error('Error al cargar sexos:', error); }
+    });
+  }
+
+  cargarCatalogoTipoPartes() {
+    this.juicioService.getCatalogoTipoPartes().subscribe({
+      next: (response) => { this.catTipoPartes = response; },
+      error: (error) => { console.error('Error al cargar tipo partes:', error); }
+    });
+  }
+
+  cargarCatalogoMunicipios() {
+    this.juicioService.getCatalogoMunicipios().subscribe({
+      next: (response) => { this.catMunicipios = response; },
+      error: (error) => { console.error('Error al cargar municipios:', error); }
+    });
+  }
+
+  cargarCatTipoDocumento() {
+    this.juicioService.getCatTipoDocumento().subscribe({
+      next: (tipoDocumento) => { this.catTipoDocumentos = tipoDocumento; },
+      error: (error) => { console.error('Error al cargar tipo documentos:', error); }
+    });
+  }
 }

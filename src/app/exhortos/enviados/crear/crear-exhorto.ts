@@ -2002,7 +2002,7 @@ export class CrearExhortoComponent {
   modalClosed(id: number) {
     //cuando se cierra la modal de confirmacion de envio de archivos, redireccionamos a la busqueda principal
     //console.log(id)
-    this.router.navigate(['/inicio/exhortos/exhortos-enviados'], { state: { id } });
+    this.router.navigate(['/exhortos/lista-exhortos-enviados'], { state: { id } });
   }
 
   GetSeccionesUsuario(): Promise<void> {

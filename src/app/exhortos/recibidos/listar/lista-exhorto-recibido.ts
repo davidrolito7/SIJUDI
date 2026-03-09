@@ -270,9 +270,16 @@ export class ListaExhortosRecibidos implements OnInit {
               this.listadoEstatus = response.data;
               //var todos = { "idEstatus": 0, "descripcion": "Todos", "Activo":true, "idTipoTramite":1 };
               //this.listadoEstatus.push(todos);
-              this.selectedEstatus=this.listadoEstatus.find(f=>f.idEstatus==5);
-               this.ListaExhortos();
-              console.log(this.listadoEstatus);
+              const perfil = this.authService.getRoleNameUsuario(); // Obtener perfil del servicio
+              console.log(perfil);
+              if(['Oficialia','Secretario'].includes(perfil)){
+                this.selectedEstatus=this.listadoEstatus.find(f=>f.idEstatus==5); // por default que carhue estatus Recibido
+              }else{
+                this.selectedEstatus=this.listadoEstatus.find(f=>f.idEstatus==7); // por default que cargue estatus Acordado
+              }
+
+              this.ListaExhortos();
+              //console.log(this.listadoEstatus);
             }
             else
             {

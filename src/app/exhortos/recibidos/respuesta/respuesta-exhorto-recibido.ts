@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, inject, signal, Signal } from '@angular/c
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { TableModule } from "primeng/table";
 import { Button } from "primeng/button";
-import { archivos, EnviadoRespuestaArchivosResponse, respuestaExhorto } from '../../interfaces/exhortos.model';
+import { archivos, EnviadoRespuestaArchivosResponse, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
@@ -56,6 +56,8 @@ export class RespuestaExhortoRecibido {
   tienePermisoEnviarGenerales = signal<boolean>(false);
   tienePermisoEnviarArchivos= signal<boolean>(false);
   tienePermisoEliminarArchivo =signal<boolean>(false);
+  puedeEnviarGenerales= signal<boolean>(false);
+  movimientos = signal<VerMovimientosResponse[]>([]);
   private perfilSeleccionadoService = inject(AuthService);
   perfilSeleccionado! : Signal<string>;
   enviadoRespuestaArchivosResponse! : EnviadoRespuestaArchivosResponse ;
@@ -82,7 +84,7 @@ export class RespuestaExhortoRecibido {
     if (state && state.idExhortoRecibido) {
       this.idNotificacion = state.idExhortoRecibido;
       this.cargarDetallesPromocion(this.idNotificacion); // Cargar los detalles de la notifiacion con el idNotificacion
-
+      this.obtenerMovimientos(this.idNotificacion);
 
     } else {
       // Si no hay state, redirigir a la lista de amparos
@@ -201,6 +203,18 @@ export class RespuestaExhortoRecibido {
             if(this.detallesAcuerdo.generales.fechaHoraRecepcion!=null){
               this.archivosEnviado=true;
             }
+          }
+          if(this.detallesAcuerdo.archivos.length>0)
+          {
+            // Buscar si existe un archivo con idTipoDocumento = 2
+            const archivoTipo2 = this.detallesAcuerdo.archivos.find(a => a.idTipoDocumento === 2);
+
+            // Validar que ese archivo tenga exactamente dos firmantes
+            const tieneDosFirmas = archivoTipo2?.firmantes?.length === 2;
+            // se puede empezar enviar la respuesta con la condicion de que:
+            // se debe tener un documento de tipo=2 Acuerdo
+            // el documento de tipo 2 debe tener al menos dos firmas: del secretario y del juez
+            this.puedeEnviarGenerales.set(tieneDosFirmas);
           }
           //console.log(this.detallesAcuerdo);
           //this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
@@ -339,5 +353,21 @@ export class RespuestaExhortoRecibido {
   }
   hideDialogAcuse() {
     this.envioDialog = false;
+  }
+  obtenerMovimientos(idExhortoRecibido: number) {
+    this.exhortosService.getMovimientos(idExhortoRecibido).subscribe({
+        next:(response => {
+            //console.log('Datos recibidos:', response);
+            this.movimientos.set(response.data); // Almacena los datos recibidos en la variable
+            const maxId = Math.max(...this.movimientos().map(m => m.idMovimiento));
+
+
+            this.puedeEnviarGenerales.set(maxId>9 ? true:false);
+          }),
+        error:(error) => {
+            //console.error('Error al cargar los movimientos del exhorto', error);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+        }
+    });
   }
 }

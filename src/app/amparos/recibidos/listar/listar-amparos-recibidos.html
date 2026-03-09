@@ -20,6 +20,7 @@
             <!-- Estatus -->
             <div class="col-span-6 lg:col-span-3 w-full">
                 <label class="block mb-2 text-sm font-medium">Estatus</label>
+                {{selectedEstatus?.idEstatus}}
                 <p-select inputId="idEstatus" class="w-full"
                     [options]="[...listaEstatus(), { idEstatus: 0, nombre: 'Todos' }]"
                     [(ngModel)]="selectedEstatus" optionLabel="nombre" appendTo="body" fluid></p-select>
