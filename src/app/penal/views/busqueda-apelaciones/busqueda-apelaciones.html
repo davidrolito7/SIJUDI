@@ -4,9 +4,9 @@
 <app-breadcrub></app-breadcrub>
 
 <!-- <div class="card flex justify-center mt-4 "> -->
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+<div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
     <div class="card ">
-    <p-accordion [(value)]="activeIndex" class="p-accordioncontent-content-0" >
+    <p-accordion [(value)]="activeIndex" class="p-accordioncontent-content-0 bg-surface-0 dark:bg-surface-0" >
         <p-accordion-panel value="0" >
 
             <p-accordion-header class="dark:text-surface-0">
@@ -20,7 +20,7 @@
                 <form #myForm="ngForm" (ngSubmit)="BusquedaFiltros()" aria-label="Filtros de búsqueda de apelaciones">
 
                     <div class="card">
-                        <p-fieldset legend="Datos de Apelación">
+                        <p-fieldset legend="Datos de Apelación" class="p-fieldset-legend-background-transparent">
 
                             <div class=" flex flex-wrap grid-cols-12 gap-4 w-full">
 
@@ -159,7 +159,7 @@
 </div>
 
 
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+<div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
         <div>
             <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
