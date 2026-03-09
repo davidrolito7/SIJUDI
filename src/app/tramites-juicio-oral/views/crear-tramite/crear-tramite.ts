@@ -29,7 +29,7 @@ import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
     Spinner, TextareaModule, FileUploadModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Breadcrub,
     PdfDialog
-],
+  ],
   templateUrl: './crear-tramite.html',
   styleUrl: './crear-tramite.css',
   providers: [ConfirmationService]
@@ -67,37 +67,64 @@ export class CrearTramite {
   ) { }
 
   loading = false;
-
+  catTipoTramite = [
+    { label: 'CAUSA', value: 33 },
+    { label: 'CUADERNO DE EJECUCIÓN', value: 47 },
+  ];
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
-    this.loadCatJuzgados();
 
     this.validarCausaForm = this.fb.group({
-      numeroCausa: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
-      idJuzgado: [null, Validators.required],
+      idCatTipoTramite: [null, Validators.required],
+      numeroExpediente: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
+      idJuzgado: [{ value: null, disabled: true }, Validators.required],
       observaciones: [''],
       idPantalla: [1]
+    });
+  }
+
+  cargarCatalogoJuzgados(idCatTipoTramite: number | null) {
+    const juzgadoCtrl = this.validarCausaForm.get('idJuzgado');
+    this.catJuzgados = [];
+    juzgadoCtrl?.setValue(null, { emitEvent: false });
+    juzgadoCtrl?.disable({ emitEvent: false });
+    this.mostrarAddDocumentos.set(false);
+    this.causaValidada = null;
+    this.documentosAnexados = [];
+
+    if (idCatTipoTramite == null) return;
+
+    this.isLoading = true;
+    this.apiService.getCatJuzgados({ idCatTipoTramite }).subscribe({
+      next: (response) => {
+        this.catJuzgados = response.data;
+        juzgadoCtrl?.enable({ emitEvent: false });
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar juzgados:', error);
+        this.isLoading = false;
+      }
     });
   }
 
   onValidarCausa() {
     this.isLoading = true;
     this.mostrarAddDocumentos.set(false);
-    const params = this.validarCausaForm.value;
+    const params = this.validarCausaForm.getRawValue();
     this.apiService.postValidarCausa(params).subscribe(
       (response) => {
         this.isLoading = false;
         if (response.success) {
-          this.causaValidada = response.data,
-            this.mostrarAddDocumentos.set(true);
+          this.causaValidada = response.data;
+          this.mostrarAddDocumentos.set(true);
         } else {
           this.confirmationService.confirm({
             key: 'info',
             accept: () => { },
           });
         }
-
       },
       (error) => {
         this.mostrarAddDocumentos.set(false);
@@ -145,7 +172,7 @@ export class CrearTramite {
     });
 
   }
-    onEnviarPromocion() {
+  onEnviarPromocion() {
     this.confirmationService.confirm({
       key: 'promocion',
       accept: () => this.onEnviarTramite(),
@@ -167,10 +194,14 @@ export class CrearTramite {
     this.isLoading = true;
 
     const formData = new FormData();
-    const formValue = this.validarCausaForm.value;
+    const formValue = this.validarCausaForm.getRawValue();
 
-    formData.append('idCausa', this.causaValidada?.idCausa?.toString() ?? '');
-    formData.append('IdCatJuzgado', this.causaValidada?.idCatJuzgado?.toString() ?? '');
+    // idExpediente: si es causa usa idCausa, si es cuaderno usa idCuaderno
+    const idExpediente = this.causaValidada?.idCausa ?? this.causaValidada?.idCuaderno ?? 0;
+
+    formData.append('idExpediente', idExpediente.toString());
+    formData.append('idCatTipoTramite', formValue.idCatTipoTramite?.toString() ?? '0');
+    formData.append('IdCatJuzgado', this.causaValidada?.idCatJuzgado?.toString() ?? '0');
     formData.append('Observaciones', formValue.observaciones ?? '');
 
     this.documentosAnexados.forEach((file) => {
@@ -179,25 +210,22 @@ export class CrearTramite {
 
     this.apiService.postEnviarTramite(formData).subscribe({
       next: (response) => {
-        this.isLoading = false
+        this.isLoading = false;
         this.tramitesElectronicosRecibidos = response.data;
         this.confirmationService.confirm({
           key: 'success',
           accept: () => {
             this.mostrarAddDocumentos.set(false);
-
             this.validarCausaForm.reset();
             this.documentosAnexados = [];
             this.causaValidada = null;
           },
           reject: () => {
             this.mostrarAddDocumentos.set(false);
-
             this.validarCausaForm.reset();
             this.documentosAnexados = [];
             this.causaValidada = null;
           }
-
         });
       },
       error: () => (this.isLoading = false),

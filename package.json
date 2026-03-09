@@ -37,6 +37,7 @@
     "@primeuix/themes": "^2.0.2",
     "angularx-qrcode": "^21.0.4",
     "dayjs": "^1.11.19",
+    "driver.js": "^1.4.0",
     "express": "^5.1.0",
     "jwt-decode": "^4.0.0",
     "pdfmake": "^0.3.3",

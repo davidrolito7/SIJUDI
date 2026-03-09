@@ -8,7 +8,7 @@ import { checkToken } from '../../core/auth/interceptor/token.interceptor';
   providedIn: 'root',
 })
 export class ApiService {
-  private apiUrl = 'https://api.tribunaloaxaca.gob.mx/juiciooralApi/api/PromocionesJuicioOral'; // Replace with your API URL
+  private apiUrl = 'https://localhost:7057/api/PromocionesJuicioOral'; // Replace with your API URL
 private nasApiUrl = 'https://api.tribunaloaxaca.gob.mx/NasApi/api'
   constructor(private http: HttpClient) { }
 
@@ -21,12 +21,12 @@ private nasApiUrl = 'https://api.tribunaloaxaca.gob.mx/NasApi/api'
     );
   }
 
-    getCatJuzgados(): Observable<ApiResponse<CatJuzgadoResponse[]>> {
+    getCatJuzgados(params?: any): Observable<ApiResponse<CatJuzgadoResponse[]>> {
     const url = `${this.apiUrl}/CatalogoJuzgados`;
     return this.http.post<ApiResponse<CatJuzgadoResponse[]>>(
       url,
       null,
-      { context: checkToken() }
+      { params, context: checkToken() }
     );
   }
   postValidarCausa(params?: any): Observable<ApiResponse<ValidarCausaResponse>> {
