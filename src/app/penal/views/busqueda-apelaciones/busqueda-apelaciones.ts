@@ -265,7 +265,7 @@ mostrarTabla: boolean = false;
   // "fechaRecepFinal": "",
   // "nombreParte": ""
   //    };
-
+console.log('Filtros antes de enviar a la API:', this.filtros);
 // this.filtros.IdSala = (this.filtros.IdSala !== undefined && this.filtros.IdSala !== null&& this.filtros.IdSala !== '') ? this.filtros.IdSala.toString() : '';
 // this.filtros.IdNomenclatura = (this.filtros.IdNomenclatura !== undefined && this.filtros.IdNomenclatura !== null && this.filtros.IdNomenclatura !== '') ? this.filtros.IdNomenclatura.toString() : '';
 // this.filtros.TipoApelacion = (this.filtros.TipoApelacion !== undefined && this.filtros.TipoApelacion !== null && this.filtros.TipoApelacion !== '') ? this.filtros.TipoApelacion.toString() : '';
