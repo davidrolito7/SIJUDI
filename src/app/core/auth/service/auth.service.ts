@@ -75,12 +75,12 @@ export class AuthService {
   login(usuario: string, contrasenia: string, idSistema: number, remember: boolean): Observable<GenericResponse<responseLogin>> {
     const url = '/api/AuthJWT/Login';
     const body = { usuario, contrasenia, idSistema };
-    return this.http.post<GenericResponse<responseLogin>>(`${this.constService.ruta}${url}`, body)
+    return this.http.post<GenericResponse<responseLogin>>(`${this.constService.ruta}${url}`, body,{withCredentials:true})
       .pipe(
         tap(response => {
           if (response.success) {
             this.tokenService.saveToken(response.data.access_token, remember);
-            this.tokenService.saveRefreshToken(response.data.refresh_token, remember);
+            //this.tokenService.saveRefreshToken(response.data.refresh_token, remember);
           }
         })
       );
@@ -117,7 +117,7 @@ export class AuthService {
     return this.http.post(url, null);
   }
 
-  refresToken(access_token: string, refresh_token: string, remember: boolean): Observable<GenericResponse<responseLogin>> {
+  /*refresToken(access_token: string, refresh_token: string, remember: boolean): Observable<GenericResponse<responseLogin>> {
     const url = `${this.constService.ruta}/api/AuthJWT/RefreshToken`;
     const body = { access_token, refresh_token };
 
@@ -127,6 +127,18 @@ export class AuthService {
           if (response.success) {
             this.tokenService.saveToken(response.data.access_token, remember);
             this.tokenService.saveRefreshToken(response.data.refresh_token, remember);
+          }
+        })
+      );
+  }*/
+ //ahora el refresh token se almacena en el cookie del back y no se expone en el fron por seguridad
+ refresToken(remember: boolean): Observable<GenericResponse<responseLogin>> {
+    const url = `${this.constService.ruta}/api/AuthJWT/RefreshToken`;
+    return this.http.post<GenericResponse<responseLogin>>(url,{},{withCredentials:true})
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            this.tokenService.saveToken(response.data.access_token, remember);
           }
         })
       );

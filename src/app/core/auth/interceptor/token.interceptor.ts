@@ -44,45 +44,43 @@ export function tokenInterceptor(
           return addToken(request);
         }
 
-        const refreshToken = tokenService.getRefreshToken();
         const accessToken = tokenService.getToken();
-        const isValidRefreshToken = tokenService.isValidRefreshToken();
         const remember = typeof window !== 'undefined'
           ? sessionStorage.getItem(tokenService.nameRefreshToken) !== null
           : false;
           
-        if (!refreshToken || !isValidRefreshToken) {
-          return next(request);
-        }
 
-        if (authService.getIsRefreshing()) {
-          return authService.getRefreshTokenSubject().pipe(
-            filter(token => token !== null),
-            take(1),
-            switchMap(() => addToken(request))
+          //si hay un refresh token en curso, esperar
+          if (authService.getIsRefreshing()) {
+            return authService.getRefreshTokenSubject().pipe(
+              filter(token => token !== null),
+              take(1),
+              switchMap(() => addToken(request))
+            );
+          }
+          
+          authService.setIsRefreshing(true);
+          authService.getRefreshTokenSubject().next(null);
+
+          return authService.refresToken(remember).pipe(
+            tap(() => {}),
+            switchMap(response => {
+                const newAccessToken = response.data.access_token;
+                authService.getRefreshTokenSubject().next(newAccessToken);
+                return addToken(request);
+              
+            }),
+            catchError((e) => {
+              //tokenService.removeToken();
+              //tokenService.notifySessionExpired();
+              tokenService.logout();
+              return throwError(() => new Error('Error al renovar el token'));
+            }),
+            finalize(() => {
+              authService.setIsRefreshing(false);
+            })
           );
-        }
-
-        authService.setIsRefreshing(true);
-        authService.getRefreshTokenSubject().next(null);
-
-        return authService.refresToken(accessToken || '', refreshToken, remember).pipe(
-          tap(() => {}),
-          switchMap(response => {
-            const newAccessToken = response.data.access_token;
-            authService.getRefreshTokenSubject().next(newAccessToken);
-            return addToken(request);
-          }),
-          catchError(() => {
-            tokenService.removeToken();
-            tokenService.removeRefreshToken();
-            tokenService.notifySessionExpired();
-            return throwError(() => new Error('Error al renovar el token'));
-          }),
-          finalize(() => {
-            authService.setIsRefreshing(false);
-          })
-        );
+                
       })
     );
   }

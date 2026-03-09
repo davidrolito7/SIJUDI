@@ -74,25 +74,27 @@
                                             @if(!generalesEnviado){
                                                 <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
                                                 @if (tienePermisoEnviarGenerales()) {
-                                                    <div class="relative">
-                                                        <p-button (click)="enviarAcuerdoGenerales(this.idNotificacion)"
-                                                        ><i class="bi bi-send"></i> Enviar generales</p-button>
-                                                    </div>
+                                                    @if(puedeEnviarGenerales()){
+                                                        <div class="relative">
+                                                            <p-button (click)="enviarAcuerdoGenerales(this.idNotificacion)"
+                                                            ><i class="bi bi-send"></i> Enviar generales</p-button>
+                                                        </div>
+                                                    }
+                                                }
+
+                                            }
+                                            @else{
+                                                @if(!archivosEnviado)   {
+                                                    @if (tienePermisoEnviarArchivos()) {
+                                                        <div class="relative">
+                                                            <p-button type="button" (click)="enviarAcuerdoArchivos(this.idNotificacion)"
+                                                                class=""><i class="bi bi-send"></i> Enviar archivos
+                                                            </p-button>
+                                                        </div>
                                                     }
 
                                                 }
-                                                @else{
-                                                    @if(!archivosEnviado)   {
-                                                        @if (tienePermisoEnviarArchivos()) {
-                                                            <div class="relative">
-                                                                <p-button type="button" (click)="enviarAcuerdoArchivos(this.idNotificacion)"
-                                                                    class=""><i class="bi bi-send"></i> Enviar archivos
-                                                                </p-button>
-                                                            </div>
-                                                        }
-
-                                                    }
-                                                }
+                                            }
                                         </div>
                                     </td>
                                 </tr>
