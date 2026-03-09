@@ -7,14 +7,14 @@ function checkAuth(tokenService: TokenService,
   targetUrl: string): true | ReturnType<Router['parseUrl']> {
 
 
-  const isValidToken = tokenService.isValidRefreshToken();
+  //const isValidToken = tokenService.isValidRefreshToken();
   tokenService.setValidacionCompletada(true);
 
-  if (!isValidToken) {
+  /*if (!isValidToken) {
     tokenService.clearTwoFactorValidated();
     tokenService.clearPerfilCompleted();
     return router.parseUrl('/login');
-  }
+  }*/
 
   const twoOk = tokenService.isTwoFactorValidated();
   const isLogin2fase = targetUrl === '/login2fase' || targetUrl.startsWith('/login2fase/');

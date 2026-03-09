@@ -19,12 +19,13 @@ import { MessageService } from 'primeng/api';
 
 import { twoAccess } from '../../interface/login.interfaces';
 import { After } from 'node:v8';
+import { Spinner } from "../../../../shared/components/spinner/spinner";
 
 
 @Component({
   selector: 'app-login2',
   providers: [MessageService],
-  imports: [SelectModule, FormsModule, ButtonModule, InputMaskModule, CommonModule, SelectButtonModule, ToggleButtonModule, FileUploadModule, PasswordModule, PasswordModule, QRCodeComponent, DialogModule, ToastModule, ReactiveFormsModule],
+  imports: [SelectModule, FormsModule, ButtonModule, InputMaskModule, CommonModule, SelectButtonModule, ToggleButtonModule, FileUploadModule, PasswordModule, PasswordModule, QRCodeComponent, DialogModule, ToastModule, ReactiveFormsModule, Spinner],
   templateUrl: './login2fase.html',
   styleUrl: './login2fase.css',
 })
@@ -55,7 +56,7 @@ export class Login2 implements OnInit {
   visible: boolean = false;
 
   //* === FLAGS Y VARIABLES DE CONTROL ===
-
+  isLoading: boolean=false;
 
   constructor(private authService: AuthService,
     private router: Router,
@@ -63,7 +64,7 @@ export class Login2 implements OnInit {
     private mensaje: MessageService,
     private fb: FormBuilder,
     private el: ElementRef,
-    private cdr: ChangeDetectorRef
+    private cd: ChangeDetectorRef
 
 
   ) { }
@@ -88,6 +89,8 @@ export class Login2 implements OnInit {
       });
       return;
     } else {
+      this.isLoading=true;
+      this.cd.detectChanges();
       this.authService.postSendTwoFactorCodeAuthenticator(this.codigo).subscribe({
         next: (response) => {
           if (response.success) {
@@ -112,7 +115,13 @@ export class Login2 implements OnInit {
             detail: 'Ocurrió un error al intentar validar.',
             life: 3000
           });
+          this.isLoading=false;
+          this.cd.detectChanges();
           return;
+        },
+        complete:()=>{
+          this.isLoading=false;
+          this.cd.detectChanges();
         }
       });
 
@@ -127,6 +136,8 @@ export class Login2 implements OnInit {
 
 
   getGoogle() {
+    this.isLoading=true;
+    this.cd.detectChanges();
     this.authService.GetTwoValidation().subscribe({
       next: (response) => {
         if (response.success) {
@@ -141,11 +152,7 @@ export class Login2 implements OnInit {
           // refresca el tap para el uso del  QR
           this.step = 2;
           this.step = 1;
-          this.cdr.detectChanges();  // <-- agregar: fuerza la actualización de la vista
-
-
-
-
+          
         }
         else {
           this.mensaje.add({
@@ -163,6 +170,12 @@ export class Login2 implements OnInit {
         //   detail: 'Ocurrió un error al intentar ingresar.',
         //   life: 3000
         // });
+        this.isLoading=false;
+        this.cd.detectChanges();
+      },
+      complete:()=>{
+        this.isLoading=false;
+        this.cd.detectChanges();
       }
     });
   }
@@ -208,6 +221,8 @@ export class Login2 implements OnInit {
     const formData = new FormData();
     formData.append('file', this.llaveFile, this.llaveFile.name);
 
+    this.isLoading=true;
+    this.cd.detectChanges();
     this.authService.postValidaPrivateKey(formData, password).subscribe({
       next: (response) => {
         if (response.success) {
@@ -229,6 +244,12 @@ export class Login2 implements OnInit {
           detail: 'Ocurrió un error al validar la llave privada.',
           life: 3000
         });
+        this.isLoading=false;
+        this.cd.detectChanges();
+      },
+      complete:()=>{
+        this.isLoading=false;
+        this.cd.detectChanges();
       }
     });
   }
@@ -264,7 +285,7 @@ export class Login2 implements OnInit {
   onLogout(): void {
     this.tokenService.logout();
 
-    this.router.navigate(['/login'], { replaceUrl: true });
+    //this.router.navigate(['/login'], { replaceUrl: true });
   }
 }
 
