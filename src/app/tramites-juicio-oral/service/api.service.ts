@@ -8,7 +8,7 @@ import { checkToken } from '../../core/auth/interceptor/token.interceptor';
   providedIn: 'root',
 })
 export class ApiService {
-  private apiUrl = 'https://localhost:7057/api/PromocionesJuicioOral'; // Replace with your API URL
+  private apiUrl = 'https://api.tribunaloaxaca.gob.mx/juiciooralApi/api/PromocionesJuicioOral'; 
 private nasApiUrl = 'https://api.tribunaloaxaca.gob.mx/NasApi/api'
   constructor(private http: HttpClient) { }
 
