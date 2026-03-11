@@ -26,6 +26,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { Spinner } from "../../../shared/components/spinner/spinner";
+import { Base64ToBlob, base64ToFile } from '../../../shared/functions/utils';
 
 
 // Definición de tipo para partes y anexos, para mayor claridad en el código. No es estrictamente necesario, pero ayuda a entender mejor qué propiedades se esperan en cada caso.
@@ -1205,38 +1206,53 @@ export class Terminosprimerainstancia implements OnInit, AfterViewInit {
 
     this.apiService.obtenerCertificacion(folio)
       .subscribe({
-        next: (pdfBlob: Blob) => {
-          this.isLoading = false;
-          this.cdr.detectChanges();
+        next: (response: any) => {
+          if(response.success){
+            this.isLoading = false;
+            this.cdr.detectChanges();
 
-          const blobUrl = URL.createObjectURL(pdfBlob);
+            var pdfBlob = base64ToFile(response.data.documento,response.data.nombre, response.data.mimetype);
+            const blobUrl = URL.createObjectURL(pdfBlob);
 
-          const iframe = document.createElement('iframe');
-          iframe.style.display = 'none';
-          iframe.src = blobUrl;
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = blobUrl;
 
-          document.body.appendChild(iframe);
+            document.body.appendChild(iframe);
 
-          iframe.onload = () => {
-            iframe.contentWindow?.focus();
-            iframe.contentWindow?.print();
+            iframe.onload = () => {
+              iframe.contentWindow?.focus();
+              iframe.contentWindow?.print();
 
+              setTimeout(() => {
+                URL.revokeObjectURL(blobUrl);
+                document.body.removeChild(iframe);
+              }, 1000);
+            };
+
+            // 🔥 Limpiar formulario después de certificar
             setTimeout(() => {
-              URL.revokeObjectURL(blobUrl);
-              document.body.removeChild(iframe);
-            }, 1000);
-          };
-
-          // 🔥 Limpiar formulario después de certificar
-          setTimeout(() => {
-            this.nuevo();
-            this.isSaving = false;
-            // this.terminosForm.enable();
-          }, 800);
+              this.nuevo();
+              this.isSaving = false;
+              // this.terminosForm.enable();
+            }, 800);
+          }else{
+              this.messageService.add({
+              severity: 'error',
+              summary: 'No se pudo generar la certificación',
+              detail: response.message
+            });
+          }
         },
         error: (e) => {
           this.isLoading = false;
           this.cdr.detectChanges();
+
+          this.messageService.add({
+              severity: 'error',
+              summary: 'No se pudo generar la certificación',
+              detail: e.message
+            });
         }
 
       });
