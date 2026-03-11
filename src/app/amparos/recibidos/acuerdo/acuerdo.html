@@ -22,11 +22,12 @@
       </div>
 
       <div class="mt-6 md:mt-0 flex items-center">
+        <!-- <p-button (click)="confirm()" label="Save" /> -->
         <!--@if(tienePermisoGuardar()){-->
-          @if (mostrarBotonGuardar) {
-          <p-button  (onClick)="guardarOActualizar()" label="Guardar" icon="pi pi-check"> 
-          </p-button>
-          }
+        @if (mostrarBotonGuardar) {
+        <p-button (onClick)="guardarOActualizar()" label="Guardar" icon="pi pi-check">
+        </p-button>
+        }
         <!--}-->
 
         <!--@if (mostrarBotonEnviarGenerales) {
@@ -51,186 +52,177 @@
     <!-- Estado destino -->
     <div class="col-span-12 sm:col-span-6">
       <label class="block mb-2 text-sm font-medium">Órgano impartidor de justicia*</label>
-      <p-select id="organoDestino" [options]="organo()" formControlName="organoDestino"
-        optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar organo..."
-        inputId="organoDestino-dropdown" fluid></p-select>
+      <p-select id="organoDestino" [options]="organo()" formControlName="organoDestino" optionLabel="descripcion"
+        appendTo="body" filter="true" filterPlaceholder="Buscar organo..." inputId="organoDestino-dropdown"
+        fluid></p-select>
 
     </div>
 
     <!-- Número de expediente -->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Número de expediente*</label>
-      <input pInputText type="text"  id="noExpediente" formControlName="noExpediente" name="noExpediente" class="w-full"
+      <input pInputText type="text" id="noExpediente" formControlName="noExpediente" name="noExpediente" class="w-full"
         maxlength="50" />
-       
+
 
     </div>
     <!--Expediente digital-->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Expediente digital*</label>
-       <p-checkbox inputId="expDigital" name="expDigital" formControlName="expDigital"  [binary]="true" />
-                <label for="expDigital" class="ml-2"> {{
-            acuerdoForm.value.expDigital ? 'Disponible' : 'No existe' }} </label>
+      <p-checkbox inputId="expDigital" name="expDigital" formControlName="expDigital" [binary]="true" />
+      <label for="expDigital" class="ml-2"> {{
+        acuerdoForm.value.expDigital ? 'Disponible' : 'No existe' }} </label>
     </div>
-   
+
     @if(acuerdoForm.value.expDigital){
-      <!-- Dirección del expediente -->
-      <div class="col-span-12 sm:col-span-3">
-        <label class="block mb-2 text-sm font-medium">Dirección del expediente</label>
-        <input pInputText type="text" id="direccionExpediente" name="direccionExpediente" formControlName="direccionExpediente" class="w-full"
-          maxlength="50" />
-        <div *ngIf="acuerdoForm.get('direccionExpediente')?.hasError('required')">
-          
-          </div>
+    <!-- Dirección del expediente -->
+    <div class="col-span-12 sm:col-span-3">
+      <label class="block mb-2 text-sm font-medium">Dirección del expediente</label>
+      <input pInputText type="text" id="direccionExpediente" name="direccionExpediente"
+        formControlName="direccionExpediente" class="w-full" maxlength="50" />
+      <div *ngIf="acuerdoForm.get('direccionExpediente')?.hasError('required')">
 
       </div>
+
+    </div>
     }
 
     <!-- Tipo de cuaderno -->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Tipo de juicio*</label>
       <p-select id="cuaderno" name="cuaderno" inputId="cuaderno-dropdown" formControlName="cuaderno"
-        [options]="cuaderno()" optionLabel="descripcion" required appendTo="body" 
-        filterPlaceholder="Buscar vía..."  class="w-full" fluid></p-select>
+        [options]="cuaderno()" optionLabel="descripcion" required appendTo="body" filterPlaceholder="Buscar vía..."
+        class="w-full" fluid></p-select>
 
     </div>
   </div>
 </div>
 <!--documentos-->
-@if(idRespuesta ?? 0 !== 0)
+@if(idRespuesta !== 0)
 {
-  <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
-      <div class="flex items-start flex-col md:justify-between md:flex-row">
-          <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+  <div class="flex items-start flex-col md:justify-between md:flex-row">
+    <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
 
-          <div class="flex items-center">
-             @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
-                <p-button 
-                  (click)="openNewFirma()"
-                  severity="warn">Firmar
-                </p-button>
-              }
-              <p-fileupload mode="basic" name="demo[]" [multiple]="false" chooseIcon="pi pi-upload"
-                  accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
-                  chooseLabel="Agregar documento" />
+    <div class="flex items-center">
+      @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
+      <p-button (click)="openNewFirma()" severity="warn">Firmar
+      </p-button>
+      }
+      <p-fileupload mode="basic" name="demo[]" [multiple]="false" chooseIcon="pi pi-upload" accept="application/pdf"
+        maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true" chooseLabel="Agregar documento" />
 
-             
-          </div>
-      </div>
 
-      <div class="w-full">
-          <div class="grid grid-cols-6 gap-4 w-full items-end">
-              @if (promocion()?.archivos?.length ?? 0 > 0) {
-              <div class="col-span-6 sm:col-span-6 ">
-
-                  <p-table [value]="promocion()?.archivos || []" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
-                      <ng-template #header>
-                          <tr class="uppercase text-xs">
-                              <th>para firmar</th>
-                              <th>Documento</th>
-                              <th>Clasificación</th>
-                              <th>Firmado</th>
-                              <th>Fecha firmado</th>
-                              <th>Firmantes</th>
-                              <th>Tamaño</th>
-                              <th style="min-width: 10rem">Acciones</th>
-                          </tr>
-                      </ng-template>
-                      <ng-template #body let-documento let-i="rowIndex">
-                          <tr>
-                              <td>@if(!documento.firmado){
-                                <input  (change)="archivo_seleccionado(documento)"
-                                        [id]="documento.selecParaFirma"
-                                        type="checkbox" [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma"/>
-                              }
-                              </td>
-                              <td style="font-size: small;">{{ documento.nombreDocumento }}</td>
-                              <td style="font-size: small;">
-                                @if(documento.idArchivo === 0){
-                                  <form [formGroup]="doctosForm">
-                                    <p-select id="clasificacion" inputId="clasificacion-dropdown"
-                                      formControlName="clasificacion"
-                                      [options]="catalogo()"
-                                      optionLabel="descripcion"
-                                      placeholder="seleccione" 
-                                      appendTo="body"
-                                      filterPlaceholder="Buscar tipo..."
-                                      class="w-full md:w-56"
-                                      fluid>
-                                    </p-select>
-                                  </form>
-                                }
-                                @else{
-                                  <span>
-                                    {{ documento.clasificacionArchivo.descripcion }}
-                                  </span>
-                                }
-                              </td>
-                              <td style="font-size: small;">{{ documento.firmado ? 'Sí' : 'No' }}</td>
-                              <td style="font-size: small;">{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
-                              <td>
-                                <table>
-                                    @for (firmante of documento.firmantes; track firmante) {
-                                      <tr>
-                                        @if(firmante != undefined)
-                                          {
-                                          <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
-                                          @if(!documento.firmado){
-                                            <td class="px-4">
-                                              <!--<a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">Eliminar</a>-->
-                                              <p-button  (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true" icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>
-                                            </td>
-                                          }
-                                        }
-                                      </tr>
-                                    }
-                                </table>
-                              </td>
-                              <td style="font-size: small;">{{ ((documento.longitud / 1024)/1024) | number:'1.0-2' }} MB</td>
-                            
-                              <td class="text-center">
-                                @if(documento.idArchivo === 0){
-                                  <p-button (click)="onUpload(documento.file)" severity="success" [rounded]="true"
-                                        icon="pi pi-upload" class="mr-2" title="cargar documento">
-                                  </p-button>
-                                }
-                                  <!--APLICAR FIRMAS-->
-                                @if(!documento.firmado && documento?.firmantes?.length ?? 0 > 0 ){
-                                    <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
-                                      icon="pi pi-key" class="mr-2" title="Aplicar firmas">
-                                    </p-button>
-                                                            
-                                }
-                                <!--VER O DESCARGAR DOCUMENTO-->
-                                <p-button (click)="getFile(documento)" severity="success" [rounded]="true"
-                                                          icon="pi pi-file-pdf" class="mr-2" title="Descargar PDF"></p-button>
-
-                                <!--ELIMINAR DOCUMENTO-->
-
-                                @if(idEstatus == 2 || idEstatus==0 ){ <!--//Pendiente de enviar-->
-                                  <!--@if(tienePermisoEliminarArchivo()){-->
-                                    <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
-                                    (click)="eliminarDocumento(documento,2,i)" ></p-button>
-                                    
-                                <!--}-->
-                                }
-
-                              </td>
-                          </tr>
-                      </ng-template>
-                  </p-table>
-                   @if(mostrarDocumento()){
-                    <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-                    </app-pdf-dialog>
-                  } 
-              </div>
-              }
-              
-          </div>
-          <div>
-          </div>
-      </div>
+    </div>
   </div>
+
+  <div class="w-full">
+    <div class="grid grid-cols-6 gap-4 w-full items-end">
+      @if (promocion()?.archivos?.length ?? 0 > 0) {
+      <div class="col-span-6 sm:col-span-6 ">
+
+        <p-table [value]="promocion()?.archivos || []" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+          <ng-template #header>
+            <tr class="uppercase text-xs">
+              <th>para firmar</th>
+              <th>Documento</th>
+              <th>Clasificación</th>
+              <th>Firmado</th>
+              <th>Fecha firmado</th>
+              <th>Firmantes</th>
+              <th>Tamaño</th>
+              <th style="min-width: 10rem">Acciones</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-documento let-i="rowIndex">
+            <tr>
+              <td>@if(!documento.firmado){
+                <input (change)="archivo_seleccionado(documento)" [id]="documento.selecParaFirma" type="checkbox"
+                  [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma" />
+                }
+              </td>
+              <td style="font-size: small;">{{ documento.nombreDocumento }}</td>
+              <td style="font-size: small;">
+                @if(documento.idArchivo === 0){
+                <form [formGroup]="doctosForm">
+                  <p-select id="clasificacion" inputId="clasificacion-dropdown" formControlName="clasificacion"
+                    [options]="catalogo()" optionLabel="descripcion" placeholder="seleccione" appendTo="body"
+                    filterPlaceholder="Buscar tipo..." class="w-full md:w-56" fluid>
+                  </p-select>
+                </form>
+                }
+                @else{
+                <span>
+                  {{ documento.clasificacionArchivo.descripcion }}
+                </span>
+                }
+              </td>
+              <td style="font-size: small;">{{ documento.firmado ? 'Sí' : 'No' }}</td>
+              <td style="font-size: small;">{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+              <td>
+                <table>
+                  @for (firmante of documento.firmantes; track firmante) {
+                  <tr>
+                    @if(firmante != undefined)
+                    {
+                    <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
+                    @if(!documento.firmado){
+                    <td class="px-4">
+                      <!--<a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">Eliminar</a>-->
+                      <p-button (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true"
+                        icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>
+                    </td>
+                    }
+                    }
+                  </tr>
+                  }
+                </table>
+              </td>
+              <td style="font-size: small;">{{ ((documento.longitud / 1024)/1024) | number:'1.0-2' }} MB</td>
+
+              <td class="text-center">
+                @if(documento.idArchivo === 0){
+                <p-button (click)="onUpload(documento.file)" severity="success" [rounded]="true" icon="pi pi-upload"
+                  class="mr-2" title="cargar documento">
+                </p-button>
+                }
+                <!--APLICAR FIRMAS-->
+                @if(!documento.firmado && (documento?.firmantes?.length ?? 0) > 0 ){
+                <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
+                  icon="pi pi-key" class="mr-2" title="Aplicar firmas">
+                </p-button>
+
+                }
+                <!--VER O DESCARGAR DOCUMENTO-->
+                <p-button (click)="getFile(documento)" severity="success" [rounded]="true" icon="pi pi-file-pdf"
+                  class="mr-2" title="Descargar PDF"></p-button>
+
+                <!--ELIMINAR DOCUMENTO-->
+
+                @if(idEstatus == 2 || idEstatus==0 ){ <!--//Pendiente de enviar-->
+                <!--@if(tienePermisoEliminarArchivo()){-->
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                  (click)="eliminarDocumento(documento,2,i)"></p-button>
+
+                <!--}-->
+                }
+
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        @if(mostrarDocumento()){
+        <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+        </app-pdf-dialog>
+        }
+      </div>
+      }
+
+    </div>
+    <div>
+    </div>
+  </div>
+</div>
 }
 <!--* MODAL DE CONFIRMACION GUADAR EXHORTO -->
 <app-confirm-dialog key="guardarPromocion" title="Confirmación" message="¿Está seguro de guardar la promoción?"
@@ -242,13 +234,69 @@
   circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA ENVIAR LOS ARCHIVOS DEL EXHORTO AL JUZGADO EXHORTADO -->
-<app-confirm-dialog key="eliminarArchivo" title="Confirmación"
-  message="¿Está seguro de aliminar el archivo?" icon="pi pi-question" circleClass="bg-red-500"
-  acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
+<app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro de aliminar el archivo?"
+  icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
 
-<p-toast></p-toast>
+  <p-toast></p-toast>
 
+  <p-confirmdialog key="responsePromocion">
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+      @if (message) {
+      <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded-full">
+        <div
+          class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+          <i class="pi pi-check text-5xl!"></i>
+        </div>
+        <span class="font-bold text-2xl block mb-2 mt-2">{{ message.header }}</span>
 
-    
+        <div class="w-full mt-4 flex flex-col gap-1 text-sm">
 
+          <!-- Folio -->
+          <div class="flex justify-between items-center px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+            <span class="font-semibold text-color-secondary">Folio Confirmación</span>
+            <span class="font-medium break-words text-right max-w-48">{{ responsePromocion()?.folioConfirmacion || 'NP-32034'
+              }}</span>
+          </div>
 
+          <!-- Fecha Envío -->
+          <div class="flex justify-between items-center px-3 py-2 rounded-lg">
+            <span class="font-semibold text-color-secondary">Fecha Envío</span>
+            <span class="font-medium">{{ responsePromocion()?.fec_envio ? (responsePromocion()?.fec_envio |
+              date:'dd/MM/yyyy HH:mm:ss') : '22/06/2023 10:30:00 h' }}</span>
+          </div>
+
+          <!-- Órgano Impartidor -->
+          <div class="flex justify-between items-start px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+            <span class="font-semibold text-color-secondary shrink-0 mr-4">Órgano Impartidor</span>
+            <span class="font-medium break-words text-right">{{ responsePromocion()?.organoImpartidorJusticia || 'Juzgado Primero de Distrito del Estado de México'
+              }}</span>
+          </div>
+
+          <!-- Número Expediente -->
+          <div class="flex justify-between items-center px-3 py-2 rounded-lg">
+            <span class="font-semibold text-color-secondary">Número Expediente</span>
+            <span class="font-medium break-words text-right max-w-48">{{ responsePromocion()?.numeroExpedienteOIJ ||
+              '0001/2026' }}</span>
+          </div>
+
+          <!-- Fecha Recepción -->
+          <div class="flex justify-between items-center px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+            <span class="font-semibold text-color-secondary">Fecha Recepción</span>
+            <span class="font-medium">{{ responsePromocion()?.fechaRecepcion ? (responsePromocion()?.fechaRecepcion |
+              date:'dd/MM/yyyy HH:mm:ss') : '22/06/2023 10:30:00 h' }}</span>
+          </div>
+
+          <!-- Mensaje -->
+          <div class="flex justify-between items-start px-3 py-2 rounded-lg">
+            <span class="font-semibold text-color-secondary shrink-0 mr-4">Mensaje</span>
+            <span class="font-medium break-words text-right">{{ responsePromocion()?.mensaje || 'No hay mensaje disponible' }}</span>
+          </div>
+
+        </div>
+        <div class="flex justify-end gap-2 mt-6 w-full">
+          <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+        </div>
+      </div>
+      }
+    </ng-template>
+  </p-confirmdialog>
