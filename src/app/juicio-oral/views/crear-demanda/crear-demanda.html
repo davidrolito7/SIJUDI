@@ -26,8 +26,8 @@
                             optionLabel="Descripcion" />
                     </div>
                     <!-- Catálogo de Materias -->
-                    <div class="col-span-6 sm:col-span-3">
-                        <label for="IdCatMateria" class="block mb-2 text-sm font-medium  ">Materia</label>
+                    <div id="idCatMateria"  class="col-span-6 sm:col-span-3">
+                        <label for="idCatMateria" class="block mb-2 text-sm font-medium  ">Materia</label>
                         <p-select formControlName="idCatMateria" fluid appendTo="body" [options]="catMaterias"
                             optionValue="IdCatMateria" (onChange)="cargarCatalogoVias($event.value)"
                             placeholder="Selecciona una materia" optionLabel="Descripcion" />
@@ -72,7 +72,7 @@
             <ng-template #caption>
                 <div class="flex">
                     <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Partes</div>
-                    <p-button icon="pi pi-users" class="ml-auto" label="Agregar" (click)="showDialog()" />
+                    <p-button id="agregarParte" icon="pi pi-users" class="ml-auto" label="Agregar" (click)="showDialog()" />
                 </div>
             </ng-template>
             <ng-template #header>
@@ -155,7 +155,6 @@
                     <p-button icon="pi pi-file-plus" class="ml-auto" label="Agregar" (click)="showModalListAnexo()" />
                 </div>
             </ng-template>
-
             <ng-template #header>
                 <tr>
                     <th>ID</th>

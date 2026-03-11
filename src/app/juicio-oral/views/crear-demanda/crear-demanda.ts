@@ -27,7 +27,8 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { PasswordModule } from 'primeng/password';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
-
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 @Component({
   selector: 'app-crear-demanda',
   imports: [CommonModule, FormsModule, ToastModule, SelectModule, DialogModule, ButtonModule,
@@ -92,6 +93,7 @@ export class CrearDemanda implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.startTutorial();
     this.cargarCatalogoMunicipios();
     this.cargarCatalogoMaterias();
     this.cargarCatTipoDocumento();
@@ -232,7 +234,6 @@ export class CrearDemanda implements OnInit {
       direccion: (valores.direccion ?? '').toUpperCase(),
       correo: (valores.correo ?? '').toUpperCase(),
       correoAlterno: (valores.correoAlterno ?? '').toUpperCase(),
-      filtroParte: 'manual',
     };
 
     // Normaliza el nombre completo quitando espacios extra para comparar
@@ -736,5 +737,26 @@ export class CrearDemanda implements OnInit {
       next: (tipoDocumento) => { this.catTipoDocumentos = tipoDocumento; },
       error: (error) => { console.error('Error al cargar tipo documentos:', error); }
     });
+  }
+
+
+  startTutorial() {
+    const driverObj = driver({
+      nextBtnText: 'Siguiente',
+      prevBtnText: 'Atrás',
+      doneBtnText: 'Finalizar',
+      showProgress: true,
+      showButtons: ['next', 'previous'],
+      steps: [
+        { element: '#idCatMunicipio', popover: { title: 'Selecciona un municipio', description: 'Haz clic aquí y elige el municipio donde quieras llevar a cabo tu proceso.', side: "left", align: 'start' } },
+        { element: '#idCatMateria', popover: { title: 'Selecciona la materia del caso', description: 'Haz clic aquí y elige la materia a la que pertenece tu demanda.', side: "left", align: 'start' } },
+        { element: '#idCatTipoVia', popover: { title: 'Elige la vía correspondiente', description: 'Después de seleccionar la materia, selecciona la vía que aplique a tu demanda.', side: "bottom", align: 'start' } },
+        { element: '#descripcionDemanda', popover: { title: 'Describe brevemente tu demanda', description: 'Escribe un resumen corto que explique el motivo o el contexto de la demanda.', side: "bottom", align: 'start' } },
+        { element: '#agregarParte', popover: { title: 'Agrega una parte al expediente', description: 'Presiona este botón para añadir una persona u organización relacionada con la demanda .', side: "left", align: 'start' } },
+        { element: '#listadoPartes', popover: { title: 'Listado de partes agregadas', description: 'Aquí verás todas las partes que hayas agregado. Puedes editarlas o eliminarlas si es necesario', side: "left", align: 'start' } },
+      ]
+    });
+
+    driverObj.drive();
   }
 }
