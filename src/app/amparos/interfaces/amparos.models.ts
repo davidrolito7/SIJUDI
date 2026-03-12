@@ -177,7 +177,8 @@ export interface PromocionGeneralesRequest {
     numeroExpedienteOIJ: string;
     existeEE: boolean;
     urlEE: string | null;
-    tipoCuaderno: number;
+    tipoCuaderno: string;
+    idTipoCuaderno:number;
 }
 //request para el endpoint
 //https://interconexion.tribunaloaxaca.gob.mx/api/Promocion/GuardarRespuestaNotificacionArchivos
