@@ -451,3 +451,17 @@ export interface ConsultarAsuntoRequest {
     idTipoProcedimiento:number;
 
 }
+
+//* RESPONSE AL ENVIAR PROMOCION AL FEDERAL  de https://localhost:44397/api/Promocion/EnviaPromocionInterconexion
+
+export interface EnviarPromocionResponse {
+  respuestaGenericaCJF: RespuestaGenericaCJF;
+  respuestaGenericaCJO: RespuestaGenericaCJF; 
+}
+
+export interface RespuestaGenericaCJF {
+  folioConfirmacion: string;
+  codigoRetorno: number;
+  mensaje: string;
+  fechaRecepcion: string;
+}

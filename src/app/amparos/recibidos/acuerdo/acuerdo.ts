@@ -6,6 +6,7 @@ import {
   CatalogoClasificacionArchivo,
   CatalogoOrganoDestino,
   CatalogoTipoCuaderno,
+  EnviarPromocionResponse,
   PromocionDocumentos,
   PromocionGeneralesRequest,
   PromocionGeneralesUpdate,
@@ -35,6 +36,7 @@ import { DialogModule } from 'primeng/dialog';
 import { PasswordModule } from 'primeng/password';
 import { TokenService } from '../../../core/auth/service/token.service';
 import { validarFirmasUsuarioAmparoRespuesta } from '../../../exhortos/functions/firmas';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-acuerdo',
@@ -54,7 +56,8 @@ import { validarFirmasUsuarioAmparoRespuesta } from '../../../exhortos/functions
     ConfirmDialog,
     ConfirmDialogModule,
     DialogModule,
-    PasswordModule
+    PasswordModule,
+    FormsModule
   ],
   templateUrl: './acuerdo.html',
   styleUrl: './acuerdo.css',
@@ -89,7 +92,7 @@ export class Acuerdo {
   // ─── Signals ───────────────────────────────────────────────────────────────
 
   promocion = signal<UI_PromocionResponse | null>(null);
-  responsePromocion = signal<UI_PromocionResponse | null>(null);
+  responsePromocion = signal<EnviarPromocionResponse | null>(null);
   organo = signal<CatalogoOrganoDestino[]>([]);
   cuaderno = signal<CatalogoTipoCuaderno[]>([]);
   catalogo = signal<CatalogoClasificacionArchivo[]>([]);
@@ -150,10 +153,7 @@ export class Acuerdo {
       });
     }
 
-    this.confirmationService.confirm({
-      key: 'responsePromocion',
-      header: 'Acuerdo enviado',
-    });
+
   }
 
   // ─── Guardar / Actualizar ──────────────────────────────────────────────────
@@ -204,10 +204,12 @@ export class Acuerdo {
     this.cd.detectChanges();
 
     this.amparosService.guardarPromocion(promocion).subscribe({
-      next: (response: any) => {
+      next: (response) => {
         if (response.success) {
           this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Promoción guardada exitosamente' });
-          this.responsePromocion.set(response.data);
+          response.data.respuestaGenericaCJF.folioConfirmacion =
+            String(response.data.respuestaGenericaCJF.folioConfirmacion);
+          this.responsePromocion.set(response.data); 
           this.confirmationService.confirm({
             key: 'responsePromocion',
             header: 'Promoción Guardada',
@@ -359,13 +361,13 @@ export class Acuerdo {
               severity: 'success',
               summary: 'Éxito',
               detail: `Firma registrada: ${archivo.nombreDocumento}`,
-              life:7000
+              life: 7000
             });
           } else {
             this.messageService.add({
               severity: 'warn',
               summary: 'Error',
-              detail: response.message || `No se pudo registrar la firma en: ${archivo.nombreDocumento}`, life:0
+              detail: response.message || `No se pudo registrar la firma en: ${archivo.nombreDocumento}`, life: 0
             });
           }
         }),
@@ -375,7 +377,7 @@ export class Acuerdo {
             severity: 'error',
             summary: 'Error',
             detail: e.message || `Error en: ${archivo.nombreDocumento}`,
-            life:0 //con 0 se queda hasta que el usuario lo cierre
+            life: 0 //con 0 se queda hasta que el usuario lo cierre
           });
           return of(null); // devolvemos un observable vacío para que forkJoin continúe
         })
@@ -594,7 +596,7 @@ export class Acuerdo {
         selecParaFirma: false,
         firmantes: [],
         file: file,
-        usrYaFirmo:false
+        usrYaFirmo: false
       };
 
       // @ts-ignore
@@ -604,7 +606,7 @@ export class Acuerdo {
   }
 
   archivo_seleccionado(item: any) {
-    item.selecParaFirma = !item.selecParaFirma;
+    // item.selecParaFirma = !item.selecParaFirma;
     const algunoSeleccionado = this.promocion()?.archivos.some(a => a.selecParaFirma);
     this.seleccionadosParaFirma.set(algunoSeleccionado ?? false);
   }
@@ -821,19 +823,18 @@ export class Acuerdo {
 
               //obtenemos el idUsuario del token
               const userData = this.tokenService.getUserFromToken();
-              var idUsuario=0;
-              if(userData !== null){
+              var idUsuario = 0;
+              if (userData !== null) {
                 idUsuario = userData.idGeneral;
               }
               //valida si el usuario loqueado ya firmó
-              if(this.promocion()?.archivos != null)
-              {
-                const documentosValidados = validarFirmasUsuarioAmparoRespuesta(this.promocion()?.archivos ?? [],idUsuario);
-                this.promocion()!.archivos = documentosValidados.map((archivo:any)=>({
+              if (this.promocion()?.archivos != null) {
+                const documentosValidados = validarFirmasUsuarioAmparoRespuesta(this.promocion()?.archivos ?? [], idUsuario);
+                this.promocion()!.archivos = documentosValidados.map((archivo: any) => ({
                   ...archivo
                 }));
               }
-              
+
             }
           } else {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });

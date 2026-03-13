@@ -25,7 +25,8 @@ import {
   CatalogoOrganoResponse,
   CatalogoTipoAsuntoResponse,
   NotifiViaConsultaAsuntoResponse,
-  ConsultarAsuntoRequest
+  ConsultarAsuntoRequest,
+  EnviarPromocionResponse
 } from '../interfaces/amparos.models';
 import { GenericResponse } from '../../shared/interface/shared.interface';
 import { environment } from '../../../environments/environment';
@@ -81,8 +82,8 @@ export class AmparosService {
 
   // Envía la promoción al PJF
   // POST /Promocion/EnviaPromocionInterconexion
-  enviarPromocion(idRespuesta: number): Observable<any> {
-    return this.http.post(`${this.apiUrlPromocion}EnviaPromocionInterconexion`, { idRespuesta }, { context: checkToken() });
+  enviarPromocion(idRespuesta: number): Observable<GenericResponse<EnviarPromocionResponse>> {
+    return this.http.post<GenericResponse<EnviarPromocionResponse>>(`${this.apiUrlPromocion}EnviaPromocionInterconexion`, { idRespuesta }, { context: checkToken() });
   }
 
   // ─── Documentos ────────────────────────────────────────────────────────────
