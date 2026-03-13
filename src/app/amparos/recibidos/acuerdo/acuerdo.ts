@@ -1,5 +1,7 @@
 import { ChangeDetectorRef, Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { forkJoin, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import {
   CatalogoClasificacionArchivo,
   CatalogoOrganoDestino,
@@ -31,6 +33,8 @@ import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { PasswordModule } from 'primeng/password';
+import { TokenService } from '../../../core/auth/service/token.service';
+import { validarFirmasUsuarioAmparoRespuesta } from '../../../exhortos/functions/firmas';
 
 @Component({
   selector: 'app-acuerdo',
@@ -112,7 +116,8 @@ export class Acuerdo {
     private confirmationService: ConfirmationService,
     private sanitizer: DomSanitizer,
     private router: Router,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private tokenService: TokenService,
   ) { }
 
   // ─── Getter archivos seleccionados ─────────────────────────────────────────
@@ -335,10 +340,59 @@ export class Acuerdo {
     let procesados = 0;
     this.isLoading = true;
     this.cd.detectChanges();
+    const Usuario = this.tokenService.getUserFromToken();
 
-    for (const archivo of seleccionados) {
+    // forkJoin para que todas las peticiones se lancen en paralelo y al final se ejecute finalizarFirma() 
+    // sin necesidad de manejar contadores manuales:
+    const peticiones = seleccionados.map(archivo => {
       const param: guardaFirmaTmpRequest = {
-        idUsuario: 0, // reemplaza con el id real del usuario en sesión
+        idUsuario: Usuario.idGeneral,
+        idArchivo: archivo.idArchivo,
+        idClasificacionArchivo: archivo.clasificacionArchivo?.idClasificacionArchivo ?? 0,
+        passwordFirma: this.formularioFirma.value.password as string,
+      };
+
+      return this.amparosService.guardaFirmaTemporal(param).pipe(
+        tap(response => {
+          if (response.success) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: `Firma registrada: ${archivo.nombreDocumento}`,
+              life:7000
+            });
+          } else {
+            this.messageService.add({
+              severity: 'warn',
+              summary: 'Error',
+              detail: response.message || `No se pudo registrar la firma en: ${archivo.nombreDocumento}`, life:0
+            });
+          }
+        }),
+        // Para que forkJoin no se corte si alguna petición falla
+        catchError(e => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: e.message || `Error en: ${archivo.nombreDocumento}`,
+            life:0 //con 0 se queda hasta que el usuario lo cierre
+          });
+          return of(null); // devolvemos un observable vacío para que forkJoin continúe
+        })
+      );
+    });
+
+    forkJoin(peticiones).subscribe({
+      next: () => {
+        // Aquí ya terminaron todas las peticiones
+        this.finalizarFirma();
+      }
+    });
+
+    /*for (const archivo of seleccionados) {
+      const param: guardaFirmaTmpRequest = {
+
+        idUsuario: Usuario.idGeneral, // reemplaza con el id real del usuario en sesión
         idArchivo: archivo.idArchivo,
         idClasificacionArchivo: archivo.clasificacionArchivo?.idClasificacionArchivo ?? 0,
         passwordFirma: this.formularioFirma.value.password as string,
@@ -370,7 +424,7 @@ export class Acuerdo {
           }
         }
       });
-    }
+    }*/
   }
 
   finalizarFirma(): void {
@@ -539,7 +593,8 @@ export class Acuerdo {
         activo: true,
         selecParaFirma: false,
         firmantes: [],
-        file: file
+        file: file,
+        usrYaFirmo:false
       };
 
       // @ts-ignore
@@ -763,6 +818,22 @@ export class Acuerdo {
               this.idEstatus = this.promocion()?.estatus.idEstatus ?? 0;
 
               this.verificarArchivosFirmados();
+
+              //obtenemos el idUsuario del token
+              const userData = this.tokenService.getUserFromToken();
+              var idUsuario=0;
+              if(userData !== null){
+                idUsuario = userData.idGeneral;
+              }
+              //valida si el usuario loqueado ya firmó
+              if(this.promocion()?.archivos != null)
+              {
+                const documentosValidados = validarFirmasUsuarioAmparoRespuesta(this.promocion()?.archivos ?? [],idUsuario);
+                this.promocion()!.archivos = documentosValidados.map((archivo:any)=>({
+                  ...archivo
+                }));
+              }
+              
             }
           } else {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });

@@ -162,6 +162,7 @@ export interface PromocionDocumentos {
     firmantes: Firmantes[];
     file: File;
     activo: boolean;
+    usrYaFirmo:boolean;
 }
 export interface Firmantes{
     idFirmaTmp:number;

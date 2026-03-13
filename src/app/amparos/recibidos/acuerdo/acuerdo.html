@@ -108,7 +108,7 @@
             (click)="openNewFirma()"
             severity="warn"
             icon="pi pi-pen-to-square"
-            label="Registrar firma">
+            label="Firmar con FIREL">
           </p-button>
         }
 
@@ -148,7 +148,7 @@
 
             <!-- Checkbox firma -->
             <td>
-              @if (!documento.firmado) {
+              @if (!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo) {
                 <input
                   type="checkbox"
                   (change)="archivo_seleccionado(documento)"
