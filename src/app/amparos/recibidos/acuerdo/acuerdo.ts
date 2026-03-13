@@ -495,11 +495,14 @@ export class Acuerdo {
           this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
           this.cargarPromocion();
         } else {
-          this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? '' : response.errors.join(', ')}` });
+          this.messageService.add({ severity: 'warn', 
+                                    summary: 'Error', 
+                                    detail: `${response.message}\n${response.errors == undefined ? '' : response.errors.join(', ')}`,
+                                    life:0 });
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, life:0 });
         this.isLoading = false;
         this.cd.detectChanges();
       },
