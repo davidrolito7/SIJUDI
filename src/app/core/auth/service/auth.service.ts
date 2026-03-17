@@ -189,6 +189,7 @@ export class AuthService {
     //this.perfilSeleccionado = perfil;
     this.perfilSeleccionado.set(perfil);
   }
+  
   ActualizaAreaSeleccionado(area: any) {
     this.areaSeleccionado.set(area);
   }
