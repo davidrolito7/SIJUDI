@@ -1,172 +1,281 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
-<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+<app-breadcrub></app-breadcrub>
 
-    <!-- HEADER -->
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
 
-    <app-breadcrub></app-breadcrub>
-
-
-    <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
-        <div class="flex items-start flex-col md:justify-between md:flex-row">
-
-              <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
-                    <div class="relative overflow-x-auto">
-                        <div class="flex uppercase font-bold text-lg">
-                                    Detalles de la promoción
-                        </div>
-
-                    @if (detallesPromocion) {
-                      <p-table [value]="detallesPromocion" dataKey="idRespuesta"
-                        class="w-full text-sm text-left text-gray-500 dark:text-gray-400" [expandedRowKeys]="expandedRows"
-                        >
-                        <ng-template #caption>
-                                <div class="flex uppercase justify-center items-center font-bold text-lg">
-                                    DATOS GENERALES
-                                </div>
-                        </ng-template>
-                        <ng-template pTemplate="header">
-                          <tr class="bg-gray-50 dark:bg-gray-700 text-gray-700 uppercase text-xs">
-                            <th></th>
-                            <th>Órgano impartidor</th>
-                            <th>Expediente </th>
-                            <th>Url EE </th>
-                            <th>Estatus</th>
-                            <th>Cuaderno</th>
-                            <th class="text-center">Acciones</th>
-                            <!--<th class="px-2 py-2">Acciones</th>-->
-                          </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-promocion let-expanded="expanded">
-                          <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
-                            <td class="px-3 py-2">
-                          
-                              <button type="button"
-                                (click)="toggleRow(promocion)"
-                                >
-                                <i [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
-                              </button>
-                            </td>
-                            <td style="font-size: small;">{{ promocion.organoImpartidorJusticia.descripcion }}</td>
-                            <td style="font-size: small;">{{ promocion.numeroExpedienteOIJ }}</td>
-                            <td style="font-size: small;">{{ promocion.urlEE }}</td>
-                            <td style="font-size: small;">{{ promocion.estatus.nombre}}</td>
-                            <td style="font-size: small;">{{ promocion.tipoCuaderno }}</td>
-                            <td style="font-size: small;">
-                              @if(promocion.estatus.idEstatus !==3 && promocion.estatus.idEstatus !== 4){
-                                <div class="flex justify-center gap-3">
-                                  <div class="relative">
-                                    <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                                    <p-button type="button" severity="warn" (click)="redirectToPromocion(idNotificacion, promocion.idRespuesta)">
-                                      Editar
-                                    </p-button>
-                                  </div>
-                                  <div class="relative">
-                                    <p-button type="button" (click)="enviarPromocion(promocion.idRespuesta)">
-                                      Enviar
-                                    </p-button>
-                                  </div>
-                                </div>
-                              }
-                            </td>
-                          </tr>
-                          <!-- Expanded row details -->
-                          @if (expandedRows[promocion.idRespuesta]) {
-                            <tr class="bg-gray-50 dark:bg-gray-800">
-                              <td colspan="8" class="px-4 py-4">
-
-                                @if (promocion.archivos) {
-                                  <p-table [value]="promocion.archivos" dataKey="idDetalleActo"
-                                    class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                    <ng-template #caption>
-                                      <div class="flex uppercase justify-center items-center font-bold text-lg">
-                                        DOCUMENTOS
-                                      </div>
-                                    </ng-template>
-                                    <ng-template pTemplate="header">
-                                      <tr class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-600 dark:text-gray-400">
-                                        <th>Nombre del documento</th>
-                                        <th>Clasificación</th>
-                                        <th>Firmado</th>
-                                        <th>Fecha firmado</th>
-                                        <th>Firmantes</th>
-                                        <th>Tamaño</th>
-                                        <th class="text-center">Acciones</th>
-                                      </tr>
-                                    </ng-template>
-                                    <ng-template pTemplate="body" let-archivo>
-                                      <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
-                                        <td style="font-size: small;">{{ archivo.nombreDocumento }}</td>
-                                        <td style="font-size: small;">{{ archivo.clasificacionArchivo.descripcion }}</td>
-                                        <td style="font-size: small;">
-                                          @if(archivo.firmado){
-                                            <p>Si</p>
-                                          }
-                                          @else{
-                                          <p>No</p>
-                                        }
-                                      </td>
-                                      <td class="text-center">{{ archivo.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                                      <td>
-                                        <table>
-                                            @for (firmante of archivo.firmantes; track firmante) {
-                                              <tr>
-                                                @if(firmante != undefined)
-                                                  {
-                                                  <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
-                                                  @if(!archivo.firmado){
-                                                    <td class="px-4">
-                                                      <!--<a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">Eliminar</a>-->
-                                                      <!--<p-button  (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true" icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>-->
-                                                    </td>
-                                                  }
-                                                }
-                                              </tr>
-                                            }
-                                        </table>
-                                      </td>
-                                      <td>{{ ((archivo.longitud / 1024)/1024) | number:'1.0-2' }} MB</td>
-                                      <td>
-                                        <p-button (click)="mostrarArchivo(archivo)" type="button" icon="pi pi-file-pdf"  [rounded]="true">
-                                        </p-button>
-                                          @if(promocion.estatus.idEstatus !==3 && promocion.estatus.idEstatus !== 4){
-                                            <p-button (click)="eliminarDocumento(archivo)" type="button" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
-                                              data-modal-toggle="popup-modal">
-                                             
-                                              </p-button>
-                                            }
-                                          </td>
-                                        </tr>
-                                      </ng-template>
-                                      <ng-template pTemplate="emptymessage">
-                                        <tr>
-                                          <td colspan="5" class="px-4 py-2 text-gray-500 dark:text-gray-400">No hay
-                                          detalles disponibles para esta promoción.</td>
-                                        </tr>
-                                      </ng-template>
-                                    </p-table>
-                                    @if(mostrarDocumento()){
-                                        <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-                                        </app-pdf-dialog>
-                                    } 
-                                  }
-                                </td>
-                              </tr>
-                            }
-                          </ng-template>
-                        </p-table>
-                      }
-                    </div>
-
-
-            </div>
-        </div>
-    </div>
+  <!-- Encabezado sección -->
+  <div class="mb-4">
+    <span class="font-bold text-xl text-surface-900 dark:text-surface-0">
+      Detalles de la promoción
+    </span>
   </div>
-<!--MODAL PARA CONFIRMAR LA ELIMINACION DE ARCHIVO-->
+
+  @if (detallesPromocion) {
+  <p-table [value]="detallesPromocion" dataKey="idRespuesta" [expandedRowKeys]="expandedRows" stripedRows>
+
+    <!-- Caption tabla principal -->
+    <ng-template #caption>
+      <div class="flex justify-center items-center">
+        <span class="uppercase font-semibold text-sm tracking-widest text-surface-600 dark:text-surface-300">
+          Datos generales
+        </span>
+      </div>
+    </ng-template>
+
+    <!-- Encabezados tabla principal -->
+    <ng-template pTemplate="header">
+      <tr class="uppercase text-xs">
+        <th style="width: 3rem"></th>
+        <th>Órgano impartidor</th>
+        <th>Expediente</th>
+        <th>URL Expediente digital</th>
+        <th>Estatus</th>
+        <th>Cuaderno</th>
+        @if (hayPromocionEditable) {
+        <th class="text-center">Acciones</th>
+        }
+      </tr>
+    </ng-template>
+
+    <!-- Filas tabla principal -->
+    <ng-template pTemplate="body" let-promocion let-expanded="expanded">
+      <tr>
+
+        <!-- Toggle expand -->
+        <td>
+          <p-button [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" [rounded]="true" [text]="true"
+            severity="secondary" size="small" (click)="toggleRow(promocion)">
+          </p-button>
+        </td>
+
+        <td style="font-size: small;">{{ promocion.organoImpartidorJusticia.descripcion }}</td>
+        <td style="font-size: small;">{{ promocion.numeroExpedienteOIJ }}</td>
+
+        <!-- URL expediente digital -->
+        <td style="font-size: small;">
+          @if (promocion.urlEE) {
+          <a [href]="promocion.urlEE" target="_blank" class="text-primary underline break-all hover:opacity-70">
+            {{ promocion.urlEE }}
+          </a>
+          } @else {
+          <span class="text-surface-400">—</span>
+          }
+        </td>
+
+        <!-- Estatus con badge -->
+        <td>
+          <p-tag [value]="promocion.estatus.nombre"
+            [severity]="promocion.estatus.idEstatus === 3 || promocion.estatus.idEstatus === 4 ? 'success' : 'warn'">
+          </p-tag>
+        </td>
+
+        <td style="font-size: small;">{{ promocion.tipoCuaderno }}</td>
+
+        <!-- Acciones -->
+        @if (hayPromocionEditable) {
+
+        <td>
+          <div class="flex justify-center gap-2">
+            <p-button label="Editar" icon="pi pi-pencil" severity="warn" size="small"
+              (click)="redirectToPromocion(idNotificacion, promocion.idRespuesta)">
+            </p-button>
+            <p-button label="Enviar" icon="pi pi-send" size="small" (click)="enviarPromocion(promocion.idRespuesta)">
+            </p-button>
+          </div>
+
+        </td>
+        }
+      </tr>
+
+      <!-- Fila expandida — documentos -->
+      @if (expandedRows[promocion.idRespuesta]) {
+      <tr>
+        <td colspan="7" class="p-0">
+          <div class="p-4 bg-surface-100 dark:bg-surface-800 border-t border-surface">
+
+            @if (promocion.archivos && promocion.archivos.length > 0) {
+            <p-table [value]="promocion.archivos" stripedRows>
+
+              <ng-template #caption>
+                <div class="flex justify-center items-center">
+                  <span class="uppercase font-semibold text-sm tracking-widest text-surface-600 dark:text-surface-300">
+                    Documentos
+                  </span>
+                </div>
+              </ng-template>
+
+              <ng-template pTemplate="header">
+      <tr class="uppercase text-xs">
+        <th>Nombre del documento</th>
+        <th>Clasificación</th>
+        <th>Firmado</th>
+        <th>Fecha firmado</th>
+        <th>Firmantes</th>
+        <th>Tamaño</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-archivo>
+      <tr>
+
+        <td style="font-size: small;">{{ archivo.nombreDocumento }}</td>
+        <td style="font-size: small;">{{ archivo.clasificacionArchivo.descripcion }}</td>
+
+        <!-- Firmado -->
+        <td>
+          @if (archivo.firmado) {
+          <p-tag value="Sí" severity="success" icon="pi pi-check"></p-tag>
+          } @else {
+          <p-tag value="No" severity="secondary"></p-tag>
+          }
+        </td>
+
+        <!-- Fecha firmado -->
+        <td style="font-size: small;">
+          {{ archivo.fechaFirmado ? (archivo.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss') : '—' }}
+        </td>
+
+        <!-- Firmantes -->
+        <td>
+          @if (archivo.firmantes && archivo.firmantes.length > 0) {
+          <div class="flex flex-col gap-1">
+            @for (firmante of archivo.firmantes; track firmante) {
+            @if (firmante != undefined) {
+            <span class="text-xs underline">{{ firmante.nombre }}</span>
+            }
+            }
+          </div>
+          } @else {
+          <span class="text-surface-400 text-xs">Sin firmantes</span>
+          }
+        </td>
+
+        <!-- Tamaño -->
+        <td style="font-size: small;">
+          {{ ((archivo.longitud / 1024) / 1024) | number:'1.0-2' }} MB
+        </td>
+
+        <!-- Acciones -->
+        <td>
+          <div class="flex justify-center gap-2">
+            <p-button icon="pi pi-file-pdf" [rounded]="true" severity="success" size="small" title="Ver / Descargar"
+              (click)="mostrarArchivo(archivo)">
+            </p-button>
+            @if (promocion.estatus.idEstatus !== 3 && promocion.estatus.idEstatus !== 4) {
+            <p-button icon="pi pi-trash" [rounded]="true" [outlined]="true" severity="danger" size="small"
+              title="Eliminar documento" (click)="eliminarDocumento(archivo)">
+            </p-button>
+            }
+          </div>
+        </td>
+
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center text-surface-400 py-4 text-sm">
+          No hay documentos para esta promoción.
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+
+  @if (mostrarDocumento()) {
+  <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+  </app-pdf-dialog>
+  }
+
+  } @else {
+  <div class="text-center text-surface-400 py-6 text-sm">
+    <i class="pi pi-folder-open text-2xl mb-2 block"></i>
+    No hay documentos adjuntos en esta promoción.
+  </div>
+  }
+
+</div>
+</td>
+</tr>
+}
+
+</ng-template>
+
+<ng-template pTemplate="emptymessage">
+  <tr>
+    <td colspan="7" class="text-center text-surface-400 py-6 text-sm">
+      No hay promociones disponibles.
+    </td>
+  </tr>
+</ng-template>
+
+</p-table>
+}
+
+</div>
+
+<!-- ─── Confirmación eliminar archivo ────────────────────────────────────── -->
 <app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro de eliminar el documento?"
-  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+  icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
 </app-confirm-dialog>
 
+<!-- ─── Confirmación enviar promoción ────────────────────────────────────── -->
+<app-confirm-dialog key="enviarPromocion" title="Confirmación"
+  message="¿Está seguro de enviar la promoción al Poder Judicial de la Federación?" icon="pi pi-send"
+  circleClass="bg-primary" acceptLabel="Enviar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+
+<!-- ─── Dialog respuesta envío ───────────────────────────────────────────── -->
+<p-confirmdialog key="responsePromocion">
+  <ng-template #headless let-message let-onAccept="onAccept">
+    @if (message) {
+    <div
+      class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded-2xl w-[90vw] sm:w-auto sm:min-w-[420px] sm:max-w-[520px]">
+
+      <!-- Ícono -->
+      <div
+        class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+        <i class="pi pi-check text-5xl!"></i>
+      </div>
+
+      <span class="font-bold text-2xl block mb-2 mt-4">{{ message.header }}</span>
+
+      <!-- Datos de la respuesta -->
+      <div class="flex flex-col gap-1 w-full mt-4 text-sm">
+
+        <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+          <span class="font-semibold text-color-secondary shrink-0">Folio Confirmación</span>
+          <span class="font-medium text-right min-w-0 ">
+            {{ responsePromocion()?.respuestaGenericaCJF?.folioConfirmacion || '—' }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg">
+          <span class="font-semibold text-color-secondary shrink-0">Fecha Recepción</span>
+          <span class="font-medium text-right min-w-0 ">
+            {{ responsePromocion()?.respuestaGenericaCJF?.fechaRecepcion
+            ? (responsePromocion()?.respuestaGenericaCJF?.fechaRecepcion | date:'dd/MM/yyyy HH:mm:ss')
+            : '—' }}
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+          <span class="font-semibold text-color-secondary shrink-0">Mensaje</span>
+          <span class="font-medium text-right min-w-0 ">
+            {{ responsePromocion()?.respuestaGenericaCJF?.mensaje || '—' }}
+          </span>
+        </div>
+
+      </div>
+
+      <div class="flex justify-end gap-2 mt-6 w-full">
+        <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
+      </div>
+
+    </div>
+    }
+  </ng-template>
+</p-confirmdialog>
+
 <p-toast></p-toast>
- 

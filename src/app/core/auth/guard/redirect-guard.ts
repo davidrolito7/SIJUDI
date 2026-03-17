@@ -7,9 +7,10 @@ export const redirectGuard: CanMatchFn = (_route, segments) => {
   const router = inject(Router);
 
   const url = '/' + (segments.map(s => s.path).join('/') || '');
-  const ok = tokenService.isValidRefreshToken();
+  //const ok = tokenService.isValidRefreshToken();
+  const ok = tokenService.isOneFactorValidated();
 
-  if (url === '/login' && ok) {
+  if (url === '/login' && ok ) {
     const twoOk = tokenService.isTwoFactorValidated();
     return router.parseUrl(twoOk ? '/perfil' : '/login2fase');
   }

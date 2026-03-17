@@ -37,9 +37,13 @@ export interface CatJuzgadoResponse {
 }
 
 export interface ValidarCausaResponse {
-    idCausa: number;
     idCatJuzgado: number;
-    numCausa: string;
-    numCarpeta: string;
+    idJuzgado: number;
     juzgado: string;
-}   
+    tipoTramite: string;
+    idCausa: number | null;
+    numCausa: string | null;
+    numCarpeta: string | null;
+    idCuaderno: number | null;
+    numCuaderno: string | null;
+}

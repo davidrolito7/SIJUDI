@@ -1,74 +1,108 @@
 import { ChangeDetectorRef, Component, signal } from '@angular/core';
 import { Toast } from "primeng/toast";
 import { TableModule } from "primeng/table";
-import { PromocionDocumentos, UI_PromocionResponse } from '../../interfaces/amparos.models';
+import { EnviarPromocionResponse, PromocionDocumentos, UI_PromocionResponse } from '../../interfaces/amparos.models';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { Router } from '@angular/router';
 import { AmparosService } from '../../services/amparo.service';
 import { Button } from "primeng/button";
-import {CommonModule} from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { base64ToFile, downloadBase64 } from '../../../shared/functions/utils';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+import { TagModule } from 'primeng/tag';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-RespuestaAmparoRecibido',
-  imports: [Toast, TableModule, Breadcrub, Spinner, Button, PdfDialog, ConfirmDialog,CommonModule],
+  imports: [
+    Toast,
+    TableModule,
+    Breadcrub,
+    Spinner,
+    Button,
+    PdfDialog,
+    ConfirmDialog,
+    CommonModule,
+    TagModule,
+    ConfirmDialogModule   // <-- agregado para el dialog de respuesta
+  ],
   templateUrl: './respuesta-amparo-recibido.html',
   styleUrl: './respuesta-amparo-recibido.css',
-  providers:[MessageService, ConfirmationService]
+  providers: [MessageService, ConfirmationService]
 })
 export class RespuestaAmparoRecibido {
-   expandedRows: { [key: number]: boolean } = {};
-   detallesPromocion: UI_PromocionResponse[] = [];
-   idNotificacion: number |0= 0;
-   isLoading: boolean = false;
 
-   nombre = '';
-    documentoUrl: SafeResourceUrl | null = null;
-    mostrarDocumento = signal<boolean>(false);
-    dialogData: any = {}; // Para almacenar la información del archivo del diálogo
+  expandedRows: { [key: number]: boolean } = {};
+  detallesPromocion: UI_PromocionResponse[] = [];
+  idNotificacion: number | 0 = 0;
+  isLoading: boolean = false;
 
-  constructor(private messageService: MessageService, 
-    private router :Router,
+  nombre = '';
+  documentoUrl: SafeResourceUrl | null = null;
+  mostrarDocumento = signal<boolean>(false);
+  dialogData: any = {};
+
+  // Signal para mostrar los datos de respuesta en el dialog tras enviar
+  responsePromocion = signal<EnviarPromocionResponse | null>(null);
+
+
+  constructor(
+    private messageService: MessageService,
+    private router: Router,
     private amparosService: AmparosService,
-    private cd: ChangeDetectorRef, 
+    private cd: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
-    private confirmationService: ConfirmationService, ) {}
+    private confirmationService: ConfirmationService,
+  ) { }
 
   ngOnInit() {
-
     const state = window.history.state as { idNotificacion: number };
 
     if (state && state.idNotificacion) {
       this.idNotificacion = state.idNotificacion;
-      this.cargarDetallesPromocion(this.idNotificacion); // Cargar los detalles de la notifiacion con el idNotificacion
-
-
-    } else {
-      // Si no hay state, redirigir a la lista de amparos
-      //this.router.navigate(['/inicio/promocion']);
-     
+      this.cargarDetallesPromocion(this.idNotificacion);
     }
 
+    this.testDialog();
   }
+  testDialog(): void {
+    this.responsePromocion.set({
+      respuestaGenericaCJF: {
+        folioConfirmacion: "202621400010000105",
+        codigoRetorno: 1,
+        mensaje: 'Exito',
+        fechaRecepcion: '2026-03-13T10:44:24-06:00'
+      },
+      respuestaGenericaCJO: {
+        folioConfirmacion: "26",
+        codigoRetorno: 1,
+        mensaje: 'Exito',
+        fechaRecepcion: '2026-03-13T10:44:38.0405595-06:00'
+      }
+    });
+    this.confirmationService.confirm({
+      key: 'responsePromocion',
+      header: 'Promoción Enviada',
+    });
+  }
+  // ─── Carga ─────────────────────────────────────────────────────────────────
+
   cargarDetallesPromocion(idNotificacion: number): void {
-    this.idNotificacion = idNotificacion; // Almacena el idNotificacion
+    this.idNotificacion = idNotificacion;
     this.isLoading = true;
     this.cd.detectChanges();
+
     this.amparosService.getPromocionDetalles(idNotificacion).subscribe({
       next: (response) => {
-        if(response.success){
+        if (response.success) {
           this.detallesPromocion = response.data;
           this.isLoading = false;
           this.cd.detectChanges();
-          //this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
-        }
-        else{
-          //console.log(response.errors);
+        } else {
           this.messageService.add({ severity: 'warn', summary: 'Error', detail: response.message });
         }
       },
@@ -79,103 +113,139 @@ export class RespuestaAmparoRecibido {
       }
     });
   }
-  /*expandAll(){
-    this.detallesPromocion.forEach(promocion => {
-      this.expandedRows[promocion.idRespuesta] = true;
-    });
-  }
-  collapseAll(){
-    this.expandedRows = {};
-  }*/
+
+  // ─── Tabla expandible ──────────────────────────────────────────────────────
+
   toggleRow(promocion: any) {
-  if (this.expandedRows[promocion.idRespuesta]) {
-    delete this.expandedRows[promocion.idRespuesta];
-  } else {
-    this.expandedRows[promocion.idRespuesta] = true;
+    if (this.expandedRows[promocion.idRespuesta]) {
+      delete this.expandedRows[promocion.idRespuesta];
+    } else {
+      this.expandedRows[promocion.idRespuesta] = true;
+    }
   }
-}
-/*
-  onRowExpand(event: any): void {
-    this.expandedRows[event.data.idRespuesta] = true;}
-  onRowCollapse(event: any): void {
-    delete this.expandedRows[event.data.idRespuesta];
-  }*/
+
+  // ─── Navegación ────────────────────────────────────────────────────────────
+
   redirectToPromocion(idNotificacion: number, idRespuesta: number): void {
     this.router.navigate(['/amparos/acuerdo'], {
       state: { idNotificacion, idRespuesta }
     });
   }
+
+  // ─── Enviar promoción ──────────────────────────────────────────────────────
+
+  // Guarda el idRespuesta del registro y abre el confirm
   enviarPromocion(idPromocion: number | undefined): void {
-    // Aquí puedes implementar la lógica para enviar la promoción
-    // Por ejemplo, podrías hacer una llamada a un servicio para enviar la promoción al backend
+    if (!idPromocion) {
+      this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: 'Promoción inválida' });
+      return;
+    }
+    this.confirmationService.confirm({
+      key: 'enviarPromocion',
+      accept: () => this.onEnviar(idPromocion),
+      reject: () => { }
+    });
   }
-  //Llamada al servicio para obtener los Archivos base64 pdf
-  mostrarArchivo(documento: PromocionDocumentos): void {
-    const FIVE_MB = 5 * 1024 * 1024; // menos a 5 megas se abren en modal... los mayores se descargan
-    this.isLoading=true;
+
+  // Llama al servicio con el idRespuesta guardado y muestra el dialog de respuesta
+  onEnviar(idPromocion: number): void {
+    this.isLoading = true;
     this.cd.detectChanges();
-    this.amparosService.getFilePromocion(documento.idArchivo).subscribe({
+
+    this.amparosService.enviarPromocion(idPromocion).subscribe({
       next: (response) => {
-        //console.log("recibe respuesta");
-        if(response.success){
-            const base64String = response.data.documento;
-                    if(documento.longitud<= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
-                        
-                        this.onVerDocumento(base64String,documento.nombreDocumento ?? 'documento', 'application/pdf'); // se visualiza en modal
-                    else{
-                      const nombre= response.data.fileName;
-                      this.dialogData.fileName=nombre;
-                      const ext= nombre.split('.')[1];
-                      downloadBase64(base64String, nombre,ext );
-                    }
+        if (response.success) {
+          this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Promoción enviada exitosamente' });
+          response.data.respuestaGenericaCJF.folioConfirmacion =
+            String(response.data.respuestaGenericaCJF.folioConfirmacion);
+          this.responsePromocion.set(response.data); this.confirmationService.confirm({
+            key: 'responsePromocion',
+            header: 'Promoción Enviada',
+          });
+        } else {
+          this.messageService.add({ severity: 'warn', summary: 'Error', detail: response.message });
         }
-        else
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
       },
-      error: (error) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-          this.isLoading=false;
+      error: (e) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+        this.isLoading = false;
         this.cd.detectChanges();
       },
-      complete:()=>{
-        this.isLoading=false;
+      complete: () => {
+        this.isLoading = false;
+        this.cd.detectChanges();
+        // Recarga la tabla para reflejar el nuevo estatus
+        this.cargarDetallesPromocion(this.idNotificacion);
+      }
+    });
+  }
+
+  // ─── Archivos ──────────────────────────────────────────────────────────────
+
+  mostrarArchivo(documento: PromocionDocumentos): void {
+    const FIVE_MB = 5 * 1024 * 1024;
+    this.isLoading = true;
+    this.cd.detectChanges();
+
+    this.amparosService.getFilePromocion(documento.idArchivo).subscribe({
+      next: (response) => {
+        if (response.success) {
+          const base64String = response.data.documento;
+          if (documento.longitud <= FIVE_MB && response.data.fileName.split('.')[1] === 'pdf') {
+            this.onVerDocumento(base64String, documento.nombreDocumento ?? 'documento', 'application/pdf');
+          } else {
+            const nombre = response.data.fileName;
+            this.dialogData.fileName = nombre;
+            const ext = nombre.split('.')[1];
+            downloadBase64(base64String, nombre, ext);
+          }
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+        }
+      },
+      error: (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+        this.isLoading = false;
+        this.cd.detectChanges();
+      },
+      complete: () => {
+        this.isLoading = false;
         this.cd.detectChanges();
       }
     });
   }
-  onVerDocumento(fileBase64: string, nombre:string, mime:string): void {
-    const file = base64ToFile(fileBase64,nombre, mime);
+
+  onVerDocumento(fileBase64: string, nombre: string, mime: string): void {
+    const file = base64ToFile(fileBase64, nombre, mime);
     if (file instanceof File) {
       const url = URL.createObjectURL(file);
-      //this.nombre = file.name;
       this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
       this.mostrarDocumento.set(true);
     } else {
       console.error('Documento inválido');
-    } 
-  }
-  eliminarDocumento(documento: PromocionDocumentos) {
-    //tipoDocumento=2 que son archivos de exhortos enviados
-      this.confirmationService.confirm({
-        key: 'eliminarArchivo',
-        accept: () => this.onEliminarDocumento(documento),
-        reject: () => { }
-      });
     }
-  
+  }
+
+  eliminarDocumento(documento: PromocionDocumentos) {
+    this.confirmationService.confirm({
+      key: 'eliminarArchivo',
+      accept: () => this.onEliminarDocumento(documento),
+      reject: () => { }
+    });
+  }
+
   onEliminarDocumento(documento: PromocionDocumentos) {
-    // Llamada al servicio para eliminar el documento
-    this.isLoading=true;
+    this.isLoading = true;
     this.cd.detectChanges();
-    const tipoDocumento = 2; // Puedes cambiar este valor según sea necesario
+    const tipoDocumento = 2;
+
     this.amparosService.eliminarArchivo(documento.idArchivo, tipoDocumento).subscribe({
-      next: (response:any )=> {
+      next: (response: any) => {
         if (response.success) {
-          // Encuentra el índice del documento que quieres eliminar
           const indexRespuesta = this.detallesPromocion.findIndex(resp => resp.idRespuesta === documento.idRespuesta);
-          if(indexRespuesta !== -1){
+          if (indexRespuesta !== -1) {
             const indexDoc = this.detallesPromocion[indexRespuesta].archivos.findIndex(doc => doc.idArchivo === documento.idArchivo);
-            if(indexDoc !== -1){
+            if (indexDoc !== -1) {
               this.detallesPromocion[indexRespuesta].archivos.splice(indexDoc, 1);
             }
           }
@@ -184,17 +254,21 @@ export class RespuestaAmparoRecibido {
           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
         }
       },
-      error:(error) => {
+      error: (error) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
-        this.isLoading=false;
+        this.isLoading = false;
         this.cd.detectChanges();
       },
-      complete:()=>{
-        this.isLoading=false;
+      complete: () => {
+        this.isLoading = false;
         this.cd.detectChanges();
       }
     });
+  }
 
-  } 
-     
+  get hayPromocionEditable(): boolean {
+  return this.detallesPromocion.some(
+    p => p.estatus.idEstatus !== 3 && p.estatus.idEstatus !== 4
+  );
+}
 }

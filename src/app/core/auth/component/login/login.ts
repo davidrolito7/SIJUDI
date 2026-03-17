@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit,HostListener,ViewChild,ElementRef } from '@angular/core';
+import { Component, OnInit,HostListener,ViewChild,ElementRef, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -12,11 +12,12 @@ import { ToastModule } from 'primeng/toast';
 import { AuthService } from '../../service/auth.service';
 import { TokenService } from '../../service/token.service';
 import { MessageService } from 'primeng/api';
+import { Spinner } from "../../../../shared/components/spinner/spinner";
 
 @Component({
   standalone: true,
   selector: 'app-login',
-  imports: [CommonModule, FormsModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, CheckboxModule,ToastModule],
+  imports: [CommonModule, FormsModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, CheckboxModule, ToastModule, Spinner],
   providers: [MessageService],
   templateUrl: './login.html',
   styleUrl: './login.css',
@@ -30,6 +31,7 @@ export class Login implements OnInit {
   @ViewChild('passwordInput')
   passwordInput!:ElementRef;
   verPassword:boolean=false;
+  isLoading: boolean=(false);
 
   constructor(
     private authService: AuthService,
@@ -37,7 +39,8 @@ export class Login implements OnInit {
     //private renderer: Renderer2,
     private el: ElementRef,
     private tokenService: TokenService,
-    private mensaje: MessageService
+    private mensaje: MessageService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -111,7 +114,8 @@ export class Login implements OnInit {
       });
       return;
     }
-
+    this.isLoading=true;
+    this.cd.detectChanges();
     this.authService.login(this.usuario, this.contrasenia, this.idSistema, this.recordar).subscribe({
       next: (response) => {
         if (response.success) {
@@ -134,7 +138,14 @@ export class Login implements OnInit {
           detail: 'Ocurrió un error al intentar ingresar.',
           life: 3000
         });
+        this.isLoading=false;
+        this.cd.detectChanges();
+      },
+      complete:()=>{
+        this.isLoading=false;
+        this.cd.detectChanges();
       }
+
     });
   }
 

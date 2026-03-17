@@ -162,6 +162,7 @@ export interface PromocionDocumentos {
     firmantes: Firmantes[];
     file: File;
     activo: boolean;
+    usrYaFirmo:boolean;
 }
 export interface Firmantes{
     idFirmaTmp:number;
@@ -177,7 +178,8 @@ export interface PromocionGeneralesRequest {
     numeroExpedienteOIJ: string;
     existeEE: boolean;
     urlEE: string | null;
-    tipoCuaderno: number;
+    tipoCuaderno: string;
+    idTipoCuaderno:number;
 }
 //request para el endpoint
 //https://interconexion.tribunaloaxaca.gob.mx/api/Promocion/GuardarRespuestaNotificacionArchivos
@@ -448,4 +450,18 @@ export interface ConsultarAsuntoRequest {
     idMateria:number;
     idTipoProcedimiento:number;
 
+}
+
+//* RESPONSE AL ENVIAR PROMOCION AL FEDERAL  de https://localhost:44397/api/Promocion/EnviaPromocionInterconexion
+
+export interface EnviarPromocionResponse {
+  respuestaGenericaCJF: RespuestaGenericaCJF;
+  respuestaGenericaCJO: RespuestaGenericaCJF; 
+}
+
+export interface RespuestaGenericaCJF {
+  folioConfirmacion: string;
+  codigoRetorno: number;
+  mensaje: string;
+  fechaRecepcion: string;
 }

@@ -57,7 +57,10 @@ export class TramitesJuicioOral implements OnInit {
   ) { }
   items: MenuItem[] = [{ label: 'Components' }, { label: 'Form' }, { label: 'InputText', routerLink: '/inputtext' }];
   home: MenuItem = { icon: 'pi pi-home', routerLink: '/' };
-
+  catTipoTramite = [
+    { label: 'CAUSA', value: 33 },
+    { label: 'CUADERNO DE EJECUCIÓN', value: 47 },
+  ];
   searchValue: string | undefined;
 
   clear(table: Table) {
@@ -83,35 +86,54 @@ export class TramitesJuicioOral implements OnInit {
   }
 
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    this.loadCatJuzgados();
-
     this.validarCausaForm = this.fb.group({
-      numeroCausa: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
-      idJuzgado: [null, Validators.required],
+      idCatTipoTramite: [null, Validators.required],
+      numeroExpediente: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
+      idJuzgado: [{ value: null, disabled: true }, Validators.required],
       idPantalla: [1]
+    });
+  }
+
+  cargarCatalogoJuzgados(idCatTipoTramite: number | null) {
+    const juzgadoCtrl = this.validarCausaForm.get('idJuzgado');
+    this.catJuzgados = [];
+    juzgadoCtrl?.setValue(null, { emitEvent: false });
+    juzgadoCtrl?.disable({ emitEvent: false });
+    this.mostrarTramites.set(false);
+    this.tramitesElectronicosRecibidos = [];
+
+    if (idCatTipoTramite == null) return;
+
+    this.isLoading = true;
+    this.apiService.getCatJuzgados({ idCatTipoTramite }).subscribe({
+      next: (response) => {
+        this.catJuzgados = response.data;
+        juzgadoCtrl?.enable({ emitEvent: false });
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar juzgados:', error);
+        this.isLoading = false;
+      }
     });
   }
 
   onBuscarTramitesElectronicos() {
     this.isLoading = true;
     this.mostrarTramites.set(false);
-    const params = this.validarCausaForm.value;
+    const params = this.validarCausaForm.getRawValue();
     this.apiService.getTramitesElectronicosRecibidos(params).subscribe(
       (response) => {
         this.isLoading = false;
         if (response.success) {
           this.tramitesElectronicosRecibidos = response.data;
           this.mostrarTramites.set(true);
-
         } else {
           this.confirmationService.confirm({
             key: 'info',
             accept: () => { },
           });
         }
-
       },
       (error) => {
         this.isLoading = false;
@@ -119,23 +141,7 @@ export class TramitesJuicioOral implements OnInit {
     );
   }
 
-  loadCatJuzgados() {
-    this.apiService.getCatJuzgados().subscribe(
-      (response) => {
-        if (response.success) {
-          this.catJuzgados = response.data;
-
-        } else {
-        }
-
-      },
-      (error) => {
-      }
-    );
-  }
-
-    detalle(idTramiteElectronicoRecibido: number) {
+  detalle(idTramiteElectronicoRecibido: number) {
     this.router.navigate(['/juicio-oral/detalle'], { state: { idTramiteElectronicoRecibido } });
   }
-
 }

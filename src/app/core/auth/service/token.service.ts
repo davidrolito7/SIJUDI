@@ -1,7 +1,8 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -14,11 +15,14 @@ export class TokenService {
   private sessionExpiredSubject = new BehaviorSubject<boolean>(false);
   sessionExpired$ = this.sessionExpiredSubject.asObservable();
   private validacionCompletada = new BehaviorSubject<boolean>(false);
+  private readonly ONE_FACTOR_KEY='oneFactorValidated'
   private readonly TWO_FACTOR_KEY = 'twoFactorValidated';
   private readonly PERFIL_COMPLETED_KEY = 'perfilCompleted';
+  private readonly router = inject(Router);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.isBrowser = isPlatformBrowser(this.platformId);
+    
   }
 
   setValidacionCompletada(valor: boolean) {
@@ -76,12 +80,12 @@ export class TokenService {
     return null;
   }
 
-  removeRefreshToken() {
+  /*removeRefreshToken() {
     if (this.isBrowser && localStorage) {
       localStorage.removeItem(this.nameRefreshToken);
       sessionStorage.removeItem(this.nameRefreshToken);
     }
-  }
+  }*/
 
   isValidToken() {
     const token = this.getToken();
@@ -103,7 +107,7 @@ export class TokenService {
     return false;
   }
 
-  isValidRefreshToken(): boolean {
+  /*isValidRefreshToken(): boolean {
     if (!this.isBrowser) return false;
 
     const token = this.getRefreshToken() ?? '';
@@ -129,7 +133,7 @@ export class TokenService {
       console.error('Error al decodificar el refresh token:', error);
       return false;
     }
-  }
+  }*/
 
   getUserFromToken() {
     const token = this.getToken();
@@ -154,15 +158,25 @@ export class TokenService {
     if (typeof window === 'undefined') return;
     sessionStorage.setItem(this.TWO_FACTOR_KEY, value ? 'true' : 'false');
   }
+  setOneFactorValidated(value: boolean):void{
+    sessionStorage.setItem(this.ONE_FACTOR_KEY, value ? 'true' : 'false');
+  }
 
   isTwoFactorValidated(): boolean {
     if (typeof window === 'undefined') return false;
     return sessionStorage.getItem(this.TWO_FACTOR_KEY) === 'true';
   }
-
+  isOneFactorValidated(): boolean {
+    if (typeof window === 'undefined') return false;
+    return sessionStorage.getItem(this.ONE_FACTOR_KEY) === 'true';
+  }
   clearTwoFactorValidated(): void {
     if (typeof window === 'undefined') return;
     sessionStorage.removeItem(this.TWO_FACTOR_KEY);
+  }
+  clearOneFactorValidated(): void {
+    if (typeof window === 'undefined') return;
+    sessionStorage.removeItem(this.ONE_FACTOR_KEY);
   }
 
   setPerfilCompleted(value: boolean): void {
@@ -203,11 +217,11 @@ export class TokenService {
     if (!this.isBrowser) return;
 
     this.removeToken();
-    this.removeRefreshToken();
+    //this.removeRefreshToken();
 
     this.clearTwoFactorValidated();
     this.clearPerfilCompleted();
-
+    this.clearOneFactorValidated();
     // this.removeAppSelections();
 
     //  borrar usuario recordado también
@@ -216,9 +230,10 @@ export class TokenService {
 
     // limpia banderas 
     this.setValidacionCompletada(false);
-    this.notifySessionExpired();
+    //this.notifySessionExpired();
 
     this.limpiarPantallas(); 
+    this.router.navigate(['/login'], { replaceUrl: true });
    }
 
   /**

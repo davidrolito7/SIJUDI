@@ -14,40 +14,33 @@
                     <div class="font-bold text-2xl text-surface-900 dark:text-surface-0">Detalle de amparo recibido
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        @if(puedeRecibir() && detallesNotificacion()?.generales?.idEstatus !==3 && detallesNotificacion()?.generales?.idEstatus !== 4)
+                        @if(puedeRecibir() && detallesNotificacion()?.generales?.idEstatus !==3 &&
+                        detallesNotificacion()?.generales?.idEstatus !== 4)
                         {
-                            <div class="relative">
-                            <p-button type="button" (click)="recibir()"
-                                class="text-white bg-violeta hover:bg-morado focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
-                            Recibir</p-button>
-                            </div>
+                        <div class="relative">
+                            <p-button label="Recibir" (click)="recibir()">
+                            </p-button>
+                        </div>
                         }
-                        @if(puedeTurnarRevocar() && detallesNotificacion()?.generales?.idEstatus !==3 && detallesNotificacion()?.generales?.idEstatus !== 4)
+                        @if(!puedeTurnarRevocar() && detallesNotificacion()?.generales?.idEstatus !==3 &&
+                        detallesNotificacion()?.generales?.idEstatus !== 4)
                         {
-                            <div class="relative">
-                            <p-button type="button" (click)="turnar()"
-                                class="text-white bg-violeta hover:bg-morado focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
-                            Turnar</p-button>
-                            </div>
+                        <div class="relative">
+                            <p-button styleClass="btn-secondary" (click)="turnar()" label="Nuevo trámite"></p-button>
+                        </div>
+                        <div class="relative">
+                            <p-button styleClass="btn-tertiary" (click)="revocar()" label="Revocar"></p-button>
+                        </div>
 
-
-                            <div class="relative">
-                            <p-button type="button" (click)="revocar()"
-                                class="text-white bg-violeta hover:bg-morado focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">
-                            Revocar</p-button>
-                            </div>
-
-                            <div class="relative">
-                            <p-button type="button" (click)="crearPromocion()"
-                                class="text-white bg-violeta hover:bg-morado focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900">Crear
-                            Promoción</p-button>
-                            </div>
+                        <div class="relative">
+                            <p-button styleClass="bg-primary-200" label="Crear Promoción" (click)="crearPromocion()">
+                            </p-button>
+                        </div>
                         }
                         <div class="relative">
                             @if(detallesNotificacion()?.numPromociones ?? 0 > 0){
-                            <p-button type="button" (click)="verDetallePromociones()"
-                                class="text-white bg-violeta hover:bg-morado focus:outline-none focus:ring-2 focus:ring-violeta/50 font-medium rounded-full text-sm px-8 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Ver
-                                Promociones ({{detallesNotificacion()?.numPromociones}})
+                            <p-button styleClass="btn-tertiary" label="Promociones" (click)="verDetallePromociones()">
+                                ({{detallesNotificacion()?.numPromociones}})
                             </p-button>
                             }
 
@@ -73,13 +66,14 @@
                                             </td>
                                             <td class="col2">
                                                 <span class="text-red-500 font-bold">
-                                                {{detallesNotificacion()?.generales?.neun}}
+                                                    {{detallesNotificacion()?.generales?.neun}}
                                                 </span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="col1">
-                                                <p class="text-surface-600  dark:text-surface-300"><b>Número de expediente:
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Número de
+                                                        expediente:
                                                     </b>
                                                 </p>
                                             </td>
@@ -92,7 +86,8 @@
                                                     </b>
                                                 </p>
                                             </td>
-                                            <td class="col2">{{ detallesNotificacion()?.generales?.fec_envio | date:'yyyy-MM-dd HH:mm:ss' |
+                                            <td class="col2">{{ detallesNotificacion()?.generales?.fec_envio |
+                                                date:'yyyy-MM-dd HH:mm:ss' |
                                                 date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                         </tr>
                                         <tr>
@@ -109,8 +104,8 @@
                                             </td>
                                             <td class="col2">{{ detallesNotificacion()?.generales?.materia }}</td>
                                         </tr>
-                                        
-                                        
+
+
                                     </table>
                                 </div>
                             </div>
@@ -130,30 +125,34 @@
 
                                         <tr>
                                             <td class="col1">
-                                                <p class="text-surface-600  dark:text-surface-300"><b>Tipo cuaderno: </b>
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Tipo cuaderno:
+                                                    </b>
                                                 </p>
                                             </td>
                                             <td class="col2 text-surface-700 dark:text-surface-200">{{
-                                                    detallesNotificacion()?.generales?.tipoCuaderno }}</td>
+                                                detallesNotificacion()?.generales?.tipoCuaderno }}</td>
                                         </tr>
                                         <tr>
                                             <td class="col1">
-                                                <p class="text-surface-600  dark:text-surface-300"><b>Órgano destino: </b>
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Órgano destino:
+                                                    </b>
                                                 </p>
                                             </td>
                                             <td class="col2 text-surface-700 dark:text-surface-200">{{
-                                                    detallesNotificacion()?.generales?.organo_impartidor_justicia }}</td>
+                                                detallesNotificacion()?.generales?.organo_impartidor_justicia }}</td>
                                         </tr>
                                         <tr>
                                             <td class="col1">
-                                                <p class="text-surface-600  dark:text-surface-300"><b>Fecha de recepción: </b>
+                                                <p class="text-surface-600  dark:text-surface-300"><b>Fecha de
+                                                        recepción: </b>
                                                 </p>
                                             </td>
                                             <td class="col2 text-surface-700 dark:text-surface-200">{{
-                                                detallesNotificacion()?.generales?.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                                detallesNotificacion()?.generales?.fechaRecepcion | date:'yyyy-MM-dd
+                                                HH:mm:ss'}}</td>
                                         </tr>
-                                        
-                                        
+
+
                                         <tr>
                                             <td class="col1">
                                                 <p class="text-surface-600  dark:text-surface-300"><b>Estatus: </b></p>
@@ -172,7 +171,7 @@
 
                         </div>
                     </div>
-                    
+
                     @if (!detallesNotificacion()?.generales) {
                     <div>
                         <p class="text-surface-600  dark:text-surface-300">No hay datos generales disponibles.</p>
@@ -201,15 +200,15 @@
                                     <th>
                                         <div class="flex items-center justify-between">Tipo Persona</div>
                                     </th>
-                                    
+
                                 </tr>
                             </ng-template>
 
                             <ng-template #body let-partes>
                                 <tr>
-                                    <td style="font-size: small;">{{ partes?.nombre }}  </td>
+                                    <td style="font-size: small;">{{ partes?.nombre }} </td>
                                     <td style="font-size: small;">{{ partes?.caracter}}</td>
-                                    
+
                                     <td style="font-size: small;">{{ partes?.tipoPersona }}</td>
 
                                 </tr>
@@ -224,13 +223,14 @@
 
                     </div>
 
-                </div>                
+                </div>
                 <!--ACTOS RECLAMADOS-->
                 <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
                     <div class="relative overflow-x-auto">
 
-                        <p-table #dt [value]="detallesNotificacion()?.actosReclamados || []" dataKey="idActoReclamado" [expandedRowKeys]="expandedRows"
-                            (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
+                        <p-table #dt [value]="detallesNotificacion()?.actosReclamados || []" dataKey="idActoReclamado"
+                            [expandedRowKeys]="expandedRows" (onRowExpand)="onRowExpand($event)"
+                            (onRowCollapse)="onRowCollapse($event)">
                             <ng-template pTemplate="caption">
                                 <div class="flex uppercase justify-center items-center font-bold text-lg">
                                     ACTOS RECLAMADOS
@@ -240,22 +240,29 @@
                             <ng-template pTemplate="header">
                                 <tr class="uppercase text-xs">
                                     <th></th>
-                                    <th><div class="flex items-center justify-between">Nombre</div></th>    
-                                    <th><div class="flex items-center justify-between">Descripción carácter</div></th>       
-                                    <th><div class="flex items-center justify-between">Descripción tipo persona</div></th>
-                                    <th><div class="flex items-center justify-between">Persona ID</div></th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Nombre</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Descripción carácter</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Descripción tipo persona</div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between">Persona ID</div>
+                                    </th>
 
-    
+
                                 </tr>
                             </ng-template>
 
-                            <ng-template pTemplate="body" let-item let-expanded="expanded" >
+                            <ng-template pTemplate="body" let-item let-expanded="expanded">
                                 <tr>
                                     <td><button type="button"
-                                        (click)="expandedRows[item.idActoReclamado] = !expandedRows[item.idActoReclamado]"
-                                        class="flex items-center justify-center w-8 h-8 rounded-full text-gray-500 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-400">
-                                        <i
-                                        [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                                            (click)="expandedRows[item.idActoReclamado] = !expandedRows[item.idActoReclamado]"
+                                            class="flex items-center justify-center w-8 h-8 rounded-full text-gray-500 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-400">
+                                            <i [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                                         </button>
 
                                     </td>
@@ -266,7 +273,7 @@
                                 </tr>
                                 <!-- Expanded row details -->
                                 @if (expandedRows[item.idActoReclamado]) {
-                                    <tr >
+                                <tr>
                                     <td colspan="12" class="px-4 py-4">
                                         <p class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Detalles:</p>
                                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -280,11 +287,12 @@
                                                 </tr>
                                             </thead>
                                             @for (detalle of item.actosDetalles; track detalle) {
-                                                <tbody>
-                                                <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                            <tbody>
+                                                <tr
+                                                    class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
                                                     <td class="px-4 py-2">{{ detalle.descripOpcionActoRec}} </td>
                                                     <td class="px-4 py-2">{{ detalle.idOpcionActoRec }}</td>
-                                                    
+
                                                     <td class="px-4 py-2">{{ detalle.tipoCampo }}</td>
                                                     <td class="px-4 py-2">{{ detalle.descripcionIdCampo }}</td>
                                                     <td class="px-4 py-2">{{ detalle.activo }}</td>
@@ -294,10 +302,10 @@
                                         </table>
                                     </td>
                                 </tr>
-                                
+
                                 }
                             </ng-template>
-                            
+
 
                             <ng-template pTemplate="emptymessage">
                                 <tr>
@@ -305,7 +313,7 @@
                                 </tr>
                             </ng-template>
                         </p-table>
-                    
+
                     </div>
 
                 </div>
@@ -336,26 +344,28 @@
                                     <th>
                                         <div class="flex items-center justify-between">Acciones</div>
                                     </th>
-    
+
                                 </tr>
                             </ng-template>
 
-                            <ng-template #body let-archivo >
+                            <ng-template #body let-archivo>
                                 <tr>
                                     <td style="font-size: small;">{{ archivo?.nombreDocumento }}</td>
-                                    <td style="font-size: small;">{{ ((archivo?.longitud)/1024)/1024 | number:'1.2-2' }} MB</td>
+                                    <td style="font-size: small;">{{ ((archivo?.longitud)/1024)/1024 | number:'1.2-2' }}
+                                        MB</td>
                                     <td style="font-size: small;">
                                         @if (archivo.firmado) {
-                                                <span>Sí</span>
-                                            }
-                                            @else  {
-                                                <span>No</span>
-                                            }
+                                        <span>Sí</span>
+                                        }
+                                        @else {
+                                        <span>No</span>
+                                        }
                                     </td>
-                                    <td style="font-size: small;">{{ archivo?.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                                    <td class="text-center"> 
+                                    <td style="font-size: small;">{{ archivo?.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss'
+                                        }}</td>
+                                    <td class="text-center">
                                         <p-button (click)="mostrarArchivo(archivo)" severity="success" [rounded]="true"
-                                                icon="pi pi-file-pdf" class="mr-2" title="descargar">
+                                            icon="pi pi-file-pdf" class="mr-2" title="descargar">
                                         </p-button>
                                     </td>
 
@@ -369,9 +379,9 @@
                             </ng-template>
                         </p-table>
                         @if(mostrarDocumento()){
-                            <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-                            </app-pdf-dialog>
-                        } 
+                        <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                        </app-pdf-dialog>
+                        }
                     </div>
                 </div>
                 <!--MOVIMIENTOS-->
@@ -435,8 +445,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-

@@ -211,10 +211,10 @@ export class TerminosService {
   // ==========================
   // CERTIFICACIÓN
   // ==========================
-obtenerCertificacion(folio: string) {
+obtenerCertificacion(folio: string):Observable<any> {
   return this.http.get(
     `${this.apiUrl}/Certificacion?folio=${folio}`,
-    { responseType: 'blob' ,context: checkToken()}
+    { context: checkToken()}
   );
 }
 

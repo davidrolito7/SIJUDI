@@ -2,15 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { checkToken } from '../../core/auth/interceptor/token.interceptor';
+import { environment } from '../../../environments/environment';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class PerfilUsuarioService {
-  
-  private baseUrlEfirma:string="https://api.tribunaloaxaca.gob.mx/efirma/api/efirma";
-  private baseUrlPermisos:string="https://api.tribunaloaxaca.gob.mx/permisos/api/Permisos";
+  private baseUrlPermisos:string= environment.ConstantsService.ruta+"/api/Permisos";
+  private baseUrlEfirma:string = environment.urlApiEfirma+"/efirma";
+  //private baseUrlEfirma:string="https://api.tribunaloaxaca.gob.mx/efirma/api/efirma";
+  //private baseUrlPermisos:string="https://api.tribunaloaxaca.gob.mx/permisos/api/Permisos";
 
   constructor(private http:HttpClient) { }
 

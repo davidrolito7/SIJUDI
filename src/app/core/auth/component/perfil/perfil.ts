@@ -161,7 +161,7 @@ continuar(): void {
     this.pantallasService.limpiarPantallas();
 
     // 3. Cargar pantallas frescas
-    this.cargarPantallasUsuario();
+    //this.cargarPantallasUsuario();
 
     // 4. Navegar
     this.menuStore.refresh()
@@ -177,11 +177,11 @@ continuar(): void {
   onLogout(): void {
     this.tokenService.logout();
     this.pantallasService.limpiarPantallas(); // limpia memoria + ambos storages
-    this.router.navigate(['/login'], { replaceUrl: true });
+    //this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   //! QUITAR ESTO POSTERIOMENTE (DAVID RODRIGUEZ)
-  private cargarPantallasUsuario(): void {
+  /*private cargarPantallasUsuario(): void {
     // No revisar caché aquí — ya se limpió con limpiarPantallas() antes de llamar esto
     this.pantallasService.cargarPantallas().subscribe({
       next: (pantallas) => {
@@ -191,7 +191,7 @@ continuar(): void {
         console.error('Error al cargar las vistas:', error);
       }
     });
-  }
+  }*/
 
   // --------------------
   // Carga de datos

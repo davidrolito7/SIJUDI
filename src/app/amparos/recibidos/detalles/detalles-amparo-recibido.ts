@@ -157,7 +157,7 @@ export class DetallesAmparoRecibido {
     //Metodo para navegar el componenete promocion que es donde se crean las promociones
     crearPromocion() { //Ya tenemos el idNotificacion alcenado, solo se lo pasamos al estado
         //console.log('Navegando a crear promoción con idNotificacion:', this.idNotificacion);
-        this.router.navigate(['/inicio/amparos/detalle/promocion'], { state: { idNotificacion: this.idNotificacion } });
+        this.router.navigate(['/amparos/acuerdo'], { state: { idNotificacion: this.idNotificacion } });
     }
     verDetallePromociones(){
       //console.log('Navegando a ver promociones con idNotificacion:', this.idNotificacion);

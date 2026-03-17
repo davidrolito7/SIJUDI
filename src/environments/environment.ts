@@ -1,6 +1,7 @@
 export const environment = {
     production:true,
     ConstantsService:{
+        //ruta : 'https://api.tribunaloaxaca.gob.mx/permisos',
         ruta : 'https://api.tribunaloaxaca.gob.mx/permisos',
         idSistema: 4169
 
