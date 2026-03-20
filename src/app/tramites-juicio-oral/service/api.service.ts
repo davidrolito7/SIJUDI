@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse, CatJuzgadoResponse, DetalleTramiteElectronicoRecibidoResponse, TramitesElectronicosRecibidosResponse, ValidarCausaResponse } from '../interface/tramites-juicio-oral.model';
@@ -8,8 +8,9 @@ import { checkToken } from '../../core/auth/interceptor/token.interceptor';
   providedIn: 'root',
 })
 export class ApiService {
-  private apiUrl = 'https://api.tribunaloaxaca.gob.mx/juiciooralApi/api/PromocionesJuicioOral'; 
-private nasApiUrl = 'https://api.tribunaloaxaca.gob.mx/NasApi/api'
+   private apiUrl = 'https://pruebas.tribunaloaxaca.gob.mx/apijuiciooral/api/PromocionesJuicioOral';
+ // private apiUrl = 'http://localhost:5041/api/PromocionesJuicioOral';
+  private nasApiUrl = 'https://api.tribunaloaxaca.gob.mx/NasApi/api'
   constructor(private http: HttpClient) { }
 
   getTramitesElectronicosRecibidos(params?: any): Observable<ApiResponse<TramitesElectronicosRecibidosResponse[]>> {
@@ -21,7 +22,7 @@ private nasApiUrl = 'https://api.tribunaloaxaca.gob.mx/NasApi/api'
     );
   }
 
-    getCatJuzgados(params?: any): Observable<ApiResponse<CatJuzgadoResponse[]>> {
+  getCatJuzgados(params?: any): Observable<ApiResponse<CatJuzgadoResponse[]>> {
     const url = `${this.apiUrl}/CatalogoJuzgados`;
     return this.http.post<ApiResponse<CatJuzgadoResponse[]>>(
       url,
@@ -57,10 +58,20 @@ private nasApiUrl = 'https://api.tribunaloaxaca.gob.mx/NasApi/api'
   }
 
   getDocumentoNas(params: { path: string; fileName: string }): Observable<ApiResponse<any>> {
-  const url = `${this.nasApiUrl}/Nas`;
-  return this.http.get<ApiResponse<any>>(url, {
-    params,
-    context: checkToken()
-  });
-}
+    const url = `${this.nasApiUrl}/Nas`;
+    return this.http.get<ApiResponse<any>>(url, {
+      params,
+      context: checkToken()
+    });
+  }
+
+  // endpoint para generar y descargar acuse de tramite enviado
+  getAcuseTramite(idTramiteElectronicoRecibido: number): Observable<HttpResponse<Blob>> {
+    const url = `${this.apiUrl}/AcuseTramiteElectronico/${idTramiteElectronicoRecibido}`;
+    return this.http.get(url, {
+      responseType: 'blob',
+      observe: 'response',
+      context: checkToken()
+    });
+  }
 }

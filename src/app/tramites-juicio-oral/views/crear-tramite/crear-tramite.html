@@ -23,11 +23,12 @@
             </div>
 
             <div class="grid grid-cols-6 gap-4 w-full items-end">
-                    <div class="col-span-6 md:col-span-2">
+                <div class="col-span-6 md:col-span-2">
                     <label class="block mb-2 text-sm font-medium">Tipo de Trámite</label>
-                    <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite" (onChange)="cargarCatalogoJuzgados($event.value)"
-                        optionValue="value" fluid placeholder="Selecciona un tipo de trámite" [filter]="true"
-                        optionLabel="label" appendTo="body" />
+                    <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
+                        (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid
+                        placeholder="Selecciona un tipo de trámite" [filter]="true" optionLabel="label"
+                        appendTo="body" />
                 </div>
                 <div class="col-span-6 sm:col-span-2">
                     <label class="block mb-2 text-sm font-medium">No. Expediente</label>
@@ -102,7 +103,7 @@
                     </ng-template>
                 </p-table>
                 <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-                </app-pdf-dialog> 
+                </app-pdf-dialog>
 
             </div>
             }
@@ -130,17 +131,85 @@
 </app-confirm-dialog>
 
 <app-confirm-dialog key="promocion" title="Confirmación" message="Confirme la acción para enviar promoción"
-    icon="pi pi-question-circle" circleClass="bg-primary" acceptLabel="Confirmar"
-    acceptStyleClass="bg-primary" rejectLabel="Cancelar">
+    icon="pi pi-question-circle" circleClass="bg-primary" acceptLabel="Confirmar" acceptStyleClass="bg-primary"
+    rejectLabel="Cancelar">
 </app-confirm-dialog>
 
 <!--* RESPONSE ENVIAR PROMOCION -->
-<app-confirm-dialog key="success" title="Confirmación"
+<!-- <app-confirm-dialog key="success" title="Confirmación"
     [message]="'Promoción enviada correctamente al ' + (tramitesElectronicosRecibidos?.juzgado ?? '')"
     icon="pi pi-check" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary"
     [showReject]="false">
-</app-confirm-dialog>
+</app-confirm-dialog> -->
+<p-confirmdialog key="success">
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        @if (message) {
+        <div
+            class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded-2xl w-[90vw] sm:w-auto sm:min-w-[420px] sm:max-w-[520px]">
 
+            <!-- Ícono -->
+            <div
+                class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                <i class="pi pi-check text-5xl!"></i>
+            </div>
+
+            <span class="font-bold text-2xl block mb-2 mt-4">Promoción enviada correctamente</span>
+
+            <!-- Datos de la respuesta -->
+            <div class="flex flex-col gap-1 w-full mt-4 text-sm">
+
+                <div
+                    class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+                    <span class="font-semibold text-color-secondary shrink-0">Folio</span>
+                    <span class="font-medium text-right min-w-0">
+                        {{ tramitesElectronicosRecibidos?.folio || '—' }}
+                    </span>
+                </div>
+
+                <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg">
+                    <span class="font-semibold text-color-secondary shrink-0">Juzgado</span>
+                    <span class="font-medium text-right min-w-0">
+                        {{ tramitesElectronicosRecibidos?.juzgado || '—' }}
+                    </span>
+                </div>
+
+                <div
+                    class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+                    <span class="font-semibold text-color-secondary shrink-0">Fecha de envío</span>
+                    <span class="font-medium text-right min-w-0">
+                        {{ tramitesElectronicosRecibidos?.fechaEnvio
+                        ? (tramitesElectronicosRecibidos?.fechaEnvio | date:'dd/MM/yyyy HH:mm')
+                        : '—' }}
+                    </span>
+                </div>
+
+                <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg">
+                    <span class="font-semibold text-color-secondary shrink-0">Observaciones</span>
+                    <span class="font-medium text-right min-w-0">
+                        {{ tramitesElectronicosRecibidos?.observaciones || '—' }}
+                    </span>
+                </div>
+
+                <div
+                    class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+                    <span class="font-semibold text-color-secondary shrink-0">Cantidad de anexos</span>
+                    <span class="font-medium text-right min-w-0">
+                        {{ tramitesElectronicosRecibidos?.cantidadAnexos ?? '—' }}
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6 w-full">
+                <p-button label="Acuse" (onClick)="descargarAcuse()" styleClass="w-32"></p-button>
+                <p-button label="Salir" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+
+            </div>
+
+        </div>
+        }
+    </ng-template>
+</p-confirmdialog>
 
 <app-confirm-dialog key="info" title="No hay conincidencias" message="La causa o el juzgado es incorrecto."
     icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
