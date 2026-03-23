@@ -110,3 +110,7 @@ export interface twoAccess {
   user: string,
   lastLoginUTC: Date
 }
+export interface usuarioAreas{
+  idSubArea: number;
+  descripcion:string;
+}

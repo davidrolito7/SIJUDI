@@ -14,13 +14,20 @@
                         Selecciona primero la adscripción y después el perfil con el que deseas ingresar al sistema.
                     </p>
                     <div class="flex flex-col gap-6">
-
+                        <!--SELECCIONA ADSCRIPCION /AREA -->
                         <p-select inputId="areaSelect" [options]="listaAreas()" optionLabel="area" optionValue="idArea"
                             [ngModel]="areaSeleccionada()" (ngModelChange)="onAreaChange($event)"
                             placeholder="Selecciona un área" class="w-full" />
+                        <!--SELECCIONA PERFIL-->
                         <p-select inputId="perfilSelect" [options]="perfiles()" optionLabel="descripcion"
                             optionValue="idSistemaPerfil" [ngModel]="perfilSeleccionado()"
                             (ngModelChange)="onPerfilChange($event)" placeholder="Selecciona tu perfil"
+                            class="w-full" />
+                        <!--SELECCIONA SUBAREA-->
+                        
+                        <p-select inputId="subAreaSelect" [options]="subAreas()" optionLabel="descripcion"
+                            optionValue="idSubArea" [ngModel]="subAreaId()"
+                            (ngModelChange)="onSubAreaChange($event)" placeholder="Selecciona una subarea"
                             class="w-full" />
                         <div class="flex items-center text-white/80">
                             <p-checkbox [(ngModel)]="recordar" id="rememberme" [binary]="true"

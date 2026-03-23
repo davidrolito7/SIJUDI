@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { Observable, tap } from 'rxjs';
 import { TokenService } from './token.service';
-import { responseLogin, areasResponse, twoAccess } from '../interface/login.interfaces';
+import { responseLogin, areasResponse, twoAccess, usuarioAreas } from '../interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
 import { checkToken, tokenInterceptor } from '../interceptor/token.interceptor';
 import { BehaviorSubject } from 'rxjs';
@@ -313,5 +313,9 @@ export class AuthService {
         context: checkToken()
       }
     );
+  }
+   getSubAreas(idAreaSistema: number, idGeneral: number): Observable<GenericResponse<usuarioAreas[]>> {
+    const url = `${this.constService.ruta}/api/Permisos/SubAreasUsuario?idAreaSistema=${idAreaSistema}&idgeneral=${idGeneral}`;
+    return this.http.post<GenericResponse<usuarioAreas[]>>(url, null, { context: checkToken() });
   }
 }

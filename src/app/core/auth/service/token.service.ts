@@ -265,6 +265,9 @@ export class TokenService {
   getPerfilNombre(): string {
     return this.readRemembered('perfilSeleccionadoDesc');
   }
+  getSubAreaNOmbre(): string{
+    return this.readRemembered('SubAreaNombre');
+  }
 
   getAbogadoFotoUrl(): string {
     if (!this.isBrowser) return '';
