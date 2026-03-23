@@ -1,7 +1,8 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-900">
+<div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-960">
     <app-breadcrub></app-breadcrub>
+
     <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 pl-2 mb-2 tracking-tight">
         Captura registro 1° instancia
     </h2>
@@ -26,7 +27,7 @@
                             optionLabel="Descripcion" />
                     </div>
                     <!-- Catálogo de Materias -->
-                    <div id="idCatMateria"  class="col-span-6 sm:col-span-3">
+                    <div id="idCatMateria" class="col-span-6 sm:col-span-3">
                         <label for="idCatMateria" class="block mb-2 text-sm font-medium  ">Materia</label>
                         <p-select formControlName="idCatMateria" fluid appendTo="body" [options]="catMaterias"
                             optionValue="IdCatMateria" (onChange)="cargarCatalogoVias($event.value)"
@@ -72,7 +73,8 @@
             <ng-template #caption>
                 <div class="flex">
                     <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Partes</div>
-                    <p-button id="agregarParte" icon="pi pi-users" class="ml-auto" label="Agregar" (click)="showDialog()" />
+                    <p-button id="agregarParte" icon="pi pi-users" class="ml-auto" label="Agregar"
+                        (click)="showDialog()" />
                 </div>
             </ng-template>
             <ng-template #header>
@@ -141,7 +143,7 @@
 
 <!--* MODAL DE CONFIRMACION ELIMINAR PARTE -->
 <app-confirm-dialog key="parte" title="Confirmación" message="¿Está seguro de eliminar esta parte?"
-    icon="pi pi-question-circle" circleClass="bg-surface-900 dark:bg-surface-0" acceptLabel="Eliminar"
+    icon="pi pi-question-circle" circleClass="bg-surface-950 dark:bg-surface-0" acceptLabel="Eliminar"
     acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
 </app-confirm-dialog>
 
@@ -249,22 +251,23 @@
 </div>
 
 <!--* BOTÓN AUTORIZAR FIREL — solo si algún documento requiere firma y aún no se ha verificado -->
-<section *ngIf="requiereFirma && !firmaVerificada" class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
-    <p-button (onClick)="autorizarFirel($event)" [disabled]="!canEnviar()" icon="pi pi-key"
-        label="Firma FIREL" styleClass="btn-tertiary disabled:opacity-50 disabled:cursor-not-allowed" />
+<section *ngIf="requiereFirma && !firmaVerificada"
+    class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
+    <p-button (onClick)="autorizarFirel($event)" [disabled]="!canEnviar()" icon="pi pi-key" label="Firma FIREL"
+        styleClass="btn-tertiary disabled:opacity-50 disabled:cursor-not-allowed" />
 </section>
 
 <!--* BOTÓN ENVIAR DEMANDA — si no requiere firma, o ya fue verificada -->
-<section *ngIf="!requiereFirma || firmaVerificada" class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
-    <p-button (onClick)="enviarDemanda($event)" [disabled]="!canEnviar()" icon="pi pi-upload"
-        label="Enviar demanda"
+<section *ngIf="!requiereFirma || firmaVerificada"
+    class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
+    <p-button (onClick)="enviarDemanda($event)" [disabled]="!canEnviar()" icon="pi pi-upload" label="Enviar demanda"
         styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:enabled:bg-[#ff830a]/80 hover:enabled:border-[#ff830a]/80 disabled:opacity-50 disabled:cursor-not-allowed" />
 </section>
 
 <!--* DIALOGO DE CONFIRMACION VALIDAR FIREL -->
 <p-confirmdialog key="firma">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
-        <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+        <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded">
             <div
                 class="rounded-full bg-secondary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
                 <svg class="w-14 h-14 text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"

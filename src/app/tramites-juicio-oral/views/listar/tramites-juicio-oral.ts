@@ -198,4 +198,12 @@ export class TramitesJuicioOral implements OnInit {
         }
       });
   }
+
+  limpiarBusqueda() {
+    this.busquedaState.limpiar();
+    this.validarCausaForm.reset({ idPantalla: 1 });
+    this.catJuzgados = [];
+    this.tramitesElectronicosRecibidos = [];
+    this.mostrarTramites.set(false);
+  }
 }

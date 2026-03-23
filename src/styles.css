@@ -12,6 +12,12 @@
   --color-secondary-700: #7f6542;
 }
 
+@media (prefers-color-scheme: dark) {
+  .dark\:bg-surface-960 {
+    background-color: #000000 !important;
+  }
+}
+
 /* ============================================
    BOTONES PERSONALIZADOS
    ============================================ */
@@ -38,9 +44,10 @@
   --p-button-primary-active-background: #9E523A;
   --p-button-primary-active-border: #9E523A;
 
-    /* Tailwind: */
+  /* Tailwind: */
   @apply border-[#C46A4A];
 }
+
 /* Botón eliminar (rojo) */
 .btn-rojo {
   --p-button-primary-background: #ef4444;
@@ -78,8 +85,8 @@
 
 /* Caption: sin borde superior, padding inferior */
 .p-datatable-header {
-  @apply border-t-0 p-0! pb-4!;
-   background: transparent
+  @apply border-t-0 !p-0 !pb-4;
+  background: transparent;
 }
 
 /* Cabeceras: peso de fuente medium */
@@ -91,17 +98,19 @@
    DIALOG (p-dialog) - Variante compacta
    ============================================ */
 .dialog-compact .p-dialog-header {
-  padding: 0rem 0rem 0rem 0.6rem  !important;
+  padding: 0rem 0rem 0rem 0.6rem !important;
 }
 
 .dialog-compact .p-dialog-content {
-  padding: 0rem 0.6rem  !important;
+  padding: 0rem 0.6rem !important;
 }
 
 .dialog-compact .p-dialog-title {
-  font-size: 1.125rem !important; /* text-lg */
+  font-size: 1.125rem !important;
+  /* text-lg */
 
 }
+
 /* ============================================
    MENÚ (p-menu) - Z-index overlay
    ============================================ */
@@ -113,9 +122,12 @@
   body * {
     visibility: hidden;
   }
-  #contentToPrint, #contentToPrint * {
+
+  #contentToPrint,
+  #contentToPrint * {
     visibility: visible;
   }
+
   #contentToPrint {
     position: fixed;
     left: 0;

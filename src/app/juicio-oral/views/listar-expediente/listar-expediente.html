@@ -1,11 +1,11 @@
 <app-spinner [isLoading]="isLoading"></app-spinner> 
-<div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-900">
+<div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-960">
 
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
 
     <!-- BUSQUEDA -->
-    <div class=" border border-surface rounded-2xl p-4">
+    <div class=" border border-surface rounded-2xl p-4 bg-surface-50 dark:bg-surface-950">
 
         <div class="flex items-start flex-col md:flex-row justify-between">
             <div class="font-medium text-2xl mb-2">
@@ -60,7 +60,7 @@
 <div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
 
     <div class="card">
-        <p-table #dtInicio [value]="expedientes()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+        <p-table #dtInicio stripedRows  [value]="expedientes()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="[
     'folio',
     'cat_via_materia.cat_materia.Descripcion',

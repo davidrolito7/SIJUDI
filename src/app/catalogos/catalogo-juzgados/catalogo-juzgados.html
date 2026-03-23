@@ -1,11 +1,11 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-950 flex flex-col gap-4">
 
     <!-- HEADER -->
 
 <app-breadcrub></app-breadcrub>
-    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+    <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
 
         <div class="flex items-start flex-col md:flex-row justify-between">
             <div>
@@ -31,7 +31,7 @@
     </div>
 </div>
 
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
     <p-table #dt1 [value]="listaJuzgado" dataKey="idJuzgado" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
         [paginator]="true" [globalFilterFields]="['descripcion']">
         <ng-template #caption>
