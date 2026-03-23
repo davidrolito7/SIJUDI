@@ -85,6 +85,9 @@ private buildBreadcrumbs(): void {
   get perfilNombre(): string {
     return this.tokenService.getPerfilNombre();
   }
+  get subAreaNombre(): string{
+    return this.tokenService.getSubAreaNOmbre();
+  }
 
   onLogout(): void {
     this.tokenService.logout();

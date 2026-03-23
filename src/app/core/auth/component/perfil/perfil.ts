@@ -21,7 +21,7 @@ import { MessageService } from 'primeng/api';
 
 import { TokenService } from '../../service/token.service';
 import { AuthService } from '../../service/auth.service';
-import { areasResponse, responseCatalogoPerfiles } from '../../interface/login.interfaces';
+import { areasResponse, responseCatalogoPerfiles, usuarioAreas } from '../../interface/login.interfaces';
 import { GenericResponse } from '../../../../shared/interface/shared.interface';
 import { Spinner } from '../../../../shared/components/spinner/spinner';
 import { PantallasService } from '../../../../juicio-oral/services/pantallas.service';
@@ -33,6 +33,7 @@ interface PersistedSelection {
   areaId: number;
   perfilId: number;
   perfilDesc: string;
+  subAreaId:number;
 }
 
 @Component({
@@ -64,6 +65,7 @@ export class Perfil {
 
   readonly listaAreas = signal<areasResponse[]>([]);
   readonly perfiles = signal<responseCatalogoPerfiles[]>([]);
+  readonly subAreas = signal<usuarioAreas[]>([]);
 
   readonly idGeneral = signal(0);
   readonly idAreaSistemaUsuario = signal(0);
@@ -71,6 +73,8 @@ export class Perfil {
   readonly areaSeleccionada = signal(0);
   readonly perfilSeleccionado = signal(0);
   readonly perfilNombreSeleccionado = signal('');
+  readonly subAreaId= signal(0);
+  readonly subAreaNombre=signal('');
 
   recordar = false;
   // Datos para mostrar (abogado)
@@ -78,7 +82,7 @@ export class Perfil {
   readonly abogadoFotoBase64 = signal<string>(''); // viene como "/9j/...." (JPEG base64)
 
   readonly canContinue = computed(
-    () => this.areaSeleccionada() > 0 && this.perfilSeleccionado() > 0
+    () => this.areaSeleccionada() > 0 && this.perfilSeleccionado() > 0 && this.subAreaId() > 0
   );
 
   ngOnInit(): void {
@@ -88,8 +92,9 @@ export class Perfil {
     this.areaSeleccionada.set(persisted.areaId);
     this.perfilSeleccionado.set(persisted.perfilId);
     this.perfilNombreSeleccionado.set(persisted.perfilDesc);
+    this.subAreaId.set(persisted.subAreaId);
 
-    this.loadUserAndAreas(persisted.areaId, persisted.perfilId);
+    this.loadUserAndAreas(persisted.areaId, persisted.perfilId,persisted.subAreaId);
   }
 
   onAreaChange(areaId: number): void {
@@ -104,6 +109,7 @@ export class Perfil {
     if (areaId <= 0) return;
 
     this.loadPerfilesForArea(areaId, 0);
+    this.loadSubareas(areaId);
   }
 
   onPerfilChange(perfilId: number): void {
@@ -112,13 +118,19 @@ export class Perfil {
     const selected = this.perfiles().find(p => p.idSistemaPerfil === perfilId);
     this.perfilNombreSeleccionado.set(selected?.descripcion ?? '');
   }
+  onSubAreaChange(SubAreaId: number): void {
+    this.subAreaId.set(SubAreaId);
+
+    const selected = this.subAreas().find(p => p.idSubArea === SubAreaId);
+    this.subAreaNombre.set(selected?.descripcion ?? '');
+  }
 
 continuar(): void {
     if (!this.canContinue()) {
       this.messageService.add({
         severity: 'error',
         summary: 'Campos requeridos',
-        detail: 'Debes seleccionar un área y un perfil',
+        detail: 'Debes seleccionar un área, un perfil y  subarea',
       });
       return;
     }
@@ -133,6 +145,8 @@ continuar(): void {
     store.setItem('perfilSeleccionado', String(this.perfilSeleccionado()));
     store.setItem('perfilSeleccionadoDesc', this.perfilNombreSeleccionado());
     store.setItem('idAreaSistemaUsuario', String(this.idAreaSistemaUsuario()));
+    store.setItem('SubAreaId',String(this.subAreaId()));
+    store.setItem('SubAreaNombre',this.subAreaNombre());
 
     const areaObj = this.listaAreas().find(a => a.idArea === this.areaSeleccionada());
     store.setItem('AreaName', areaObj?.area ?? '');
@@ -147,6 +161,8 @@ continuar(): void {
     other.removeItem('AreaBd');
     other.removeItem('AbogadoNombre');
     other.removeItem('pantallas_usuario'); // limpia del storage que no se usa
+    other.removeItem('SubAreaId');
+    other.removeItem('SubAreaNombre');
     localStorage.removeItem('AbogadoFotoBase64');
 
     this.messageService.add({
@@ -197,7 +213,7 @@ continuar(): void {
   // Carga de datos
   // --------------------
 
-  private loadUserAndAreas(restoreAreaId: number, restorePerfilId: number): void {
+  private loadUserAndAreas(restoreAreaId: number, restorePerfilId: number, restoreSubAreaId:number): void {
     const user = this.tokenService.getUserFromToken();
     if (!user?.Usr) {
       this.messageService.add({
@@ -240,6 +256,38 @@ continuar(): void {
             this.perfiles.set([]);
           }
         }),
+        /**aqui agregamos la consulta de subareas */
+        switchMap(areas => {
+          if (!areas || areas.length === 0) return of<usuarioAreas[]>([]);
+          // Ejemplo: tomar el área seleccionada
+          //const areaId = this.areaSeleccionada();
+          const area = areas.find(f=>f.idArea===this.areaSeleccionada());
+          if (area !== undefined) {
+            return this.authService.getSubAreas(area.idAreaSistema,this.idGeneral()).pipe(
+              map(r => (r.data ?? []) as usuarioAreas[])
+            );
+          }
+          return of<usuarioAreas[]>([]);
+        }),
+        tap(subareas => {
+          this.subAreas.set(subareas);
+
+          const validSubArea =
+            restoreSubAreaId > 0 && subareas.some(sa => sa.idSubArea === this.subAreaId());
+
+          this.subAreaId.set(validSubArea ? restoreSubAreaId : 0);
+          const area = this.subAreas().find(f=>f.idSubArea === this.subAreaId());
+          this.subAreaNombre.set(area?.descripcion ?? '');
+
+          if (!validSubArea) {
+            this.perfilSeleccionado.set(0);
+            this.perfilNombreSeleccionado.set('');
+            this.perfiles.set([]);
+            this.subAreaId.set(0);
+            this.subAreaNombre.set('');
+          }
+        }),
+        /**Aqui seguimos con perfiles */
         switchMap(() => {
           const areaId = this.areaSeleccionada();
           if (areaId > 0) return this.loadPerfilesForArea$(areaId, restorePerfilId);
@@ -258,7 +306,38 @@ continuar(): void {
       )
       .subscribe();
   }
+  private loadSubareas(idArea: number)
+  {
+    const idG = this.idGeneral();
+    const area = this.listaAreas().find(f=>f.idArea===idArea);
+    //console.log(area!.idAreaSistema);
+    this.authService.getSubAreas(area!.idAreaSistema ?? 0,idG).subscribe({
+      next:(response:GenericResponse<usuarioAreas[]>)=>{
+        if(response.success){
+            this.subAreas.set(response.data);
+        }
+        else{
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: response.message,
+            life:0
+          });
+        }
+      },
+      error:(e)=>{
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: e.message,
+            life:0
+          });
+      },
+      complete:()=>{
 
+      }
+    })
+  }
   private loadPerfilesForArea(areaId: number, restorePerfilId: number): void {
     this.isLoading.set(true);
 
@@ -333,12 +412,16 @@ continuar(): void {
       primary.getItem('perfilSeleccionadoDesc') ??
       fallback.getItem('perfilSeleccionadoDesc') ??
       '';
-
+    const subAreaId =
+      this.readNumber(primary, 'SubAreaId') ||
+      this.readNumber(fallback, 'SubAreaId');
+      '';
     return {
       recordar,
       areaId,
       perfilId,
       perfilDesc,
+      subAreaId,
     };
   }
 
