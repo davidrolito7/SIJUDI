@@ -21,7 +21,8 @@ private catalogos = 'https://localhost:7240/api/Catalogos/';
   constructor(private http: HttpClient) {}
     
     
-        getListadoInicios(params?: any): Observable<ApiResponse<responseDataBusqueda[]>> {
+        getListadoInicios(params?: any,Idpantalla?: number): Observable<ApiResponse<responseDataBusqueda[]>> {
+            params["IdPantalla"] = Idpantalla;
             console.log('Parámetros enviados al servicio:', params);
             return this.http.post<ApiResponse<responseDataBusqueda[]>>(
                 `${this.BusquedaApelaciones}`,  params,{ context: checkToken()} 
@@ -29,7 +30,6 @@ private catalogos = 'https://localhost:7240/api/Catalogos/';
 
 
   getCatApelaciones(
-    idGeneral: number,
     idAreaSistemaUsuario: number,
     idPantalla: number
 ): Observable<ApiResponse<CatApelaciones[]>> {
@@ -38,7 +38,6 @@ private catalogos = 'https://localhost:7240/api/Catalogos/';
         `${this.catalogos}obtieneCatApelaciones`,
         {
             params: {
-                idGeneral ,
                 idAreaSistemaUsuario,
                 idPantalla
             },
@@ -47,23 +46,8 @@ private catalogos = 'https://localhost:7240/api/Catalogos/';
     );
 }
 
-getCatalogoApelaciones(): Observable<ApiResponse<CatApelaciones[]>> {
-  const cat = `${this.catalogos}obtieneCatApelaciones`;
-  return this.http.get<ApiResponse<CatApelaciones[]>>(cat, { context: checkToken() });
-}
 
-
-getCatalogoNomenclaturas(): Observable<ApiResponse<Nomenclatura[]>> {
-  const cat = `${this.catalogos}obtieneNomenclatura`;
-  return this.http.get<ApiResponse<Nomenclatura[]>>(cat, { context: checkToken() });
-}
-
-getCatalogoSalas(): Observable<ApiResponse<CatSalas[]>> {
-  const cat = `${this.catalogos}obtieneCatSalas`;
-  return this.http.get<ApiResponse<CatSalas[]>>(cat, { context: checkToken() });
-}
   getCatNomenclaturas(
-    idGeneral: number,
     idAreaSistemaUsuario: number,
     idPantalla: number
 ): Observable<ApiResponse<Nomenclatura[]>> {
@@ -71,8 +55,7 @@ getCatalogoSalas(): Observable<ApiResponse<CatSalas[]>> {
     return this.http.get<ApiResponse<Nomenclatura[]>>(
         `${this.catalogos}obtieneNomenclatura` ,
         {
-            params: {
-                idGeneral ,
+            params: {              
                 idAreaSistemaUsuario,
                 idPantalla
             },
@@ -81,27 +64,9 @@ getCatalogoSalas(): Observable<ApiResponse<CatSalas[]>> {
     );
 }
 
-//   getCaSalas(
-//     idGeneral: number,
-//     idAreaSistemaUsuario: number,
-//     idPantalla: number
-// ): Observable<ApiResponse<CatSalas[]>> {
 
-//     return this.http.get<ApiResponse<CatSalas[]>>(
-//         `${this.catalogos}obtieneCatSalas`,
-//         {
-//             params: {
-//                 idGeneral ,
-//                 idAreaSistemaUsuario,
-//                 idPantalla
-//             },
-//             context: checkToken()
-//         }
-//     );
-// }
 
-  getCaSalas(
-    idGeneral: number,
+  getCaSalas(   
     idAreaSistemaUsuario: number,
     idPantalla: number
 ): Observable<ApiResponse<CatSalas[]>> {
@@ -110,7 +75,7 @@ getCatalogoSalas(): Observable<ApiResponse<CatSalas[]>> {
         `${this.catalogos}obtieneCatSalas`,
         {
             params: {
-                idGeneral ,
+               
                 idAreaSistemaUsuario,
                 idPantalla
             },

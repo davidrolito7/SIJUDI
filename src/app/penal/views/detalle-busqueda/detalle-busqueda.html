@@ -1,198 +1,218 @@
-  <app-spinner [isLoading]="isLoading"></app-spinner>
-   
- <div class="lg:sticky top-0 z-50 flex flex-col gap-4">
+<app-spinner [isLoading]="isLoading"></app-spinner>
 
- <!-- HEADER -->
-    <app-breadcrub></app-breadcrub>
+<div class="lg:sticky top-0 z-50 flex flex-col gap-4">
+  <!-- HEADER -->
+  <app-breadcrub></app-breadcrub>
 
+  <!-- DETALLE -->
+  <div class="border border-surface rounded-2xl">
+    <div class="card">
+      <div class="card items-start flex-col md:flex-row justify-between mt-4">
+        <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
+          Detalle de la apelación 2da instancia
+        </label>
+        <div class="ml-5 mr-5"><p-divider /></div>
+      </div>
 
-     <!-- DETALLE -->
-    <div class=" border border-surface rounded-2xl">
+      <div class="cardflex items-start flex-col md:flex-row justify-between">
+        <p-card class="m-5">
+          <div class="grid grid-cols-12 gap-4 w-full items-end p-4">
+            @for (item of apelacion; track item.idExpediente) {
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Folio de oficialia:</label
+                >
+                @if (item.foliodeOficialia == null) {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.foliodeOficialia }}</span>
+                }
+              </div>
 
- <div class="card">
-  <div class="card  items-start flex-col md:flex-row justify-between mt-4">
-            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
-                Detalle de la apelación 2da instancia 
-            </label>
-            <div class="ml-5 mr-5"><p-divider  /></div>
-            
-        </div>
-              
-            
-            <div class="cardflex items-start flex-col md:flex-row justify-between">
-               <p-card class="m-5">
-                <div class="grid grid-cols-12 gap-4 w-full items-end p-4">
-                     
-                    @for (item of apelacion; track item.idExpediente) {
-                        <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de oficialia:</label>
-                        @if(item.foliodeOficialia == null) {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.foliodeOficialia}}</span>
-                        }
-                  
-                    </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Folio de apelación:</label
+                >
+                @if (item.foliodeApelacion == null || item.foliodeApelacion == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.foliodeApelacion }}</span>
+                }
+              </div>
 
-                    
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Folio de apelación anterior:</label
+                >
+                @if (item.foliodeApelacionAnterior == null || item.foliodeApelacionAnterior == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.foliodeApelacionAnterior }}</span>
+                }
+              </div>
 
-                    <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de apelación:</label>
-                        @if(item.foliodeApelacion == null || item.foliodeApelacion == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.foliodeApelacion}}</span>
-                        }
-                       
-                    
-                    </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Trámite:</label
+                >
+                @if (item.tramite == null || item.tramite == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.tramite }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Sala:</label
+                >
+                @if (item.sala == null || item.sala == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.sala }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Sala anterior:</label
+                >
+                @if (item.salaAnterior == null || item.salaAnterior == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.salaAnterior }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Apelación:</label
+                >
+                <span class="text-gray-600">{{ item.apelacion }}</span>
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Tipo de Apelación:</label
+                >
+                @if (item.tipodeApelacion == null || item.tipodeApelacion == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.tipodeApelacion }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Fecha de auto:</label
+                >
+                @if (item.fechadeAuto == null || item.fechadeAuto == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.fechadeAuto.split(' ')[0] }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Expediente/Causa:</label
+                >
+                @if (item.expediente_Causa == null || item.expediente_Causa == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.expediente_Causa }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Tipo de escrito:</label
+                >
+                @if (item.tipodeEscrito == null || item.tipodeEscrito == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.tipodeEscrito }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Folio del oficio:</label
+                >
 
-                    <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio de apelación anterior:</label>
-                        @if(item.foliodeApelacionAnterior == null || item.foliodeApelacionAnterior == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.foliodeApelacionAnterior}}</span>
-                        }
-                    
-                    
-                    </div>
+                @if (item.foliodelOficio == null || item.foliodelOficio == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.foliodelOficio }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >No. Fojas:</label
+                >
+                @if (item.noFojas == null || item.noFojas == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.noFojas }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Expediete acumulado:</label
+                >
 
-                    <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Trámite:</label>
-                        @if(item.tramite == null || item.tramite == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.tramite}}</span>
-                        }
-                    
-                    </div>  
-                    <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala:</label>
-                       @if(item.sala == null || item.sala == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.sala}}</span>
-                        } 
-                       </div> 
-                        <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sala anterior:</label>
-                        @if(item.salaAnterior == null || item.salaAnterior == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.salaAnterior}}</span>
-                        }
-                         </div> 
-                          <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Apelación:</label>
-                     <span class="text-gray-600">{{item.apelacion}}</span>
-                        </div>  
-                        <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipo de Apelación:</label>
-                         @if(item.tipodeApelacion == null || item.tipodeApelacion == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.tipodeApelacion}}</span>
-                        }
-                    
-                             </div>
-                              <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha de auto:</label>
-                        @if(item.fechadeAuto == null || item.fechadeAuto == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{ item.fechadeAuto.split(' ')[0]  }}</span>
-                        } 
-                        
-                              </div>
-                                <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Expediente/Causa:</label>
-                        @if(item.expediente_Causa == null || item.expediente_Causa == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.expediente_Causa}}</span>
-                        } 
-                               </div>
-                                 <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipo de escrito:</label>
-                                     @if(item.tipodeEscrito == null || item.tipodeEscrito == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.tipodeEscrito}}</span>
-                        } 
-                     
-                                   </div> 
-                        <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Folio del oficio:</label>
-                          
-                        @if(item.foliodelOficio == null || item.foliodelOficio == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.foliodelOficio}}</span>
-                        }
-                  
-                    </div>
-                                      <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">No. Fojas:</label>
-                        @if(item.noFojas == null || item.noFojas == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.noFojas}}</span>
-                        }
-                                       </div>  
-                                       <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Expediete acumulado:</label>
+                @if (item.expedienteAcumulado == null || item.expedienteAcumulado == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.expedienteAcumulado }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Juzgado de origen:</label
+                >
 
-                     @if(item.expedienteAcumulado == null || item.expedienteAcumulado == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.expedienteAcumulado}}</span>
-                        }
-                                        </div> 
-                                         <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Juzgado de origen:</label>
-             
-                        @if(item.juzgadoOrigen == null || item.juzgadoOrigen == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.juzgadoOrigen}}</span>
-                        }
-                                           </div>  
-                                           <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha de recepción:</label>
-                        
-                     @if(item.fechadeRecepcion == null || item.fechadeRecepcion == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{ item.fechadeRecepcion.split(' ')[0]}}</span>
-                        }
-                                             </div>  
-                                              
-                                               <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha de Ingreso a sala:</label>
-                     @if(item.fechadeIngresoaSala == null || item.fechadeIngresoaSala == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.fechadeIngresoaSala.split(' ')[0] }}</span>
-                        }
-                                                 </div>  
-                                                 <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Es reposición:</label>
-                     @if(item.esReposicion == null || item.esReposicion == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.esReposicion}}</span>
-                        }
-                                                   </div>  
-                                                   <div class="col-span-6 md:col-span-3">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Anexos:</label>
-                        @if(item.anexos == null || item.anexos == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.anexos}}</span>
-                        }
-                                                   </div>  
-                                                   <!-- <div class="col-span-6 md:col-span-3">
+                @if (item.juzgadoOrigen == null || item.juzgadoOrigen == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.juzgadoOrigen }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Fecha de recepción:</label
+                >
+
+                @if (item.fechadeRecepcion == null || item.fechadeRecepcion == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.fechadeRecepcion.split(' ')[0] }}</span>
+                }
+              </div>
+
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Fecha de Ingreso a sala:</label
+                >
+                @if (item.fechadeIngresoaSala == null || item.fechadeIngresoaSala == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.fechadeIngresoaSala.split(' ')[0] }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Es reposición:</label
+                >
+                @if (item.esReposicion == null || item.esReposicion == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.esReposicion }}</span>
+                }
+              </div>
+              <div class="col-span-6 md:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Anexos:</label
+                >
+                @if (item.anexos == null || item.anexos == '') {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.anexos }}</span>
+                }
+              </div>
+              <!-- <div class="col-span-6 md:col-span-3">
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Partes:</label>
                         @if(item.partes == null || item.partes == '') {
                             <span class="text-gray-600">---</span>
@@ -200,129 +220,120 @@
                             <span class="text-gray-600">{{item.partes}}</span>
                         }
                                                       </div>   -->
-                                                      <!-- <div class="col-span-6 md:col-span-3">
+              <!-- <div class="col-span-6 md:col-span-3">
                                                       
                     </div> -->
-                     <div class="col-span-12 md:col-span-12">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Observaciones de la apelación:</label>
-                     @if(item.observacionesdelaApelacion == null || item.observacionesdelaApelacion == '') {
-                            <span class="text-gray-600">---</span>
-                        } @else {
-                            <span class="text-gray-600">{{item.observacionesdelaApelacion}}</span>
-                        }
-                                               </div>
+              <div class="col-span-12 md:col-span-12">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Observaciones de la apelación:</label
+                >
+                @if (
+                  item.observacionesdelaApelacion == null || item.observacionesdelaApelacion == ''
+                ) {
+                  <span class="text-gray-600">---</span>
+                } @else {
+                  <span class="text-gray-600">{{ item.observacionesdelaApelacion }}</span>
                 }
-               
-                </div>
- </p-card>
-                <div class="ml-5 mr-5"><p-divider  /></div>
-                </div>
+              </div>
+            }
+          </div>
+        </p-card>
+        <div class="ml-5 mr-5"><p-divider /></div>
+      </div>
 
-                <div class="card">
-            <div class="flex-col md:flex-row">
-                <!-- <div class="w-full md:w-11/12 flex flex-col items-center justify-center gap-3 py-5"> -->
-                    <div class="card">
-                        <p-card class="m-5">
-            <p-table [value]="partes" [tableStyle]="{ 'min-width': '50rem' }">
+      <div class="card">
+        <div class="flex-col md:flex-row">
+          <!-- <div class="w-full md:w-11/12 flex flex-col items-center justify-center gap-3 py-5"> -->
+          <div class="card">
+            <p-card class="m-5">
+              <p-table [value]="partes" [tableStyle]="{ 'min-width': '50rem' }">
                 <ng-template #caption>
+                  <div class="flex items-center justify-between">
                     <div class="flex items-center justify-between">
-                       
-                        <div class="flex items-center justify-between">
-                        <span class="text-xl font-bold">Partes</span>
-                        
+                      <span class="text-xl font-bold">Partes</span>
                     </div>
-                        <!-- <p-iconfield>
+                    <!-- <p-iconfield>
                             <p-inputicon class="pi pi-search" />
                             <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Search..." />
                         </p-iconfield> -->
-                    </div>
+                  </div>
                 </ng-template>
                 <ng-template #header>
-                    <tr>
-                        <th>Parte</th>
-                        <th>Nombre</th>
-                        <th>Direccion</th>
-                        <th>Menor edad</th>
-                        <th>Sexo</th>
-                    </tr>
+                  <tr>
+                    <th>Parte</th>
+                    <th>Nombre</th>
+                    <th>Direccion</th>
+                    <th>Menor edad</th>
+                    <th>Sexo</th>
+                  </tr>
                 </ng-template>
                 <ng-template #body let-partes>
-                    <tr>
-                        <td>{{ partes.parte }}</td>
-                        <td>{{ partes.nombre }}</td>
-                        <td>{{ partes.direccion }}</td>
-                        <td>{{ partes.menorEdad }}</td>
-                          <td>{{ partes.sexo }}</td>
-                    </tr>
+                  <tr>
+                    <td>{{ partes.parte }}</td>
+                    <td>{{ partes.nombre }}</td>
+                    <td>{{ partes.direccion }}</td>
+                    <td>{{ partes.menorEdad }}</td>
+                    <td>{{ partes.sexo }}</td>
+                  </tr>
                 </ng-template>
                 <ng-template #emptymessage>
-                <tr>
+                  <tr>
                     <td colspan="8">Sin resultados.</td>
-                </tr>
-            </ng-template>
-            </p-table>
+                  </tr>
+                </ng-template>
+              </p-table>
             </p-card>
-        </div>
-                <!-- </div> -->
-                <div class="ml-5 mr-5"><p-divider  /></div>
-                <!-- <div class="w-full md:w-2/12">
+          </div>
+          <!-- </div> -->
+          <div class="ml-5 mr-5"><p-divider /></div>
+          <!-- <div class="w-full md:w-2/12">
                     <p-divider layout="vertical" class="!hidden md:!flex"><b>OR</b></p-divider>
                     <p-divider layout="horizontal" class="!flex md:!hidden" align="center"><b>OR</b></p-divider>
                 </div> -->
-                <!-- <div class="w-full md:w-110/12 flex items-center justify-center py-5"> -->
-                     <div class="card">
-                        <p-card class="m-5">
-            <p-table [value]="anexos" [tableStyle]="{ 'min-width': '50rem' }">
+          <!-- <div class="w-full md:w-110/12 flex items-center justify-center py-5"> -->
+          <div class="card">
+            <p-card class="m-5">
+              <p-table [value]="anexos" [tableStyle]="{ 'min-width': '50rem' }">
                 <ng-template #caption>
+                  <div class="flex items-center justify-between">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center justify-between">
-                        <span class="text-xl font-bold">Anexos</span>
-                        
+                      <span class="text-xl font-bold">Anexos</span>
                     </div>
-                        <!-- <p-iconfield>
+                    <!-- <p-iconfield>
                             <p-inputicon class="pi pi-search" />
                             <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Search..." />
                         </p-iconfield> -->
-                    </div>
+                  </div>
                 </ng-template>
                 <ng-template #header>
-                    <tr>
-                        
-                        <th>Anexo</th>
-                        <th>Es valor</th>
-                        <th>Monto anexo</th>
-                        <th>Cantidad</th>
-                        <th>Orden</th>
-                    </tr>
+                  <tr>
+                    <th>Anexo</th>
+                    <th>Es valor</th>
+                    <th>Monto anexo</th>
+                    <th>Cantidad</th>
+                    <th>Orden</th>
+                  </tr>
                 </ng-template>
                 <ng-template #body let-anexos>
-                    <tr>
-                        
-                          <td>{{ anexos.anexo }}</td>
-                            <td>{{ anexos.esValor }}</td>
-                              <td>{{ anexos.montoAnexo }}</td>
-                                <td>{{ anexos.cantidad }}</td> 
-                                 <td>{{ anexos.orden }}</td>
-                    </tr>
+                  <tr>
+                    <td>{{ anexos.anexo }}</td>
+                    <td>{{ anexos.esValor }}</td>
+                    <td>{{ anexos.montoAnexo }}</td>
+                    <td>{{ anexos.cantidad }}</td>
+                    <td>{{ anexos.orden }}</td>
+                  </tr>
                 </ng-template>
                 <ng-template #emptymessage>
-                <tr>
+                  <tr>
                     <td colspan="8">Sin resultados.</td>
-                </tr>
-            </ng-template>
-            </p-table>
+                  </tr>
+                </ng-template>
+              </p-table>
             </p-card>
+          </div>
+          <!-- </div> -->
         </div>
-                <!-- </div> -->
-            </div>
-        </div>
-          
-   
- </div>
-
-
-
-
-
+      </div>
     </div>
-    </div>
+  </div>
+</div>

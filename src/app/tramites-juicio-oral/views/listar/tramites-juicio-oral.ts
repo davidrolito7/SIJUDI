@@ -21,6 +21,7 @@ import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { TooltipModule } from 'primeng/tooltip';
 import { Router } from '@angular/router';
+import { HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-tramites-juicio-oral',
@@ -143,5 +144,29 @@ export class TramitesJuicioOral implements OnInit {
 
   detalle(idTramiteElectronicoRecibido: number) {
     this.router.navigate(['/juicio-oral/detalle'], { state: { idTramiteElectronicoRecibido } });
+  }
+
+  descargarAcuse(id: number): void {
+    this.isLoading = true;
+    this.apiService.getAcuseTramite(id)
+      .subscribe({
+        next: (response: HttpResponse<Blob>) => {
+          const disposition = response.headers.get('content-disposition') ?? '';
+          const match = disposition.match(/filename="([^"]+)"/);
+          const filename = match ? match[1] : `Acuse_${id}.pdf`;
+
+          const url = window.URL.createObjectURL(response.body!);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          link.click();
+          setTimeout(() => window.URL.revokeObjectURL(url), 100);
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
+          console.error('Error al descargar el acuse');
+        }
+      });
   }
 }

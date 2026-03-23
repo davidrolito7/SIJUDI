@@ -23,11 +23,13 @@ import { AvatarModule } from 'primeng/avatar';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { InputMaskModule } from 'primeng/inputmask';
 import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { HttpResponse } from '@angular/common/http';
 @Component({
   selector: 'app-crear-tramite',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, TextareaModule, FileUploadModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Breadcrub,
+    Spinner, TextareaModule, FileUploadModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Breadcrub, ConfirmDialogModule,
     PdfDialog
   ],
   templateUrl: './crear-tramite.html',
@@ -231,4 +233,25 @@ export class CrearTramite {
       error: () => (this.isLoading = false),
     });
   }
+descargarAcuse(): void {
+    const id = this.tramitesElectronicosRecibidos?.idTramiteElectronicoRecibido;
+    if (!id) return;
+
+    this.apiService.getAcuseTramite( id )
+        .subscribe({
+            next: (response: HttpResponse<Blob>) => {
+                const disposition = response.headers.get('content-disposition') ?? '';
+                const match       = disposition.match(/filename="([^"]+)"/);
+                const filename    = match ? match[1] : `Acuse_${id}.pdf`;
+
+                const url  = window.URL.createObjectURL(response.body!);
+                const link = document.createElement('a');
+                link.href     = url;
+                link.download = filename;
+                link.click();
+                window.URL.revokeObjectURL(url);
+            },
+            error: () => console.error('Error al descargar el acuse')
+        });
+}
 }

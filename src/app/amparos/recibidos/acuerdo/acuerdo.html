@@ -1,33 +1,30 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<!-- ─── ENCABEZADO STICKY ──────────────────────────────────────────────────── -->
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
-  <app-breadcrub></app-breadcrub>
+<app-breadcrub></app-breadcrub>
 
-  <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
-    <div class="flex items-start flex-col md:flex-row justify-between">
-      <div>
-        <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-          Crear acuerdo
-        </label>
-        <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-          <div class="flex items-center gap-2">
-            <i class="pi pi-users text-base! leading-normal!"></i>
-            <span>Inicia un exhorto</span>
-          </div>
+<div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+  <div class="flex items-start flex-col md:flex-row justify-between">
+    <div>
+      <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+        Crear acuerdo
+      </label>
+      <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-users text-base! leading-normal!"></i>
+          <span>Inicia un exhorto</span>
         </div>
       </div>
+    </div>
 
-      <div class="mt-6 md:mt-0 flex items-center gap-2">
-        <!-- Guardar / Actualizar -->
-        @if (mostrarBotonGuardar) {
-        <p-button (onClick)="guardarOActualizar()" label="Guardar" icon="pi pi-check"></p-button>
-        }
-        <!-- Enviar — solo visible cuando hay al menos 1 archivo con firma aplicada -->
-        @if (hayArchivoFirmado() && mostrarBotonGuardar) {
-        <p-button (onClick)="enviar()" label="Enviar" icon="pi pi-send" severity="success"></p-button>
-        }
-      </div>
+    <div class="mt-6 md:mt-0 flex justify-center items-center gap-2">
+      <!-- Guardar / Actualizar -->
+      @if (mostrarBotonGuardar) {
+      <p-button (onClick)="guardarOActualizar()" label="Guardar" icon="pi pi-check"></p-button>
+      }
+      <!-- Enviar — solo visible cuando hay al menos 1 archivo con firma aplicada -->
+      @if (hayArchivoFirmado() && mostrarBotonGuardar) {
+      <p-button (onClick)="enviar()" label="Enviar" icon="pi pi-send" severity="success"></p-button>
+      }
     </div>
   </div>
 </div>
@@ -245,35 +242,39 @@
 <p-confirmdialog key="responsePromocion">
   <ng-template #headless let-message let-onAccept="onAccept">
     @if (message) {
-    <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded-2xl">
+    <div
+      class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded-2xl w-[90vw] sm:w-auto sm:min-w-[420px] sm:max-w-[520px]">
+
+      <!-- Ícono -->
       <div
         class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
         <i class="pi pi-check text-5xl!"></i>
       </div>
+
       <span class="font-bold text-2xl block mb-2 mt-4">{{ message.header }}</span>
 
+      <!-- Datos de la respuesta -->
       <div class="flex flex-col gap-1 w-full mt-4 text-sm">
 
-        <div class="flex flex-col px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
-          <span class="font-semibold text-color-secondary text-xs uppercase tracking-wide mb-1">Folio
-            Confirmación</span>
-          <span class="font-medium break-all">
+        <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+          <span class="font-semibold text-color-secondary shrink-0">Folio Confirmación</span>
+          <span class="font-medium text-right min-w-0 ">
             {{ responsePromocion()?.respuestaGenericaCJF?.folioConfirmacion || '—' }}
           </span>
         </div>
 
-        <div class="flex flex-col px-3 py-2 rounded-lg">
-          <span class="font-semibold text-color-secondary text-xs uppercase tracking-wide mb-1">Fecha Recepción</span>
-          <span class="font-medium">
+        <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg">
+          <span class="font-semibold text-color-secondary shrink-0">Fecha Recepción</span>
+          <span class="font-medium text-right min-w-0 ">
             {{ responsePromocion()?.respuestaGenericaCJF?.fechaRecepcion
             ? (responsePromocion()?.respuestaGenericaCJF?.fechaRecepcion | date:'dd/MM/yyyy HH:mm:ss')
             : '—' }}
           </span>
         </div>
 
-        <div class="flex flex-col px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
-          <span class="font-semibold text-color-secondary text-xs uppercase tracking-wide mb-1">Mensaje</span>
-          <span class="font-medium">
+        <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+          <span class="font-semibold text-color-secondary shrink-0">Mensaje</span>
+          <span class="font-medium text-right min-w-0 ">
             {{ responsePromocion()?.respuestaGenericaCJF?.mensaje || '—' }}
           </span>
         </div>
@@ -283,6 +284,7 @@
       <div class="flex justify-end gap-2 mt-6 w-full">
         <p-button label="Aceptar" (onClick)="onAccept()" styleClass="w-32"></p-button>
       </div>
+
     </div>
     }
   </ng-template>
