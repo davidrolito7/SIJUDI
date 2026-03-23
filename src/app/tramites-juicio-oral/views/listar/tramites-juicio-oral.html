@@ -1,6 +1,6 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<div class="sticky top-0 z-50 flex flex-col gap-4 bg-surface-50 dark:bg-surface-900">
+<div class="sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-900">
 
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
@@ -26,7 +26,7 @@
                         optionValue="value" fluid placeholder="Selecciona un tipo de trámite" [filter]="true"
                         optionLabel="label" appendTo="body" />
                 </div>
-                <div class="col-span-6 md:col-span-2">
+                <div class="col-span-6 md:col-span-1">
                     <label class="block mb-2 text-sm font-medium">Folio</label>
                     <p-inputmask fluid formControlName="numeroExpediente" class="uppercase text-sm rounded-lg"
                         mask="9999/9999" placeholder="0001/2026" />

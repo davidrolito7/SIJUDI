@@ -47,7 +47,6 @@ export class TramitesJuicioOral implements OnInit {
   isLoading: boolean = false;
   mostrarTramites = signal(false);
 
-
   constructor(
     private readonly fb: FormBuilder,
     private apiService: ApiService,
