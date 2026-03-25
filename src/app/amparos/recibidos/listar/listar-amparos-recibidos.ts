@@ -129,12 +129,14 @@ export class ListarAmparosRecibidos {
 
     //localStorage.setItem('dateE3', fechaIni.toISOString());
     //localStorage.setItem('dateE4', fechaFin.toISOString());
-  
+    const idArea = this.authService.getAreaUsuario()
+
     const obj = {
       fechaIni: fechaIni,
       fechaFin: fechaFin,
       estatus: this.selectedEstatus?.idEstatus || 0,
-      perfil: perfil
+      perfil: perfil,
+      idAreaAdminAplicaciones: Number(idArea)
     };
     this.isLoading = true;
     this.cd.detectChanges();
