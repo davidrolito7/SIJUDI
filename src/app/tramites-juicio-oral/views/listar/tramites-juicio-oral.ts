@@ -22,6 +22,7 @@ import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { TooltipModule } from 'primeng/tooltip';
 import { Router } from '@angular/router';
 import { HttpResponse } from '@angular/common/http';
+import { TramitesBusquedaStateService } from '../../service/tramites-busqueda-state.service';
 
 @Component({
   selector: 'app-tramites-juicio-oral',
@@ -47,17 +48,15 @@ export class TramitesJuicioOral implements OnInit {
   isLoading: boolean = false;
   mostrarTramites = signal(false);
 
-
   constructor(
     private readonly fb: FormBuilder,
     private apiService: ApiService,
     private readonly confirmationService: ConfirmationService,
     private router: Router,
-
+    private busquedaState: TramitesBusquedaStateService
 
   ) { }
-  items: MenuItem[] = [{ label: 'Components' }, { label: 'Form' }, { label: 'InputText', routerLink: '/inputtext' }];
-  home: MenuItem = { icon: 'pi pi-home', routerLink: '/' };
+
   catTipoTramite = [
     { label: 'CAUSA', value: 33 },
     { label: 'CUADERNO DE EJECUCIÓN', value: 47 },
@@ -93,6 +92,35 @@ export class TramitesJuicioOral implements OnInit {
       idJuzgado: [{ value: null, disabled: true }, Validators.required],
       idPantalla: [1]
     });
+    const estado = this.busquedaState.recuperar();
+
+    if (estado) {
+      // Restaura tipo de trámite y carga juzgados primero
+      this.validarCausaForm.patchValue({
+        idCatTipoTramite: estado.idCatTipoTramite,
+        numeroExpediente: estado.numeroExpediente,
+        idPantalla: estado.idPantalla
+      });
+
+      // Carga el catálogo y luego restaura el juzgado
+      if (estado.idCatTipoTramite) {
+        this.isLoading = true;
+        this.apiService.getCatJuzgados({ idCatTipoTramite: estado.idCatTipoTramite }).subscribe({
+          next: (response) => {
+            this.catJuzgados = response.data;
+            const juzgadoCtrl = this.validarCausaForm.get('idJuzgado');
+            juzgadoCtrl?.enable({ emitEvent: false });
+            juzgadoCtrl?.setValue(estado.idJuzgado, { emitEvent: false });
+            this.isLoading = false;
+
+            // Vuelve a ejecutar la búsqueda automáticamente
+            this.onBuscarTramitesElectronicos();
+          },
+          error: () => (this.isLoading = false)
+        });
+      }
+    }
+
   }
 
   cargarCatalogoJuzgados(idCatTipoTramite: number | null) {
@@ -143,6 +171,7 @@ export class TramitesJuicioOral implements OnInit {
   }
 
   detalle(idTramiteElectronicoRecibido: number) {
+    this.busquedaState.guardar(this.validarCausaForm.getRawValue());
     this.router.navigate(['/juicio-oral/detalle'], { state: { idTramiteElectronicoRecibido } });
   }
 
@@ -168,5 +197,13 @@ export class TramitesJuicioOral implements OnInit {
           console.error('Error al descargar el acuse');
         }
       });
+  }
+
+  limpiarBusqueda() {
+    this.busquedaState.limpiar();
+    this.validarCausaForm.reset({ idPantalla: 1 });
+    this.catJuzgados = [];
+    this.tramitesElectronicosRecibidos = [];
+    this.mostrarTramites.set(false);
   }
 }

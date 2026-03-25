@@ -38,7 +38,8 @@ import { HttpResponse } from '@angular/common/http';
 })
 export class CrearTramite {
   //* === FORMULARIOS ===
-  validarCausaForm!: FormGroup;
+  busquedaForm!: FormGroup;
+  documentosForm!: FormGroup;
 
   //* === LISTAS Y DATOS TEMPORALES ===
   tramitesElectronicosRecibidos: TramitesElectronicosRecibidosResponse | null = null;
@@ -77,17 +78,19 @@ export class CrearTramite {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
 
-    this.validarCausaForm = this.fb.group({
+    this.busquedaForm = this.fb.group({
       idCatTipoTramite: [null, Validators.required],
       numeroExpediente: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
       idJuzgado: [{ value: null, disabled: true }, Validators.required],
-      observaciones: [''],
       idPantalla: [1]
+    });
+    this.documentosForm = this.fb.group({
+      observaciones: ['', [Validators.required, Validators.maxLength(450)]]
     });
   }
 
   cargarCatalogoJuzgados(idCatTipoTramite: number | null) {
-    const juzgadoCtrl = this.validarCausaForm.get('idJuzgado');
+    const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
     this.catJuzgados = [];
     juzgadoCtrl?.setValue(null, { emitEvent: false });
     juzgadoCtrl?.disable({ emitEvent: false });
@@ -114,7 +117,7 @@ export class CrearTramite {
   onValidarCausa() {
     this.isLoading = true;
     this.mostrarAddDocumentos.set(false);
-    const params = this.validarCausaForm.getRawValue();
+    const params = this.busquedaForm.getRawValue();
     this.apiService.postValidarCausa(params).subscribe(
       (response) => {
         this.isLoading = false;
@@ -188,23 +191,24 @@ export class CrearTramite {
   }
 
   onEnviarTramite(): void {
-
-    if (this.validarCausaForm.invalid) {
-      this.validarCausaForm.markAllAsTouched();
+    if (this.busquedaForm.invalid || this.documentosForm.invalid) {
+      this.busquedaForm.markAllAsTouched();
+      this.documentosForm.markAllAsTouched(); // 👈 valida ambos
       return;
     }
-    this.isLoading = true;
 
+    this.isLoading = true;
     const formData = new FormData();
-    const formValue = this.validarCausaForm.getRawValue();
+    const busquedaValue = this.busquedaForm.getRawValue();
+    const documentosValue = this.documentosForm.getRawValue(); // 👈 observaciones desde aquí
 
     // idExpediente: si es causa usa idCausa, si es cuaderno usa idCuaderno
     const idExpediente = this.causaValidada?.idCausa ?? this.causaValidada?.idCuaderno ?? 0;
 
     formData.append('idExpediente', idExpediente.toString());
-    formData.append('idCatTipoTramite', formValue.idCatTipoTramite?.toString() ?? '0');
+    formData.append('idCatTipoTramite', busquedaValue.idCatTipoTramite?.toString() ?? '0');
     formData.append('IdCatJuzgado', this.causaValidada?.idCatJuzgado?.toString() ?? '0');
-    formData.append('Observaciones', formValue.observaciones ?? '');
+    formData.append('Observaciones', documentosValue.observaciones ?? '');
 
     this.documentosAnexados.forEach((file) => {
       formData.append('Archivos', file, file.name);
@@ -216,42 +220,45 @@ export class CrearTramite {
         this.tramitesElectronicosRecibidos = response.data;
         this.confirmationService.confirm({
           key: 'success',
-          accept: () => {
-            this.mostrarAddDocumentos.set(false);
-            this.validarCausaForm.reset();
-            this.documentosAnexados = [];
-            this.causaValidada = null;
-          },
-          reject: () => {
-            this.mostrarAddDocumentos.set(false);
-            this.validarCausaForm.reset();
-            this.documentosAnexados = [];
-            this.causaValidada = null;
-          }
+          accept: () => this.resetForms(),
+          reject: () => this.resetForms()
         });
       },
       error: () => (this.isLoading = false),
     });
   }
-descargarAcuse(): void {
+  private resetForms(): void {
+    this.mostrarAddDocumentos.set(false);
+    this.busquedaForm.reset({
+      idCatTipoTramite: null,
+      numeroExpediente: '',
+      idJuzgado: null,
+      idPantalla: 1    
+    });
+    this.documentosForm.reset();
+    this.documentosAnexados = [];
+    this.causaValidada = null;
+    this.catJuzgados = [];
+  }
+  descargarAcuse(): void {
     const id = this.tramitesElectronicosRecibidos?.idTramiteElectronicoRecibido;
     if (!id) return;
 
-    this.apiService.getAcuseTramite( id )
-        .subscribe({
-            next: (response: HttpResponse<Blob>) => {
-                const disposition = response.headers.get('content-disposition') ?? '';
-                const match       = disposition.match(/filename="([^"]+)"/);
-                const filename    = match ? match[1] : `Acuse_${id}.pdf`;
+    this.apiService.getAcuseTramite(id)
+      .subscribe({
+        next: (response: HttpResponse<Blob>) => {
+          const disposition = response.headers.get('content-disposition') ?? '';
+          const match = disposition.match(/filename="([^"]+)"/);
+          const filename = match ? match[1] : `Acuse_${id}.pdf`;
 
-                const url  = window.URL.createObjectURL(response.body!);
-                const link = document.createElement('a');
-                link.href     = url;
-                link.download = filename;
-                link.click();
-                window.URL.revokeObjectURL(url);
-            },
-            error: () => console.error('Error al descargar el acuse')
-        });
-}
+          const url = window.URL.createObjectURL(response.body!);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          link.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: () => console.error('Error al descargar el acuse')
+      });
+  }
 }

@@ -46,18 +46,18 @@ import { checkToken } from "../../core/auth/interceptor/token.interceptor";
 
 export class JuicioService {
 
-    private inicio = 'http://10.1.10.50:81/api/Inicio/';
-    private firma = 'http://10.1.10.50:81/api/VerificaFirma';
-    private catalogos = 'http://10.1.10.50:81/api/Catalogo/';
-    private permisos = 'http://10.1.10.50:81/api/Permisos/';
-    private requerimientos = 'http://10.1.10.50:81/api/Requerimiento/';
-    private expediente = 'http://10.1.10.50:81/api/Expediente/';
-    private documentos = 'http://10.1.10.50:81/api/Documento/';
-    private tramites = 'http://10.1.10.50:81/api/Tramites/';
-    private juzgados = 'http://10.1.10.50:81/api/Juzgados/';
-    private remitente = 'http://10.1.10.50:81/api/Remitentes/';
-    private audiencia = 'http://10.1.10.50:81/api/Audiencia/'
-    private solicitud = 'http://10.1.10.50:81/api/Solicitud/'
+    private inicio = 'http://127.0.0.1:8000/api/Inicio/';
+    private firma = 'http://127.0.0.1:8000/api/VerificaFirma';
+    private catalogos = 'http://127.0.0.1:8000/api/Catalogo/';
+    private permisos = 'http://127.0.0.1:8000/api/Permisos/';
+    private requerimientos = 'http://127.0.0.1:8000/api/Requerimiento/';
+    private expediente = 'http://127.0.0.1:8000/api/Expediente/';
+    private documentos = 'http://127.0.0.1:8000/api/Documento/';
+    private tramites = 'http://127.0.0.1:8000/api/Tramites/';
+    private juzgados = 'http://127.0.0.1:8000/api/Juzgados/';
+    private remitente = 'http://127.0.0.1:8000/api/Remitentes/';
+    private audiencia = 'http://127.0.0.1:8000/api/Audiencia/'
+    private solicitud = 'http://127.0.0.1:8000/api/Solicitud/'
 
 
     constructor(private http: HttpClient, private tokenService: TokenService) { }

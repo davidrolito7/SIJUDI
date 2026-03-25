@@ -1,32 +1,26 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<div class="sticky top-0 z-50 flex flex-col gap-4 bg-surface-50 dark:bg-surface-900">
+<div class="sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-960">
 
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
     <!-- BUSQUEDA -->
-    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+    <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
         <form class="flex flex-col" [formGroup]="validarCausaForm">
 
-            <div class="flex items-start flex-col md:flex-row justify-between">
-                <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-                    Búsqueda
-                </label>
-
-                <div class="flex items-center">
-
-                </div>
-            </div>
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-2 ">
+                Búsqueda
+            </label>
 
             <div class="grid grid-cols-6 gap-4 w-full items-end">
                 <div class="col-span-6 md:col-span-2">
                     <label class="block mb-2 text-sm font-medium">Tipo de Trámite</label>
                     <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
-                        (onChange)="cargarCatalogoJuzgados($event.value)"
-                        optionValue="value" fluid placeholder="Selecciona un tipo de trámite" [filter]="true"
-                        optionLabel="label" appendTo="body" />
+                        (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid
+                        placeholder="Selecciona un tipo de trámite" [filter]="true" optionLabel="label"
+                        appendTo="body" />
                 </div>
-                <div class="col-span-6 md:col-span-2">
+                <div class="col-span-6 md:col-span-1">
                     <label class="block mb-2 text-sm font-medium">Folio</label>
                     <p-inputmask fluid formControlName="numeroExpediente" class="uppercase text-sm rounded-lg"
                         mask="9999/9999" placeholder="0001/2026" />
@@ -53,7 +47,7 @@
 
 <!-- CONTENIDO (ya no se mete "debajo" visualmente) -->
 @if (mostrarTramites()) {
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
         <div>
             <div class="font-medium text-xl text-surface-900 dark:text-surface-0 ">Resultado</div>
@@ -61,12 +55,12 @@
     </div>
 
     <div class="card pt-4">
-        <p-table #dt1 [value]="tramitesElectronicosRecibidos" dataKey="idTramiteElectronicoRecibido" [rows]="10"
+        <p-table #dt1 [value]="tramitesElectronicosRecibidos" stripedRows  dataKey="idTramiteElectronicoRecibido" [rows]="10"
             [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="['folio','fechaEnvio','observaciones','cantidadAnexos']">
             <ng-template #caption>
                 <div class="flex">
-                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="limpiarBusqueda()" />
                     <p-iconfield iconPosition="left" class="ml-auto">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
                         <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
@@ -77,34 +71,25 @@
 
             <ng-template #header>
                 <tr>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Folio
-                            <p-columnFilter type="text" field="folio" display="menu" />
-                        </div>
+                    <th>
+                        Folio
+                        <!-- <p-columnFilter type="text" field="folio" display="menu" /> -->
                     </th>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Fecha de Envío
-                            <p-columnFilter type="date" field="fechaEnvio" display="menu"></p-columnFilter>
-                        </div>
+                    <th>
+                        Fecha de Envío
+                        <!-- <p-columnFilter type="date" field="fechaEnvio" display="menu"></p-columnFilter> -->
                     </th>
-                    <th style="min-width:10rem">
-                        <div class="flex items-center justify-between">
-                            Observaciones
-                            <p-columnFilter type="text" field="observaciones" display="menu" />
-                        </div>
+                    <th>
+                        Observaciones
+                        <!-- <p-columnFilter type="text" field="observaciones" display="menu" /> -->
+
                     </th>
-                    <th style="min-width:15rem">
-                        <div class="flex items-center justify-between">
-                            Cantidad de Documentos
-                            <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" />
-                        </div>
+                    <th>
+                        Cantidad de Documentos
+                        <!-- <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" /> -->
                     </th>
-                    <th style="min-width:10rem">
-                        <div class="flex items-center justify-between">
-                            Acciones
-                        </div>
+                    <th pFrozenColumn alignFrozen="right">
+                        Acciones
                     </th>
                 </tr>
             </ng-template>
@@ -115,15 +100,19 @@
                     <td>{{ tramite.fechaEnvio | date:'yyyy-MM-dd HH:mm' }} h</td>
                     <td>{{ tramite.observaciones }}</td>
                     <td>{{ tramite.cantidadAnexos }}</td>
-                    <td>
-                        <p-button pTooltip="Ver detalle" (click)="detalle(tramite.idTramiteElectronicoRecibido)"
-                            tooltipPosition="top">
-                            <i class="pi pi-eye"></i>
-                        </p-button>
-                        <p-button pTooltip="Descargar acuse" (click)="descargarAcuse(tramite.idTramiteElectronicoRecibido)"
-                            tooltipPosition="top" class="ml-2">
-                            <i class="pi pi-download"></i>
-                        </p-button>
+                    <td pFrozenColumn alignFrozen="right">
+                        <div class="flex gap-2">
+
+                            <p-button pTooltip="Ver detalle" (click)="detalle(tramite.idTramiteElectronicoRecibido)"
+                                tooltipPosition="top">
+                                <i class="pi pi-eye"></i>
+                            </p-button>
+                            <p-button pTooltip="Descargar acuse"
+                                (click)="descargarAcuse(tramite.idTramiteElectronicoRecibido)" tooltipPosition="top"
+                                class="ml-2">
+                                <i class="pi pi-download"></i>
+                            </p-button>
+                        </div>
                     </td>
                 </tr>
             </ng-template>

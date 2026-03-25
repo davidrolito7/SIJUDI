@@ -1,12 +1,12 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 <!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
 
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-900 flex flex-col gap-4">
+<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-950 flex flex-col gap-4">
 
     <!-- HEADER -->
     <!-- <header
-        class="border border-surface rounded-2xl bg-surface-50 dark:bg-surface-900 flex items-center justify-between overflow-hidden">
-        <p-breadcrumb class="hidden lg:block" styleClass="bg-surface-50 dark:bg-surface-900" [home]="home"
+        class="border border-surface rounded-2xl bg-surface-50 dark:bg-surface-950 flex items-center justify-between overflow-hidden">
+        <p-breadcrumb class="hidden lg:block" styleClass="bg-surface-50 dark:bg-surface-950" [home]="home"
             [model]="items" />
 
         <div class="ml-auto flex items-center gap-2 pr-4 pt-2 pb-2">
@@ -18,7 +18,7 @@
     </header> -->
 
     <!-- TITULO -->
-    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl p-4">
+    <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
 
         <div class="flex items-start flex-col md:flex-row justify-between">
             <div>
@@ -45,7 +45,7 @@
     </div>
 </div>
 
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl mb-4 p-4">
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
 
         <p-table #dt1  [value]="listaConfiJuzgado()" dataKey="idConfiguracion" [rows]="10"
             [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"

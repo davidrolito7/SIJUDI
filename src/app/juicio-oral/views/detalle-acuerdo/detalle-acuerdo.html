@@ -5,7 +5,7 @@
 <!--* DIALOGO DE CONFIRMACION VALIDAR FIREL -->
 <p-confirmdialog key="firma">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
-        <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+        <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded">
             <div
                 class="rounded-full bg-secondary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
                                 <i class="pi pi-key text-white" style="font-size: 3rem"></i>
@@ -40,7 +40,7 @@
     <!-- BREADCRUMB -->
     <app-breadcrub></app-breadcrub>
 
-    <div class="bg-surface-50 dark:bg-surface-900 border border-surface rounded-2xl">
+    <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl">
         <div class="flex items-start flex-col md:flex-row justify-between p-4">
             <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
                 Detalle del acuerdo #{{ detalleAcuerdo.folio }}
