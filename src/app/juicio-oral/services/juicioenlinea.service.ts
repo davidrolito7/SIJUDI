@@ -52,7 +52,7 @@ export class JuicioService {
     private permisos = 'http://127.0.0.1:8000/api/Permisos/';
     private requerimientos = 'http://127.0.0.1:8000/api/Requerimiento/';
     private expediente = 'http://127.0.0.1:8000/api/Expediente/';
-    private documentos = 'http://127.0.0.1:8000/api/Documento/';
+    private documentos = 'http://localhost:8000/api/Documento/';
     private tramites = 'http://127.0.0.1:8000/api/Tramites/';
     private juzgados = 'http://127.0.0.1:8000/api/Juzgados/';
     private remitente = 'http://127.0.0.1:8000/api/Remitentes/';

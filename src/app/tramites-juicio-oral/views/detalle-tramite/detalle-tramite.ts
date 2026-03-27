@@ -58,15 +58,13 @@ export class DetalleTramite {
     });
   }
 
-  openModal(archivo: { url: string; nombreArchivo: string }): void {
+  openModal(referencia : string): void {
     this.isLoading.set(true);
-    const fileName = archivo.nombreArchivo; // "REFERENCIA_PAGO_147753.pdf"
 
-    this.apiService.getDocumentoNas({ path: archivo.url + '/', fileName: archivo.nombreArchivo }).subscribe({
+    this.apiService.getDocumentoNas(referencia).subscribe({
       next: (response) => {
         if (response?.data?.file) {
-          this.nombre = fileName;
-          this.onVerDocumento(response.data.file, fileName, 'application/pdf');
+          this.onVerDocumento(response.data.file, response.data.fileName, 'application/pdf');
         }
          this.isLoading.set(false);
       },
@@ -79,6 +77,7 @@ export class DetalleTramite {
   }
 
   onVerDocumento(fileBase64: string, nombre: string, mime: string): void {
+      this.nombre = nombre; 
     const byteChars = atob(fileBase64);
     const byteNumbers = Array.from(byteChars).map(c => c.charCodeAt(0));
     const byteArray = new Uint8Array(byteNumbers);

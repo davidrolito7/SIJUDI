@@ -1,7 +1,7 @@
 <app-spinner [isLoading]="isLoading()" />
 
 
-<div class="lg:sticky top-0 z-50 flex flex-col gap-4">
+<div class="lg:sticky top-0 z-50 flex flex-col">
 
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
@@ -15,7 +15,7 @@
             </label>
         </div>
 
-        <!-- Sección: Datos generales -->
+        <!-- Sección: Datos generales -->|
         <div
             class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 transition delay-100 duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.01]">
             <span class="flex items-center">
@@ -94,7 +94,7 @@
 
                         <td>
                             <p-button icon="pi pi-file-pdf" [rounded]="true" [raised]="true" severity="success"
-                                (click)="openModal(archivo)" pTooltip="Ver PDF" tooltipPosition="top" />
+                                (click)="openModal(archivo.referencia)" pTooltip="Ver PDF" tooltipPosition="top" />
                         </td>
                     </tr>
                 </ng-template>
