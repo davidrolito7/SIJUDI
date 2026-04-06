@@ -30,7 +30,7 @@ export function svgSrcForModulo(m: ModulosUsuario): string {
 
 export function svgSrcForPantalla(p: Pantallas): string {
   const key = (p.imagen ?? '').trim();
-  const file = PANTALLA_SVG_BY_IMAGEN[key] ?? 'default.svg';
+  const file = PANTALLA_SVG_BY_IMAGEN[key] ?? 'oficialiaComun.svg';
   return `icons/${file}`;
 }
 

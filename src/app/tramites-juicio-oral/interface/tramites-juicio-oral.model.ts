@@ -25,10 +25,11 @@ export interface DetalleTramiteElectronicoRecibidoResponse extends TramitesElect
 
 export interface DetalleTramiteElectronicoRecibidoResponse {
     idArchivo: number;
+    referencia: string;
     idTramiteElectronicoRecibido: number;
-    url: string;
     nombreArchivo: string;
     activo: boolean;
+
 }
 
 export interface CatJuzgadoResponse {

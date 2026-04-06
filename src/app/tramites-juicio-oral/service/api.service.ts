@@ -57,12 +57,17 @@ export class ApiService {
     );
   }
 
-  getDocumentoNas(params: { path: string; fileName: string }): Observable<ApiResponse<any>> {
-    const url = `${this.nasApiUrl}/Nas`;
-    return this.http.get<ApiResponse<any>>(url, {
-      params,
-      context: checkToken()
-    });
+  // getDocumentoNas(params: { path: string; fileName: string }): Observable<ApiResponse<any>> {
+  //   const url = `${this.nasApiUrl}/Nas`;
+  //   return this.http.get<ApiResponse<any>>(url, {
+  //     params,
+  //     context: checkToken()
+  //   });
+  // }
+
+  getDocumentoNas(referencia: string): Observable<ApiResponse<any>> {
+    const url = `${this.apiUrl}/DescargarArchivo/${referencia}`;
+    return this.http.get<ApiResponse<any>>(url, {context: checkToken() });
   }
 
   // endpoint para generar y descargar acuse de tramite enviado
