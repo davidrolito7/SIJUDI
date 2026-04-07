@@ -110,6 +110,9 @@ export interface documentos {
 }
 export interface verMovimientosResponse {
     idNotificacion:number;
+    cargoTurna:string;
+    idUsuarioTurna:number;
+    nombreUsuarioTurna:string;
     fechaTurnado: Date,
     idUsuarioRecibe: number,
     nombreUsuarioRecibe: string,
