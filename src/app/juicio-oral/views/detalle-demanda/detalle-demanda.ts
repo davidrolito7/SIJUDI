@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
-import { DetalleInicioResponse } from '../../interfaces/juicioenlinea.model';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -12,6 +11,7 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { TooltipModule } from 'primeng/tooltip';
 import { base64ToFile } from '../../../shared/functions/utils';
 import { Spinner } from "../../../shared/components/spinner/spinner";
+import { DetalleDemandaResponse } from '../../interfaces/juicioenlinea.model';
 
 @Component({
   selector: 'app-detalle-demanda',
@@ -24,8 +24,9 @@ export class DetalleDemanda implements OnInit {
   idInicio: number | undefined;
   nombre: string = '';
   documentoUrl: SafeResourceUrl | null = null;
-  detalleInicio: DetalleInicioResponse | null = null;
+  detalleInicio: DetalleDemandaResponse | null = null;
   isLoading = false;
+  
   mostrarDocumento = signal<boolean>(false);
 
   constructor(

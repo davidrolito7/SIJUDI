@@ -29,7 +29,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 // ============================
 // App - feature
 // ============================
-import { ListadoIniciosCreados } from '../../interfaces/juicioenlinea.model';
+import { ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { TooltipModule } from 'primeng/tooltip';
 
@@ -71,7 +71,7 @@ export class ListarDemanda implements OnInit {
     { label: 'Finalizado', value: 3 },
   ];
 
-  inicios = signal<ListadoIniciosCreados[]>([]);
+  inicios = signal<ListarExpedientesResponse[]>([]);
   isLoading = false;
 
   filtro: { folio: string; rangeDates: Date[] | ''; estado: number } = {
@@ -144,7 +144,7 @@ export class ListarDemanda implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.inicios.set(response.data);
-        this.pagination = response.pagination;
+        //this.pagination = response.pagination;
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -224,13 +224,13 @@ export class ListarDemanda implements OnInit {
   // Estado helpers for UI tags
   // ============================
   getEstadoDescripcion(inicio: unknown): string | null {
-    const i = inicio as { ultimo_estado?: { estado?: { descripcion?: string } } };
-    return i.ultimo_estado?.estado?.descripcion ?? null;
+    const i = inicio as { pre_registro?: { ultimo_estado?: { estado?: { descripcion?: string } } } };
+    return i.pre_registro?.ultimo_estado?.estado?.descripcion ?? null;
   }
 
   getEstadoId(inicio: unknown): number | null {
-    const i = inicio as { ultimo_estado?: { estado?: { idCatEstadoInicio?: number } } };
-    return i.ultimo_estado?.estado?.idCatEstadoInicio ?? null;
+    const i = inicio as { pre_registro?: { ultimo_estado?: { estado?: { idCatEstadoInicio?: number } } } };
+    return i.pre_registro?.ultimo_estado?.estado?.idCatEstadoInicio ?? null;
   }
 
   getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {

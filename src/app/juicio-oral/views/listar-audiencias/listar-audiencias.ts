@@ -8,7 +8,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule, formatDate } from '@angular/common'; // Asegúrate de importar esto
 import { Spinner } from "../../../shared/components/spinner/spinner";
 
-import { ListadoIniciosCreados } from '../../interfaces/juicioenlinea.model';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';

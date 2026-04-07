@@ -86,7 +86,7 @@
 
             <ng-template #header class="bg-red-500">
                 <tr>
-                    <th scope="col">Folio</th>
+                    <th scope="col">No. Expediente</th>
                     <th scope="col">Materia</th>
                     <th scope="col">Vía</th>
                     <th scope="col">Fecha Creado</th>
@@ -95,31 +95,31 @@
                 </tr>
             </ng-template>
 
-            <ng-template #body let-inicio>
+            <ng-template #body let-demanda>
                 <tr>
                     <td>
-                        # <span>{{ inicio.folio }}</span>
+                        # <span>{{ demanda.NumExpediente }}</span>
                     </td>
 
                     <td>
-                        {{ inicio.cat_via_materia?.cat_materia?.Descripcion }}
+                        {{ demanda.pre_registro.cat_via_materia?.cat_materia?.Descripcion }}
                     </td>
 
                     <td>
-                        {{ inicio.cat_via_materia?.cat_via?.descripcion }}
+                        {{ demanda.pre_registro.cat_via_materia?.cat_via?.descripcion }}
                     </td>
 
                     <td>
-                        {{ inicio.fechaHoraRecepcion | date: 'dd/MM/yyyy HH:mm' }} h
+                        {{ demanda.fechaResponse | date: 'dd/MM/yyyy HH:mm' }} h
                     </td>
 
                     <td>
-                        <p-tag [value]="(getEstadoDescripcion(inicio) | uppercase) ?? ''"
-                            [severity]="getEstadoTag(inicio).severity" [icon]="getEstadoTag(inicio).icon" />
+                        <p-tag [value]="(getEstadoDescripcion(demanda) | uppercase) ?? ''"
+                            [severity]="getEstadoTag(demanda).severity" [icon]="getEstadoTag(demanda).icon" />
                     </td>
 
                     <td>
-                        <p-button (click)="detalle(inicio.idPreregistro)" [rounded]="true" [text]="true" [raised]="true"
+                        <p-button (click)="detalle(demanda.idPreregistro)" [rounded]="true" [text]="true" [raised]="true"
                             severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
                             tooltipPosition="top" title="Detalle">
                         </p-button>

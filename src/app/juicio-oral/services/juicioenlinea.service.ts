@@ -1,6 +1,5 @@
 import { map, Observable, tap } from "rxjs";
 import {
-    DetalleInicioResponse,
     CatMateria,
     CatTipoDocumento,
     ApiResponse,
@@ -26,13 +25,13 @@ import {
     RespuestaTramites,
     RespuestaIniciosCreados,
     RespuestaExpedienteDetalle,
-    RespuestaExpediente,
     RespuestaListadoAudiencia,
     RespuestaListadoSolicitud,
     CatMunicipios,
     DetalleExpedienteResponse,
     DocumentoResponse,
     ListadoAcuerdosResponse,
+    DetalleDemandaResponse,
 
 } from "../interfaces/juicioenlinea.model";
 import { HttpClient } from "@angular/common/http";
@@ -66,15 +65,15 @@ export class JuicioService {
     //* Audiencias  //http://10.1.10.50:81/api/Audiencia/Listar
     //* ########################################################################
 
-    getListadoInicios(params?: any): Observable<RespuestaIniciosCreados> {
-        return this.http.get<RespuestaIniciosCreados>(
+    getListadoInicios(params?: any): Observable<ApiResponse<ListarExpedientesResponse[]>> {
+        return this.http.get<ApiResponse<ListarExpedientesResponse[]>>(
             `${this.inicio}ListadoPreregistros`, { params, context: checkToken() }
         );
     }
 
-    getDetalleInicios(idInicio: number): Observable<DetalleInicioResponse> {
+    getDetalleInicios(idInicio: number): Observable<DetalleDemandaResponse> {
         const url = `${this.inicio}DetallePreregistro/${idInicio}`;
-        return this.http.get<DetalleInicioResponse>(url, { context: checkToken() }
+        return this.http.get<DetalleDemandaResponse>(url, { context: checkToken() }
         );
     }
 
@@ -212,8 +211,8 @@ export class JuicioService {
         return this.http.post<any>(url, {}, { context: checkToken() });
     }
 
-    getListadoExpedientes(params?: any): Observable<RespuestaExpediente> {
-        return this.http.get<RespuestaExpediente>(
+    getListadoExpedientes(params?: any): Observable<ApiResponse<ListarExpedientesResponse[]>> {
+        return this.http.get<ApiResponse<ListarExpedientesResponse[]>>(
             `${this.expediente}Listar`, {
             params,
             context: checkToken()
