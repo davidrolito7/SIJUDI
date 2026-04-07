@@ -40,7 +40,7 @@ import {
   CatSexos,
   CatTipoPartes,
   DatosUsuarioResponse,
-  DetalleInicioResponse,
+  DetalleDemandaResponse,
   ListarExpedientesResponse,
   Partes,
   PartesRequest,
@@ -109,7 +109,7 @@ export class CrearTramite implements OnInit {
   NumExpediente!: string;
   detalleExpediente: RegistroExpediente[] | null = null;
   expediente: ListarExpedientesResponse | null = null;
-  preRegistro: DetalleInicioResponse | null = null;
+  detalleDemanda: DetalleDemandaResponse | null = null;
 
   // ============================
   // Catálogos
@@ -238,10 +238,10 @@ export class CrearTramite implements OnInit {
         this.detalleExpediente = response.data.registros;
         const exp = response.data.expediente;
         this.expediente = exp;
-        this.preRegistro = Array.isArray(this.expediente?.pre_registro)
-          ? this.expediente.pre_registro[0]
-          : this.expediente?.pre_registro;
-        this.partes = this.preRegistro ? this.preRegistro.partes : [];
+        this.detalleDemanda = Array.isArray(this.expediente?.demanda)
+          ? this.expediente.demanda[0]
+          : this.expediente?.demanda;
+        this.partes = this.detalleDemanda ? this.detalleDemanda.demanda.partes : [];
         this.cdr.markForCheck();
 
       },

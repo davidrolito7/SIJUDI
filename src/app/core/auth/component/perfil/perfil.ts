@@ -33,7 +33,7 @@ interface PersistedSelection {
   areaId: number;
   perfilId: number;
   perfilDesc: string;
-  subAreaId:number;
+  subAreaId: number;
 }
 
 @Component({
@@ -73,8 +73,8 @@ export class Perfil {
   readonly areaSeleccionada = signal(0);
   readonly perfilSeleccionado = signal(0);
   readonly perfilNombreSeleccionado = signal('');
-  readonly subAreaId= signal(0);
-  readonly subAreaNombre=signal('');
+  readonly subAreaId = signal(0);
+  readonly subAreaNombre = signal('');
 
   recordar = false;
   // Datos para mostrar (abogado)
@@ -94,7 +94,7 @@ export class Perfil {
     this.perfilNombreSeleccionado.set(persisted.perfilDesc);
     this.subAreaId.set(persisted.subAreaId);
 
-    this.loadUserAndAreas(persisted.areaId, persisted.perfilId,persisted.subAreaId);
+    this.loadUserAndAreas(persisted.areaId, persisted.perfilId, persisted.subAreaId);
   }
 
   onAreaChange(areaId: number): void {
@@ -125,17 +125,57 @@ export class Perfil {
     this.subAreaNombre.set(selected?.descripcion ?? '');
   }
 
-continuar(): void {
+  continuar(): void {
     if (!this.canContinue()) {
       this.messageService.add({
         severity: 'error',
         summary: 'Campos requeridos',
-        detail: 'Debes seleccionar un área, un perfil y  subarea',
+        detail: 'Debes seleccionar un área, un perfil y subarea',
       });
       return;
     }
 
-    // 1. Primero guardar "recordar" para que PantallasService sepa qué storage usar
+    const request = {
+      idSistema: SISTEMA_ID,
+      idArea: this.areaSeleccionada(),
+      idSistemaPerfil: this.perfilSeleccionado(),
+      idSubArea: this.subAreaId()
+    };
+
+    this.authService.postLoginContexto(request, this.recordar).subscribe({
+      next: (response) => {
+        if (!response.success) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Acceso denegado',
+            detail: response.message ?? 'No se puede continuar.',
+          });
+          return;
+        }
+
+        this.guardarContextoStorage();
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Operación exitosa',
+          detail: 'Área y perfil seleccionados correctamente',
+        });
+
+        this.tokenService.setPerfilCompleted(true);
+        this.pantallasService.limpiarPantallas();
+
+        this.menuStore.refresh()
+          .pipe(
+            catchError(() => of([])),
+            takeUntilDestroyed(this.destroyRef)
+          )
+          .subscribe(() => {
+            this.router.navigate(['/home'], { replaceUrl: true });
+          });
+      }
+    });
+  }
+  private guardarContextoStorage(): void {
     localStorage.setItem('recordarUsuario', this.recordar ? 'true' : 'false');
 
     const store = this.recordar ? localStorage : sessionStorage;
@@ -145,8 +185,8 @@ continuar(): void {
     store.setItem('perfilSeleccionado', String(this.perfilSeleccionado()));
     store.setItem('perfilSeleccionadoDesc', this.perfilNombreSeleccionado());
     store.setItem('idAreaSistemaUsuario', String(this.idAreaSistemaUsuario()));
-    store.setItem('SubAreaId',String(this.subAreaId()));
-    store.setItem('SubAreaNombre',this.subAreaNombre());
+    store.setItem('SubAreaId', String(this.subAreaId()));
+    store.setItem('SubAreaNombre', this.subAreaNombre());
 
     const areaObj = this.listaAreas().find(a => a.idArea === this.areaSeleccionada());
     store.setItem('AreaName', areaObj?.area ?? '');
@@ -160,34 +200,10 @@ continuar(): void {
     other.removeItem('AreaName');
     other.removeItem('AreaBd');
     other.removeItem('AbogadoNombre');
-    other.removeItem('pantallas_usuario'); // limpia del storage que no se usa
+    other.removeItem('pantallas_usuario');
     other.removeItem('SubAreaId');
     other.removeItem('SubAreaNombre');
     localStorage.removeItem('AbogadoFotoBase64');
-
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Operación exitosa',
-      detail: 'Área y perfil seleccionados correctamente',
-    });
-
-    this.tokenService.setPerfilCompleted(true);
-
-    // 2. Limpiar memoria + storage ANTES de cargar para forzar HTTP
-    this.pantallasService.limpiarPantallas();
-
-    // 3. Cargar pantallas frescas
-    //this.cargarPantallasUsuario();
-
-    // 4. Navegar
-    this.menuStore.refresh()
-      .pipe(
-        catchError(() => of([])),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => {
-        this.router.navigate(['/home'], { replaceUrl: true });
-      });
   }
 
   onLogout(): void {
@@ -196,7 +212,7 @@ continuar(): void {
     //this.router.navigate(['/login'], { replaceUrl: true });
   }
 
-  //! QUITAR ESTO POSTERIOMENTE (DAVID RODRIGUEZ)
+  //! QUITAR ESTO POSTERIOMENTE (DAVID RODRI)
   /*private cargarPantallasUsuario(): void {
     // No revisar caché aquí — ya se limpió con limpiarPantallas() antes de llamar esto
     this.pantallasService.cargarPantallas().subscribe({
@@ -213,7 +229,7 @@ continuar(): void {
   // Carga de datos
   // --------------------
 
-  private loadUserAndAreas(restoreAreaId: number, restorePerfilId: number, restoreSubAreaId:number): void {
+  private loadUserAndAreas(restoreAreaId: number, restorePerfilId: number, restoreSubAreaId: number): void {
     const user = this.tokenService.getUserFromToken();
     if (!user?.Usr) {
       this.messageService.add({
@@ -261,9 +277,9 @@ continuar(): void {
           if (!areas || areas.length === 0) return of<usuarioAreas[]>([]);
           // Ejemplo: tomar el área seleccionada
           //const areaId = this.areaSeleccionada();
-          const area = areas.find(f=>f.idArea===this.areaSeleccionada());
+          const area = areas.find(f => f.idArea === this.areaSeleccionada());
           if (area !== undefined) {
-            return this.authService.getSubAreas(area.idAreaSistema,this.idGeneral()).pipe(
+            return this.authService.getSubAreas(area.idAreaSistema, this.idGeneral()).pipe(
               map(r => (r.data ?? []) as usuarioAreas[])
             );
           }
@@ -276,7 +292,7 @@ continuar(): void {
             restoreSubAreaId > 0 && subareas.some(sa => sa.idSubArea === this.subAreaId());
 
           this.subAreaId.set(validSubArea ? restoreSubAreaId : 0);
-          const area = this.subAreas().find(f=>f.idSubArea === this.subAreaId());
+          const area = this.subAreas().find(f => f.idSubArea === this.subAreaId());
           this.subAreaNombre.set(area?.descripcion ?? '');
 
           if (!validSubArea) {
@@ -306,34 +322,33 @@ continuar(): void {
       )
       .subscribe();
   }
-  private loadSubareas(idArea: number)
-  {
+  private loadSubareas(idArea: number) {
     const idG = this.idGeneral();
-    const area = this.listaAreas().find(f=>f.idArea===idArea);
+    const area = this.listaAreas().find(f => f.idArea === idArea);
     //console.log(area!.idAreaSistema);
-    this.authService.getSubAreas(area!.idAreaSistema ?? 0,idG).subscribe({
-      next:(response:GenericResponse<usuarioAreas[]>)=>{
-        if(response.success){
-            this.subAreas.set(response.data);
+    this.authService.getSubAreas(area!.idAreaSistema ?? 0, idG).subscribe({
+      next: (response: GenericResponse<usuarioAreas[]>) => {
+        if (response.success) {
+          this.subAreas.set(response.data);
         }
-        else{
+        else {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
             detail: response.message,
-            life:0
+            life: 0
           });
         }
       },
-      error:(e)=>{
+      error: (e) => {
         this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: e.message,
-            life:0
-          });
+          severity: 'error',
+          summary: 'Error',
+          detail: e.message,
+          life: 0
+        });
       },
-      complete:()=>{
+      complete: () => {
 
       }
     })
@@ -415,7 +430,7 @@ continuar(): void {
     const subAreaId =
       this.readNumber(primary, 'SubAreaId') ||
       this.readNumber(fallback, 'SubAreaId');
-      '';
+    '';
     return {
       recordar,
       areaId,
@@ -432,5 +447,5 @@ continuar(): void {
     return Number.isFinite(n) ? n : 0;
   }
 
- 
+
 }

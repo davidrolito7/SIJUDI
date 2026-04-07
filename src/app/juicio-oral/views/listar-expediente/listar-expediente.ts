@@ -5,6 +5,7 @@ import { CommonModule, formatDate } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
+import { MessageService } from 'primeng/api';
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { Spinner } from "../../../shared/components/spinner/spinner";
@@ -16,16 +17,18 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
 import { PantallasService } from '../../services/pantallas.service';
 
 @Component({
   selector: 'app-listar-expediente',
-  imports: [CommonModule, FormsModule, DatePickerModule, Breadcrub, Spinner, ButtonModule, SelectModule, InputMaskModule, TableModule, IconFieldModule, InputIconModule, TagModule, InputTextModule],
+  imports: [CommonModule, FormsModule, DatePickerModule, Breadcrub, Spinner, ButtonModule, SelectModule, InputMaskModule, TableModule, IconFieldModule, InputIconModule, TagModule, InputTextModule, ToastModule],
   templateUrl: './listar-expediente.html',
   styleUrl: './listar-expediente.css',
+  providers: [MessageService]
 })
 export class ListarExpediente {
-  isLoading = false;
+  isLoading = signal(false);
   filtro: { expediente: string; rangeDates: Date[] | '' } = {
     expediente: '',
     rangeDates: ''
@@ -47,11 +50,12 @@ export class ListarExpediente {
     private router: Router,
     private route: ActivatedRoute,
     private au: AuthService,
-    private pantallasService: PantallasService
+    private pantallasService: PantallasService,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     this.route.queryParams.subscribe(params => {
       const currentPage = params['page'] ? +params['page'] : 1;
@@ -86,13 +90,16 @@ export class ListarExpediente {
 
       this.juicioService.getListadoExpedientes(requestParams).subscribe({
         next: (response) => {
-          this.expedientes.set(response.data);
-          this.pagination = response.pagination;
-          this.isLoading = false;
-        },
-        error: (error) => {
-          this.isLoading = false;
-          console.error('Error:', error);
+          this.isLoading.set(false);
+          if (response.success) {
+            this.expedientes.set(response.data);
+          } else {
+            this.messageService.add({ 
+              severity: 'error', 
+              summary: 'Error', 
+              detail: response.message 
+            });
+          }
         }
       });
     });

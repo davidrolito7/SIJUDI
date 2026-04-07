@@ -1,7 +1,7 @@
 import { signal, Injectable, Inject, PLATFORM_ID, } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { Observable, tap } from 'rxjs';
+import { catchError, Observable, of, tap, throwError } from 'rxjs';
 import { TokenService } from './token.service';
 import { responseLogin, areasResponse, twoAccess, usuarioAreas } from '../interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
@@ -75,7 +75,7 @@ export class AuthService {
   login(usuario: string, contrasenia: string, idSistema: number, remember: boolean): Observable<GenericResponse<responseLogin>> {
     const url = '/api/AuthJWT/Login';
     const body = { usuario, contrasenia, idSistema };
-    return this.http.post<GenericResponse<responseLogin>>(`${this.constService.ruta}${url}`, body,{withCredentials:true})
+    return this.http.post<GenericResponse<responseLogin>>(`${this.constService.ruta}${url}`, body, { withCredentials: true })
       .pipe(
         tap(response => {
           if (response.success) {
@@ -131,10 +131,10 @@ export class AuthService {
         })
       );
   }*/
- //ahora el refresh token se almacena en el cookie del back y no se expone en el fron por seguridad
- refresToken(remember: boolean): Observable<GenericResponse<responseLogin>> {
+  //ahora el refresh token se almacena en el cookie del back y no se expone en el fron por seguridad
+  refresToken(remember: boolean): Observable<GenericResponse<responseLogin>> {
     const url = `${this.constService.ruta}/api/AuthJWT/RefreshToken`;
-    return this.http.post<GenericResponse<responseLogin>>(url,{},{withCredentials:true})
+    return this.http.post<GenericResponse<responseLogin>>(url, {}, { withCredentials: true })
       .pipe(
         tap(response => {
           if (response.success) {
@@ -149,7 +149,7 @@ export class AuthService {
     var rolesUsuario = null;
     if (this.isBrowser) {
       const recordarUsuario = localStorage.getItem('recordarUsuario');
-      if(recordarUsuario=== 'true')
+      if (recordarUsuario === 'true')
         rolesUsuario = localStorage.getItem("perfilSeleccionadoDesc");
       else
         rolesUsuario = sessionStorage.getItem("perfilSeleccionadoDesc");
@@ -180,7 +180,7 @@ export class AuthService {
     const url = `${this.constService.ruta}/api/Permisos/AreaSistemaUsuario?idSistema=${idSistema}&idGeneral=${idGeneral}`;
     return this.http.post(url, null, { context: checkToken() });
   }
-  
+
   GetModulosUsuario(idAreaSistemaUsuario: string, IdPerfilUsuario: string): Observable<any> {
     const url = `${this.constService.ruta}/api/Permisos/ObtenerModulosPantasUsuario?IdAreaSistemaUsuario=${idAreaSistemaUsuario}&IdPerfilUsuario=${IdPerfilUsuario}`;
     return this.http.post(url, null, { context: checkToken() });
@@ -201,7 +201,7 @@ export class AuthService {
     //this.perfilSeleccionado = perfil;
     this.perfilSeleccionado.set(perfil);
   }
-  
+
   ActualizaAreaSeleccionado(area: any) {
     this.areaSeleccionado.set(area);
   }
@@ -232,7 +232,7 @@ export class AuthService {
     var idAreaUsuario = null;
     if (this.isBrowser) {
       const recordarUsuario = localStorage.getItem('recordarUsuario');
-      if(recordarUsuario=== 'true')
+      if (recordarUsuario === 'true')
         idAreaUsuario = localStorage.getItem("areaSeleccionada");
       else
         idAreaUsuario = sessionStorage.getItem("areaSeleccionada");
@@ -243,37 +243,37 @@ export class AuthService {
     var areaName = null;
     if (this.isBrowser) {
       const recordarUsuario = localStorage.getItem('recordarUsuario');
-      if(recordarUsuario=== 'true')
-          areaName = localStorage.getItem('AreaName');
-      else{
+      if (recordarUsuario === 'true')
+        areaName = localStorage.getItem('AreaName');
+      else {
         areaName = sessionStorage.getItem('AreaName');
       }
     }
     return areaName!;
   }
-  getAreaSistemaUsuario(): string{
+  getAreaSistemaUsuario(): string {
     var areaName = null;
-        if (this.isBrowser) {
-          const recordarUsuario = localStorage.getItem('recordarUsuario');
-          if(recordarUsuario=== 'true')
-              areaName = localStorage.getItem('idAreaSistemaUsuario');
-          else{
-            areaName = sessionStorage.getItem('idAreaSistemaUsuario');
-          }
-        }
-        return areaName!;
+    if (this.isBrowser) {
+      const recordarUsuario = localStorage.getItem('recordarUsuario');
+      if (recordarUsuario === 'true')
+        areaName = localStorage.getItem('idAreaSistemaUsuario');
+      else {
+        areaName = sessionStorage.getItem('idAreaSistemaUsuario');
+      }
+    }
+    return areaName!;
   }
-  getPerfilSeleccionado():string{
+  getPerfilSeleccionado(): string {
     var areaName = null;
-        if (this.isBrowser) {
-          const recordarUsuario = localStorage.getItem('recordarUsuario');
-          if(recordarUsuario=== 'true')
-              areaName = localStorage.getItem('perfilSeleccionado');
-          else{
-            areaName = sessionStorage.getItem('perfilSeleccionado');
-          }
-        }
-        return areaName!;
+    if (this.isBrowser) {
+      const recordarUsuario = localStorage.getItem('recordarUsuario');
+      if (recordarUsuario === 'true')
+        areaName = localStorage.getItem('perfilSeleccionado');
+      else {
+        areaName = sessionStorage.getItem('perfilSeleccionado');
+      }
+    }
+    return areaName!;
   }
   GetSeccionesUsuario(idAreaSistemaUsuario: string | null, IdPantalla: string, idPerfil: string | null): Observable<any> {
     const url = `${this.constService.ruta}/api/Permisos/ObtenerSeccionesUsuario?IdAreaSistemaUsuario=${idAreaSistemaUsuario}&IdPantalla=${IdPantalla}&idPerfil=${idPerfil}`;
@@ -315,8 +315,26 @@ export class AuthService {
       }
     );
   }
-   getSubAreas(idAreaSistema: number, idGeneral: number): Observable<GenericResponse<usuarioAreas[]>> {
+  getSubAreas(idAreaSistema: number, idGeneral: number): Observable<GenericResponse<usuarioAreas[]>> {
     const url = `${this.constService.ruta}/api/Permisos/SubAreasUsuario?idAreaSistema=${idAreaSistema}&idgeneral=${idGeneral}`;
     return this.http.post<GenericResponse<usuarioAreas[]>>(url, null, { context: checkToken() });
   }
+
+  //endpoint para agregar contexto al token 
+postLoginContexto(request: any, remember: boolean): Observable<GenericResponse<any>> {
+  const url = `${this.constService.ruta}/api/AuthJWT/LoginContexto`;
+  return this.http.post<GenericResponse<any>>(url, request, { context: checkToken() })
+    .pipe(
+      tap(response => {
+        if (response.success && response.data?.access_token) {
+          this.tokenService.saveToken(response.data.access_token, remember);
+        }
+      }),
+      catchError((err: HttpErrorResponse) => {
+        const body = err.error as GenericResponse<any>;
+        if (body?.message) return of(body);
+        return throwError(() => err);
+      })
+    );
+}
 }

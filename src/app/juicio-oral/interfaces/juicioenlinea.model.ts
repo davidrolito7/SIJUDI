@@ -11,7 +11,7 @@ export interface ApiResponse<T> {
 //##########################################################
 // LISTADO DE PREREGISTROS RESPONSE  //http://127.0.0.1:8000/api/Inicio/ListadoPreregistros
 
-export interface ListadoIniciosCreados { //* OK
+export interface ListadoDemandasResponse { //* OK
     idPreregistro: number;
     folio: string;
     //sintesis: string;
@@ -24,10 +24,7 @@ export interface ListadoIniciosCreados { //* OK
     cat_via_materia: CatMateriaVia;
     ultimo_estado: HistorialEstado;
 }
-// export interface FrimaElectronicaRequest {   //! QUITAR
-//     archivoPfx_Efirma: File;
-//     password_Efirma: string;
-// }
+
 export interface CatMateria {
     idCatMateria: number;
     descripcion: string;
@@ -47,7 +44,18 @@ export interface CatTipoDocumento { //* OK
 //########################################################################
 // DETALLE DE PREREGISTROS RESPONSE   //http://127.0.0.1:8000/api/Inicio/DetallePreregistro/{idPreregistro}
 
-export interface DetalleInicioResponse {  //* OK
+export interface DetalleDemandaResponse {  //* OK
+    idExpediente: number;
+    NumExpediente: string;
+    idCatJuzgado: string;
+    fechaResponse: string;
+    idPreregistro: string;
+    idSecretario: string;
+    numSecretaria: string;
+    juzgado: Juzgado;
+    demanda: DemandaResponse;
+}
+export interface DemandaResponse {
     idPreregistro: number;
     folio: string;
     idCatViaMateria: number;
@@ -62,6 +70,7 @@ export interface DetalleInicioResponse {  //* OK
     tipo: string;
     cat_tipo_parte: CatTipoPartes;
 }
+
 export interface Partes { //* OK
     idParte: number;
     idPreregistro: number;
@@ -238,7 +247,7 @@ export interface ListarExpedientesResponse {
     idSecretario: string;
     numSecretaria: string;
     tramites: DetalleTramites[];
-    pre_registro: ListadoIniciosCreados;
+    demanda: ListadoDemandasResponse;
     juzgado: Juzgado;
     ultimo_historial: HistorialExpediente;
 
@@ -359,7 +368,7 @@ export interface DetalleExpedienteResponse { //* OK
     numSecretaria: string;
     juzgado: Juzgado;
     tramites: DetalleTramites[];
-    pre_registro: DetalleInicioResponse;
+    pre_registro: DetalleDemandaResponse;
     requerimientos: DetalleRequerimiento;
 
 }
@@ -698,7 +707,7 @@ export interface RespuestaTramites {
 export interface RespuestaIniciosCreados {
     status: number;
     message: string;
-    data: ListadoIniciosCreados[];
+    data: ListadoDemandasResponse[];
     pagination: {
         current_page: number;
         last_page: number;
@@ -708,18 +717,6 @@ export interface RespuestaIniciosCreados {
     };
 }
 
-export interface RespuestaExpediente {
-    status: number;
-    message: string;
-    data: ListarExpedientesResponse[];
-    pagination: {
-        current_page: number;
-        last_page: number;
-        per_page: number;
-        total: number;
-
-    };
-}
 
 
 export interface RespuestaExpedienteDetalle {
@@ -765,7 +762,7 @@ export interface RespuestaListadoSolicitud {
 }
 
 export type RegistroExpediente =
-    | DetalleInicioResponse
+    | DetalleDemandaResponse
     | DetalleRequerimiento
     | DetalleTramites
     | AudienciasResponse;
