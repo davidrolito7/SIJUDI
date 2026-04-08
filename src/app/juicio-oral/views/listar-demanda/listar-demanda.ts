@@ -212,8 +212,8 @@ export class ListarDemanda implements OnInit {
     return new Date(year, month - 1, day);
   }
 
-  detalle(idInicio: number) {
-    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idInicio } });
+  detalle(idExpediente: number) {
+    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idExpediente } });
   }
 
   onRedirigirCrear() {

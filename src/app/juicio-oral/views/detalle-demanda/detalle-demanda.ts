@@ -26,7 +26,7 @@ export class DetalleDemanda implements OnInit {
   documentoUrl: SafeResourceUrl | null = null;
   detalleInicio: DetalleDemandaResponse | null = null;
   isLoading = false;
-  
+
   mostrarDocumento = signal<boolean>(false);
 
   constructor(
@@ -37,19 +37,19 @@ export class DetalleDemanda implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const state = window.history.state as { idInicio: number };
+    const state = window.history.state as { idExpediente: number };
 
-    if (state?.idInicio) {
-      this.idInicio = state.idInicio;
+    if (state?.idExpediente) {
+      this.idInicio = state.idExpediente;
       this.getDetalleInicio(this.idInicio);
     } else {
-      console.warn('No se proporcionó idInicio. Redirigiendo a la página de inicio.');
+      console.warn('No se proporcionó idExpediente. Redirigiendo a la página de inicio.');
     // this.router.navigate(['/layout/inicio']);
     }
   }
 
-  getDetalleInicio(idInicio: number): void {
-    this.juicioService.getDetalleInicios(idInicio).subscribe({
+  getDetalleInicio(idExpediente: number): void {
+    this.juicioService.getDetalleInicios(idExpediente).subscribe({
       next: (response: any) => {
         this.detalleInicio = response.data || null;
         this.cdr.markForCheck();
