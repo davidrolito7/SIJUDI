@@ -368,7 +368,7 @@ export interface DetalleExpedienteResponse { //* OK
     numSecretaria: string;
     juzgado: Juzgado;
     tramites: DetalleTramites[];
-    pre_registro: DetalleDemandaResponse;
+    pre_registro: DemandaResponse;
     requerimientos: DetalleRequerimiento;
 
 }
