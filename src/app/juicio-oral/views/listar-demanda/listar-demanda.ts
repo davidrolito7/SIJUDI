@@ -16,7 +16,7 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageService } from 'primeng/api';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 
@@ -29,7 +29,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 // ============================
 // App - feature
 // ============================
-import { ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
+import { DetalleDemandaResponse, ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { TooltipModule } from 'primeng/tooltip';
 
@@ -71,8 +71,10 @@ export class ListarDemanda implements OnInit {
     { label: 'Finalizado', value: 3 },
   ];
 
-  inicios = signal<ListarExpedientesResponse[]>([]);
+  inicios = signal<DetalleDemandaResponse[]>([]);
   isLoading = false;
+  totalRecords = 0;        // ← total para que PrimeNG sepa cuántas páginas hay
+  rowsPerPage = 10;        // ← rows actuales, se actualiza desde el evento lazy
 
   filtro: { folio: string; rangeDates: Date[] | ''; estado: number } = {
     folio: '',
@@ -80,12 +82,6 @@ export class ListarDemanda implements OnInit {
     estado: 0,
   };
 
-  pagination = {
-    current_page: 1,
-    last_page: 1,
-    per_page: 5,
-    total: 0,
-  };
 
   // ============================
   // Constructor / DI
@@ -101,10 +97,9 @@ export class ListarDemanda implements OnInit {
   // Lifecycle
   // ============================
   ngOnInit(): void {
+    // Solo sincronizar filtros desde URL, la tabla disparará onLazyLoad automáticamente
     const params = this.route.snapshot.queryParams;
     this.sincronizarFiltrosDesdeURL(params);
-    const page = params['page'] ? +params['page'] : 1;
-    this.cargarDatos(page);
   }
 
   // ============================
@@ -122,29 +117,38 @@ export class ListarDemanda implements OnInit {
         ]
         : '';
   }
+  // ── Evento lazy de PrimeNG ──────────────────────────────────────────
+  // Se dispara al cargar, cambiar página y cambiar rows per page
+  onLazyLoad(event: TableLazyLoadEvent): void {
+    const rows = event.rows ?? this.rowsPerPage;
+    const first = event.first ?? 0;
 
-  private cargarDatos(page: number): void {
+    this.rowsPerPage = rows;
+    const page = Math.floor(first / rows) + 1;
+
+    this.actualizarURL(page);
+    this.cargarDatos(page, rows);
+  }
+
+  private cargarDatos(page: number, perPage: number): void {
     this.isLoading = true;
 
-    const requestParams: Record<string, string | number> = {
-      page,
-      per_page: 5,
-    };
+    const params: Record<string, string | number> = { page, per_page: perPage };
 
-    if (this.filtro.folio) requestParams['folio'] = this.filtro.folio;
+    if (this.filtro.folio) params['folio'] = this.filtro.folio;
 
     if (Array.isArray(this.filtro.rangeDates) && this.filtro.rangeDates.length === 2) {
-      requestParams['fechaInicio'] = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
-      requestParams['fechaFinal'] = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
+      params['fechaInicio'] = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
+      params['fechaFinal'] = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
     }
 
-    if (this.filtro.estado > 0) requestParams['estado'] = this.filtro.estado;
+    if (this.filtro.estado > 0) params['estado'] = this.filtro.estado;
 
-    this.juicioService.getListadoInicios(requestParams).subscribe({
+    this.juicioService.getListadoInicios(params).subscribe({
       next: (response) => {
         this.isLoading = false;
         this.inicios.set(response.data);
-        //this.pagination = response.pagination;
+        this.totalRecords = response.pagination?.total ?? 0; // ← total del backend
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -154,13 +158,16 @@ export class ListarDemanda implements OnInit {
       },
     });
   }
-
   // ============================
   // Actions (filters / paging)
   // ============================
   aplicarFiltros(): void {
+    this.actualizarURL(1);
+    this.cargarDatos(1, this.rowsPerPage);
+  }
+  private actualizarURL(page: number): void {
     const queryParams: Record<string, string | number | null> = {
-      page: 1,
+      page,
       estado: this.filtro.estado > 0 ? this.filtro.estado : null,
       folio: this.filtro.folio || null,
       fechaInicio: null,
@@ -176,33 +183,19 @@ export class ListarDemanda implements OnInit {
       relativeTo: this.route,
       queryParams,
       queryParamsHandling: 'merge',
+      replaceUrl: true,
     });
-
-    this.cargarDatos(1);
   }
-
   limpiarFiltros(): void {
     this.filtro = { estado: 0, rangeDates: '', folio: '' };
-
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { estado: null, folio: null, fechaInicio: null, fechaFinal: null, page: 1 },
       queryParamsHandling: 'merge',
     });
-
-    this.cargarDatos(1);
+    this.cargarDatos(1, this.rowsPerPage);
   }
 
-  cambiarPagina(page: number): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-
-    this.cargarDatos(page);
-  }
 
   // ============================
   // Helpers
@@ -224,26 +217,29 @@ export class ListarDemanda implements OnInit {
   // Estado helpers for UI tags
   // ============================
   getEstadoDescripcion(inicio: unknown): string | null {
-    const i = inicio as { pre_registro?: { ultimo_estado?: { estado?: { descripcion?: string } } } };
-    return i.pre_registro?.ultimo_estado?.estado?.descripcion ?? null;
+    const i = inicio as { demanda?: { ultimo_estado?: { estado?: { descripcion?: string } } } };
+    return i.demanda?.ultimo_estado?.estado?.descripcion ?? null;
   }
 
   getEstadoId(inicio: unknown): number | null {
-    const i = inicio as { pre_registro?: { ultimo_estado?: { estado?: { idCatEstadoInicio?: number } } } };
-    return i.pre_registro?.ultimo_estado?.estado?.idCatEstadoInicio ?? null;
+    const i = inicio as { demanda?: { ultimo_estado?: { estado?: { idCatEstadoInicio?: number } } } };
+    return i.demanda?.ultimo_estado?.estado?.idCatEstadoInicio ?? null;
   }
 
   getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
     const id = this.getEstadoId(inicio);
     switch (id) {
       case 1:
-        return { severity: 'success', icon: 'pi pi-check' };
+        return { severity: 'secondary', icon: 'pi pi-send' };
       case 2:
         return { severity: 'info', icon: 'pi pi-clock' };
       case 3:
-        return { severity: 'warn', icon: 'pi pi-exclamation-triangle' };
+        return { severity: 'success', icon: 'pi pi-check' };
       default:
         return { severity: 'secondary' };
     }
+  }
+  asExpediente(row: unknown): ListarExpedientesResponse {
+    return row as ListarExpedientesResponse;
   }
 }

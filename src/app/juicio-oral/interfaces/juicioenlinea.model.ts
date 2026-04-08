@@ -6,8 +6,15 @@ export interface ApiResponse<T> {
     data: T;
     nombre?: string;
     descripcion?: string;
-}
+    pagination?: Pagination;
 
+}
+export interface Pagination {   
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+}
 //##########################################################
 // LISTADO DE PREREGISTROS RESPONSE  //http://127.0.0.1:8000/api/Inicio/ListadoPreregistros
 
@@ -247,7 +254,7 @@ export interface ListarExpedientesResponse {
     idSecretario: string;
     numSecretaria: string;
     tramites: DetalleTramites[];
-    demanda: ListadoDemandasResponse;
+    demanda: DemandaResponse;
     juzgado: Juzgado;
     ultimo_historial: HistorialExpediente;
 

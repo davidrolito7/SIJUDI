@@ -65,8 +65,8 @@ export class JuicioService {
     //* Audiencias  //http://10.1.10.50:81/api/Audiencia/Listar
     //* ########################################################################
 
-    getListadoInicios(params?: any): Observable<ApiResponse<ListarExpedientesResponse[]>> {
-        return this.http.get<ApiResponse<ListarExpedientesResponse[]>>(
+    getListadoInicios(params?: any): Observable<ApiResponse<DetalleDemandaResponse[]>> {
+        return this.http.get<ApiResponse<DetalleDemandaResponse[]>>(
             `${this.inicio}ListadoPreregistros`, { params, context: checkToken() }
         );
     }

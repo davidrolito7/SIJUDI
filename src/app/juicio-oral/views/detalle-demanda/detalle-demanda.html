@@ -11,7 +11,7 @@
 
         <div class="flex items-start flex-col md:flex-row justify-between">
             <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
-                Detalle de demandas electrónicas 1° instancia #{{detalleInicio?.NumExpediente}}
+                Detalle de demandas electrónicas 1° instancia #{{detalleDemanda?.NumExpediente}}
             </label>
         </div>
 
@@ -30,61 +30,67 @@
         </div>
 
         <div class="p-5 w-full">
-            @if (detalleInicio) {
+            @if (detalleDemanda) {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <!-- Columna Izquierda -->
                 <div class="flex flex-col space-y-2">
-                    <p class="text-surface-600 dark:text-surface-200"><b>Folio pre-registro: </b>
-                        {{detalleInicio.NumExpediente}}
+                    <p class="text-surface-600 dark:text-surface-200"><b>No. Expediente: </b>
+                        {{detalleDemanda.NumExpediente}}
+                    </p>
+                     <p class="text-surface-600 dark:text-surface-200"><b>Juzgado: </b>
+                        {{detalleDemanda.juzgado.Descripcion}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Fecha recepción:</b>
-                        {{ detalleInicio.fechaResponse| date:'yyyy-MM-dd' }}
+                        {{ detalleDemanda.fechaResponse| date:'yyyy-MM-dd' }}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Hora recepción:</b>
-                        {{ detalleInicio.fechaResponse | date:'HH:mm' }} h
+                        {{ detalleDemanda.fechaResponse | date:'HH:mm' }} h
                     </p>
                 </div>
                 <!-- Columna Derecha -->
                 <div class="flex flex-col space-y-2">
                     <p class="text-surface-600 dark:text-surface-200"><b>Materia: </b>
-                        {{detalleInicio.demanda.cat_via_materia.cat_materia.Descripcion}}
+                        {{detalleDemanda.demanda.cat_via_materia.cat_materia.Descripcion}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Via:</b>
-                        {{detalleInicio.demanda.cat_via_materia.cat_via.descripcion}}
+                        {{detalleDemanda.demanda.cat_via_materia.cat_via.descripcion}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Estado:</b>
-                        @switch (detalleInicio.demanda.ultimo_estado.estado.idCatEstadoInicio) {
+                        @switch (detalleDemanda.demanda.ultimo_estado.estado.idCatEstadoInicio) {
                         @case (1) {
                         <span
                             class="ml-2 bg-green-100 text-green-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-green-400 border border-green-500">
-                            {{detalleInicio.demanda.ultimo_estado.estado.descripcion }}
+                            {{detalleDemanda.demanda.ultimo_estado.estado.descripcion }}
                         </span>
                         }
                         @case (2) {
                         <span
                             class="ml-2 bg-purple-100 text-purple-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-purple-400 border border-purple-500">
-                            {{ detalleInicio.demanda.ultimo_estado.estado.descripcion }}
+                            {{ detalleDemanda.demanda.ultimo_estado.estado.descripcion }}
                         </span>
                         }
                         @case (3) {
                         <span
                             class="ml-2 bg-orange-100 text-orange-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-orange-300 border border-orange-300">
-                            {{ detalleInicio.demanda.ultimo_estado.estado.descripcion }}
+                            {{ detalleDemanda.demanda.ultimo_estado.estado.descripcion }}
                         </span>
                         }
                         @default {
                         <span>
-                            {{ detalleInicio.demanda.ultimo_estado.estado.descripcion }}
+                            {{ detalleDemanda.demanda.ultimo_estado.estado.descripcion }}
                         </span>
                         }
                         }
                     </p>
-                </div>
-                <div class="flex flex-col space-y-2 md:col-span-2">
-                    <p class="text-surface-600 dark:text-surface-200 wrap-break-word"><b>Descripción: </b>
-                        {{detalleInicio.demanda.descripcionDemanda}}
+                     <p class="text-surface-600 dark:text-surface-200 wrap-break-word"><b>Descripción: </b>
+                        {{detalleDemanda.demanda.descripcionDemanda}}
                     </p>
                 </div>
+                <!-- <div class="flex flex-col space-y-2 md:col-span-2">
+                    <p class="text-surface-600 dark:text-surface-200 wrap-break-word"><b>Descripción: </b>
+                        {{detalleDemanda.demanda.descripcionDemanda}}
+                    </p>
+                </div> -->
             </div>
             }
         </div>
@@ -104,7 +110,7 @@
         </div>
 
         <div class="p-3">
-            <p-table [value]="detalleInicio?.demanda?.partes ?? []"   [tableStyle]="{ 'min-width': '100%', width: 'max-content' }">
+            <p-table [value]="detalleDemanda?.demanda?.partes ?? []"   [tableStyle]="{ 'min-width': '100%', width: 'max-content' }">
                 <ng-template #header>
                     <tr>
                         <th>Nombre</th>
@@ -160,7 +166,7 @@
         </div>
 
         <div class="p-3">
-            <p-table [value]="detalleInicio?.demanda?.documentos ?? []" [tableStyle]="{ 'min-width': '50rem' }">
+            <p-table [value]="detalleDemanda?.demanda?.documentos ?? []" [tableStyle]="{ 'min-width': '50rem' }">
                 <ng-template #header>
                     <tr>
                         <th>Nombre</th>

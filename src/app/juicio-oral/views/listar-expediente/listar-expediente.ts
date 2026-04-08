@@ -94,10 +94,10 @@ export class ListarExpediente {
           if (response.success) {
             this.expedientes.set(response.data);
           } else {
-            this.messageService.add({ 
-              severity: 'error', 
-              summary: 'Error', 
-              detail: response.message 
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: response.message
             });
           }
         }
@@ -169,4 +169,8 @@ export class ListarExpediente {
   }
 
   mostrarDropdown = false;
+
+  asExpediente(row: unknown): ListarExpedientesResponse {
+    return row as ListarExpedientesResponse;
+  }
 }
