@@ -1,93 +1,75 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit,HostListener,ViewChild,ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { Router } from "@angular/router";
+import { Router } from '@angular/router';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ToastModule } from 'primeng/toast';
 
 import { AuthService } from '../../service/auth.service';
 import { TokenService } from '../../service/token.service';
 import { MessageService } from 'primeng/api';
-import { Spinner } from "../../../../shared/components/spinner/spinner";
+import { Spinner } from '../../../../shared/components/spinner/spinner';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   standalone: true,
   selector: 'app-login',
-  imports: [CommonModule, FormsModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, CheckboxModule, ToastModule, Spinner],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    CheckboxModule,
+    ToastModule,
+    Spinner,
+  ],
   providers: [MessageService],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login implements OnInit {
-  @HostListener('window:beforeunload', ['$event'])
-  usuario: string = '';
+  usuario: string     = '';
   contrasenia: string = '';
-  idSistema: number = 4169;
-  recordar: boolean = false;
-  @ViewChild('passwordInput')
-  passwordInput!:ElementRef;
-  verPassword:boolean=false;
-  isLoading: boolean=(false);
+  idSistema: number   = 4169;
+  recordar: boolean   = false;
+  verPassword: boolean = false;
+  isLoading: boolean  = false;
+
+  @ViewChild('passwordInput') passwordInput!: ElementRef;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    //private renderer: Renderer2,
     private el: ElementRef,
     private tokenService: TokenService,
     private mensaje: MessageService,
     private cd: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
-    /*const container = this.el.nativeElement.querySelector('#container');
-
-    if (container) {
-      setTimeout(() => {
-        this.renderer.addClass(container, 'sign-in');
-      }, 200);
-    }*/
-  }
-
-  /*toggle() {
-    const container = this.el.nativeElement.querySelector('#container');
-
-    if (container) {
-      if (container.classList.contains('sign-in')) {
-        this.renderer.removeClass(container, 'sign-in');
-        this.renderer.addClass(container, 'sign-up');
-      } else {
-        this.renderer.removeClass(container, 'sign-up');
-        this.renderer.addClass(container, 'sign-in');
-      }
-    }
-  }*/
+  ngOnInit() {}
 
   forgotPassword() {
     window.open('https://virtual.tribunaloaxaca.gob.mx/ForgotPassword', '_blank');
   }
-  passwordFocus(){
-    if (this.usuario || this.usuario.trim()!=='' ) {
+
+  passwordFocus() {
+    if (this.usuario?.trim()) {
       this.passwordInput.nativeElement.focus();
     }
   }
-  passwordEnter(){
-    if(!this.contrasenia || this.contrasenia.trim()==='' || this.contrasenia === undefined)
-    {
-      this.mensaje.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Por favor, ingrese su contraseña.',
-        life: 3000
-      });
+
+  passwordEnter() {
+    if (!this.contrasenia?.trim()) {
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su contraseña.', life: 3000 });
       return;
-    }else{
-      this.validarUsuario();
     }
+    this.validarUsuario();
   }
 
   togglePassword() {
@@ -95,68 +77,55 @@ export class Login implements OnInit {
   }
 
   validarUsuario() {
-    if (!this.usuario || this.usuario.trim()==='' || this.usuario=== undefined) {
-      this.mensaje.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Por favor, ingrese su usuario.',
-        life: 3000
-      });
+    if (!this.usuario?.trim()) {
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su usuario.', life: 3000 });
       return;
     }
-    if(!this.contrasenia || this.contrasenia.trim()==='' || this.contrasenia === undefined)
-    {
-      this.mensaje.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Por favor, ingrese su contraseña.',
-        life: 3000
-      });
+    if (!this.contrasenia?.trim()) {
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su contraseña.', life: 3000 });
       return;
     }
-    this.isLoading=true;
+
+    this.isLoading = true;
     this.cd.detectChanges();
+
     this.authService.login(this.usuario, this.contrasenia, this.idSistema, this.recordar).subscribe({
-      next: (response) => {
+      next: async (response) => {
         if (response.success) {
-          this.authService.actualizaPerfilSeleccionado("");
-          this.tokenService.setTwoFactorValidated(false);
-          this.router.navigate(['login2fase']);
+          this.authService.actualizaPerfilSeleccionado('');
+
+          if (environment.DEV_SKIP_2FA) {
+            await this.tokenService.setTwoFactorValidated(true);
+            this.router.navigate(['/perfil']);
+          } else {
+            this.tokenService.setTwoFactorValidated(false);
+            this.router.navigate(['login2fase']);
+          }
         } else {
           this.mensaje.add({
             severity: 'error',
             summary: 'Error',
             detail: 'Usuario o contraseña incorrectos.',
-            life: 3000
+            life: 3000,
           });
         }
       },
-      error: (error) => {
-        this.mensaje.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Ocurrió un error al intentar ingresar.',
-          life: 3000
-        });
-        this.isLoading=false;
+      error: () => {
+        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al intentar ingresar.', life: 3000 });
+        this.isLoading = false;
         this.cd.detectChanges();
       },
-      complete:()=>{
-        this.isLoading=false;
+      complete: () => {
+        this.isLoading = false;
         this.cd.detectChanges();
-      }
-
+      },
     });
   }
 
   @HostListener('window:beforeunload', ['$event'])
-  clearSession(event: Event) {
+  clearSession(_event: Event) {
     if (!localStorage.getItem('userSession')) {
       sessionStorage.removeItem('userSession');
     }
   }
-  alternarPassword(){
-    this.verPassword=!this.verPassword;
-  }
-
 }

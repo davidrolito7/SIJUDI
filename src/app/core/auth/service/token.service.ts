@@ -1,287 +1,236 @@
-import { Injectable, Inject, PLATFORM_ID, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
-import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 
-@Injectable({
-  providedIn: 'root',
-})
+// ─────────────────────────────────────────────────────────────────────────────
+// HMAC-SHA256 con Web Crypto API
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function hmacSign(secret: string, data: string): Promise<string> {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data));
+  return Array.from(new Uint8Array(sig))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+async function hmacVerify(secret: string, data: string, expected: string): Promise<boolean> {
+  try {
+    const actual = await hmacSign(secret, data);
+    if (actual.length !== expected.length) return false;
+    // Comparación en tiempo constante para evitar timing attacks
+    let diff = 0;
+    for (let i = 0; i < actual.length; i++) {
+      diff |= actual.charCodeAt(i) ^ expected.charCodeAt(i);
+    }
+    return diff === 0;
+  } catch {
+    return false;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Injectable({ providedIn: 'root' })
 export class TokenService {
-  nameToken = 'token_TE_PJO';//token del sistema tribunal electronico del poder judcial de oaxaca
-  nameRefreshToken = 'refreshT_TE_PJO';
-  isBrowser: boolean = false;
+
+  // Públicos para compatibilidad con el interceptor
+  readonly nameToken        = 'token_TE_PJO';
+  readonly nameRefreshToken = 'refreshT_TE_PJO';
+
+  // Claves de HMAC en sessionStorage
+  private readonly TWO_FACTOR_KEY = '_tf_sig';
+  private readonly PERFIL_KEY     = '_pf_sig';
+  private readonly PANTALLAS_KEY  = 'pantallas_usuario';
+
+  private readonly router = inject(Router);
 
   private sessionExpiredSubject = new BehaviorSubject<boolean>(false);
   sessionExpired$ = this.sessionExpiredSubject.asObservable();
-  private validacionCompletada = new BehaviorSubject<boolean>(false);
-  private readonly ONE_FACTOR_KEY='oneFactorValidated'
-  private readonly TWO_FACTOR_KEY = 'twoFactorValidated';
-  private readonly PERFIL_COMPLETED_KEY = 'perfilCompleted';
-  private readonly router = inject(Router);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-    
-  }
+  notifySessionExpired(): void { this.sessionExpiredSubject.next(true); }
 
-  setValidacionCompletada(valor: boolean) {
-    this.validacionCompletada.next(valor);
-  }
+  // ─────────────────────────────────────────────────────────────────────────
+  // TOKEN PRINCIPAL
+  // ─────────────────────────────────────────────────────────────────────────
 
-  validacionLista(): Observable<boolean> {
-    return this.validacionCompletada.asObservable();
-  }
-
-  notifySessionExpired() {
-    this.sessionExpiredSubject.next(true);
-  }
-
-  saveToken(token: string, remember: boolean) {
+  saveToken(token: string, remember: boolean): void {
     localStorage.removeItem(this.nameToken);
     sessionStorage.removeItem(this.nameToken);
-    if (remember) {
-      localStorage.setItem(this.nameToken, token);
-    } else {
-      sessionStorage.setItem(this.nameToken, token);
-    }
+    remember
+      ? localStorage.setItem(this.nameToken, token)
+      : sessionStorage.setItem(this.nameToken, token);
   }
 
-  getToken() {
-    if (this.isBrowser) {
-      // da prioridad al token más reciente en sessionStorage
-      return sessionStorage.getItem(this.nameToken) || localStorage.getItem(this.nameToken);
-    }
-    return null;
+  getToken(): string | null {
+    return sessionStorage.getItem(this.nameToken)
+        || localStorage.getItem(this.nameToken);
   }
 
-  removeToken() {
-    if (this.isBrowser && localStorage) {
-      localStorage.removeItem(this.nameToken);
-      sessionStorage.removeItem(this.nameToken);
-    }
+  removeToken(): void {
+    localStorage.removeItem(this.nameToken);
+    sessionStorage.removeItem(this.nameToken);
   }
 
-  saveRefreshToken(refreshToken: string, remember: boolean) {
+  // ─────────────────────────────────────────────────────────────────────────
+  // REFRESH TOKEN
+  // ─────────────────────────────────────────────────────────────────────────
+
+  saveRefreshToken(refreshToken: string, remember: boolean): void {
     localStorage.removeItem(this.nameRefreshToken);
     sessionStorage.removeItem(this.nameRefreshToken);
-    if (remember) {
-      localStorage.setItem(this.nameRefreshToken, refreshToken);
-    } else {
-      sessionStorage.setItem(this.nameRefreshToken, refreshToken);
-    }
+    remember
+      ? localStorage.setItem(this.nameRefreshToken, refreshToken)
+      : sessionStorage.setItem(this.nameRefreshToken, refreshToken);
   }
 
-  getRefreshToken() {
-    if (this.isBrowser) {
-      // prioridad al de sessionStorage para no usar uno viejo de localStorage
-      return sessionStorage.getItem(this.nameRefreshToken) || localStorage.getItem(this.nameRefreshToken);
-    }
-    return null;
+  getRefreshToken(): string | null {
+    return sessionStorage.getItem(this.nameRefreshToken)
+        || localStorage.getItem(this.nameRefreshToken);
   }
 
-  /*removeRefreshToken() {
-    if (this.isBrowser && localStorage) {
-      localStorage.removeItem(this.nameRefreshToken);
-      sessionStorage.removeItem(this.nameRefreshToken);
-    }
-  }*/
+  // ─────────────────────────────────────────────────────────────────────────
+  // VALIDACIÓN JWT
+  // ─────────────────────────────────────────────────────────────────────────
 
-  isValidToken() {
+  isValidToken(): boolean {
     const token = this.getToken();
-    if (!token) {
-      console.log('session expired: no token found');
+    if (!token) return false;
+    try {
+      const { exp } = jwtDecode<JwtPayload>(token);
+      if (!exp) return false;
+      return new Date(exp * 1000).getTime() > Date.now();
+    } catch {
       return false;
     }
-
-    try {
-      const decodeToken = jwtDecode<JwtPayload>(token);
-      if (decodeToken?.exp) {
-        const tokenDate = new Date(0);
-        tokenDate.setUTCSeconds(decodeToken.exp);
-        return tokenDate.getTime() > new Date().getTime();
-      }
-    } catch (error) {
-      console.error("Error al decodificar el token:", error);
-    }
-    return false;
   }
 
-  /*isValidRefreshToken(): boolean {
-    if (!this.isBrowser) return false;
-
-    const token = this.getRefreshToken() ?? '';
-
-    if (!token) return false;
-
-    try {
-      const decodeToken = jwtDecode<JwtPayload>(token);
-
-      if (!decodeToken?.exp) return false;
-
-      const tokenDate = new Date(0);
-      tokenDate.setUTCSeconds(decodeToken.exp);
-
-      if (tokenDate.getTime() <= Date.now()) {
-        this.notifySessionExpired();
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      // ✅ corrupto: no lo trates como “expiró”, solo inválido
-      console.error('Error al decodificar el refresh token:', error);
-      return false;
-    }
-  }*/
-
-  getUserFromToken() {
+  getUserFromToken(): any | null {
     const token = this.getToken();
     if (!token) return null;
-
     try {
-      const decodedToken: any = jwtDecode(token);
-      const userDataString = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata"];
-
-      if (!userDataString) return null;
-
-      const userData = JSON.parse(userDataString);
-      //return userData.Usr;
-      return userData;
-    } catch (error) {
-      //console.error("Error al obtener usuario del token:");
+      const decoded: any = jwtDecode(token);
+      const raw = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata'];
+      return raw ? JSON.parse(raw) : null;
+    } catch {
       return null;
     }
   }
 
-  setTwoFactorValidated(value: boolean): void {
-    if (typeof window === 'undefined') return;
-    sessionStorage.setItem(this.TWO_FACTOR_KEY, value ? 'true' : 'false');
-  }
-  setOneFactorValidated(value: boolean):void{
-    sessionStorage.setItem(this.ONE_FACTOR_KEY, value ? 'true' : 'false');
+  // ─────────────────────────────────────────────────────────────────────────
+  // CLAVE DE FIRMA
+  //* Usa el payload del JWT como secreto → si el token cambia o expira,
+  // Todos los HMAC anteriores quedan inválidos automáticamente.
+  // ─────────────────────────────────────────────────────────────────────────
+
+  private getSigningSecret(): string {
+    const token = this.getToken();
+    if (!token) return '';
+    return token.split('.')[1] ?? '';
   }
 
-  isTwoFactorValidated(): boolean {
-    if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem(this.TWO_FACTOR_KEY) === 'true';
+  // ─────────────────────────────────────────────────────────────────────────
+  // TWO FACTOR
+  // Fuente de verdad: HMAC en sessionStorage verificado contra el JWT.
+  // Sin flags en memoria → sin condición de carrera.
+  // ─────────────────────────────────────────────────────────────────────────
+
+  async setTwoFactorValidated(value: boolean): Promise<void> {
+    if (!value) {
+      sessionStorage.removeItem(this.TWO_FACTOR_KEY);
+      return;
+    }
+    const secret = this.getSigningSecret();
+    if (!secret) return;
+    const sig = await hmacSign(secret, 'twoFactor:true');
+    sessionStorage.setItem(this.TWO_FACTOR_KEY, sig);
   }
-  isOneFactorValidated(): boolean {
-    if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem(this.ONE_FACTOR_KEY) === 'true';
+
+  async isTwoFactorValidated(): Promise<boolean> {
+    const sig = sessionStorage.getItem(this.TWO_FACTOR_KEY);
+    if (!sig) return false;
+    const secret = this.getSigningSecret();
+    if (!secret) return false;
+    return hmacVerify(secret, 'twoFactor:true', sig);
   }
+
   clearTwoFactorValidated(): void {
-    if (typeof window === 'undefined') return;
     sessionStorage.removeItem(this.TWO_FACTOR_KEY);
   }
-  clearOneFactorValidated(): void {
-    if (typeof window === 'undefined') return;
-    sessionStorage.removeItem(this.ONE_FACTOR_KEY);
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // PERFIL COMPLETADO
+  // ─────────────────────────────────────────────────────────────────────────
+
+  async setPerfilCompleted(value: boolean): Promise<void> {
+    if (!value) {
+      sessionStorage.removeItem(this.PERFIL_KEY);
+      return;
+    }
+    const secret = this.getSigningSecret();
+    if (!secret) return;
+    const sig = await hmacSign(secret, 'perfil:true');
+    sessionStorage.setItem(this.PERFIL_KEY, sig);
   }
 
-  setPerfilCompleted(value: boolean): void {
-    if (!this.isBrowser) return;
-    sessionStorage.setItem(this.PERFIL_COMPLETED_KEY, value ? 'true' : 'false');
-  }
-
-  isPerfilCompleted(): boolean {
-    if (!this.isBrowser) return false;
-    return sessionStorage.getItem(this.PERFIL_COMPLETED_KEY) === 'true';
+  async isPerfilCompleted(): Promise<boolean> {
+    const sig = sessionStorage.getItem(this.PERFIL_KEY);
+    if (!sig) return false;
+    const secret = this.getSigningSecret();
+    if (!secret) return false;
+    return hmacVerify(secret, 'perfil:true', sig);
   }
 
   clearPerfilCompleted(): void {
-    if (!this.isBrowser) return;
-    sessionStorage.removeItem(this.PERFIL_COMPLETED_KEY);
+    sessionStorage.removeItem(this.PERFIL_KEY);
   }
 
-  private removeAppSelections(): void {
-    if (!this.isBrowser) return;
-
-    const keys = [
-      'areaSeleccionada',
-      'perfilSeleccionado',
-      'perfilSeleccionadoDesc',
-      'idAreaSistemaUsuario',
-    ];
-
-    for (const k of keys) {
-      localStorage.removeItem(k);
-      sessionStorage.removeItem(k);
-    }
-  }
-
-  /**
-   * Cierra sesión completamente (borra tokens y selección).
-   */
-  logout(): void {
-    if (!this.isBrowser) return;
-
-    this.removeToken();
-    //this.removeRefreshToken();
-
-    this.clearTwoFactorValidated();
-    this.clearPerfilCompleted();
-    this.clearOneFactorValidated();
-    // this.removeAppSelections();
-
-    //  borrar usuario recordado también
-    // localStorage.removeItem('recordarUsuario');
-    // sessionStorage.removeItem('recordarUsuario');
-
-    // limpia banderas 
-    this.setValidacionCompletada(false);
-    //this.notifySessionExpired();
-
-    this.limpiarPantallas(); 
-    this.router.navigate(['/login'], { replaceUrl: true });
-   }
-
-  /**
-   * Cambiar perfil: mantiene la sesión (tokens), pero obliga a completar perfil otra vez.
-   */
-  startProfileChange(): void {
-    if (!this.isBrowser) return;
-
-    this.clearPerfilCompleted();
-    // this.removeAppSelections();
-  }
+  // ─────────────────────────────────────────────────────────────────────────
+  // DATOS DE PERFIL
+  // ─────────────────────────────────────────────────────────────────────────
 
   private readRemembered(key: string): string {
-    if (!this.isBrowser) return '';
     const recordar = localStorage.getItem('recordarUsuario') === 'true';
-    const primary = recordar ? localStorage : sessionStorage;
+    const primary  = recordar ? localStorage  : sessionStorage;
     const fallback = recordar ? sessionStorage : localStorage;
     return primary.getItem(key) ?? fallback.getItem(key) ?? '';
   }
 
-  getAbogadoNombre(): string {
-    return this.readRemembered('AbogadoNombre');
-  }
-
-  getAreaNombre(): string {
-    return this.readRemembered('AreaName');
-  }
-
-  getPerfilNombre(): string {
-    return this.readRemembered('perfilSeleccionadoDesc');
-  }
-  getSubAreaNOmbre(): string{
-    return this.readRemembered('SubAreaNombre');
-  }
+  getAbogadoNombre(): string { return this.readRemembered('AbogadoNombre'); }
+  getAreaNombre(): string    { return this.readRemembered('AreaName'); }
+  getPerfilNombre(): string  { return this.readRemembered('perfilSeleccionadoDesc'); }
+  getSubAreaNombre(): string { return this.readRemembered('SubAreaNombre'); }
 
   getAbogadoFotoUrl(): string {
-    if (!this.isBrowser) return '';
-    // foto la guardamos en sessionStorage
     const b64 = sessionStorage.getItem('AbogadoFotoBase64') ?? '';
-    if (!b64) return '';
-    // viene como JPEG base64
-    return `data:image/jpeg;base64,${b64}`;
+    return b64 ? `data:image/jpeg;base64,${b64}` : '';
   }
 
-  private storageKey = 'pantallas_usuario';
+  // ─────────────────────────────────────────────────────────────────────────
+  // LOGOUT
+  // ─────────────────────────────────────────────────────────────────────────
 
-  limpiarPantallas() {
-    localStorage.removeItem(this.storageKey);
+  logout(): void {
+    this.removeToken();
+    this.clearTwoFactorValidated();
+    this.clearPerfilCompleted();
+    this.limpiarPantallas();
+    this.router.navigate(['/login'], { replaceUrl: true });
+  }
 
+  startProfileChange(): void {
+    this.clearPerfilCompleted();
+  }
+
+  limpiarPantallas(): void {
+    localStorage.removeItem(this.PANTALLAS_KEY);
   }
 }
