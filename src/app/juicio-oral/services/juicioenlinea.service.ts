@@ -38,25 +38,25 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { TokenService } from "../../core/auth/service/token.service";
 import { checkToken } from "../../core/auth/interceptor/token.interceptor";
-
+import { environment } from "../../../environments/environment";
 @Injectable({
     providedIn: 'root' // <-- Esto lo registra en el módulo raíz
 })
 
 export class JuicioService {
 
-    private inicio = 'http://127.0.0.1:8000/api/Inicio/';
-    private firma = 'http://127.0.0.1:8000/api/VerificaFirma';
-    private catalogos = 'http://127.0.0.1:8000/api/Catalogo/';
-    private permisos = 'http://127.0.0.1:8000/api/Permisos/';
-    private requerimientos = 'http://127.0.0.1:8000/api/Requerimiento/';
-    private expediente = 'http://127.0.0.1:8000/api/Expediente/';
-    private documentos = 'http://localhost:8000/api/Documento/';
-    private tramites = 'http://127.0.0.1:8000/api/Tramites/';
-    private juzgados = 'http://127.0.0.1:8000/api/Juzgados/';
-    private remitente = 'http://127.0.0.1:8000/api/Remitentes/';
-    private audiencia = 'http://127.0.0.1:8000/api/Audiencia/'
-    private solicitud = 'http://127.0.0.1:8000/api/Solicitud/'
+    private inicio = `${environment.urlApiJuicioOral}/api/Inicio/`;
+    private firma = `${environment.urlApiJuicioOral}/api/VerificaFirma`;
+    private catalogos = `${environment.urlApiJuicioOral}/api/Catalogo/`;
+    private permisos = `${environment.urlApiJuicioOral}/api/Permisos/`;
+    private requerimientos = `${environment.urlApiJuicioOral}/api/Requerimiento/`;
+    private expediente = `${environment.urlApiJuicioOral}/api/Expediente/`;
+    private documentos = `${environment.urlApiJuicioOral}/api/Documento/`;
+    private tramites = `${environment.urlApiJuicioOral}/api/Tramites/`;
+    private juzgados = `${environment.urlApiJuicioOral}/api/Juzgados/`;
+    private remitente = `${environment.urlApiJuicioOral}/api/Remitentes/`;
+    private audiencia = `${environment.urlApiJuicioOral}/api/Audiencia/`
+    private solicitud = `${environment.urlApiJuicioOral}/api/Solicitud/`
 
 
     constructor(private http: HttpClient, private tokenService: TokenService) { }

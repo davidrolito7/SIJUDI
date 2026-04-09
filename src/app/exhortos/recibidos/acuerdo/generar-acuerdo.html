@@ -25,7 +25,7 @@
           
             @if (tienePermisoGuardar()) {
                 <div class="relative">
-                    @if ([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)) {
+                    @if ([0, 11].includes(detallesAcuerdo().generales.idEstatus )) {
                     <p-button type="button" (click)="guardarRespuestaExhorto()">
                     Guardar</p-button>
                     }
@@ -37,7 +37,7 @@
                 @if(puedeEnviarGenerales()){
                   <div class="relative">
                   <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                  @if (detallesAcuerdo()?.generales?.idEstatus === 11 ) {
+                  @if (detallesAcuerdo().generales.idEstatus === 11 ) {
                       <p-button type="button" (click)="enviarAcuerdoGenerales(this.idExhortoRecibido)"
                       ><i class="bi bi-send"></i> Enviar Generales</p-button>
                       }
@@ -47,7 +47,7 @@
               }
               @if (tienePermisoEnviarArchvios()) {
               <div class="relative">
-                  @if (detallesAcuerdo()?.generales?.idEstatus === 12) {
+                  @if (detallesAcuerdo().generales.idEstatus === 12) {
                   <p-button type="button" (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"
                       ><i class="bi bi-send"></i> Enviar Archivos</p-button>
                   }
@@ -82,14 +82,14 @@
     </div>
   </div>
 </div>
-@if(detallesAcuerdo()?.generales?.idRespuesta !== 0)
+@if(detallesAcuerdo().generales.idRespuesta !== 0)
 {
   <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
       <div class="flex items-start flex-col md:justify-between md:flex-row">
           <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
 
           <div class="flex items-center">
-            @if([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)){
+            @if([0, 11].includes(detallesAcuerdo().generales.idEstatus)){
               @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
                   <div class="relative" style="margin-right: 1rem;">
                     <p-button type="button"
@@ -201,7 +201,7 @@
                                                           icon="pi pi-file-pdf" class="mr-2" title="Descargar PDF"></p-button>
 
                                 <!--ELIMINAR DOCUMENTO-->
-                                @if([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)){ <!--//Pendiente de enviar-->
+                                @if([0, 11].includes(detallesAcuerdo().generales.idEstatus )){ <!--//Pendiente de enviar-->
                                   @if(tienePermisoEliminarArchivo()){
                                     <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                                     (click)="eliminarDocumento(documento,1,i)" ></p-button>

@@ -11,6 +11,9 @@ export const environment = {
     urlApiEfirma: 'https://api.tribunaloaxaca.gob.mx/efirma/api/efirma',
     urlApiExhortosElectronicos: "https://api.tribunaloaxaca.gob.mx/exhortoselectronicos/api",
     urlApiAmparosPJF: 'https://interconexion.tribunaloaxaca.gob.mx/Api',
-    urlApiTerminos: 'https://api.tribunaloaxaca.gob.mx/terminosApi/api'
+    urlApiTerminos: 'https://api.tribunaloaxaca.gob.mx/terminosApi/api',
     //ModuloExhortos:'Exhortos'
+
+    //* api juicio oral
+    urlApiJuicioOral: 'http://10.1.10.50:81'
 };
