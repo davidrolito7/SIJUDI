@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    DEV_SKIP_2FA: true, // false para flujo normal de 2FA
+    DEV_SKIP_2FA: false, // false para flujo normal de 2FA
     ConstantsService: {
         ruta : 'https://pruebas.tribunaloaxaca.gob.mx/permisos',
         idSistema: 4169,
@@ -14,9 +14,14 @@ export const environment = {
     urlApiTerminos: 'https://pruebas.tribunaloaxaca.gob.mx/terminosApi/api',
     //ModuloExhortos:'Exhortos'
 
-    //* api juicio oral
-    urlApiJuicioOral: 'http://10.1.10.50:81'
-    //urlApiJuicioOral:'http://127.0.0.1:8000'  
+    //* api juicio en linea
+    //urlApiJuicioOral: 'http://10.1.10.50:81',
+    urlApiJuicioOral:'http://127.0.0.1:8000',
+
+    //* api juicio oral penal
+    urlApiJuicioOralPenal:'https://pruebas.tribunaloaxaca.gob.mx/ApiJuicioOral/api/PromocionesJuicioOral'
+    //urlApiJuicioOralPenal:'https://localhost:7057/api/PromocionesJuicioOral'
+
 };
 
 

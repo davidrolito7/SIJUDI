@@ -3,13 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse, CatJuzgadoResponse, DetalleTramiteElectronicoRecibidoResponse, TramitesElectronicosRecibidosResponse, ValidarCausaResponse } from '../interface/tramites-juicio-oral.model';
 import { checkToken } from '../../core/auth/interceptor/token.interceptor';
-
+import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-   private apiUrl = 'https://pruebas.tribunaloaxaca.gob.mx/apijuiciooral/api/PromocionesJuicioOral';
- // private apiUrl = 'http://localhost:5041/api/PromocionesJuicioOral';
+  private apiUrl = environment.urlApiJuicioOralPenal;
+
   private nasApiUrl = 'https://api.tribunaloaxaca.gob.mx/NasApi/api'
   constructor(private http: HttpClient) { }
 
@@ -67,7 +67,7 @@ export class ApiService {
 
   getDocumentoNas(referencia: string): Observable<ApiResponse<any>> {
     const url = `${this.apiUrl}/DescargarArchivo/${referencia}`;
-    return this.http.get<ApiResponse<any>>(url, {context: checkToken() });
+    return this.http.get<ApiResponse<any>>(url, { context: checkToken() });
   }
 
   // endpoint para generar y descargar acuse de tramite enviado

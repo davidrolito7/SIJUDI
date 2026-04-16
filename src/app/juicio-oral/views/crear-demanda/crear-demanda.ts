@@ -28,7 +28,6 @@ import { Spinner } from "../../../shared/components/spinner/spinner";
 import { PasswordModule } from 'primeng/password';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
 @Component({
   selector: 'app-crear-demanda',
   imports: [CommonModule, FormsModule, ToastModule, SelectModule, DialogModule, ButtonModule,
@@ -69,7 +68,7 @@ export class CrearDemanda implements OnInit {
   isLoading: boolean = false;
   documentoUrl: SafeResourceUrl | null = null;
   nombre = '';
-  visibleFirma: boolean = false;
+  //visibleFirma: boolean = false;
 
   //* === FLAGS Y VARIABLES DE CONTROL ===
   formEnviado: boolean = false;
@@ -101,13 +100,14 @@ export class CrearDemanda implements OnInit {
     this.cargarCatalogoTipoPartes();
 
     this.formulario = this.fb.group({
+      cveMunicipio: [null, Validators.required],
       idCatMateria: [null, Validators.required],
       idCatTipoVia: [{ value: null, disabled: true }, Validators.required],
       descripcionDemanda: ['', [Validators.required, Validators.maxLength(250)]],
     });
 
     this.parteForm = this.fb.group({
-      idUsr: [''],
+     //// idUsr: [''],
       nombre: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoPaterno: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoMaterno: ['', [Validators.required, Validators.maxLength(100)]],
@@ -122,7 +122,7 @@ export class CrearDemanda implements OnInit {
 
     this.declaracionAnexoForm = this.fb.group({
       idCatTipoDocumento: [null, Validators.required],
-      descripcion: [''],
+      //descripcion: [''],
       cantidad: [1, [Validators.required, Validators.min(1)]],
       esValor: [false],
       valor: [null]
@@ -208,8 +208,8 @@ export class CrearDemanda implements OnInit {
     this.editandoParte = false;
     this.indiceParteEditando = -1;
     this.parteForm.reset({
-      esMenorEdad: false,
-      idUsr: ''
+      esMenorEdad: false
+     //// idUsr: ''
     });
     this.formEnviado = false;
     this.visible = true;
@@ -227,7 +227,7 @@ export class CrearDemanda implements OnInit {
 
     const nuevaParte: PartesRequest = {
       ...valores,
-      idUsr: valores.idUsr?.toString().trim() || null,
+     //// idUsr: valores.idUsr?.toString().trim() || null,
       nombre: (valores.nombre ?? '').toUpperCase(),
       apellidoPaterno: (valores.apellidoPaterno ?? '').toUpperCase(),
       apellidoMaterno: (valores.apellidoMaterno ?? '').toUpperCase(),
@@ -294,7 +294,7 @@ export class CrearDemanda implements OnInit {
     }
 
     this.visible = false;
-    this.parteForm.reset({ esMenorEdad: false, idUsr: '' });
+    this.parteForm.reset({ esMenorEdad: false });
     this.formEnviado = false;
   }
 
@@ -303,7 +303,7 @@ export class CrearDemanda implements OnInit {
     this.indiceParteEditando = index;
 
     const parte = this.listaPartes[index];
-    this.parteForm.reset({ esMenorEdad: false, idUsr: '' });
+    this.parteForm.reset({ esMenorEdad: false });
     this.parteForm.patchValue(parte);
     this.formEnviado = false;
     this.visible = true;
@@ -314,7 +314,7 @@ export class CrearDemanda implements OnInit {
   }
 
   resetParteForm() {
-    this.parteForm.reset({ esMenorEdad: false, idUsr: '' });
+    this.parteForm.reset({ esMenorEdad: false });
     this.editandoParte = false;
     this.indiceParteEditando = -1;
     this.formEnviado = false;
@@ -478,7 +478,7 @@ export class CrearDemanda implements OnInit {
     this.confirmationService.confirm({
       key: 'firma',
       target: event.target as EventTarget,
-      accept: () => this.visibleFirma = true,
+      accept: () => this.onVerificarFirma(),
       reject: () => { }
     });
   }
@@ -495,7 +495,7 @@ export class CrearDemanda implements OnInit {
     this.juicioService.verificarFirma({ password_Efirma: values.password_Efirma }).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.visibleFirma = false;
+        ////this.visibleFirma = false;
         if (response && response.success) {
           this.firmaVerificada = true;
           this.messageService.add({ severity: 'success', summary: 'Firma verificada', detail: 'La firma digital es válida.' });
@@ -506,7 +506,7 @@ export class CrearDemanda implements OnInit {
       },
       error: () => {
         this.isLoading = false;
-        this.visibleFirma = false;
+        // this.visibleFirma = false;
         this.resetFirmaForm();
       }
     });
@@ -514,7 +514,7 @@ export class CrearDemanda implements OnInit {
 
   resetFirmaForm() {
     this.firmaForm.reset();
-    this.visibleFirma = false;
+    ////this.visibleFirma = false;
     this.firmaVerificada = false;
   }
 
@@ -535,78 +535,66 @@ export class CrearDemanda implements OnInit {
       reject: () => this.limpiarTodo()
     });
   }
-
   enviarFormulario() {
     this.isLoading = true;
-
     const formValue = this.formulario.getRawValue();
-    const data = {
-      ...formValue,
-      descripcionDemanda: formValue.descripcionDemanda ? formValue.descripcionDemanda.toUpperCase() : '',
-      partes: this.listaPartes,
-      anexosDeclarados: this.anexosDeclarados,
-      documentos: this.listaAnexos
-    };
-
     const formData = new FormData();
 
+    Object.entries(formValue).forEach(([key, value]) => {
+      formData.append(key, String(value ?? ''));
+    });
+
+    // 1. Agregar campos Simples
     if (this.firmaVerificada) {
       formData.append('password_Efirma', this.firmaForm.value.password_Efirma ?? '');
     }
 
-    Object.keys(data).forEach(key => {
-      if (Array.isArray((data as any)[key])) {
-        if (key === 'partes') {
-          (data as any)[key].forEach((parte: any, index: number) => {
-            const { descripcionTipoParte, ...parteSinDescripcion } = parte;
-            Object.keys(parteSinDescripcion).forEach(subKey => {
-              if (
-                (subKey === 'apellidoPaterno' || subKey === 'apellidoMaterno' || subKey === 'idUsr') &&
-                (!parteSinDescripcion[subKey] || parteSinDescripcion[subKey].toString().trim() === '')
-              ) return;
-              formData.append(`partes[${index}][${subKey}]`, parteSinDescripcion[subKey]);
-            });
-          });
-        }
-        if (key === 'documentos') {
-          (data as any)[key].forEach((documento: any, index: number) => {
-            Object.keys(documento).forEach(subKey => {
-              if (subKey === 'documento' && documento[subKey] instanceof File) {
-                formData.append(`documentos[${index}][${subKey}]`, documento[subKey]);
-              } else if (subKey !== 'documento') {
-                formData.append(`documentos[${index}][${subKey}]`, documento[subKey] ?? '');
-              }
-            });
-          });
-        }
-        if (key === 'anexosDeclarados') {
-          (data as any)[key].forEach((anexo: any, index: number) => {
-            Object.keys(anexo).forEach(subKey => {
-              formData.append(`anexosDeclarados[${index}][${subKey}]`, anexo[subKey] ?? '');
-            });
-          });
-        }
-      } else {
-        formData.append(key, (data as any)[key]);
-      }
+
+    // 2. Mapear y agregar Partes (Limpio y fuertemente tipado)
+    this.listaPartes.forEach((parte, index) => {
+      // Definimos qué campos vacíos vamos a ignorar
+      const opcionales = ['apellidoPaterno', 'apellidoMaterno'];
+
+      Object.entries(parte).forEach(([key, value]) => {
+        // Ignorar propiedades exclusivas de UI y valores nulos/vacíos en opcionales
+        if (key === 'descripcionTipoParte') return;
+        if (opcionales.includes(key) && (!value || value.toString().trim() === '')) return;
+
+        formData.append(`partes[${index}][${key}]`, String(value));
+      });
     });
 
+    // 3. Mapear y agregar Documentos / Anexos
+    this.listaAnexos.forEach((documento, index) => {
+      Object.entries(documento).forEach(([key, value]) => {
+        formData.append(`documentos[${index}][${key}]`, value as string | Blob);
+      });
+    });
+
+    // 4. Mapear y agregar Anexos Declarados
+    this.anexosDeclarados.forEach((anexo, index) => {
+      Object.entries(anexo).forEach(([key, value]) => {
+        if (key === 'descripcion') return; // Evitamos mandar la descripción
+        formData.append(`anexosDeclarados[${index}][${key}]`, String(value ?? ''));
+      });
+    });
+
+    // 5. Enviar Petición
     this.juicioService.crearInicio(formData).subscribe({
       next: (respuesta) => {
         this.isLoading = false;
-        if (respuesta && respuesta.success) {
+        if (respuesta?.success) {
           this.folio = respuesta.data.folio;
-          const idPreregistro = respuesta.data.idPreregistro;
           this.confirmationService.confirm({
             key: 'success',
-            accept: () => this.detalle(idPreregistro),
+            accept: () => this.detalle(respuesta.data.idDemanda),
             reject: () => this.limpiarTodo()
           });
         }
       },
       error: () => {
         this.isLoading = false;
-        this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ocurrió un error' });
+        this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ocurrió un error con el servidor.' });
       }
     });
   }
@@ -614,7 +602,7 @@ export class CrearDemanda implements OnInit {
   /** Limpia todos los formularios y listas */
   limpiarTodo() {
     this.formulario.reset();
-    this.parteForm.reset({ esMenorEdad: false, idUsr: '' });
+    this.parteForm.reset({ esMenorEdad: false });
     this.firmaForm.reset();
     this.declaracionAnexoForm.reset({ cantidad: 1 });
     this.anexoForm.reset();

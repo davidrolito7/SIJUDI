@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
@@ -25,6 +25,10 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { HttpResponse } from '@angular/common/http';
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
+
+
 @Component({
   selector: 'app-crear-tramite',
   imports: [
@@ -36,7 +40,7 @@ import { HttpResponse } from '@angular/common/http';
   styleUrl: './crear-tramite.css',
   providers: [ConfirmationService]
 })
-export class CrearTramite {
+export class CrearTramite implements OnInit, AfterViewInit {
   //* === FORMULARIOS ===
   busquedaForm!: FormGroup;
   documentosForm!: FormGroup;
@@ -75,8 +79,7 @@ export class CrearTramite {
     { label: 'CUADERNO DE EJECUCIÓN', value: 47 },
   ];
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
+    // Al inicializar, creamos los formularios:
 
     this.busquedaForm = this.fb.group({
       idCatTipoTramite: [null, Validators.required],
@@ -87,6 +90,13 @@ export class CrearTramite {
     this.documentosForm = this.fb.group({
       observaciones: ['', [Validators.required, Validators.maxLength(450)]]
     });
+  }
+
+  ngAfterViewInit(): void {
+    // Retrasamos un poco la ejecución para asegurar que la vista esté completamente renderizada.
+    setTimeout(() => {
+      this.startTutorial();
+    }, 100);
   }
 
   cargarCatalogoJuzgados(idCatTipoTramite: number | null) {
@@ -124,6 +134,10 @@ export class CrearTramite {
         if (response.success) {
           this.causaValidada = response.data;
           this.mostrarAddDocumentos.set(true);
+
+          setTimeout(() => {
+            this.startTutorialPostValidacion();
+          }, 200);
         } else {
           this.confirmationService.confirm({
             key: 'info',
@@ -233,7 +247,7 @@ export class CrearTramite {
       idCatTipoTramite: null,
       numeroExpediente: '',
       idJuzgado: null,
-      idPantalla: 1    
+      idPantalla: 1
     });
     this.documentosForm.reset();
     this.documentosAnexados = [];
@@ -260,5 +274,39 @@ export class CrearTramite {
         },
         error: () => console.error('Error al descargar el acuse')
       });
+  }
+
+  startTutorialPostValidacion() {
+    const driverObj = driver({
+      nextBtnText: 'Siguiente',
+      prevBtnText: 'Atrás',
+      doneBtnText: 'Finalizar',
+      showProgress: true,
+      showButtons: ['next', 'previous'],
+      steps: [
+        { element: '#fileUpload', popover: { title: 'Adjuntar Archivos', description: 'Haz clic aquí para cargar los documentos requeridos en formato PDF.', side: "bottom", align: 'start' } },
+        { element: '#observaciones', popover: { title: 'Observaciones', description: 'Escribe aquí cualquier observación o comentario sobre el trámite.', side: "top", align: 'start' } },
+      ]
+    });
+
+    driverObj.drive();
+  }
+
+  startTutorial() {
+    const driverObj = driver({
+      nextBtnText: 'Siguiente',
+      prevBtnText: 'Atrás',
+      doneBtnText: 'Finalizar',
+      showProgress: true,
+      showButtons: ['next', 'previous'],
+      steps: [
+        { element: '#tipoTramite', popover: { title: 'Selecciona un tipo de trámite', description: 'Haz clic aquí y elige el tipo de trámite que deseas crear.', side: "left", align: 'start' } },
+        { element: '#numeroExpediente', popover: { title: 'Ingresa el número de expediente', description: 'Escribe el número de expediente correspondiente.', side: "left", align: 'start' } },
+        { element: '#juzgado', popover: { title: 'Selecciona un juzgado', description: 'Elige el juzgado donde se presentará el trámite.', side: "bottom", align: 'start' } },
+        { element: '#botonBuscar', popover: { title: 'Buscar', description: 'Presiona este botón para validar la causa.', side: "left", align: 'start' } },
+      ]
+    });
+
+    driverObj.drive();
   }
 }

@@ -9,7 +9,7 @@ export interface ApiResponse<T> {
     pagination?: Pagination;
 
 }
-export interface Pagination {   
+export interface Pagination {
     current_page: number;
     per_page: number;
     total: number;
@@ -19,7 +19,7 @@ export interface Pagination {
 // LISTADO DE PREREGISTROS RESPONSE  //http://127.0.0.1:8000/api/Inicio/ListadoPreregistros
 
 export interface ListadoDemandasResponse { //* OK
-    idPreregistro: number;
+    idDemanda: number;
     folio: string;
     //sintesis: string;
     fechaHoraRecepcion: string;
@@ -40,30 +40,24 @@ export interface CatTipoVia {
     idCatTipoVia: number;
     descripcion: string;
 }
-export interface CatTipoDocumento { //* OK
-    idCatTipoDocumento: number;
-    nombre: string;
-    activo: string;
-    descripcion: string
 
-}
 
 //########################################################################
-// DETALLE DE PREREGISTROS RESPONSE   //http://127.0.0.1:8000/api/Inicio/DetallePreregistro/{idPreregistro}
+// DETALLE DE PREREGISTROS RESPONSE   //http://127.0.0.1:8000/api/Inicio/DetallePreregistro/{idDemanda}
 
 export interface DetalleDemandaResponse {  //* OK
     idExpediente: number;
     NumExpediente: string;
     idCatJuzgado: string;
     fechaResponse: string;
-    idPreregistro: string;
+    idDemanda: string;
     idSecretario: string;
     numSecretaria: string;
     juzgado: Juzgado;
     demanda: DemandaResponse;
 }
 export interface DemandaResponse {
-    idPreregistro: number;
+    idDemanda: number;
     folio: string;
     idCatViaMateria: number;
     sintesis: string;
@@ -71,35 +65,48 @@ export interface DemandaResponse {
     descripcionDemanda: string;
     idGeneral: string;
     partes: Partes[];
+    anexos_declarados: AnexosDeclarados[];
     documentos: Documentos[];
     cat_via_materia: CatMateriaVia;
     ultimo_estado: HistorialEstado;
-    tipo: string;
-    cat_tipo_parte: CatTipoPartes;
+    //tipo: string;
 }
 
 export interface Partes { //* OK
     idParte: number;
-    idPreregistro: number;
-    idUsr: number | null;
+    idDemanda: number;
+    idCatTipoParte: number;
     nombre: string;
     apellidoMaterno: string;
     apellidoPaterno: string;
     direccion: string;
+    menorEdad: boolean;
+    curp: string;
+    idCatSexo: number;
     correo: string;
     correoAlterno?: string;
-    idCatSexo: number;
-    sexoDescripcion: string;
-    idCatTipoParte: number;
-    tipoParteDescripcion: string;
     cat_tipo_parte: CatTipoPartes;
+}
+export interface AnexosDeclarados {
+    idAnexoDeclarado: number;
+    idDemanda: number;
+    idCatTipoDocumento: number;
+    cantidad: number;
+    valor: number;
+    created_at: string;
+    updated_at: string;
+    cat_tipo_documento: CatTipoDocumento;
+}
+export interface CatTipoDocumento { //* OK
+    idCatTipoDocumento: number;
+    nombre: string;
+    activo: string;
+    descripcion: string
 
 }
-
-
 export interface Documentos { //* OK
     idDocumento: number;
-    idPreregistro: number;
+    idDemanda: number;
     idCatTipoDocumento: number | null;
     nombre: string;
     folio: string;
@@ -107,7 +114,8 @@ export interface Documentos { //* OK
     montoAnexo: number | null;
     created_at: string;
     updated_at: string;
-    cat_tipo_documento: CatTipoDocumento;
+    //cat_tipo_documento: CatTipoDocumento;
+    cat_sexo: CatSexos;
 }
 export interface CatMateriaVia { //* OK
     idCatMateriaVia: number;
@@ -139,12 +147,11 @@ export interface CatMunicipios { //* OK
 }
 export interface HistorialEstado { //* OK
     descripcion: any;
-    idPreregistro: number;
+    idDemanda: number;
     idCatEstadoInicio: number;
     fechaEstado: string;
     estado: Estado;
 }
-
 export interface Estado { //* OK
     idCatEstadoInicio: number;
     descripcion: string;
@@ -162,16 +169,16 @@ export interface DocumentoResponse {  //! QUITAR
 //########################################################################
 // CREAR DE PREREGISTRO REQUEST  //http://127.0.0.1:8000/api/Inicio/CrearPreregistro
 
-export interface DetalleInicioRequest {
-    idCatMateria: number;
-    idCatTipoVia: number;
-    descripcionDemanda: string;
-    partes: PartesRequest[];
-    documentos: DocumentosRequest[];
-}
+// export interface DetalleDemandaRequest {
+//     idCatMateria: number;
+//     idCatTipoVia: number;
+//     descripcionDemanda: string;
+//     partes: PartesRequest[];
+//     documentos: DocumentosRequest[];
+// }
 
 export interface PartesRequest { //* OK 
-    idUsr: string | null;
+   //// idUsr: string | null;
     nombre: string;
     apellidoMaterno?: string;
     apellidoPaterno: string;
@@ -188,7 +195,7 @@ export interface PartesRequest { //* OK
 }
 export interface AnexosDelcaradosRequest {
     idCatTipoDocumento: number;
-    descripcion: string;
+    descripcion?: string;
     cantidad: number;
     valor?: number;
 
@@ -224,7 +231,7 @@ export interface CatTipoDocumento {
 
 //REPONSE DE CREAR PREREGISTRO
 export interface PreregistroCreadoResponse {
-    idPreregistro: number;
+    idDemanda: number;
     folio: string;
 }
 //REPONSE DE DATOS PARA PARTES PREREGISTRO
@@ -250,7 +257,7 @@ export interface ListarExpedientesResponse {
     NumExpediente: string;
     idCatJuzgado: string;
     fechaResponse: string;
-    idPreregistro: string;
+    idDemanda: string;
     idSecretario: string;
     numSecretaria: string;
     tramites: DetalleTramites[];
@@ -370,7 +377,7 @@ export interface DetalleExpedienteResponse { //* OK
     NumExpediente: string;
     idCatJuzgado: string;
     fechaResponse: string;
-    idPreregistro: string;
+    idDemanda: string;
     idSecretario: string;
     numSecretaria: string;
     juzgado: Juzgado;
@@ -398,7 +405,7 @@ export interface UsuarioPermisosResponse {
 
 export interface PartesAudiencia {
     idParte?: string;
-    idPreregistro?: string;
+    idDemanda?: string;
     idUsr: number | null;
     idGeneral?: number;
     nombre: string;

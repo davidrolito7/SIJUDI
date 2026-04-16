@@ -91,6 +91,8 @@ export class ListarDemanda implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
+        private messageService: MessageService
+
   ) { }
 
   // ============================
@@ -153,8 +155,12 @@ export class ListarDemanda implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
-        console.error('Error:', error);
         this.cdr.markForCheck();
+        this.messageService.add({
+            severity: 'info',
+            summary: 'Lo sentimos',
+            detail: error.error?.message || 'Error al conectar con el servidor'
+          });
       },
     });
   }
@@ -222,8 +228,8 @@ export class ListarDemanda implements OnInit {
   }
 
   getEstadoId(inicio: unknown): number | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { estado?: { idCatEstadoInicio?: number } } } };
-    return i.demanda?.ultimo_estado?.estado?.idCatEstadoInicio ?? null;
+    const i = inicio as { demanda?: { ultimo_estado?: { estado?: { idCatEstadoDemanda?: number } } } };
+    return i.demanda?.ultimo_estado?.estado?.idCatEstadoDemanda ?? null;
   }
 
   getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
@@ -236,7 +242,7 @@ export class ListarDemanda implements OnInit {
       case 3:
         return { severity: 'success', icon: 'pi pi-check' };
       default:
-        return { severity: 'secondary' };
+        return { severity: 'secondary', icon: 'pi pi-question' };
     }
   }
   asExpediente(row: unknown): ListarExpedientesResponse {

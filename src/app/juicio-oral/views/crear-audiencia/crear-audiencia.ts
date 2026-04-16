@@ -179,7 +179,7 @@ export class CrearAudiencia {
         // Mapea cada parte del backend a PartesRequest
         this.listaPartes.set(response.data.map(parte => ({
           idParte: parte.idParte,
-          idPreregistro: parte.idPreregistro,
+          idDemanda: parte.idDemanda,
           idUsr: parte.idUsr,
           nombre: parte.nombre,
           apellidoPaterno: '', // Si no viene, déjalo vacío
