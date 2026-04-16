@@ -73,8 +73,8 @@ export class Perfil {
 
   recordar = false;
 
-  readonly abogadoNombre     = signal<string>('');
-  readonly abogadoFotoBase64 = signal<string>('');
+  readonly abogadoNombre     = signal<string>(sessionStorage.getItem('AbogadoNombre') ?? localStorage.getItem('AbogadoNombre') ?? '');
+  readonly abogadoFotoBase64 = signal<string>(sessionStorage.getItem('AbogadoFotoBase64') ?? '');
 
   readonly canContinue = computed(
     () => this.areaSeleccionada() > 0 && this.perfilSeleccionado() > 0 && this.subAreaId() > 0
@@ -132,10 +132,10 @@ export class Perfil {
     }
 
     const request = {
-      idSistema: SISTEMA_ID,
-      idArea: this.areaSeleccionada(),
+      idSistema:       SISTEMA_ID,
+      idArea:          this.areaSeleccionada(),
       idSistemaPerfil: this.perfilSeleccionado(),
-      idSubArea: this.subAreaId(),
+      idSubArea:       this.subAreaId(),
     };
 
     this.authService.postLoginContexto(request, this.recordar).subscribe({
@@ -151,7 +151,6 @@ export class Perfil {
 
         this.guardarContextoStorage();
 
-        // Re-firma ambos HMACs con el nuevo token emitido por postLoginContexto
         await this.tokenService.setTwoFactorValidated(true);
         await this.tokenService.setPerfilCompleted(true);
 
@@ -200,7 +199,6 @@ export class Perfil {
     store.setItem('perfilSeleccionado',     String(this.perfilSeleccionado()));
     store.setItem('perfilSeleccionadoDesc', this.perfilNombreSeleccionado());
     store.setItem('idAreaSistemaUsuario',   String(this.idAreaSistemaUsuario()));
-    store.setItem('SubAreaId',              String(this.subAreaId()));
     store.setItem('SubAreaNombre',          this.subAreaNombre());
 
     const areaObj = this.listaAreas().find(a => a.idArea === this.areaSeleccionada());
@@ -211,7 +209,7 @@ export class Perfil {
     const toRemove = [
       'areaSeleccionada', 'perfilSeleccionado', 'perfilSeleccionadoDesc',
       'idAreaSistemaUsuario', 'AreaName', 'AreaBd', 'AbogadoNombre',
-      'pantallas_usuario', 'SubAreaId', 'SubAreaNombre',
+      'pantallas_usuario', 'SubAreaNombre',
     ];
     toRemove.forEach(k => other.removeItem(k));
     localStorage.removeItem('AbogadoFotoBase64');
@@ -228,16 +226,17 @@ export class Perfil {
 
   private loadUserAndAreas(restoreAreaId: number, restorePerfilId: number, restoreSubAreaId: number): void {
     const user = this.tokenService.getUserFromToken();
-    if (!user?.Usr) {
+    if (!user?.idGeneral) {
       this.messageService.add({ severity: 'error', summary: 'Sesión inválida', detail: 'No se pudo obtener el usuario desde el token.' });
       return;
     }
 
     this.isLoading.set(true);
 
-    this.authService.obtenerDatosUsuario(user.Usr).pipe(
+    this.authService.obtenerDatosUsuario(user.idGeneral).pipe(
       tap(resp => {
         const abogado = resp.data?.pD_Abogados?.[0];
+        // Solo actualizamos signals; el storage ya viene de login2fase
         this.abogadoNombre.set((abogado?.nombre ?? '').toString().trim());
         this.abogadoFotoBase64.set((abogado?.foto ?? '').toString().trim());
       }),
@@ -267,7 +266,7 @@ export class Perfil {
       }),
       tap(subareas => {
         this.subAreas.set(subareas);
-        const validSubArea = restoreSubAreaId > 0 && subareas.some(sa => sa.idSubArea === this.subAreaId());
+        const validSubArea = restoreSubAreaId > 0 && subareas.some(sa => sa.idSubArea === restoreSubAreaId);
         this.subAreaId.set(validSubArea ? restoreSubAreaId : 0);
         const area = this.subAreas().find(f => f.idSubArea === this.subAreaId());
         this.subAreaNombre.set(area?.descripcion ?? '');
@@ -354,10 +353,10 @@ export class Perfil {
     const primary  = recordar ? localStorage  : sessionStorage;
     const fallback = recordar ? sessionStorage : localStorage;
 
-    const areaId    = this.readNumber(primary, 'areaSeleccionada')  || this.readNumber(fallback, 'areaSeleccionada');
-    const perfilId  = this.readNumber(primary, 'perfilSeleccionado') || this.readNumber(fallback, 'perfilSeleccionado');
+    const areaId     = this.readNumber(primary, 'areaSeleccionada')  || this.readNumber(fallback, 'areaSeleccionada');
+    const perfilId   = this.readNumber(primary, 'perfilSeleccionado') || this.readNumber(fallback, 'perfilSeleccionado');
     const perfilDesc = primary.getItem('perfilSeleccionadoDesc') ?? fallback.getItem('perfilSeleccionadoDesc') ?? '';
-    const subAreaId = this.readNumber(primary, 'SubAreaId') || this.readNumber(fallback, 'SubAreaId');
+    const subAreaId  = this.readNumber(primary, 'SubAreaId') || this.readNumber(fallback, 'SubAreaId');
 
     return { recordar, areaId, perfilId, perfilDesc, subAreaId };
   }

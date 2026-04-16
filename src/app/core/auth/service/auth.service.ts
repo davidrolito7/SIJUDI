@@ -94,7 +94,7 @@ export class AuthService {
   //2= por folio rune
   //3= por codigo llave
   //4= por numero de empleado
-  obtenerDatosUsuario(idUsuario: string, tipoBusqueda: number = 4): Observable<any> {
+  obtenerDatosUsuario(idUsuario: string, tipoBusqueda: number = 1): Observable<any> {
     const url = `${this.constService.ruta}/api/Permisos/DatosUsuario?Usuario=${idUsuario}&TipoBusqueda=${tipoBusqueda}`;
 
     //const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');

@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, DestroyRef } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { Router } from '@angular/router';
@@ -18,6 +18,15 @@ import { TokenService } from '../../service/token.service';
 import { MessageService } from 'primeng/api';
 import { twoAccess } from '../../interface/login.interfaces';
 import { Spinner } from '../../../../shared/components/spinner/spinner';
+import { UserMenuStore } from '../../../layout/siderbar/user-menu.store';
+import { PantallasService } from '../../../../juicio-oral/services/pantallas.service';
+import { catchError, map, of, switchMap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+const SISTEMA_ID = 4169;
+const AREA_ID = 2037;
+const PERFIL_ID = 7241;
+const SUBAREA_ID = 1007;
 
 @Component({
   selector: 'app-login2',
@@ -33,10 +42,10 @@ import { Spinner } from '../../../../shared/components/spinner/spinner';
 export class Login2 implements OnInit {
 
   llavePrivadaForm!: FormGroup;
-  llaveFile: File | null  = null;
+  llaveFile: File | null = null;
   objectTwoAccess: twoAccess | null = null;
-  codigo: string   = '';
-  qrData: string   = '';
+  codigo: string = '';
+  qrData: string = '';
   visible: boolean = false;
   isLoading: boolean = false;
   step: 1 | 2 = 1;
@@ -47,14 +56,193 @@ export class Login2 implements OnInit {
     private tokenService: TokenService,
     private mensaje: MessageService,
     private fb: FormBuilder,
-    private cd: ChangeDetectorRef
-  ) {}
+    private cd: ChangeDetectorRef,
+    private menuStore: UserMenuStore,
+    private pantallasService: PantallasService,
+    private destroyRef: DestroyRef,
+
+
+  ) { }
 
   ngOnInit() {
     this.getGoogle();
     this.llavePrivadaForm = this.fb.group({
       password: ['', Validators.required],
     });
+  }
+
+  loginOptions = [
+    { label: 'Google Authenticator', value: 1 },
+    { label: 'Llave Privada', value: 2 },
+  ];
+
+  // ─ 0.o ─ Post 2FA: checa tipo persona y decide flujo ──────
+
+  private async handlePostTwoFactor(): Promise<void> {
+    const user = this.tokenService.getUserFromToken();
+
+    if (!user?.idGeneral) {
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'No se pudo obtener el usuario desde el token.', life: 3000 });
+      this.isLoading = false;
+      this.cd.detectChanges();
+      return;
+    }
+
+    this.authService.obtenerDatosUsuario(user.idGeneral).subscribe({
+      next: async (resp) => {
+        const abogado = resp.data?.pD_Abogados?.[0];
+        const idTipoPersona = abogado?.idTipoPersona ?? null;
+        const nombre = (abogado?.nombre ?? '').toString().trim();
+        const foto = (abogado?.foto ?? '').toString().trim();
+
+        sessionStorage.setItem('AbogadoNombre', nombre);
+        sessionStorage.setItem('AbogadoFotoBase64', foto);
+
+        if (idTipoPersona === 1) {
+          this.loginContextoAutomatico(nombre, foto);
+        } else {
+          await this.tokenService.setTwoFactorValidated(true);
+          const ok = await this.tokenService.isTwoFactorValidated();
+          if (ok) {
+            this.router.navigate(['/perfil']);
+          } else {
+            this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar la sesión, intente de nuevo.', life: 3000 });
+          }
+        }
+      },
+      error: () => {
+        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener datos del usuario.', life: 3000 });
+        this.isLoading = false;
+        this.cd.detectChanges();
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cd.detectChanges();
+      },
+    });
+  }
+
+  // ─ 0.o ─ Login contexto, se agregan los valores fijos de área, perfil y subárea 
+
+  private loginContextoAutomatico(nombre: string, foto: string): void {
+    const user = this.tokenService.getUserFromToken();
+    const idG = user?.idGeneral ?? 0;
+
+    if (!idG) {
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'No se pudo obtener el identificador del usuario.', life: 3000 });
+      return;
+    }
+
+    // Obtener nombre del área
+    this.authService.getAreas(SISTEMA_ID, idG).pipe(
+      map(r => (r.data ?? []) as any[]),
+      switchMap(areas => {
+        const area = areas.find(a => a.idArea === AREA_ID);
+        const areaName = area?.area ?? '';
+        const idAreaSistema = area?.idAreaSistema ?? 0;
+
+        return this.authService.obtenerIdAreaSistemaUsuario(idG, SISTEMA_ID, AREA_ID).pipe(
+          map(r => r.data?.idAreaSistemaUsuario ?? 0),
+          switchMap(idAreaSistemaUsuario => {
+            if (!idAreaSistemaUsuario) return of(null);
+
+            return this.authService.GetPerfiles(idAreaSistemaUsuario).pipe(
+              map((r: any) => {
+                const perfiles = r.data ?? [];
+                const perfil = perfiles.find((p: any) => p.idSistemaPerfil === PERFIL_ID);
+                const perfilDesc = perfil?.descripcion ?? '';
+
+                return this.authService.getSubAreas(idAreaSistema, idG).pipe(
+                  map((rs: any) => {
+                    const subAreas = rs.data ?? [];
+                    const subArea = subAreas.find((s: any) => s.idSubArea === SUBAREA_ID);
+                    const subAreaNombre = subArea?.descripcion ?? '';
+
+                    return { idAreaSistemaUsuario, areaName, perfilDesc, subAreaNombre };
+                  })
+                );
+              }),
+              switchMap(obs => obs)
+            );
+          })
+        );
+      }),
+      switchMap(ctx => {
+        if (!ctx) return of(null);
+
+        const request = {
+          idSistema: SISTEMA_ID,
+          idArea: AREA_ID,
+          idSistemaPerfil: PERFIL_ID,
+          idSubArea: SUBAREA_ID,
+        };
+
+        return this.authService.postLoginContexto(request, false).pipe(
+          map(response => ({ response, ...ctx }))
+        );
+      }),
+      catchError(() => {
+        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al preparar el contexto de sesión.', life: 3000 });
+        return of(null);
+      }),
+    ).subscribe({
+      next: async (result) => {
+        if (!result || !result.response?.success) {
+          this.mensaje.add({ severity: 'error', summary: 'Acceso denegado', detail: result?.response?.message ?? 'No se puede continuar.', life: 3000 });
+          return;
+        }
+
+        const { idAreaSistemaUsuario, areaName, perfilDesc, subAreaNombre } = result;
+        this.guardarContextoStorage(nombre, foto, idAreaSistemaUsuario, areaName, perfilDesc, subAreaNombre);
+
+        await this.tokenService.setTwoFactorValidated(true);
+        await this.tokenService.setPerfilCompleted(true);
+
+        const perfilOk = await this.tokenService.isPerfilCompleted();
+        if (!perfilOk) {
+          this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar la sesión, intente de nuevo.', life: 3000 });
+          return;
+        }
+
+        this.pantallasService.limpiarPantallas();
+
+        this.menuStore.refresh()
+          .pipe(
+            catchError(() => of([])),
+            takeUntilDestroyed(this.destroyRef)
+          )
+          .subscribe(() => {
+            this.router.navigate(['/home'], { replaceUrl: true });
+          });
+      },
+    });
+  }
+
+  private guardarContextoStorage(
+    nombre: string,
+    foto: string,
+    idAreaSistemaUsuario: number,
+    areaName: string,
+    perfilDesc: string,
+    subAreaNombre: string,
+  ): void {
+    localStorage.setItem('recordarUsuario', 'false');
+
+    sessionStorage.setItem('areaSeleccionada', String(AREA_ID));
+    sessionStorage.setItem('perfilSeleccionado', String(PERFIL_ID));
+    sessionStorage.setItem('perfilSeleccionadoDesc', perfilDesc);
+    sessionStorage.setItem('idAreaSistemaUsuario', String(idAreaSistemaUsuario));
+    sessionStorage.setItem('SubAreaNombre', subAreaNombre);
+    sessionStorage.setItem('AreaName', areaName);
+    sessionStorage.setItem('AbogadoNombre', nombre);
+    sessionStorage.setItem('AbogadoFotoBase64', foto);
+
+    const toRemove = [
+      'areaSeleccionada', 'perfilSeleccionado', 'perfilSeleccionadoDesc',
+      'idAreaSistemaUsuario', 'AreaName', 'AreaBd', 'AbogadoNombre',
+      'pantallas_usuario', 'SubAreaNombre', 'AbogadoFotoBase64',
+    ];
+    toRemove.forEach(k => localStorage.removeItem(k));
   }
 
   // ── Validar código Authenticator ─────────────────────────────────────────
@@ -71,16 +259,11 @@ export class Login2 implements OnInit {
     this.authService.postSendTwoFactorCodeAuthenticator(this.codigo).subscribe({
       next: async (response) => {
         if (response.success) {
-          await this.tokenService.setTwoFactorValidated(true);
-          // Confirma que quedó guardado antes de navegar
-          const ok = await this.tokenService.isTwoFactorValidated();
-          if (ok) {
-            this.router.navigate(['/perfil']);
-          } else {
-            this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar la sesión, intente de nuevo.', life: 3000 });
-          }
+          await this.handlePostTwoFactor();
         } else {
           this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Código incorrecto.', life: 3000 });
+          this.isLoading = false;
+          this.cd.detectChanges();
         }
       },
       error: () => {
@@ -88,17 +271,8 @@ export class Login2 implements OnInit {
         this.isLoading = false;
         this.cd.detectChanges();
       },
-      complete: () => {
-        this.isLoading = false;
-        this.cd.detectChanges();
-      },
     });
   }
-
-  loginOptions = [
-    { label: 'Google Authenticator', value: 1 },
-    { label: 'Llave Privada',        value: 2 },
-  ];
 
   // ── Obtener datos 2FA ────────────────────────────────────────────────────
 
@@ -112,7 +286,6 @@ export class Login2 implements OnInit {
           this.objectTwoAccess = response.data;
           this.objectTwoAccess!.encodedSecret ??= '';
           this.qrData = `otpauth://totp/Oaxaca-TV-${this.objectTwoAccess!.user}?secret=${this.objectTwoAccess!.encodedSecret}`;
-          this.step = 2;
           this.step = 1;
         } else {
           this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'No se pudo obtener la configuración 2FA.', life: 3000 });
@@ -161,23 +334,15 @@ export class Login2 implements OnInit {
     this.authService.postValidaPrivateKey(formData, password).subscribe({
       next: async (response) => {
         if (response.success) {
-          await this.tokenService.setTwoFactorValidated(true);
-          const ok = await this.tokenService.isTwoFactorValidated();
-          if (ok) {
-            this.router.navigate(['/perfil']);
-          } else {
-            this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar la sesión, intente de nuevo.', life: 3000 });
-          }
+          await this.handlePostTwoFactor();
         } else {
           this.mensaje.add({ severity: 'error', summary: 'Error', detail: response.message || 'Llave privada o contraseña incorrectas.', life: 3000 });
+          this.isLoading = false;
+          this.cd.detectChanges();
         }
       },
       error: () => {
         this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al validar la llave privada.', life: 3000 });
-        this.isLoading = false;
-        this.cd.detectChanges();
-      },
-      complete: () => {
         this.isLoading = false;
         this.cd.detectChanges();
       },
