@@ -87,7 +87,7 @@ export class Acuerdo {
   // ─── IDs ───────────────────────────────────────────────────────────────────
 
   idNotificacion: number = 0;
-  idRespuesta: number = 0;
+  idRespuesta = signal<number>(0);
 
   // ─── Signals ───────────────────────────────────────────────────────────────
 
@@ -142,7 +142,7 @@ export class Acuerdo {
       this.idNotificacion = state.idNotificacion;
 
       if (state.idRespuesta !== undefined) {
-        this.idRespuesta = state.idRespuesta;
+        this.idRespuesta.set(state.idRespuesta);
         this.cargarPromocion();
       } else {
         console.log(`Modo Creación: idNotificacion = ${this.idNotificacion}`);
@@ -177,7 +177,7 @@ export class Acuerdo {
       direccionCtrl?.updateValueAndValidity();
     });
 
-    if (this.acuerdoForm.valid && this.idRespuesta !== 0) {
+    if (this.acuerdoForm.valid && this.idRespuesta() !== 0) {
       this.actualizarPromocion();
     } else if (this.acuerdoForm.valid) {
       this.guardarPromocion();
@@ -192,7 +192,8 @@ export class Acuerdo {
   guardarPromocion() {
     const promocion: PromocionGeneralesRequest = {
       idNotificacion: this.idNotificacion,
-      organoImpartidorJusticia: this.acuerdoForm.value.organoDestino?.clave ?? 0,
+      idCatJuzgado: this.acuerdoForm.value.organoDestino?.idCatJuzgado ?? 0,
+      organoImpartidorJusticia: this.acuerdoForm.value.organoDestino?.cveJuzgado ?? 0,
       numeroExpedienteOIJ: this.acuerdoForm.value.noExpediente ?? '',
       existeEE: this.acuerdoForm.value.expDigital ?? false,
       urlEE: this.acuerdoForm.value.expDigital ? this.acuerdoForm.value.direccionExpediente ?? null : null,
@@ -214,7 +215,7 @@ export class Acuerdo {
             key: 'responsePromocion',
             header: 'Promoción Guardada',
           });
-          this.idRespuesta = response.message;
+          this.idRespuesta.set(response.message);
         } else {
           this.messageService.add({ severity: 'warn', summary: 'Error', detail: response.message });
         }
@@ -234,8 +235,9 @@ export class Acuerdo {
 
   actualizarPromocion() {
     const promocion: PromocionGeneralesUpdate = {
-      idRespuesta: this.idRespuesta,
-      organoImpartidorJusticia: this.acuerdoForm.value.organoDestino?.clave ?? 0,
+      idRespuesta: this.idRespuesta(),
+      idCatJuzgado: this.acuerdoForm.value.organoDestino?.idCatJuzgado ?? 0,
+      organoImpartidorJusticia: this.acuerdoForm.value.organoDestino?.cveJuzgado ?? 0,
       numeroExpedienteOIJ: this.acuerdoForm.value.noExpediente ?? '',
       existeEE: this.acuerdoForm.value.expDigital ?? false,
       urlEE: this.acuerdoForm.value.expDigital ? this.acuerdoForm.value.direccionExpediente ?? null : null,
@@ -286,7 +288,7 @@ export class Acuerdo {
     this.isLoading = true;
     this.cd.detectChanges();
 
-    this.amparosService.enviarPromocion(this.idRespuesta).subscribe({
+    this.amparosService.enviarPromocion(this.idRespuesta()).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Promoción enviada exitosamente' });
@@ -350,7 +352,7 @@ export class Acuerdo {
       const param: guardaFirmaTmpRequest = {
         idUsuario: Usuario.idGeneral,
         idArchivo: archivo.idArchivo,
-        idClasificacionArchivo: archivo.clasificacionArchivo?.idClasificacionArchivo ?? 0,
+        //idClasificacionArchivo: archivo.clasificacionArchivo?.idClasificacionArchivo ?? 0,
         passwordFirma: this.formularioFirma.value.password as string,
       };
 
@@ -432,6 +434,7 @@ export class Acuerdo {
   finalizarFirma(): void {
     this.firmaDialog = false;
     this.formularioFirma.reset();
+    this.seleccionadosParaFirma.set(false);
     this.isLoading = false;
     this.cd.detectChanges();
     this.cargarPromocion(); // Recarga para mostrar firmantes actualizados en la tabla
@@ -528,10 +531,10 @@ export class Acuerdo {
   guardarDocumento(file: File) {
     const tipoDocId = Number(this.doctosForm.value.clasificacion?.idClasificacionArchivo);
 
-    if (!tipoDocId || tipoDocId === 0) {
+    /*if (!tipoDocId || tipoDocId === 0) {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Seleccione una clasificación de archivo' });
       return;
-    }
+    }*/
 
     const tipoSeleccionado = this.catalogo().find(doc => doc.idClasificacionArchivo === tipoDocId);
     if (!tipoSeleccionado) {
@@ -545,7 +548,7 @@ export class Acuerdo {
     }
 
     const formData = new FormData();
-    formData.append('idPromocion', this.idRespuesta.toString());
+    formData.append('idPromocion', this.idRespuesta().toString());
     formData.append('archivo', file, file.name);
     formData.append('clasificacionArchivo', this.doctosForm.value.clasificacion?.idClasificacionArchivo.toString() ?? '0');
 
@@ -584,7 +587,7 @@ export class Acuerdo {
 
       const nuevo: PromocionDocumentos = {
         idArchivo: 0,
-        idRespuesta: this.idRespuesta ?? 0,
+        idRespuesta: this.idRespuesta() ?? 0,
         nombreDocumento: file.name,
         clasificacionArchivo: null as any,
         longitud: file.size ?? 0,
@@ -801,13 +804,13 @@ export class Acuerdo {
       this.isLoading = true;
       this.cd.detectChanges();
 
-      this.amparosService.getPromocionDetalles(this.idNotificacion, this.idRespuesta).subscribe({
+      this.amparosService.getPromocionDetalles(this.idNotificacion, this.idRespuesta()).subscribe({
         next: (response: any) => {
           if (response && response.success) {
             this.promocion.set(response.data.length > 0 ? response.data[0] : null);
 
             if (this.promocion()) {
-              const organoSelect = this.organo().find(o => o.clave === this.promocion()?.organoImpartidorJusticia.clave) || null;
+              const organoSelect = this.organo().find(o => o.cveJuzgado === this.promocion()?.organoImpartidorJusticia.cveJuzgado) || null;
               this.acuerdoForm.patchValue({ organoDestino: organoSelect });
               this.acuerdoForm.patchValue({ noExpediente: this.promocion()?.numeroExpedienteOIJ ?? '' });
               this.acuerdoForm.patchValue({ expDigital: this.promocion()?.existeEE ?? false });
@@ -819,7 +822,7 @@ export class Acuerdo {
               ) || null;
               this.acuerdoForm.patchValue({ cuaderno: cuadernoMatch });
 
-              this.idRespuesta = this.promocion()?.idRespuesta ?? 0;
+              this.idRespuesta.set(this.promocion()?.idRespuesta ?? 0);
               this.idEstatus = this.promocion()?.estatus.idEstatus ?? 0;
 
               this.verificarArchivosFirmados();

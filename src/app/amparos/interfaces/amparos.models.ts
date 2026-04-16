@@ -18,6 +18,7 @@ export interface UI_ParamlistadoAmparosRecibidosRequest{
     fechaIni?:Date;
     fechaFin?:Date;
     perfil:string;
+    idAreaAdminAplicaciones:number;
 }
 export interface catalogoEstatus{
     idEstatus:number;
@@ -109,6 +110,9 @@ export interface documentos {
 }
 export interface verMovimientosResponse {
     idNotificacion:number;
+    cargoTurna:string;
+    idUsuarioTurna:number;
+    nombreUsuarioTurna:string;
     fechaTurnado: Date,
     idUsuarioRecibe: number,
     nombreUsuarioRecibe: string,
@@ -174,6 +178,7 @@ export interface Firmantes{
 //https://interconexion.tribunaloaxaca.gob.mx/api/Promocion/GuardarRespuestaNotificacion
 export interface PromocionGeneralesRequest {
     idNotificacion: number;
+    idCatJuzgado:number;
     organoImpartidorJusticia: number;
     numeroExpedienteOIJ: string;
     existeEE: boolean;
@@ -192,6 +197,7 @@ export interface RespuestaNotificacionArchivosRequest {
 }
 export interface PromocionGeneralesUpdate{
     idRespuesta: number;
+    idCatJuzgado:number;
     organoImpartidorJusticia: number;
     numeroExpedienteOIJ: string;
     existeEE: boolean;
@@ -206,8 +212,9 @@ export interface CatalogoTipoCuaderno{
     descripcion: string;
 }
 export interface CatalogoOrganoDestino{
+    idCatJuzgado: number;
     idOrganoDestino: number;
-    clave: number;
+    cveJuzgado: number;
     descripcion: string;
 }
 export interface CatalogoClasificacionArchivo{
@@ -389,7 +396,7 @@ export interface turnosResponse{
  export interface guardaFirmaTmpRequest{
   idUsuario: number;
   idArchivo: number;
-  idClasificacionArchivo: number;
+  //idClasificacionArchivo: number;
   passwordFirma: string;
  }
  export interface CatalogoClasificacionArchivo{

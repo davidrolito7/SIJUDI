@@ -72,10 +72,10 @@ export class RespuestaAmparoRecibido {
   testDialog(): void {
     this.responsePromocion.set({
       respuestaGenericaCJF: {
-        folioConfirmacion: "202621400010000105",
+        folioConfirmacion: "202621400010000176",
         codigoRetorno: 1,
         mensaje: 'Exito',
-        fechaRecepcion: '2026-03-13T10:44:24-06:00'
+        fechaRecepcion: '2026-04-14T14:30:30'
       },
       respuestaGenericaCJO: {
         folioConfirmacion: "26",
