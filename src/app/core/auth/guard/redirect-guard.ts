@@ -2,18 +2,15 @@ import { CanMatchFn, Router, UrlSegment } from '@angular/router';
 import { inject } from '@angular/core';
 import { TokenService } from '../service/token.service';
 
-export const redirectGuard: CanMatchFn = (_route, segments) => {
+export const redirectGuard: CanMatchFn = async (_route, _segments: UrlSegment[]) => {
   const tokenService = inject(TokenService);
-  const router = inject(Router);
+  const router       = inject(Router);
 
-  const url = '/' + (segments.map(s => s.path).join('/') || '');
-  //const ok = tokenService.isValidRefreshToken();
-  const ok = tokenService.isOneFactorValidated();
+  if (!tokenService.isValidToken()) return true;
 
-  if (url === '/login' && ok ) {
-    const twoOk = tokenService.isTwoFactorValidated();
-    return router.parseUrl(twoOk ? '/perfil' : '/login2fase');
-  }
+  const twoOk = await tokenService.isTwoFactorValidated();
+  if (!twoOk) return router.parseUrl('/login2fase');
 
-  return true;
+  const perfilOk = await tokenService.isPerfilCompleted();
+  return router.parseUrl(perfilOk ? '/home' : '/perfil');
 };

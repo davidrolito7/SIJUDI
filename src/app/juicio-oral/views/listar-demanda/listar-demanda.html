@@ -1,4 +1,4 @@
-<app-spinner [isLoading]="isLoading"></app-spinner> 
+<app-spinner [isLoading]="isLoading"></app-spinner>
 <div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-960">
 
     <!-- HEADER -->
@@ -65,7 +65,8 @@
 <div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
 
     <div class="card">
-        <p-table #dtInicio stripedRows  [value]="inicios()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+        <p-table #dtInicio stripedRows [value]="inicios()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+            [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
             [globalFilterFields]="[
     'folio',
     'cat_via_materia.cat_materia.Descripcion',
@@ -87,40 +88,44 @@
             <ng-template #header class="bg-red-500">
                 <tr>
                     <th scope="col">No. Expediente</th>
+                    <th scope="col">Juzgado</th>
                     <th scope="col">Materia</th>
                     <th scope="col">Vía</th>
                     <th scope="col">Fecha Creado</th>
                     <th scope="col">Estatus</th>
-                    <th scope="col">Acciones</th>
+                    <th pFrozenColumn alignFrozen="right" scope="col">Acciones</th>
                 </tr>
             </ng-template>
 
-            <ng-template #body let-demanda>
+            <ng-template #body let-row>
+                @let expediente = asExpediente(row);
                 <tr>
                     <td>
-                        # <span>{{ demanda.NumExpediente }}</span>
+                        # <span>{{ expediente.NumExpediente }}</span>
+                    </td>
+                    <td>
+                        {{ expediente.juzgado.Descripcion }}
+                    </td>
+                    <td>
+                        {{ expediente.demanda.cat_via_materia.cat_materia.Descripcion }}
                     </td>
 
                     <td>
-                        {{ demanda.pre_registro.cat_via_materia?.cat_materia?.Descripcion }}
+                        {{ expediente.demanda.cat_via_materia.cat_via.descripcion }}
                     </td>
 
                     <td>
-                        {{ demanda.pre_registro.cat_via_materia?.cat_via?.descripcion }}
+                        {{ expediente.fechaResponse | date: 'dd/MM/yyyy HH:mm' }} h
                     </td>
 
                     <td>
-                        {{ demanda.fechaResponse | date: 'dd/MM/yyyy HH:mm' }} h
+                        <p-tag [value]="(getEstadoDescripcion(expediente) | uppercase) ?? ''"
+                            [severity]="getEstadoTag(expediente).severity" [icon]="getEstadoTag(expediente).icon" />
                     </td>
 
-                    <td>
-                        <p-tag [value]="(getEstadoDescripcion(demanda) | uppercase) ?? ''"
-                            [severity]="getEstadoTag(demanda).severity" [icon]="getEstadoTag(demanda).icon" />
-                    </td>
-
-                    <td>
-                        <p-button (click)="detalle(demanda.idExpediente)" [rounded]="true" [text]="true" [raised]="true"
-                            severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
+                    <td pFrozenColumn alignFrozen="right">
+                        <p-button (click)="detalle(expediente.idExpediente)" [rounded]="true" [text]="true"
+                            [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
                             tooltipPosition="top" title="Detalle">
                         </p-button>
 

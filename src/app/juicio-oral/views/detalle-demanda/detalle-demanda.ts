@@ -24,7 +24,7 @@ export class DetalleDemanda implements OnInit {
   idInicio: number | undefined;
   nombre: string = '';
   documentoUrl: SafeResourceUrl | null = null;
-  detalleInicio: DetalleDemandaResponse | null = null;
+  detalleDemanda: DetalleDemandaResponse | null = null;
   isLoading = false;
 
   mostrarDocumento = signal<boolean>(false);
@@ -51,12 +51,12 @@ export class DetalleDemanda implements OnInit {
   getDetalleInicio(idExpediente: number): void {
     this.juicioService.getDetalleInicios(idExpediente).subscribe({
       next: (response: any) => {
-        this.detalleInicio = response.data || null;
+        this.detalleDemanda = response.data || null;
         this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error:', error);
-        this.detalleInicio = null;
+        this.detalleDemanda = null;
         this.cdr.markForCheck();
       }
     });

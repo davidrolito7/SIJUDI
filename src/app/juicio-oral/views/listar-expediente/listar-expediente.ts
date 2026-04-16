@@ -55,8 +55,6 @@ export class ListarExpediente {
   ) { }
 
   ngOnInit(): void {
-    this.isLoading.set(true);
-
     this.route.queryParams.subscribe(params => {
       const currentPage = params['page'] ? +params['page'] : 1;
       this.filtro.expediente = params['expediente'] || '';
@@ -77,8 +75,11 @@ export class ListarExpediente {
           queryParamsHandling: 'merge',
           replaceUrl: true
         });
-        return;
+        return; // no activar spinner aquí, el re-emit lo hará
       }
+
+      // ← mover el spinner a AQUÍ, solo cuando sí vas a hacer la petición
+      this.isLoading.set(true);
 
       const requestParams = {
         page: currentPage,
@@ -94,12 +95,20 @@ export class ListarExpediente {
           if (response.success) {
             this.expedientes.set(response.data);
           } else {
-            this.messageService.add({ 
-              severity: 'error', 
-              summary: 'Error', 
-              detail: response.message 
+            this.messageService.add({
+              severity: 'warn',
+              summary: 'Lo sentimos',
+              detail: response.message
             });
           }
+        },
+        error: (error) => {
+          this.isLoading.set(false);
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Lo sentimos',
+            detail: error.error?.message || 'Error al conectar con el servidor'
+          });
         }
       });
     });
@@ -169,4 +178,8 @@ export class ListarExpediente {
   }
 
   mostrarDropdown = false;
+
+  asExpediente(row: unknown): ListarExpedientesResponse {
+    return row as ListarExpedientesResponse;
+  }
 }

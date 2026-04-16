@@ -1,4 +1,6 @@
-<app-spinner [isLoading]="isLoading()"></app-spinner> 
+<app-spinner [isLoading]="isLoading()"></app-spinner>
+            <p-toast />
+
 <div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-960">
 
     <!-- HEADER -->
@@ -60,8 +62,8 @@
 <div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
 
     <div class="card">
-        <p-table #dtInicio stripedRows  [value]="expedientes()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
-            [globalFilterFields]="[
+        <p-table #dtInicio stripedRows [value]="expedientes()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+            [paginator]="true" [globalFilterFields]="[
     'folio',
     'cat_via_materia.cat_materia.Descripcion',
     'cat_via_materia.cat_via.descripcion',
@@ -92,13 +94,14 @@
                 </tr>
             </ng-template>
 
-            <ng-template #body let-expediente>
+            <ng-template #body let-row>
+                @let expediente = asExpediente(row);
                 <tr>
                     <td>
-                         <span>#{{ expediente.NumExpediente }}</span>
+                        <span>#{{ expediente.NumExpediente }}</span>
                     </td>
                     <td>
-                        {{ expediente.pre_registro.folio }}
+                        {{ expediente.NumExpediente }}
                     </td>
                     <td>
                         {{ expediente.fechaResponse | date: 'dd/MM/yyyy HH:mm' }} h
@@ -107,18 +110,19 @@
                         {{ expediente.juzgado.Descripcion }}
                     </td>
                     <td>
-                        {{ expediente.pre_registro.cat_via_materia.cat_materia.Descripcion }}
+                        {{ expediente.demanda.cat_via_materia.cat_materia.Descripcion }}
                     </td>
-        <td>
-                        {{ expediente.pre_registro.cat_via_materia.cat_via.descripcion}}
+                    <td>
+                        {{ expediente.demanda.cat_via_materia.cat_via.descripcion}}
                     </td>
                     <td>
                         <p-tag value="{{ (expediente.ultimo_historial.estado.descripcion).toUpperCase() }}"
                             severity="info" icon="pi pi-bell" />
                     </td>
                     <td>
-                        <p-button (click)="detalle(expediente.idExpediente)" [rounded]="true"  [text]="true" [raised]="true" severity="info" [rounded]="true"
-                            icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                        <p-button (click)="detalle(expediente.idExpediente)" [rounded]="true" [text]="true"
+                            [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
+                            tooltipPosition="top" title="Detalle">
                         </p-button>
 
                     </td>

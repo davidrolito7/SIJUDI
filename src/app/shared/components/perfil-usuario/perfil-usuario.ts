@@ -11,7 +11,6 @@ import { ButtonModule } from 'primeng/button';
 import { TabsModule } from 'primeng/tabs';
 import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
 import { PasswordModule } from 'primeng/password';
-import { Fieldset } from 'primeng/fieldset';
 import { TagModule } from 'primeng/tag';
 import { Spinner } from "../spinner/spinner";
  
@@ -19,7 +18,7 @@ import { Spinner } from "../spinner/spinner";
 @Component({
   selector: 'app-perfil-usuario',
   
-  imports: [ReactiveFormsModule, FormsModule, ToastModule, Breadcrub, Button, ButtonModule, TabsModule, FileUploadModule, PasswordModule, Fieldset, TagModule, Spinner],
+  imports: [ReactiveFormsModule, FormsModule, ToastModule, Breadcrub, Button, ButtonModule, TabsModule, FileUploadModule, PasswordModule, TagModule, Spinner],
   templateUrl: './perfil-usuario.html',
   styleUrl: './perfil-usuario.css',
   providers: [MessageService] 
