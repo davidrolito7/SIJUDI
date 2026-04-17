@@ -42,8 +42,8 @@
                         optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
                         optionLabel="descripcion" appendTo="body" />
                 </div>
-                <div class="col-span-6 md:col-span-1">
-                    <p-button id="botonBuscar" (click)="onValidarCausa()" [disabled]="busquedaForm.invalid">
+                <div id="botonBuscar" class="col-span-6 md:col-span-1">
+                    <p-button  (click)="onValidarCausa()" [disabled]="busquedaForm.invalid">
                         <i pButtonIcon class="pi pi-search"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
