@@ -200,7 +200,7 @@ export class Perfil {
     store.setItem('perfilSeleccionadoDesc', this.perfilNombreSeleccionado());
     store.setItem('idAreaSistemaUsuario',   String(this.idAreaSistemaUsuario()));
     store.setItem('SubAreaNombre',          this.subAreaNombre());
-
+    store.setItem('SubAreaId',              String(this.subAreaId()));
     const areaObj = this.listaAreas().find(a => a.idArea === this.areaSeleccionada());
     store.setItem('AreaName',      areaObj?.area ?? '');
     store.setItem('AbogadoNombre', this.abogadoNombre());
@@ -209,7 +209,7 @@ export class Perfil {
     const toRemove = [
       'areaSeleccionada', 'perfilSeleccionado', 'perfilSeleccionadoDesc',
       'idAreaSistemaUsuario', 'AreaName', 'AreaBd', 'AbogadoNombre',
-      'pantallas_usuario', 'SubAreaNombre',
+      'pantallas_usuario', 'SubAreaNombre', 'SubAreaId',
     ];
     toRemove.forEach(k => other.removeItem(k));
     localStorage.removeItem('AbogadoFotoBase64');

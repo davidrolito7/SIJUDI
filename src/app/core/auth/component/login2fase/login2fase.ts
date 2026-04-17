@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, DestroyRef, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { Router } from '@angular/router';
@@ -47,7 +47,7 @@ export class Login2 implements OnInit {
   codigo: string = '';
   qrData: string = '';
   visible: boolean = false;
-  isLoading: boolean = false;
+  isLoading= signal<boolean>(false);
   step: 1 | 2 = 1;
 
   constructor(
@@ -83,7 +83,7 @@ export class Login2 implements OnInit {
 
     if (!user?.idGeneral) {
       this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'No se pudo obtener el usuario desde el token.', life: 3000 });
-      this.isLoading = false;
+      this.isLoading.set(false);
       this.cd.detectChanges();
       return;
     }
@@ -112,11 +112,11 @@ export class Login2 implements OnInit {
       },
       error: () => {
         this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener datos del usuario.', life: 3000 });
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.cd.detectChanges();
       },
       complete: () => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.cd.detectChanges();
       },
     });
@@ -236,11 +236,12 @@ export class Login2 implements OnInit {
     sessionStorage.setItem('AreaName', areaName);
     sessionStorage.setItem('AbogadoNombre', nombre);
     sessionStorage.setItem('AbogadoFotoBase64', foto);
+    sessionStorage.setItem('SubAreaId', String(SUBAREA_ID));
 
     const toRemove = [
       'areaSeleccionada', 'perfilSeleccionado', 'perfilSeleccionadoDesc',
       'idAreaSistemaUsuario', 'AreaName', 'AreaBd', 'AbogadoNombre',
-      'pantallas_usuario', 'SubAreaNombre', 'AbogadoFotoBase64',
+      'pantallas_usuario', 'SubAreaNombre', 'SubAreaId', 'AbogadoFotoBase64',
     ];
     toRemove.forEach(k => localStorage.removeItem(k));
   }
@@ -253,7 +254,7 @@ export class Login2 implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.cd.detectChanges();
 
     this.authService.postSendTwoFactorCodeAuthenticator(this.codigo).subscribe({
@@ -262,13 +263,13 @@ export class Login2 implements OnInit {
           await this.handlePostTwoFactor();
         } else {
           this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Código incorrecto.', life: 3000 });
-          this.isLoading = false;
+          this.isLoading.set(false);
           this.cd.detectChanges();
         }
       },
       error: () => {
         this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al intentar validar.', life: 3000 });
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.cd.detectChanges();
       },
     });
@@ -277,7 +278,7 @@ export class Login2 implements OnInit {
   // ── Obtener datos 2FA ────────────────────────────────────────────────────
 
   getGoogle() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.cd.detectChanges();
 
     this.authService.GetTwoValidation().subscribe({
@@ -292,11 +293,11 @@ export class Login2 implements OnInit {
         }
       },
       error: () => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.cd.detectChanges();
       },
       complete: () => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.cd.detectChanges();
       },
     });
@@ -328,7 +329,7 @@ export class Login2 implements OnInit {
     const formData = new FormData();
     formData.append('file', this.llaveFile, this.llaveFile.name);
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.cd.detectChanges();
 
     this.authService.postValidaPrivateKey(formData, password).subscribe({
@@ -337,13 +338,13 @@ export class Login2 implements OnInit {
           await this.handlePostTwoFactor();
         } else {
           this.mensaje.add({ severity: 'error', summary: 'Error', detail: response.message || 'Llave privada o contraseña incorrectas.', life: 3000 });
-          this.isLoading = false;
+          this.isLoading.set(false);
           this.cd.detectChanges();
         }
       },
       error: () => {
         this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al validar la llave privada.', life: 3000 });
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.cd.detectChanges();
       },
     });
