@@ -15,5 +15,5 @@ export const environment = {
     //ModuloExhortos:'Exhortos'
 
     //* api juicio oral
-    urlApiJuicioOral: 'http://10.1.10.50:81'
+    urlApiJuicioOral: 'https://api.tribunaloaxaca.gob.mx/juiciooralApi'
 };
