@@ -1,4 +1,4 @@
-<app-spinner [isLoading]="isLoading()"></app-spinner>
+<app-spinner [isLoading]="isLoading"></app-spinner>
 <div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-960">
 
     <!-- HEADER -->
@@ -50,7 +50,7 @@
                     <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
                         aria-label="Limpiar filtros"></p-button>
 
-                    <p-button type="submit" aria-label="Buscar" styleClass="btn-secondary">
+                    <p-button type="submit" aria-label="Buscar">
                         <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
@@ -65,7 +65,7 @@
 <div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
 
     <div class="card">
-        <p-table #dtInicio stripedRows  [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+        <p-table #dtInicio stripedRows [value]="inicios()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
             [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
             [globalFilterFields]="[
     'folio',
@@ -100,7 +100,7 @@
             <ng-template #body let-expediente>
                 <tr>
                     <td>
-                        # <span>{{ expediente.NumExpediente }}</span>
+                        <span>{{ expediente.NumExpediente }}</span>
                     </td>
                     <td>
                         {{ expediente.juzgado.Descripcion }}
@@ -117,18 +117,20 @@
                         {{ expediente.fechaResponse | date: 'dd/MM/yyyy HH:mm' }} h
                     </td>
 
-                    <!-- <td>
-                        <p-tag\ [value]="(getEstadoDescripcion(expediente) | uppercase) ?? ''"
+                    <td>
+                        <p-tag [value]="(getEstadoDescripcion(expediente) | uppercase) ?? ''"
                             [severity]="getEstadoTag(expediente).severity" [icon]="getEstadoTag(expediente).icon" />
-                    </td> -->
+                    </td>
 
                     <td pFrozenColumn alignFrozen="right">
-                        <!-- <p-button 
-                        (click)="detalle(expediente.idExpediente)" [rounded]="true" [text]="true"
-                            [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
-                            tooltipPosition="top" title="Detalle">
-                        </p-button> -->
-
+                        <div class="flex gap-2 justify-end">
+                            <p-button (click)="detalle(expediente.idExpediente)" [rounded]="true" [raised]="true"
+                                icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                            </p-button>
+                            <p-button (click)="onConfirmarTurnar($event, expediente.demanda.idDemanda)" [raised]="true" severity="info" icon="pi pi-file-export" pTooltip="Turnar demanda"
+                                tooltipPosition="top" label="Turnar">
+                            </p-button>
+                        </div>
                     </td>
                 </tr>
             </ng-template>
@@ -143,3 +145,15 @@
     </div>
 </div>
 <p-toast></p-toast>
+
+ <app-confirm-dialog
+  key="turnar"
+  title="Confirmación"
+  message="¿Desea turnar la demanda?"
+  icon="pi pi-check"
+  circleClass="bg-primary"
+  acceptLabel="Aceptar"
+  rejectLabel="Cancelar"
+  acceptStyleClass="bg-primary">
+</app-confirm-dialog> 
+

@@ -130,15 +130,23 @@ export class JuicioService {
             map(response => response.data)
         );
     }
+    
     getCatTipoDocumento(): Observable<CatTipoDocumento[]> {
         const url = `${this.catalogos}TipoDocumentos`;
         return this.http.get<{ data: CatTipoDocumento[] }>(url).pipe(
             map(response => response.data)
         );
-
     }
 
-    //Metodos del requerimiento
+    putTurnarDemanda(idDemanda: number): Observable<ApiResponse<any>> {
+        const url= `${this.demanda}Turnar/${idDemanda}`;
+        return this.http.put<ApiResponse<any>>(url, null, {context: checkToken()});
+    }
+
+    //########################################################################
+    // Requerimientos  
+    //########################################################################
+
     crearRequerimientos(formData: FormData): Observable<any> {
         return this.http.post<any>(
             this.requerimientos + 'CrearRequerimiento',
@@ -210,6 +218,11 @@ export class JuicioService {
         const url = `${this.requerimientos + 'RequerimientoExpirado'}/${idRequerimiento}`;
         return this.http.post<any>(url, {}, { context: checkToken() });
     }
+
+    //########################################################################
+    // Expedientes  
+    //########################################################################
+
 
     getListadoExpedientes(params?: any): Observable<ApiResponse<ListarExpedientesResponse[]>> {
         return this.http.get<ApiResponse<ListarExpedientesResponse[]>>(
@@ -407,7 +420,7 @@ export class JuicioService {
 
     getTramitesExpediente(idExpediente: number): Observable<ApiResponse<DetalleExpedienteResponse>> {
         const url = `${this.tramites + 'Expediente'}/${idExpediente}`;
-        return this.http.post<ApiResponse<DetalleExpedienteResponse>>(url,null, { context: checkToken() });
+        return this.http.post<ApiResponse<DetalleExpedienteResponse>>(url, null, { context: checkToken() });
     }
 
     enviarAcuerdo(formData: FormData): Observable<ApiResponse<any>> {

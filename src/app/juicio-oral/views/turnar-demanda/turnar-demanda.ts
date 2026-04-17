@@ -1,45 +1,129 @@
-import { Component, signal } from '@angular/core';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
-import { Spinner } from "../../../shared/components/spinner/spinner";
-import { ButtonModule } from "primeng/button";
-import { InputMaskModule } from "primeng/inputmask";
-import { SelectModule } from "primeng/select";
-import { DatePickerModule } from "primeng/datepicker";
+
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { CommonModule, formatDate } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Toast } from "primeng/toast";
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { InputTextModule } from 'primeng/inputtext';
+
+// ============================
+// PrimeNG
+// ============================
+import { ButtonModule } from 'primeng/button';
+import { DatePickerModule } from 'primeng/datepicker';
+import { DialogModule } from 'primeng/dialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { CommonModule } from '@angular/common';
+import { InputMaskModule } from 'primeng/inputmask';
+import { InputTextModule } from 'primeng/inputtext';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { SelectModule } from 'primeng/select';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { ToastModule } from 'primeng/toast';
+
+// ============================
+// App - shared
+// ============================
+import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Spinner } from '../../../shared/components/spinner/spinner';
+
+// ============================
+// App - feature
+// ============================
+import { DetalleDemandaResponse, ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
+import { JuicioService } from '../../services/juicioenlinea.service';
+import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+
 @Component({
   selector: 'app-turnar-demanda',
-  imports: [FormsModule, Breadcrub, Spinner, ButtonModule, InputMaskModule, SelectModule, DatePickerModule, Toast, TableModule, TagModule, InputTextModule, IconFieldModule, InputIconModule, CommonModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    // PrimeNG
+    DatePickerModule,
+    DialogModule,
+    ButtonModule,
+    ToastModule,
+    TagModule,
+    IconFieldModule,
+    InputIconModule,
+    TableModule,
+    SelectModule,
+    InputTextModule,
+    InputMaskModule,
+    TooltipModule,
+    // Shared components
+    Breadcrub,
+    Spinner,
+    ConfirmDialog
+  ],
   templateUrl: './turnar-demanda.html',
   styleUrl: './turnar-demanda.css',
+  providers: [ConfirmationService, MessageService]
+
 })
-export class TurnarDemanda {
-  inicios = signal<any[]>([]);
-  totalRecords = 0;        // ← total para que PrimeNG sepa cuántas páginas hay
-  rowsPerPage = 10;        // ← rows actuales, se actualiza desde el evento lazy
-
-  isLoading = signal(false);
-
-  constructor() { }
-
+export class TurnarDemanda implements OnInit {
+  // ============================
+  // UI options / state
+  // ============================
   estadoOptions = [
     { label: 'Todo', value: 0 },
     { label: 'Enviado', value: 1 },
     { label: 'Asignado', value: 2 },
     { label: 'Finalizado', value: 3 },
   ];
+
+  inicios = signal<DetalleDemandaResponse[]>([]);
+  isLoading = false;
+  totalRecords = 0;        // ← total para que PrimeNG sepa cuántas páginas hay
+  rowsPerPage = 10;        // ← rows actuales, se actualiza desde el evento lazy
+
   filtro: { folio: string; rangeDates: Date[] | ''; estado: number } = {
     folio: '',
     rangeDates: '',
     estado: 0,
   };
 
+
+  // ============================
+  // Constructor / DI
+  // ============================
+  constructor(
+    private juicioService: JuicioService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
+    private messageService: MessageService,
+    private readonly confirmationService: ConfirmationService,
+
+
+  ) { }
+
+  // ============================
+  // Lifecycle
+  // ============================
+  ngOnInit(): void {
+    // Solo sincronizar filtros desde URL, la tabla disparará onLazyLoad automáticamente
+    const params = this.route.snapshot.queryParams;
+    this.sincronizarFiltrosDesdeURL(params);
+  }
+
+  // ============================
+  // Data / URL sync
+  // ============================
+  private sincronizarFiltrosDesdeURL(params: Record<string, string>): void {
+    const estadoNum = params['estado'] ? Number(params['estado']) : 0;
+    this.filtro.estado = Number.isFinite(estadoNum) ? estadoNum : 0;
+    this.filtro.folio = params['folio'] || '';
+    this.filtro.rangeDates =
+      params['fechaInicio'] && params['fechaFinal']
+        ? [
+          this.parseDateFromString(params['fechaInicio']),
+          this.parseDateFromString(params['fechaFinal']),
+        ]
+        : '';
+  }
   // ── Evento lazy de PrimeNG ──────────────────────────────────────────
   // Se dispara al cargar, cambiar página y cambiar rows per page
   onLazyLoad(event: TableLazyLoadEvent): void {
@@ -49,24 +133,158 @@ export class TurnarDemanda {
     this.rowsPerPage = rows;
     const page = Math.floor(first / rows) + 1;
 
-    // this.actualizarURL(page);
-    // this.cargarDatos(page, rows);
+    this.actualizarURL(page);
+    this.cargarDatos(page, rows);
   }
 
+  private cargarDatos(page: number, perPage: number): void {
+    this.isLoading = true;
+
+    const params: Record<string, string | number> = { page, per_page: perPage };
+
+    if (this.filtro.folio) params['folio'] = this.filtro.folio;
+
+    if (Array.isArray(this.filtro.rangeDates) && this.filtro.rangeDates.length === 2) {
+      params['fechaInicio'] = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
+      params['fechaFinal'] = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
+    }
+
+    if (this.filtro.estado > 0) params['estado'] = this.filtro.estado;
+
+    this.juicioService.getListadoInicios(params).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.inicios.set(response.data);
+        this.totalRecords = response.pagination?.total ?? 0; // ← total del backend
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Lo sentimos',
+          detail: error.error?.message || 'Error al conectar con el servidor'
+        });
+      },
+    });
+  }
+  // ============================
+  // Actions (filters / paging)
+  // ============================
+  aplicarFiltros(): void {
+    this.actualizarURL(1);
+    this.cargarDatos(1, this.rowsPerPage);
+  }
+  private actualizarURL(page: number): void {
+    const queryParams: Record<string, string | number | null> = {
+      page,
+      estado: this.filtro.estado > 0 ? this.filtro.estado : null,
+      folio: this.filtro.folio || null,
+      fechaInicio: null,
+      fechaFinal: null,
+    };
+
+    if (Array.isArray(this.filtro.rangeDates) && this.filtro.rangeDates.length === 2) {
+      queryParams['fechaInicio'] = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
+      queryParams['fechaFinal'] = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
+    }
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
   limpiarFiltros(): void {
     this.filtro = { estado: 0, rangeDates: '', folio: '' };
-    // this.router.navigate([], {
-    //   relativeTo: this.route,
-    //   queryParams: { estado: null, folio: null, fechaInicio: null, fechaFinal: null, page: 1 },
-    //   queryParamsHandling: 'merge',
-    // });
-    // this.cargarDatos(1, this.rowsPerPage);
-  }
-
-  aplicarFiltros(): void {
-    // this.actualizarURL(1);
-    // this.cargarDatos(1, this.rowsPerPage);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { estado: null, folio: null, fechaInicio: null, fechaFinal: null, page: 1 },
+      queryParamsHandling: 'merge',
+    });
+    this.cargarDatos(1, this.rowsPerPage);
   }
 
 
+  // ============================
+  // Helpers
+  // ============================
+  parseDateFromString(dateStr: string): Date {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  detalle(idExpediente: number) {
+    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idExpediente } });
+  }
+
+  onRedirigirCrear() {
+    this.router.navigate(['/juicioenlinea/demandas/crear']);
+  }
+
+  // ============================
+  // Estado helpers for UI tags
+  // ============================
+  getEstadoDescripcion(inicio: unknown): string | null {
+    const i = inicio as { demanda?: { ultimo_estado?: { estado?: { descripcion?: string } } } };
+    return i.demanda?.ultimo_estado?.estado?.descripcion ?? null;
+  }
+
+  getEstadoId(inicio: unknown): number | null {
+    const i = inicio as { demanda?: { ultimo_estado?: { estado?: { idCatEstadoDemanda?: number } } } };
+    return i.demanda?.ultimo_estado?.estado?.idCatEstadoDemanda ?? null;
+  }
+
+  getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+    const id = this.getEstadoId(inicio);
+    switch (id) {
+      case 1:
+        return { severity: 'secondary', icon: 'pi pi-send' };
+      case 2:
+        return { severity: 'info', icon: 'pi pi-clock' };
+      case 3:
+        return { severity: 'success', icon: 'pi pi-check' };
+      default:
+        return { severity: 'secondary', icon: 'pi pi-question' };
+    }
+  }
+
+  onConfirmarTurnar(event: Event, idDemanda: number): void {
+    this.confirmationService.confirm({  
+      key: 'turnar',
+      target : event.target as EventTarget,
+      message: '¿Confirma que desea turnar esta demanda al juzgado?',
+      accept: () => this.onTurnarDemanda(idDemanda)
+    });
+
+  }
+
+  onTurnarDemanda(idDemanda: number): void {
+    this.juicioService.putTurnarDemanda(idDemanda).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Éxito',
+            detail: response.message
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: response.message
+          });
+        }
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.error?.message || 'Error al conectar con el servidor'
+        });
+      }
+    });
+  }
 }
