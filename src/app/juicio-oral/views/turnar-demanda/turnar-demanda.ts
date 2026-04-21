@@ -14,7 +14,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputMaskModule } from 'primeng/inputmask';
 import { InputTextModule } from 'primeng/inputtext';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { SelectModule } from 'primeng/select';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -32,9 +32,10 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 import { DetalleDemandaResponse, ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 
 @Component({
-  selector: 'app-listar-demanda',
+  selector: 'app-turnar-demanda',
   imports: [
     CommonModule,
     RouterModule,
@@ -54,13 +55,15 @@ import { TooltipModule } from 'primeng/tooltip';
     TooltipModule,
     // Shared components
     Breadcrub,
-    Spinner
+    Spinner,
+    ConfirmDialog
   ],
-  templateUrl: './listar-demanda.html',
-  styleUrl: './listar-demanda.css',
-  providers: [MessageService],
+  templateUrl: './turnar-demanda.html',
+  styleUrl: './turnar-demanda.css',
+  providers: [ConfirmationService, MessageService]
+
 })
-export class ListarDemanda implements OnInit {
+export class TurnarDemanda implements OnInit {
   // ============================
   // UI options / state
   // ============================
@@ -91,7 +94,9 @@ export class ListarDemanda implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-        private messageService: MessageService
+    private messageService: MessageService,
+    private readonly confirmationService: ConfirmationService,
+
 
   ) { }
 
@@ -157,10 +162,10 @@ export class ListarDemanda implements OnInit {
         this.isLoading = false;
         this.cdr.markForCheck();
         this.messageService.add({
-            severity: 'info',
-            summary: 'Lo sentimos',
-            detail: error.error?.message || 'Error al conectar con el servidor'
-          });
+          severity: 'info',
+          summary: 'Lo sentimos',
+          detail: error.error?.message || 'Error al conectar con el servidor'
+        });
       },
     });
   }
@@ -245,7 +250,41 @@ export class ListarDemanda implements OnInit {
         return { severity: 'secondary', icon: 'pi pi-question' };
     }
   }
-  asExpediente(row: unknown): ListarExpedientesResponse {
-    return row as ListarExpedientesResponse;
+
+  onConfirmarTurnar(event: Event, idDemanda: number): void {
+    this.confirmationService.confirm({  
+      key: 'turnar',
+      target : event.target as EventTarget,
+      message: '¿Confirma que desea turnar esta demanda al juzgado?',
+      accept: () => this.onTurnarDemanda(idDemanda)
+    });
+
+  }
+
+  onTurnarDemanda(idDemanda: number): void {
+    this.juicioService.putTurnarDemanda(idDemanda).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Éxito',
+            detail: response.message
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: response.message
+          });
+        }
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.error?.message || 'Error al conectar con el servidor'
+        });
+      }
+    });
   }
 }

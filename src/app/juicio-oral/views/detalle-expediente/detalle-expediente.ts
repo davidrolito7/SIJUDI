@@ -249,7 +249,7 @@ export class DetalleExpediente {
       switch (item.tipo) {
         case 'pre_registro': {
           tabla.push({
-            id: item.idPreregistro,
+            id: item.idDemanda,
             folio: item.folio || item.folioPreregistro || 'Sin folio',
             tipo: 'Pre-registro',
             nombre: 'Pre-registro',

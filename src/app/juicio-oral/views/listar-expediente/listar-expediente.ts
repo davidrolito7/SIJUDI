@@ -96,7 +96,7 @@ export class ListarExpediente {
             this.expedientes.set(response.data);
           } else {
             this.messageService.add({
-              severity: 'warn',
+              severity: 'info',
               summary: 'Lo sentimos',
               detail: response.message
             });
@@ -105,7 +105,7 @@ export class ListarExpediente {
         error: (error) => {
           this.isLoading.set(false);
           this.messageService.add({
-            severity: 'warn',
+            severity: 'info',
             summary: 'Lo sentimos',
             detail: error.error?.message || 'Error al conectar con el servidor'
           });

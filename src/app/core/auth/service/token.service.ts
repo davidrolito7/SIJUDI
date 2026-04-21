@@ -43,13 +43,13 @@ async function hmacVerify(secret: string, data: string, expected: string): Promi
 export class TokenService {
 
   // Públicos para compatibilidad con el interceptor
-  readonly nameToken        = 'token_TE_PJO';
+  readonly nameToken = 'token_TE_PJO';
   readonly nameRefreshToken = 'refreshT_TE_PJO';
 
   // Claves de HMAC en sessionStorage
   private readonly TWO_FACTOR_KEY = '_tf_sig';
-  private readonly PERFIL_KEY     = '_pf_sig';
-  private readonly PANTALLAS_KEY  = 'pantallas_usuario';
+  private readonly PERFIL_KEY = '_pf_sig';
+  private readonly PANTALLAS_KEY = 'pantallas_usuario';
 
   private readonly router = inject(Router);
 
@@ -72,7 +72,7 @@ export class TokenService {
 
   getToken(): string | null {
     return sessionStorage.getItem(this.nameToken)
-        || localStorage.getItem(this.nameToken);
+      || localStorage.getItem(this.nameToken);
   }
 
   removeToken(): void {
@@ -94,7 +94,7 @@ export class TokenService {
 
   getRefreshToken(): string | null {
     return sessionStorage.getItem(this.nameRefreshToken)
-        || localStorage.getItem(this.nameRefreshToken);
+      || localStorage.getItem(this.nameRefreshToken);
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -199,14 +199,14 @@ export class TokenService {
 
   private readRemembered(key: string): string {
     const recordar = localStorage.getItem('recordarUsuario') === 'true';
-    const primary  = recordar ? localStorage  : sessionStorage;
+    const primary = recordar ? localStorage : sessionStorage;
     const fallback = recordar ? sessionStorage : localStorage;
     return primary.getItem(key) ?? fallback.getItem(key) ?? '';
   }
 
   getAbogadoNombre(): string { return this.readRemembered('AbogadoNombre'); }
-  getAreaNombre(): string    { return this.readRemembered('AreaName'); }
-  getPerfilNombre(): string  { return this.readRemembered('perfilSeleccionadoDesc'); }
+  getAreaNombre(): string { return this.readRemembered('AreaName'); }
+  getPerfilNombre(): string { return this.readRemembered('perfilSeleccionadoDesc'); }
   getSubAreaNombre(): string { return this.readRemembered('SubAreaNombre'); }
 
   getAbogadoFotoUrl(): string {
@@ -223,6 +223,7 @@ export class TokenService {
     this.clearTwoFactorValidated();
     this.clearPerfilCompleted();
     this.limpiarPantallas();
+    this.limpiarDatosSesion();
     this.router.navigate(['/login'], { replaceUrl: true });
   }
 
@@ -232,5 +233,32 @@ export class TokenService {
 
   limpiarPantallas(): void {
     localStorage.removeItem(this.PANTALLAS_KEY);
+  }
+  
+  private limpiarDatosSesion(): void {
+    const recordar = localStorage.getItem('recordarUsuario') === 'true';
+    const keys = [
+      'AbogadoNombre',
+      'AreaName',
+      'SubAreaNombre',
+      'SubAreaId',
+      'idAreaSistemaUsuario',
+      'perfilSeleccionado',
+      'perfilSeleccionadoDesc',
+      'areaSeleccionada',
+      'AbogadoFotoBase64',
+      'recordarUsuario',
+    ];
+
+    if (recordar) {
+      // Si se recuerda, solo limpiamos sessionStorage (datos temporales)
+      keys.forEach(key => sessionStorage.removeItem(key));
+    } else {
+      // Si no se recuerda, limpiamos ambos para eliminar cualquier rastro de datos de sesión
+      keys.forEach(key => {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      });
+    }
   }
 }

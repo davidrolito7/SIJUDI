@@ -10,8 +10,8 @@
         <form class="flex flex-col" [formGroup]="busquedaForm">
 
             <div class="flex items-start flex-col md:flex-row justify-between">
-                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-                    Crear promoción
+                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-3">
+                    Capturar promoción electrónica
                 </label>
 
                 <!-- <div class="flex items-center">
@@ -23,27 +23,27 @@
             </div>
 
             <div class="grid grid-cols-6 gap-4 w-full items-end">
-                <div class="col-span-6 md:col-span-2">
+                <div id="tipoTramite" class="col-span-6 md:col-span-2">
                     <label class="block mb-2 text-sm font-medium">Tipo de Trámite</label>
                     <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
                         (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid
                         placeholder="Selecciona un tipo de trámite" [filter]="true" optionLabel="label"
                         appendTo="body" />
                 </div>
-                <div class="col-span-6 md:col-span-1">
+                <div id="numeroExpediente" class="col-span-6 md:col-span-1">
                     <label class="block mb-2 text-sm font-medium">No. Expediente</label>
                     <p-inputmask fluid formControlName="numeroExpediente" class="uppercase text-sm rounded-lg"
                         mask="9999/9999" placeholder="0001/2026" />
                 </div>
 
-                <div class="col-span-6 md:col-span-2">
+                <div id="juzgado" class="col-span-6 md:col-span-2">
                     <label class="block mb-2 text-sm font-medium">Juzgado</label>
                     <p-select class="w-full" [options]="catJuzgados" formControlName="idJuzgado"
                         optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
                         optionLabel="descripcion" appendTo="body" />
                 </div>
-                <div class="col-span-6 md:col-span-1">
-                    <p-button (click)="onValidarCausa()" [disabled]="busquedaForm.invalid">
+                <div id="botonBuscar" class="col-span-6 md:col-span-1">
+                    <p-button  (click)="onValidarCausa()" [disabled]="busquedaForm.invalid">
                         <i pButtonIcon class="pi pi-search"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
@@ -62,7 +62,7 @@
         <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
 
         <div class="flex items-center">
-            <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
+            <p-fileupload id="fileUpload" mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
                 accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
                 [customUpload]="true" chooseLabel="Cargar" />
 
@@ -113,9 +113,9 @@
 
             </div>
             }
-            <div class="col-span-6 sm:col-span-6" [formGroup]="documentosForm">
+            <div id="observaciones" class="col-span-6 sm:col-span-6" [formGroup]="documentosForm">
                 <label class="block mb-2 text-sm font-medium">Observaciones</label>
-                <textarea pTextarea rows="5" formControlName="observaciones" name="nombre" id="nombre" fluid
+                <textarea  pTextarea rows="5" formControlName="observaciones" name="observaciones" id="observaciones" fluid
                     class=" text-sm" placeholder="Escribe algo aquí..."></textarea>
             </div>
 

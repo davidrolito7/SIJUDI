@@ -14,10 +14,14 @@ export const environment = {
     urlApiTerminos: 'https://pruebas.tribunaloaxaca.gob.mx/terminosApi/api',
     //ModuloExhortos:'Exhortos'
 
-    //* api juicio oral
-    //urlApiJuicioOral: 'https://pruebas.tribunaloaxaca.gob.mx/apijuiciooral'
-    urlApiJuicioOral: 'http://10.1.10.50:81'
-    //urlApiJuicioOral:'http://127.0.0.1:8000'  
+    //* api juicio en linea
+    //urlApiJuicioOral: 'http://10.1.10.50:81',
+    urlApiJuicioOral:'http://127.0.0.1:8000',
+
+    //* api juicio oral penal
+    urlApiJuicioOralPenal:'https://pruebas.tribunaloaxaca.gob.mx/ApiJuicioOral/api/PromocionesJuicioOral'
+    //urlApiJuicioOralPenal:'https://localhost:7057/api/PromocionesJuicioOral'
+
 };
 
 

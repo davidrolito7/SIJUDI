@@ -9,14 +9,14 @@
 
         <div class="flex items-start flex-col md:flex-row justify-between">
             <div class="font-medium text-2xl ">
-                Registro de demandas electrónicas 1° instancia
+                Turnar demandas electrónicas 1° instancia
             </div>
-            <div class="flex items-center">
+            <!-- <div class="flex items-center">
                 <p-button (click)="onRedirigirCrear()">
                     <i pButtonIcon class="pi pi-file-plus"></i>
                     <span pButtonLabel>Nuevo</span>
                 </p-button>
-            </div>
+            </div> -->
         </div>
         <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de exhortos enviados">
             <div class="grid grid-cols-12 gap-4 w-full items-end">
@@ -50,7 +50,7 @@
                     <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
                         aria-label="Limpiar filtros"></p-button>
 
-                    <p-button type="submit" aria-label="Buscar" styleClass="btn-secondary">
+                    <p-button type="submit" aria-label="Buscar">
                         <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
@@ -97,8 +97,7 @@
                 </tr>
             </ng-template>
 
-            <ng-template #body let-row>
-                @let expediente = asExpediente(row);
+            <ng-template #body let-expediente>
                 <tr>
                     <td>
                         <span>{{ expediente.NumExpediente }}</span>
@@ -124,11 +123,14 @@
                     </td>
 
                     <td pFrozenColumn alignFrozen="right">
-                        <p-button (click)="detalle(expediente.idExpediente)" [rounded]="true" [text]="true"
-                            [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
-                            tooltipPosition="top" title="Detalle">
-                        </p-button>
-
+                        <div class="flex gap-2 justify-end">
+                            <p-button (click)="detalle(expediente.idExpediente)" [rounded]="true" [raised]="true"
+                                icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                            </p-button>
+                            <p-button (click)="onConfirmarTurnar($event, expediente.demanda.idDemanda)" [raised]="true" severity="info" icon="pi pi-file-export" pTooltip="Turnar demanda"
+                                tooltipPosition="top" label="Turnar">
+                            </p-button>
+                        </div>
                     </td>
                 </tr>
             </ng-template>
@@ -143,3 +145,15 @@
     </div>
 </div>
 <p-toast></p-toast>
+
+ <app-confirm-dialog
+  key="turnar"
+  title="Confirmación"
+  message="¿Desea turnar la demanda?"
+  icon="pi pi-check"
+  circleClass="bg-primary"
+  acceptLabel="Aceptar"
+  rejectLabel="Cancelar"
+  acceptStyleClass="bg-primary">
+</app-confirm-dialog> 
+

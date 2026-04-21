@@ -45,7 +45,7 @@ import { environment } from "../../../environments/environment";
 
 export class JuicioService {
 
-    private inicio = `${environment.urlApiJuicioOral}/api/Inicio/`;
+    private demanda = `${environment.urlApiJuicioOral}/api/Demanda/`;
     private firma = `${environment.urlApiJuicioOral}/api/VerificaFirma`;
     private catalogos = `${environment.urlApiJuicioOral}/api/Catalogo/`;
     private permisos = `${environment.urlApiJuicioOral}/api/Permisos/`;
@@ -67,12 +67,12 @@ export class JuicioService {
 
     getListadoInicios(params?: any): Observable<ApiResponse<DetalleDemandaResponse[]>> {
         return this.http.get<ApiResponse<DetalleDemandaResponse[]>>(
-            `${this.inicio}ListadoPreregistros`, { params, context: checkToken() }
+            `${this.demanda}ListadoDemandas`, { params, context: checkToken() }
         );
     }
 
-    getDetalleInicios(idInicio: number): Observable<DetalleDemandaResponse> {
-        const url = `${this.inicio}DetallePreregistro/${idInicio}`;
+    getDetalleInicios(idDemanda: number): Observable<DetalleDemandaResponse> {
+        const url = `${this.demanda}DetalleDemanda/${idDemanda}`;
         return this.http.get<DetalleDemandaResponse>(url, { context: checkToken() }
         );
     }
@@ -83,13 +83,13 @@ export class JuicioService {
     }
 
     getDocumento(idDocumento: number): Observable<ApiResponse<DocumentoResponse>> {
-        const url = `${this.inicio}Documento/${idDocumento}`;
+        const url = `${this.demanda}Documento/${idDocumento}`;
         return this.http.get<ApiResponse<DocumentoResponse>>(url, { context: checkToken() });
     }
 
     crearInicio(formData: FormData): Observable<ApiResponse<PreregistroCreadoResponse>> {
         return this.http.post<ApiResponse<PreregistroCreadoResponse>>(
-            this.inicio + 'CrearPreregistro', formData, { context: checkToken() }
+            this.demanda + 'CrearDemanda', formData, { context: checkToken() }
         );
     }
 
@@ -130,15 +130,23 @@ export class JuicioService {
             map(response => response.data)
         );
     }
+    
     getCatTipoDocumento(): Observable<CatTipoDocumento[]> {
         const url = `${this.catalogos}TipoDocumentos`;
         return this.http.get<{ data: CatTipoDocumento[] }>(url).pipe(
             map(response => response.data)
         );
-
     }
 
-    //Metodos del requerimiento
+    putTurnarDemanda(idDemanda: number): Observable<ApiResponse<any>> {
+        const url= `${this.demanda}Turnar/${idDemanda}`;
+        return this.http.put<ApiResponse<any>>(url, null, {context: checkToken()});
+    }
+
+    //########################################################################
+    // Requerimientos  
+    //########################################################################
+
     crearRequerimientos(formData: FormData): Observable<any> {
         return this.http.post<any>(
             this.requerimientos + 'CrearRequerimiento',
@@ -210,6 +218,11 @@ export class JuicioService {
         const url = `${this.requerimientos + 'RequerimientoExpirado'}/${idRequerimiento}`;
         return this.http.post<any>(url, {}, { context: checkToken() });
     }
+
+    //########################################################################
+    // Expedientes  
+    //########################################################################
+
 
     getListadoExpedientes(params?: any): Observable<ApiResponse<ListarExpedientesResponse[]>> {
         return this.http.get<ApiResponse<ListarExpedientesResponse[]>>(
@@ -407,7 +420,7 @@ export class JuicioService {
 
     getTramitesExpediente(idExpediente: number): Observable<ApiResponse<DetalleExpedienteResponse>> {
         const url = `${this.tramites + 'Expediente'}/${idExpediente}`;
-        return this.http.post<ApiResponse<DetalleExpedienteResponse>>(url,null, { context: checkToken() });
+        return this.http.post<ApiResponse<DetalleExpedienteResponse>>(url, null, { context: checkToken() });
     }
 
     enviarAcuerdo(formData: FormData): Observable<ApiResponse<any>> {

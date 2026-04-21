@@ -195,7 +195,7 @@ export class CrearTramite implements OnInit {
     });
 
     this.parteForm = this.fb.group({
-      idUsr: [''],
+     // idUsr: [''],
       nombre: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoPaterno: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoMaterno: ['', [Validators.required, Validators.maxLength(100)]],
@@ -369,7 +369,7 @@ export class CrearTramite implements OnInit {
           const camposReadonly = ['nombre', 'correo', 'correoAlterno', 'direccion'];
           camposReadonly.forEach(c => this.parteForm.get(c)?.enable({ emitEvent: false }));
           this.parteForm.patchValue({
-            idUsr: this.usrData?.idUsr,
+            //idUsr: this.usrData?.idUsr,
             nombre: this.usrData?.nombre,
             correo: this.usrData?.correo,
             correoAlterno: this.usrData?.correoAlterno,
@@ -397,7 +397,7 @@ export class CrearTramite implements OnInit {
     const valores = this.parteForm.getRawValue();
     const nuevaParte: PartesRequest = {
       ...valores,
-      idUsr: valores.idUsr?.toString().trim() || null,
+     // idUsr: valores.idUsr?.toString().trim() || null,
       nombre: (valores.nombre ?? '').toUpperCase(),
       apellidoPaterno: (valores.apellidoPaterno ?? '').toUpperCase(),
       apellidoMaterno: (valores.apellidoMaterno ?? '').toUpperCase(),
@@ -407,21 +407,21 @@ export class CrearTramite implements OnInit {
       filtroParte: this.filtroParte,
     };
 
-    // Validar duplicado en listaPartes
-    if (nuevaParte.idUsr && this.listaPartes.some((p, idx) =>
-      p.idUsr === nuevaParte.idUsr && idx !== this.indiceParteEditando)) {
-      this.messageService.add({ severity: 'warn', summary: 'Usuario duplicado', detail: 'Este usuario ya fue agregado como parte.' });
-      this.parteForm.markAsUntouched();
-      this.parteForm.updateValueAndValidity({ emitEvent: false });
-      this.formEnviado = false;
-      return;
-    }
+     //! Validar duplicado en listaPartes
+    // if ( this.listaPartes.some((p, idx) =>
+    //   p.idUsr === nuevaParte.idUsr && idx !== this.indiceParteEditando)) {
+    //   this.messageService.add({ severity: 'warn', summary: 'Usuario duplicado', detail: 'Este usuario ya fue agregado como parte.' });
+    //   this.parteForm.markAsUntouched();
+    //   this.parteForm.updateValueAndValidity({ emitEvent: false });
+    //   this.formEnviado = false;
+    //   return;
+    // }
 
-    // Validar duplicado en partes del expediente
-    if (nuevaParte.idUsr && this.partes.some(p => String(p.idUsr) === String(nuevaParte.idUsr))) {
-      this.messageService.add({ severity: 'warn', summary: 'Usuario ya existe', detail: 'Este usuario ya está registrado en el expediente.' });
-      return;
-    }
+    // // Validar duplicado en partes del expediente
+    // if ( this.partes.some(p => String(p.curp) === String(nuevaParte.curp))) {
+    //   this.messageService.add({ severity: 'warn', summary: 'Usuario ya existe', detail: 'Este usuario ya está registrado en el expediente.' });
+    //   return
+    // }
 
     const tipoSeleccionado = this.catTipoPartes.find(t => t.idCatTipoParte === Number(nuevaParte.idCatTipoParte));
     if (tipoSeleccionado) nuevaParte.descripcionTipoParte = tipoSeleccionado.descripcion;
@@ -519,7 +519,7 @@ export class CrearTramite implements OnInit {
     this.listaPartes.forEach(item => {
       const esBusqueda = !item.apellidoPaterno && !item.apellidoMaterno;
       partesFormArray.push(this.fb.group({
-        idUsr: [item.idUsr],
+       // idUsr: [item.idUsr],
         filtroParte: [item.filtroParte],
         nombre: [item.nombre, [Validators.required, Validators.maxLength(100)]],
         apellidoMaterno: [item.apellidoMaterno, esBusqueda ? [] : [Validators.required, Validators.maxLength(100)]],
@@ -613,7 +613,7 @@ export class CrearTramite implements OnInit {
             const { descripcionTipoParte, ...parteSinDescripcion } = parte;
             Object.keys(parteSinDescripcion).forEach(subKey => {
               if (
-                (subKey === 'apellidoPaterno' || subKey === 'apellidoMaterno' || subKey === 'idUsr') &&
+                (subKey === 'apellidoPaterno' || subKey === 'apellidoMaterno' ) &&
                 (!parteSinDescripcion[subKey] || parteSinDescripcion[subKey].toString().trim() === '')
               ) return;
               formData.append(`partes[${index}][${subKey}]`, parteSinDescripcion[subKey]);
