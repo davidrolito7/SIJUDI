@@ -18,6 +18,6 @@ export const environment = {
     urlApiJuicioOral: 'http://10.1.10.50:81',
 
     //* api juicio oral penal
-    urlApiJuicioOralPenal:'https://pruebas.tribunaloaxaca.gob.mx/juicioOralApi/api'
+    urlApiJuicioOralPenal:'https://api.tribunaloaxaca.gob.mx/juicioOralApi/api'
 
 };

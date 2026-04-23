@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    DEV_SKIP_2FA: true, // false para flujo normal de 2FA
+    DEV_SKIP_2FA: false, // false para flujo normal de 2FA
     ConstantsService: {
         ruta : 'https://pruebas.tribunaloaxaca.gob.mx/permisos',
         idSistema: 4169,
