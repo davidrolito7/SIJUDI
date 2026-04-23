@@ -13,15 +13,14 @@
             </div>
             <div class="flex gap-2 flex-wrap">
 
-                @if (!mostrarBoton()) {
                 <p-button (onClick)="irACrearTramite(expediente()?.idExpediente!, expediente()?.NumExpediente!)"
                     styleClass="btn-secondary" icon="pi pi-file-plus"
                     label="Nuevo trámite"></p-button>
-                }
+                
               
                 @if (mostrarBoton()) {
                 <p-button (onClick)="irACrearRequerimiento(expediente()?.idExpediente!, expediente()?.NumExpediente!)"
-                    styleClass="bg-primary" icon="pi pi-pencil"
+                     icon="pi pi-pencil"
                     label="Requerimiento"></p-button>
                 }
 
@@ -65,7 +64,7 @@
                     <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
                         aria-label="Limpiar filtros"></p-button>
 
-                    <p-button type="submit" aria-label="Buscar" styleClass="btn-secondary">
+                    <p-button type="submit" aria-label="Buscar" >
                         <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>

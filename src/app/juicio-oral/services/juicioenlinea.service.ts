@@ -6,7 +6,7 @@ import {
     CatSexos,
     CatTipoPartes,
     CatTipoVia,
-    PreregistroCreadoResponse,
+    CrearDemandaResponse,
     ListarExpedientesResponse,
     DetalleRequerimiento,
     DocumentoRequerimiento,
@@ -65,13 +65,13 @@ export class JuicioService {
     //* Audiencias  //http://10.1.10.50:81/api/Audiencia/Listar
     //* ########################################################################
 
-    getListadoInicios(params?: any): Observable<ApiResponse<DetalleDemandaResponse[]>> {
+    getListadoDemandas(params?: any): Observable<ApiResponse<DetalleDemandaResponse[]>> {
         return this.http.get<ApiResponse<DetalleDemandaResponse[]>>(
             `${this.demanda}ListadoDemandas`, { params, context: checkToken() }
         );
     }
 
-    getDetalleInicios(idDemanda: number): Observable<DetalleDemandaResponse> {
+    getDetalleDemanda(idDemanda: number): Observable<DetalleDemandaResponse> {
         const url = `${this.demanda}DetalleDemanda/${idDemanda}`;
         return this.http.get<DetalleDemandaResponse>(url, { context: checkToken() }
         );
@@ -87,8 +87,8 @@ export class JuicioService {
         return this.http.get<ApiResponse<DocumentoResponse>>(url, { context: checkToken() });
     }
 
-    crearInicio(formData: FormData): Observable<ApiResponse<PreregistroCreadoResponse>> {
-        return this.http.post<ApiResponse<PreregistroCreadoResponse>>(
+    crearDemanda(formData: FormData): Observable<ApiResponse<CrearDemandaResponse>> {
+        return this.http.post<ApiResponse<CrearDemandaResponse>>(
             this.demanda + 'CrearDemanda', formData, { context: checkToken() }
         );
     }
@@ -130,7 +130,7 @@ export class JuicioService {
             map(response => response.data)
         );
     }
-    
+
     getCatTipoDocumento(): Observable<CatTipoDocumento[]> {
         const url = `${this.catalogos}TipoDocumentos`;
         return this.http.get<{ data: CatTipoDocumento[] }>(url).pipe(
@@ -138,10 +138,22 @@ export class JuicioService {
         );
     }
 
-    putTurnarDemanda(idDemanda: number): Observable<ApiResponse<any>> {
-        const url= `${this.demanda}Turnar/${idDemanda}`;
-        return this.http.put<ApiResponse<any>>(url, null, {context: checkToken()});
+    putSiguienteMovimiento(idDemanda: number): Observable<ApiResponse<any>> {
+        const url = `${this.demanda}SiguienteMovimiento/${idDemanda}`;
+        return this.http.put<ApiResponse<any>>(url, null, { context: checkToken() });
     }
+
+    getDemandasPendientesRecibir(params?: any): Observable<ApiResponse<DetalleDemandaResponse[]>> {
+        return this.http.get<ApiResponse<DetalleDemandaResponse[]>>(
+            `${this.demanda}ListadoPendientesRecibir`, { params, context: checkToken() }
+        );
+    }
+    getDemandasPendientesTurnar(params?: any): Observable<ApiResponse<DetalleDemandaResponse[]>> {
+        return this.http.get<ApiResponse<DetalleDemandaResponse[]>>(
+            `${this.demanda}ListadoPendientesTurnar`, { params, context: checkToken() }
+        );
+    }
+
 
     //########################################################################
     // Requerimientos  

@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { AnexosDelcaradosRequest, CatMateria, CatMunicipios, CatSexos, CatTipoDocumento, CatTipoPartes, CatTipoVia, CatVia, DatosUsuarioResponse, DocumentosRequest, PartesRequest } from '../../interfaces/juicioenlinea.model';
+import { AnexosDelcaradosRequest, CatMateria, CatMunicipios, CatSexos, CatTipoDocumento, CatTipoPartes, CatTipoVia, CatVia, CrearDemandaResponse, DatosUsuarioResponse, DocumentosRequest, PartesRequest } from '../../interfaces/juicioenlinea.model';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
@@ -59,7 +59,7 @@ export class CrearDemanda implements OnInit {
   listaPartes: PartesRequest[] = [];
   listaAnexos: DocumentosRequest[] = [];
   anexosDeclarados: AnexosDelcaradosRequest[] = [];
-
+  demandaResponse: CrearDemandaResponse | null = null;
   //* === ESTADOS DE UI Y MODALES ===
   visible: boolean = false;
   visibleListAnexo: boolean = false;
@@ -107,7 +107,7 @@ export class CrearDemanda implements OnInit {
     });
 
     this.parteForm = this.fb.group({
-     //// idUsr: [''],
+      //// idUsr: [''],
       nombre: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoPaterno: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoMaterno: ['', [Validators.required, Validators.maxLength(100)]],
@@ -209,7 +209,7 @@ export class CrearDemanda implements OnInit {
     this.indiceParteEditando = -1;
     this.parteForm.reset({
       esMenorEdad: false
-     //// idUsr: ''
+      //// idUsr: ''
     });
     this.formEnviado = false;
     this.visible = true;
@@ -227,7 +227,7 @@ export class CrearDemanda implements OnInit {
 
     const nuevaParte: PartesRequest = {
       ...valores,
-     //// idUsr: valores.idUsr?.toString().trim() || null,
+      //// idUsr: valores.idUsr?.toString().trim() || null,
       nombre: (valores.nombre ?? '').toUpperCase(),
       apellidoPaterno: (valores.apellidoPaterno ?? '').toUpperCase(),
       apellidoMaterno: (valores.apellidoMaterno ?? '').toUpperCase(),
@@ -580,21 +580,24 @@ export class CrearDemanda implements OnInit {
     });
 
     // 5. Enviar Petición
-    this.juicioService.crearInicio(formData).subscribe({
+    this.juicioService.crearDemanda(formData).subscribe({
       next: (respuesta) => {
         this.isLoading = false;
         if (respuesta?.success) {
           this.folio = respuesta.data.folio;
+          this.demandaResponse = respuesta.data;
           this.confirmationService.confirm({
             key: 'success',
-            accept: () => this.detalle(respuesta.data.idDemanda),
+            accept: () => this.detalle(respuesta.data.expediente.idExpediente),
             reject: () => this.limpiarTodo()
           });
+        } else {
+          this.messageService.add({ severity: 'info', summary: 'Lo sentimos', detail: respuesta?.message || 'No se pudo crear la demanda.' });
         }
       },
-      error: () => {
+      error: (error) => {
         this.isLoading = false;
-        this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ocurrió un error con el servidor.' });
+        this.messageService.add({ severity: 'warn', summary: 'Error', detail: error.error?.message || 'Ocurrió un error con el servidor.' });
       }
     });
   }
@@ -736,12 +739,15 @@ export class CrearDemanda implements OnInit {
       showProgress: true,
       showButtons: ['next', 'previous'],
       steps: [
-        { element: '#idCatMunicipio', popover: { title: 'Selecciona un municipio', description: 'Haz clic aquí y elige el municipio donde quieras llevar a cabo tu proceso.', side: "left", align: 'start' } },
+        { element: '#cveMunicipio', popover: { title: 'Selecciona un municipio', description: 'Haz clic aquí y elige el municipio donde quieras llevar a cabo tu proceso.', side: "left", align: 'start' } },
         { element: '#idCatMateria', popover: { title: 'Selecciona la materia del caso', description: 'Haz clic aquí y elige la materia a la que pertenece tu demanda.', side: "left", align: 'start' } },
         { element: '#idCatTipoVia', popover: { title: 'Elige la vía correspondiente', description: 'Después de seleccionar la materia, selecciona la vía que aplique a tu demanda.', side: "bottom", align: 'start' } },
         { element: '#descripcionDemanda', popover: { title: 'Describe brevemente tu demanda', description: 'Escribe un resumen corto que explique el motivo o el contexto de la demanda.', side: "bottom", align: 'start' } },
         { element: '#agregarParte', popover: { title: 'Agrega una parte al expediente', description: 'Presiona este botón para añadir una persona u organización relacionada con la demanda .', side: "left", align: 'start' } },
-        { element: '#listadoPartes', popover: { title: 'Listado de partes agregadas', description: 'Aquí verás todas las partes que hayas agregado. Puedes editarlas o eliminarlas si es necesario', side: "left", align: 'start' } },
+        //{ element: '#listadoPartes', popover: { title: 'Listado de partes agregadas', description: 'Aquí verás todas las partes que hayas agregado. Puedes editarlas o eliminarlas si es necesario', side: "left", align: 'start' } },
+        { element: '#declaraAnexos', popover: { title: 'Agrega tus anexos', description: 'Presiona este botón para añadir la lista de anexos a declarar .', side: "left", align: 'start' } },
+        { element: '#agregarArchivos', popover: { title: 'Agrega tus archivos', description: 'Presiona este botón para añadir la lista de archivos previamente declarados.', side: "left", align: 'start' } },
+
       ]
     });
 

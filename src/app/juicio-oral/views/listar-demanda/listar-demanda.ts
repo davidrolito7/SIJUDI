@@ -146,7 +146,7 @@ export class ListarDemanda implements OnInit {
 
     if (this.filtro.estado > 0) params['estado'] = this.filtro.estado;
 
-    this.juicioService.getListadoInicios(params).subscribe({
+    this.juicioService.getListadoDemandas(params).subscribe({
       next: (response) => {
         this.isLoading = false;
         this.inicios.set(response.data);
@@ -215,9 +215,9 @@ export class ListarDemanda implements OnInit {
     this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idExpediente } });
   }
 
-  onRedirigirCrear() {
-    this.router.navigate(['/juicioenlinea/demandas/crear']);
-  }
+  // // onRedirigirCrear() {
+  // //   this.router.navigate(['/juicioenlinea/demandas/crear']);
+  // // }
 
   // ============================
   // Estado helpers for UI tags

@@ -37,7 +37,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 
 @Component({
-  selector: 'app-turnar-demanda',
+  selector: 'app-recibir-demanda',
   imports: [
     CommonModule,
     RouterModule,
@@ -62,12 +62,12 @@ import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm
     Spinner,
     ConfirmDialog
   ],
-  templateUrl: './turnar-demanda.html',
-  styleUrl: './turnar-demanda.css',
+  templateUrl: './recibir-demanda.html',
+  styleUrl: './recibir-demanda.css',
   providers: [ConfirmationService, MessageService]
 
 })
-export class TurnarDemanda implements OnInit {
+export class RecibirDemanda implements OnInit {
 
   // ===========================
   // UI options / state
@@ -170,7 +170,7 @@ export class TurnarDemanda implements OnInit {
 
     if (this.filtro.estado > 0) params['estado'] = this.filtro.estado;
 
-    this.juicioService.getDemandasPendientesTurnar(params).subscribe({
+    this.juicioService.getDemandasPendientesRecibir(params).subscribe({
       next: (response) => {
         this.isLoading.set(false);
         this.inicios.set(response.data);

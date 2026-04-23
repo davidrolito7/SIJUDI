@@ -12,5 +12,5 @@
   "include": [
     "src/**/*.d.ts",
     "src/**/*.spec.ts"
-  ]
+, "src/app/juicio-oral/views/recibir-demanda/recibir-demanda.spec.ts"  ]
 }
