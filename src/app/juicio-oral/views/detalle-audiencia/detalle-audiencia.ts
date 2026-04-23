@@ -43,7 +43,6 @@ export class DetalleAudiencia implements OnInit {
 
   anexoForm!: FormGroup;
   solicitudForm!: FormGroup;
-
   formEnviado: boolean = false;
   mostrarInputNombre: boolean = false; // Input de otro* en catalogo tipo documento
   catTipoDocumentos: CatTipoDocumento[] = [];
@@ -101,6 +100,7 @@ export class DetalleAudiencia implements OnInit {
       observaciones: ['', [Validators.required, Validators.maxLength(250)]],
       solicitudDocumento: [null, Validators.required],
     });
+ 
   }
 
   showModalAnexo() {

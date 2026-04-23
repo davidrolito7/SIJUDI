@@ -1,5 +1,5 @@
-<p-confirmdialog [key]="key"  [appendTo]="'body'"  [baseZIndex]="100"
-   maskStyleClass="bg-primary/40!">
+<p-confirmdialog [key]="key" [appendTo]="'body'" [baseZIndex]="100" maskStyleClass="bg-primary/40!"
+ >
   <ng-template #headless let-onAccept="onAccept" let-onReject="onReject">
     <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded">
       <div class="rounded-full inline-flex justify-center items-center h-24 w-24 -mt-20" [ngClass]="circleClass">
@@ -10,12 +10,13 @@
       <p class="font-medium mb-0">{{ message }}</p>
 
       <div class="flex items-center gap-2 mt-6">
-              @if (showAccept) {
-          <p-button [label]="acceptLabel" (onClick)="onAccept()" [styleClass]="acceptStyleClass"></p-button>
+         @if (showReject) {
+        <p-button [label]="rejectLabel" [outlined]="true" (onClick)="onReject()" styleClass="min-w-32"></p-button>
         }
-        @if (showReject) {
-          <p-button [label]="rejectLabel" [outlined]="true" (onClick)="onReject()"></p-button>
-        }
+        @if (showAccept) {
+        <p-button [label]="acceptLabel" (onClick)="onAccept()" [styleClass]="acceptStyleClass + ' min-w-32'">
+        </p-button> }
+       
       </div>
     </div>
   </ng-template>

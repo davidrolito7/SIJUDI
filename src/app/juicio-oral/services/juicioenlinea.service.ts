@@ -138,9 +138,9 @@ export class JuicioService {
         );
     }
 
-    putSiguienteMovimiento(idDemanda: number): Observable<ApiResponse<any>> {
-        const url = `${this.demanda}SiguienteMovimiento/${idDemanda}`;
-        return this.http.put<ApiResponse<any>>(url, null, { context: checkToken() });
+    putSiguienteMovimiento(payload: any): Observable<ApiResponse<any>> {
+        const url = `${this.demanda}SiguienteMovimiento`;
+        return this.http.put<ApiResponse<any>>(url, payload, { context: checkToken() });
     }
 
     getDemandasPendientesRecibir(params?: any): Observable<ApiResponse<DetalleDemandaResponse[]>> {
