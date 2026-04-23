@@ -1,6 +1,7 @@
 export const environment = {
     production: false,
-    DEV_SKIP_2FA: false, // false para flujo normal de 2FA
+    DEV_SKIP_2FA: true,    // siempre false para producción, true para saltar 2FA y pasar directo a selección de perfil (o login automático si DEV_SKIP_PERFIL también está activo)
+    DEV_SKIP_PERFIL: true, // siempre false para producción, true para saltar selección de perfil y completar contexto automáticamente para tipo persona 1 (abogado) al iniciar sesión, solo si DEV_SKIP_2FA también está activo
     ConstantsService: {
         ruta : 'https://pruebas.tribunaloaxaca.gob.mx/permisos',
         idSistema: 4169,

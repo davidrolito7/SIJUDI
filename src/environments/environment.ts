@@ -1,6 +1,7 @@
 export const environment = {
     production: true,
     DEV_SKIP_2FA: false,
+    DEV_SKIP_PERFIL: false,
     ConstantsService: {
         //ruta : 'https://api.tribunaloaxaca.gob.mx/permisos',
         ruta: 'https://api.tribunaloaxaca.gob.mx/permisos',

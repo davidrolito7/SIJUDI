@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-spinner',
@@ -6,7 +6,7 @@ import { Component, Input } from '@angular/core';
   templateUrl: './spinner.html',
   styleUrl: './spinner.css',
 })
-export class Spinner {
+export class Spinner implements OnDestroy {
   @Input() message: string = '';
 
   private _isLoading = false;
@@ -18,5 +18,9 @@ export class Spinner {
 
   get isLoading(): boolean {
     return this._isLoading;
+  }
+
+  ngOnDestroy(): void {
+    document.body.style.cursor = 'default';
   }
 }

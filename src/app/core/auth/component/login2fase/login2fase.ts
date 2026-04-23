@@ -22,6 +22,7 @@ import { UserMenuStore } from '../../../layout/siderbar/user-menu.store';
 import { PantallasService } from '../../../../juicio-oral/services/pantallas.service';
 import { catchError, map, of, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { environment } from '../../../../../environments/environment';
 
 const SISTEMA_ID = 4169;
 const AREA_ID = 2037;
@@ -65,9 +66,40 @@ export class Login2 implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getGoogle();
     this.llavePrivadaForm = this.fb.group({
       password: ['', Validators.required],
+    });
+    this.iniciarFlujo();
+  }
+
+  private iniciarFlujo(): void {
+    const user = this.tokenService.getUserFromToken();
+    if (!user?.idGeneral) {
+      this.getGoogle();
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.cd.detectChanges();
+
+    this.authService.obtenerDatosUsuario(user.idGeneral).subscribe({
+      next: (resp) => {
+        const abogado = resp.data?.pD_Abogados?.[0];
+        if (environment.DEV_SKIP_2FA && (abogado?.idTipoPersona ?? null) === 1) {
+          const nombre = (abogado?.nombre ?? '').toString().trim();
+          const foto   = (abogado?.foto   ?? '').toString().trim();
+          sessionStorage.setItem('AbogadoNombre',     nombre);
+          sessionStorage.setItem('AbogadoFotoBase64', foto);
+          this.loginContextoAutomatico(nombre, foto);
+        } else {
+          this.getGoogle();
+        }
+      },
+      error: () => {
+        this.isLoading.set(false);
+        this.cd.detectChanges();
+        this.getGoogle();
+      },
     });
   }
 
@@ -98,7 +130,7 @@ export class Login2 implements OnInit {
         sessionStorage.setItem('AbogadoNombre', nombre);
         sessionStorage.setItem('AbogadoFotoBase64', foto);
 
-        if (idTipoPersona === 1) {
+        if (environment.DEV_SKIP_PERFIL && idTipoPersona === 1) {
           this.loginContextoAutomatico(nombre, foto);
         } else {
           await this.tokenService.setTwoFactorValidated(true);
