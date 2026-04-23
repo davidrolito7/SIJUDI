@@ -67,9 +67,9 @@ export class RespuestaAmparoRecibido {
       this.cargarDetallesPromocion(this.idNotificacion);
     }
 
-    this.testDialog();
+    //this.testDialog();
   }
-  testDialog(): void {
+  /*testDialog(): void {
     this.responsePromocion.set({
       respuestaGenericaCJF: {
         folioConfirmacion: "202621400010000176",
@@ -88,7 +88,7 @@ export class RespuestaAmparoRecibido {
       key: 'responsePromocion',
       header: 'Promoción Enviada',
     });
-  }
+  }*/
   // ─── Carga ─────────────────────────────────────────────────────────────────
 
   cargarDetallesPromocion(idNotificacion: number): void {
