@@ -12,6 +12,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { base64ToFile } from '../../../shared/functions/utils';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { DetalleDemandaResponse } from '../../interfaces/juicioenlinea.model';
+import { TokenService } from '../../../core/auth/service/token.service';
 
 @Component({
   selector: 'app-detalle-demanda',
@@ -34,6 +35,8 @@ export class DetalleDemanda implements OnInit {
     private router: Router,
     private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef,
+    private tokenService: TokenService,
+
   ) { }
 
   ngOnInit(): void {
@@ -44,12 +47,12 @@ export class DetalleDemanda implements OnInit {
       this.getDetalleInicio(this.idInicio);
     } else {
       console.warn('No se proporcionó idExpediente. Redirigiendo a la página de inicio.');
-    // this.router.navigate(['/layout/inicio']);
+      // this.router.navigate(['/layout/inicio']);
     }
   }
 
   getDetalleInicio(idExpediente: number): void {
-    this.juicioService.getDetalleInicios(idExpediente).subscribe({
+    this.juicioService.getDetalleDemanda(idExpediente).subscribe({
       next: (response: any) => {
         this.detalleDemanda = response.data || null;
         this.cdr.markForCheck();
@@ -94,5 +97,31 @@ export class DetalleDemanda implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+  permisoBoton(): boolean {
+    const user = this.tokenService.getUserFromToken();
+    if (user && (user.idSistemaPerfil === 7180 || user.idSistemaPerfil === 7181 )) { //oficialia y secretaria 0.o
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  get ultimoMovimiento() {
+    const movimientos = this.detalleDemanda?.demanda?.movimientos;
+    if (!movimientos || movimientos.length === 0) return null;
+    return movimientos[movimientos.length - 1];
+  }
+
+  get mostrarBotonRecibir(): boolean {
+    const mov = this.ultimoMovimiento;
+    if (!mov) return false;
+    return mov.fechaRecepcion === null;
+  }
+
+  get mostrarBotonTurnar(): boolean {
+    const mov = this.ultimoMovimiento;
+    if (!mov) return false;
+    return mov.fechaRecepcion !== null && mov.idGeneralTurna === null;
   }
 }

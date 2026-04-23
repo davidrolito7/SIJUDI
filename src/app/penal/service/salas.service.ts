@@ -21,7 +21,7 @@ private catalogos = 'https://localhost:7240/api/Catalogos/';
   constructor(private http: HttpClient) {}
     
     
-        getListadoInicios(params?: any,Idpantalla?: number): Observable<ApiResponse<responseDataBusqueda[]>> {
+        getListadoDemandas(params?: any,Idpantalla?: number): Observable<ApiResponse<responseDataBusqueda[]>> {
             params["IdPantalla"] = Idpantalla;
             console.log('Parámetros enviados al servicio:', params);
             return this.http.post<ApiResponse<responseDataBusqueda[]>>(

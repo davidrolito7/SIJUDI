@@ -1,4 +1,4 @@
-<app-spinner [isLoading]="isLoading" message="" /> 
+<app-spinner [isLoading]="isLoading" message="" />
 
 
 <div class="lg:sticky top-0 z-50 flex flex-col">
@@ -9,10 +9,21 @@
     <!-- DETALLE -->
     <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl">
 
-        <div class="flex items-start flex-col md:flex-row justify-between">
-            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
+        <div class="flex items-center flex-col md:flex-row justify-between p-4">
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0">
                 Detalle de demandas electrónicas 1° instancia #{{detalleDemanda?.NumExpediente}}
             </label>
+            @if(mostrarBotonRecibir ){
+            <p-button [raised]="true" severity="info" icon="pi pi-file-export" pTooltip="Turnar demanda"
+                tooltipPosition="top" label="Recibir">
+            </p-button>
+            }
+
+            @if(mostrarBotonTurnar){
+            <p-button [raised]="true" severity="info" icon="pi pi-file-export" pTooltip="Turnar demanda"
+                tooltipPosition="top" label="Turnar">
+            </p-button>
+            }
         </div>
 
         <!-- Sección: Datos generales -->
@@ -37,7 +48,7 @@
                     <p class="text-surface-600 dark:text-surface-200"><b>No. Expediente: </b>
                         {{detalleDemanda.NumExpediente}}
                     </p>
-                     <p class="text-surface-600 dark:text-surface-200"><b>Juzgado: </b>
+                    <p class="text-surface-600 dark:text-surface-200"><b>Juzgado: </b>
                         {{detalleDemanda.juzgado.Descripcion}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Fecha recepción:</b>
@@ -82,7 +93,7 @@
                         }
                         }
                     </p>
-                     <p class="text-surface-600 dark:text-surface-200 wrap-break-word"><b>Descripción: </b>
+                    <p class="text-surface-600 dark:text-surface-200 wrap-break-word"><b>Descripción: </b>
                         {{detalleDemanda.demanda.descripcionDemanda}}
                     </p>
                 </div>
@@ -110,7 +121,8 @@
         </div>
 
         <div class="p-3">
-            <p-table [value]="detalleDemanda?.demanda?.partes ?? []"   [tableStyle]="{ 'min-width': '100%', width: 'max-content' }">
+            <p-table [value]="detalleDemanda?.demanda?.partes ?? []"
+                [tableStyle]="{ 'min-width': '100%', width: 'max-content' }">
                 <ng-template #header>
                     <tr>
                         <th>Nombre</th>
@@ -147,7 +159,7 @@
                 </ng-template>
             </p-table>
         </div>
-     <!-- Sección: Anexos declarados -->
+        <!-- Sección: Anexos declarados -->
         <div
             class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 transition delay-100 duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.01]">
             <span class="flex items-center">
@@ -181,7 +193,7 @@
                         <td>
                             {{ anexo.valor != null ? ('$' + (anexo.valor | number:'1.2-2':'en-US')) : 'N/A' }}
                         </td>
-                       
+
                     </tr>
                 </ng-template>
                 <ng-template #emptymessage>
@@ -190,7 +202,7 @@
                     </tr>
                 </ng-template>
             </p-table>
-          
+
         </div>
         <!-- Sección: Archivos adjuntos -->
         <div
@@ -229,7 +241,7 @@
                             {{ documento.montoAnexo ? ('$' + (documento.montoAnexo | number:'1.2-2':'en-US')) : 'N/A' }}
                         </td> -->
                         <td>
-                            <p-button icon="pi pi-file-pdf" [rounded]="true" [raised]="true"  severity="success"
+                            <p-button icon="pi pi-file-pdf" [rounded]="true" [raised]="true" severity="success"
                                 (click)="openModal(documento.idDocumento)" pTooltip="Ver PDF" tooltipPosition="top" />
                         </td>
                     </tr>
@@ -240,11 +252,11 @@
                     </tr>
                 </ng-template>
             </p-table>
-      
+
         </div>
 
     </div>
 
 </div>
-      <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-            </app-pdf-dialog>
+<app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+</app-pdf-dialog>

@@ -6,6 +6,7 @@ export const environment = {
         idSistema: 4169,
         //ruta : 'https://localhost:7260'
     },
+
     urlApiEfirma: 'https://api.tribunaloaxaca.gob.mx/efirma/api',
     urlApiExhortosElectronicos: "https://pruebas.tribunaloaxaca.gob.mx/exhortoselectronicos/api",
     //urlApiAmparosPJF:'https://localhost:44397/Api',
@@ -14,7 +15,7 @@ export const environment = {
     urlApiTerminos: 'https://pruebas.tribunaloaxaca.gob.mx/terminosApi/api',
     //ModuloExhortos:'Exhortos'
 
-    //* api juicio en linea
+    //* api demandas y oficialia primera instancia 0.o
     //urlApiJuicioOral: 'http://10.1.10.50:81',
     urlApiJuicioOral:'http://127.0.0.1:8000',
 

@@ -154,7 +154,7 @@
             <ng-template #caption>
                 <div class="flex">
                     <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Anexos declarados</div>
-                    <p-button icon="pi pi-file-plus" class="ml-auto" label="Agregar" (click)="showModalListAnexo()" />
+                    <p-button id="declaraAnexos" icon="pi pi-file-plus" class="ml-auto" label="Agregar" (click)="showModalListAnexo()" />
                 </div>
             </ng-template>
             <ng-template #header>
@@ -200,7 +200,7 @@
             <ng-template #caption>
                 <div class="flex">
                     <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Archivos adjuntos</div>
-                    <p-fileupload mode="basic" styleClass="btn-morado" class=" ml-auto" name="demo[]" accept=".pdf"
+                    <p-fileupload id="agregarArchivos" mode="basic" styleClass="btn-morado" class=" ml-auto" name="demo[]" accept=".pdf"
                         (onSelect)="onAnexosSelect($event)" [multiple]="true" [auto]="true" maxFileSize="1000000"
                         chooseIcon="pi pi-upload" chooseLabel="Agregar" />
                 </div>
@@ -304,16 +304,75 @@
 
 <!--* DIALOGO DE CONFIRMACION ENVIAR DEMANDA -->
 <app-confirm-dialog key="demanda" title="Confirmación" message="Confirme la acción para enviar demanda"
-    icon="pi pi pi-send" circleClass="bg-green-600" acceptLabel="Confirmar"
-    acceptStyleClass="bg-green-600 border-green-600" rejectLabel="Cancelar">
+    icon="pi pi pi-send" circleClass="bg-primary" acceptLabel="Confirmar"
+    acceptStyleClass="bg-primary" rejectLabel="Cancelar">
 </app-confirm-dialog>
 
 <!--* DIALOGO DE CONFIRMACION VER DEMANDA -->
-<app-confirm-dialog key="success" title="Pre-folio: {{ folio }}" message="Pre-registro enviado exitosamente!"
-    icon="pi pi-check" circleClass="bg-primary" acceptLabel="Ver pre-registro" acceptStyleClass="bg-primary"
+<!-- <app-confirm-dialog key="success" title="Folio demanda: {{ folio }}" message="Demanda enviada exitosamente!"
+    icon="pi pi-check" circleClass="bg-primary" acceptLabel="Ver demanda" acceptStyleClass="bg-primary"
     rejectLabel="Cerrar">
-</app-confirm-dialog>
+</app-confirm-dialog> -->
 
+<p-confirmdialog key="success">
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        @if (message) {
+        <div
+            class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded-2xl w-[90vw] sm:w-auto sm:min-w-[420px] sm:max-w-[520px]">
+
+            <!-- Ícono -->
+            <div
+                class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+                <i class="pi pi-check text-5xl!"></i>
+            </div>
+
+            <span class="font-bold text-2xl block mb-2 mt-4">Demanda enviada correctamente</span>
+
+            <!-- Datos de la respuesta -->
+            <div class="flex flex-col gap-1 w-full mt-4 text-sm">
+
+                <div
+                    class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+                    <span class="font-semibold text-color-secondary shrink-0">Folio</span>
+                    <span class="font-medium text-right min-w-0">
+                        {{ demandaResponse?.folio || '—' }}
+                    </span>
+                </div>
+                <div
+                    class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg ">
+                    <span class="font-semibold text-color-secondary shrink-0">Expediente</span>
+                    <span class="font-medium text-right min-w-0">
+                        {{ demandaResponse?.expediente?.NumExpediente }}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+                    <span class="font-semibold text-color-secondary shrink-0">Juzgado</span>
+                    <span class="font-medium text-right min-w-0">
+                        {{ demandaResponse?.expediente?.juzgado?.Descripcion || '—' }}
+                    </span>
+                </div>
+
+                <div
+                    class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg ">
+                    <span class="font-semibold text-color-secondary shrink-0">Fecha de envío</span>
+                    <span class="font-medium text-right min-w-0">
+                        {{ demandaResponse?.fechaHoraRecepcion| date:'dd/MM/yyyy HH:mm' : '—' }} h
+                    </span>
+                </div>
+
+
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6 w-full">
+                <p-button label="Ver demanda" (onClick)="onAccept()" ></p-button>
+                <p-button label="Cerrar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+
+            </div>
+
+        </div>
+        }
+    </ng-template>
+</p-confirmdialog>
 <!--* MODAL PARA AGREGAR PARTES -->
 <p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }" [closable]="false">
     <ng-template pTemplate="header">

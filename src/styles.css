@@ -3,15 +3,23 @@
 @import "tailwindcss-primeui";
 @import "primeicons/primeicons.css";
 @import 'driver.js/dist/driver.css';
+
 /* ============================================
-   TEMA - Define tus colores personalizados
+   TEMA - Colores personalizados (Tailwind v4)
    ============================================ */
 @theme {
   --color-secondary-500: #b2915b;
   --color-secondary-600: #9a7b4e;
   --color-secondary-700: #7f6542;
+
+  --color-tertiary-500: #c46a4a;
+  --color-tertiary-600: #b85f43;
+  --color-tertiary-700: #9e523a;
 }
 
+/* ============================================
+   DARK MODE - Overrides puntuales
+   ============================================ */
 @media (prefers-color-scheme: dark) {
   .dark\:bg-surface-960 {
     background-color: #000000 !important;
@@ -20,52 +28,35 @@
 
 /* ============================================
    BOTONES PERSONALIZADOS
+   Enfoque único: Tailwind @apply sobre <p-button>.
+   Las clases se aplican al <button> generado por PrimeNG
+   vía [styleClass]="'btn-secondary'".
    ============================================ */
 
 /* Botón secundario (café) */
 .btn-secondary {
-  /* PrimeNG v18+ (PrimeUI): variables del botón */
-  --p-button-primary-background: #b2915b;
-  --p-button-primary-border: #b2915b;
-  --p-button-primary-hover-background: #9a7b4e;
-  --p-button-primary-hover-border: #9a7b4e;
-  --p-button-primary-active-background: #7f6542;
-  --p-button-primary-active-border: #7f6542;
-  /* Tailwind: */
-  @apply border-[#b2915b];
+  @apply bg-[#b2915b] hover:bg-[#9a7b4e] active:bg-[#7f6542] text-white border-0;
 }
 
-/* Botón acción (terracota) */
+/* Botón terciario / acción (terracota) */
 .btn-tertiary {
-  --p-button-primary-background: #C46A4A;
-  --p-button-primary-border: #C46A4A;
-  --p-button-primary-hover-background: #B85F43;
-  --p-button-primary-hover-border: #B85F43;
-  --p-button-primary-active-background: #9E523A;
-  --p-button-primary-active-border: #9E523A;
-
-  /* Tailwind: */
-  @apply border-[#C46A4A];
+  @apply bg-[#c46a4a] hover:bg-[#b85f43] active:bg-[#9e523a] text-white border-0;
 }
 
 /* Botón eliminar (rojo) */
 .btn-rojo {
-  --p-button-primary-background: #ef4444;
-  --p-button-primary-border: #ef4444;
-  --p-button-primary-hover-background: #dc2626;
-  --p-button-primary-hover-border: #dc2626;
-
-  @apply bg-red-500 hover:bg-red-600 text-white border-0;
+  @apply bg-red-500 hover:bg-red-600 active:bg-red-700 text-white border-0;
 }
 
 /* Botón info (azul) */
 .btn-info {
-  --p-button-primary-background: #3b82f6;
-  --p-button-primary-border: #3b82f6;
-  --p-button-primary-hover-background: #2563eb;
-  --p-button-primary-hover-border: #2563eb;
+  @apply bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white border-0;
+}
 
-  @apply bg-blue-500 hover:bg-blue-600 text-white border-0;
+/* Botón outlined café - para acciones secundarias */
+.btn-outline {
+  @apply bg-transparent hover:bg-[#b2915b]/10 active:bg-[#b2915b]/20 
+         text-[#7f6542] border border-[#b2915b];
 }
 
 /* ============================================
@@ -98,17 +89,15 @@
    DIALOG (p-dialog) - Variante compacta
    ============================================ */
 .dialog-compact .p-dialog-header {
-  padding: 0rem 0rem 0rem 0.6rem !important;
+  padding: 0 0 0 0.6rem !important;
 }
 
 .dialog-compact .p-dialog-content {
-  padding: 0rem 0.6rem !important;
+  padding: 0 0.6rem !important;
 }
 
 .dialog-compact .p-dialog-title {
-  font-size: 1.125rem !important;
-  /* text-lg */
-
+  font-size: 1.125rem !important; /* text-lg */
 }
 
 /* ============================================
@@ -118,6 +107,9 @@
   z-index: 9999 !important;
 }
 
+/* ============================================
+   PRINT
+   ============================================ */
 @media print {
   body * {
     visibility: hidden;

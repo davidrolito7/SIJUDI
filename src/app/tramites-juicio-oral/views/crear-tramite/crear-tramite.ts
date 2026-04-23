@@ -26,8 +26,6 @@ import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { HttpResponse } from '@angular/common/http';
 import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
-
 
 @Component({
   selector: 'app-crear-tramite',

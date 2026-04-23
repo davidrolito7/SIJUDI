@@ -69,6 +69,7 @@ export interface DemandaResponse {
     documentos: Documentos[];
     cat_via_materia: CatMateriaVia;
     ultimo_estado: HistorialEstado;
+    movimientos: Movimiento[];
     //tipo: string;
 }
 
@@ -157,6 +158,21 @@ export interface Estado { //* OK
     descripcion: string;
 }
 
+export interface Movimiento {
+    idHistorialMovimientoDemanda: number;
+    idDemanda: number;
+    idCatEstadoDemanda: number;
+    idMovimiento: number;
+    cargoRecibe: string;
+    idGeneralRecibe: number;
+    fechaRecepcion: Date;
+    cargoTurna: string;
+    idGeneralTurna: number;
+    fechaTurnado: Date;
+    observaciones?: string;
+    revocado: boolean;
+    activo: boolean;
+}
 export interface DocumentoResponse {  //! QUITAR
     did: string;
     sid: string;
@@ -178,7 +194,7 @@ export interface DocumentoResponse {  //! QUITAR
 // }
 
 export interface PartesRequest { //* OK 
-   //// idUsr: string | null;
+    //// idUsr: string | null;
     nombre: string;
     apellidoMaterno?: string;
     apellidoPaterno: string;
@@ -230,9 +246,11 @@ export interface CatTipoDocumento {
 }
 
 //REPONSE DE CREAR PREREGISTRO
-export interface PreregistroCreadoResponse {
+export interface CrearDemandaResponse {
     idDemanda: number;
     folio: string;
+    fechaHoraRecepcion: Date;
+    expediente: ListarExpedientesResponse;
 }
 //REPONSE DE DATOS PARA PARTES PREREGISTRO
 export interface DatosUsuarioResponse {

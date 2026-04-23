@@ -19,11 +19,14 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { PantallasService } from '../../services/pantallas.service';
 import { Spinner } from "../../../shared/components/spinner/spinner";
+import { TokenService } from '../../../core/auth/service/token.service';
+import { SpeedDialModule } from 'primeng/speeddial';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-detalle-expediente',
   imports: [CommonModule, RouterModule, DatePickerModule, FormsModule, RadioButtonModule, ButtonModule, TagModule,
-    IconFieldModule, InputIconModule, TableModule, SelectModule, InputTextModule, InputMaskModule, TooltipModule, Breadcrub, Spinner],
+    IconFieldModule, InputIconModule, TableModule, SelectModule, InputTextModule, InputMaskModule, TooltipModule, Breadcrub, Spinner, SpeedDialModule],
   templateUrl: './detalle-expediente.html',
   styleUrl: './detalle-expediente.css',
 })
@@ -63,7 +66,7 @@ export class DetalleExpediente {
     private router: Router,
     private au: AuthService,
     private route: ActivatedRoute,
-    private pantallasService: PantallasService
+    private tokenService: TokenService,
   ) { }
 
   ngOnInit(): void {
@@ -230,7 +233,12 @@ export class DetalleExpediente {
   }
 
   mostrarBoton(): boolean {
-    return this.pantallasService.tienePermiso('requerimiento/crear');
+    const user = this.tokenService.getUserFromToken();
+    if (user && (user.idSistemaPerfil === 7180 || user.idSistemaPerfil === 7181 || user.idSistemaPerfil === 7182)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   parseDateFromString(dateStr: string): Date {
@@ -247,16 +255,14 @@ export class DetalleExpediente {
       if (!item || !item.tipo) continue;
 
       switch (item.tipo) {
-        case 'pre_registro': {
+        case 'demanda': {
           tabla.push({
             id: item.idDemanda,
             folio: item.folio || item.folioPreregistro || 'Sin folio',
-            tipo: 'Pre-registro',
-            nombre: 'Pre-registro',
+            tipo: 'Demanda',
+            nombre: 'Demanda',
             fecha: item.fechaHoraRecepcion || item.fechaCreada || item.created_at,
-            estado: item.historial_estado?.length
-              ? item.historial_estado[item.historial_estado.length - 1].estado?.descripcion ?? 'Sin estado'
-              : 'Sin estado',
+            estado: item.ultimo_estado?.estado?.descripcion || 'Sin estado',
             datosOriginales: item
           });
           break;
@@ -349,6 +355,8 @@ export class DetalleExpediente {
       descripcion === 'Notificada' ||
       descripcion === 'Notificado' ||
       descripcion === 'Enviado' ||
+      descripcion === 'En trámite' ||
+
       descripcion === 'Asignado'
     ) {
       return { severity: 'success', icon: 'pi pi-check' };
@@ -366,4 +374,7 @@ export class DetalleExpediente {
     }
     return { severity: 'secondary' };
   }
+
+      items: MenuItem[] | undefined;
+
 }

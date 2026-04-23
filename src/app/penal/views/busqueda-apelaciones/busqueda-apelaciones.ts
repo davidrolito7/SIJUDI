@@ -204,7 +204,7 @@ export class BusquedaApelaciones implements OnInit {
 
 //this.filtros.IdPantalla = this.Id_pantalla;
     this.isLoading = true;
-    this.salasService.getListadoInicios(this.filtros,this.Id_pantalla).subscribe({
+    this.salasService.getListadoDemandas(this.filtros,this.Id_pantalla).subscribe({
       next: (response) => {
         this.listaapelaciones = response?.data[0] ?? null;
 
