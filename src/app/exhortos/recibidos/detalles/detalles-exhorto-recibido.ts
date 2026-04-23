@@ -176,7 +176,7 @@ export class DetallesExhortoRecibido {
                       }
               }),
               error:(err => {
-                  this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+                  this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message , sticky: true});
                   this.isLoading=false;
                   this.cd.detectChanges();
               }),
@@ -199,7 +199,7 @@ export class DetallesExhortoRecibido {
           }),
         error:(error) => {
             //console.error('Error al cargar los movimientos del exhorto', error);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
         }
     });
   }
@@ -271,10 +271,10 @@ export class DetallesExhortoRecibido {
                           this.cargarDetallesExhorto((this.idExhortoRecibido == undefined ? 0 : this.idExhortoRecibido));
                       }
                       else
-                       this.messageService.add({ severity: 'warn', summary: 'Error', detail: (response.message==null ? "No fue posible enviar la actualización" : response.message) });
+                       this.messageService.add({ severity: 'warn', summary: 'Error', detail: (response.message==null ? "No fue posible enviar la actualización" : response.message), sticky: true });
               }),
               error:(err => {
-                  this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+                  this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message , sticky: true});
                   this.isLoading=false;
                   this.cd.detectChanges();
               }),
@@ -300,7 +300,7 @@ export class DetallesExhortoRecibido {
             },
             error:(error) => {
                 //console.error('Error al cargar detalle de notificación', error);
-                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
                  this.isLoading=false;
                 this.cd.detectChanges();
             },
@@ -326,7 +326,7 @@ export class DetallesExhortoRecibido {
         //si el turno es el paso Oficialia - secretario, debe tener el acuerdo
         if ((this.movimientos()[this.movimientos().length-1].idMovimiento == 8) && (!this.existeacuerdo()))
         {
-          this.messageService.add({ severity: 'warn', summary: 'Ok', detail: 'No se puede turnar, falta generar el acuerdo, verificar...' });
+          this.messageService.add({ severity: 'warn', summary: 'Ok', detail: 'No se puede turnar, falta generar el acuerdo, verificar...' , life:10000});
          
         }
         else{
@@ -347,7 +347,7 @@ export class DetallesExhortoRecibido {
                   }
               }),
               error:(err=>{
-                  this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+                  this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message , sticky: true});
                   this.isLoading=false;
                   this.cd.detectChanges();
               }),
@@ -386,7 +386,7 @@ export class DetallesExhortoRecibido {
                   }
               }),
               error:(err=>{
-                  this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+                  this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, sticky: true });
                   this.isLoading=false;
                   this.cd.detectChanges();
               }),
@@ -439,7 +439,7 @@ export class DetallesExhortoRecibido {
           }
         }
         else
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
         //const nombre= response.data.fileName;
         //const ext= nombre.split('.')[1];
 
@@ -449,7 +449,7 @@ export class DetallesExhortoRecibido {
       },
       error: (error) => {
         //console.error('Error al recibir el archivo', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
           this.isLoading=false;
         this.cd.detectChanges();
       },
@@ -509,12 +509,12 @@ export class DetallesExhortoRecibido {
                   
 
           } else {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor." });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor." , sticky: true});
           }
         },
         error: (err) => {
           
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message , sticky: true});
           this.isLoading=false;
           this.cd.detectChanges();
         },
@@ -549,12 +549,12 @@ export class DetallesExhortoRecibido {
             }
             else{
                 this.existeacuerdo.set(false);
-                this.messageService.add({ severity: 'warn', summary: 'Error', detail: response.message });
+                this.messageService.add({ severity: 'warn', summary: 'Error', detail: response.message , sticky: true});
             }
             }),
          error: (error) => {
              //console.error('Error al cargar detalle de promoción', error);
-            this.messageService.add({ severity: 'warn', summary: 'Error', detail: error.message });
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: error.message, sticky: true });
             this.isLoading=false;
             this.cd.detectChanges();
          },
@@ -583,12 +583,12 @@ export class DetallesExhortoRecibido {
           else{
             //console.log(responsePromociones.errors);
             //this.bandPromo = false;
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: responsePromociones.message +'\n'+ responsePromociones.errors });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: responsePromociones.message +'\n'+ responsePromociones.errors, sticky: true });
           }
         }),
         error: (error) => {
           //console.error('Error al cargar detalle de promoción', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
           this.isLoading=false;
           this.cd.detectChanges();
         },

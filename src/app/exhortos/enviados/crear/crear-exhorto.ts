@@ -596,7 +596,7 @@ export class CrearExhortoComponent {
             //console.log('Juzgados filtrados:', response.data);
             this.listaJuzgadoOrigen.set(response.data);
           } else {
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
           }
         },
         error: () => {
@@ -617,12 +617,12 @@ export class CrearExhortoComponent {
           this.listaMateria.set(response.data);
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
         }
       },
       error: (e) => {
         //console.error('Error al cargar el catálogo de Materia', e);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias', sticky: true });
       },
     });
   }
@@ -721,11 +721,11 @@ export class CrearExhortoComponent {
           this.messageService.add({ severity: 'success', summary: 'ok', detail: "Los datos fueron guardados correctamente" });
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error, sticky: true });
         this.isLoading = false;
         this.cd.detectChanges();
       },
@@ -792,7 +792,7 @@ export class CrearExhortoComponent {
         },
         (error) => {
           //console.error('❌ Error al cargar municipios:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar municipios' });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar municipios', sticky: true });
           reject(error);
         }
       );
@@ -814,7 +814,7 @@ export class CrearExhortoComponent {
         },
         error => {
           //console.error('Error al cargar el catálogo de órganos', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de órganos' });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de órganos', sticky: true });
           this.isLoading = false;
           this.cd.detectChanges();
           reject(error);
@@ -877,12 +877,12 @@ export class CrearExhortoComponent {
           this.actualizarListadoDocumentos(this.idExhorto); // <-- Agrega esta línea
           this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Documento guardado exitosamente' });
         } else {
-          this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+          this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
           this.resetForm();
         }
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar el documento' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar el documento', sticky: true });
       }
     });
   }
@@ -914,9 +914,9 @@ export class CrearExhortoComponent {
       this.exhortosForm.updateValueAndValidity();
       ValidateForm.validateAllFormFields(this.exhortosForm);
 
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos', life:10000 });
     } else {
-      this.messageService.add({ severity: 'warn', summary: 'Formulario inválido', detail: 'Revisa los campos requeridos' });
+      this.messageService.add({ severity: 'warn', summary: 'Formulario inválido', detail: 'Revisa los campos requeridos', life:10000 });
       //datos generales
       this.exhortosForm.markAllAsTouched();
       ValidateForm.validateAllFormFields(this.exhortosForm);
@@ -990,11 +990,11 @@ export class CrearExhortoComponent {
         if (response.success) {
           this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Exhorto actualizado correctamente' });
         } else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors,  sticky: true });
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error, sticky: true });
         this.isLoading = false;
         this.cd.detectChanges();
       },
@@ -1085,7 +1085,7 @@ export class CrearExhortoComponent {
           this.messageService.add({
             severity: 'warn',
             summary: 'Advertencia',
-            detail: 'No se encontraron documentos asociados al exhorto.'
+            detail: 'No se encontraron documentos asociados al exhorto.',life:10000
           });
         }
       },
@@ -1094,7 +1094,8 @@ export class CrearExhortoComponent {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'No se pudieron cargar los documentos del exhorto.'
+          detail: 'No se pudieron cargar los documentos del exhorto.',
+          sticky: true
         });
       }
     });
@@ -1108,7 +1109,7 @@ export class CrearExhortoComponent {
           this.listaJuzgadoOrigen.set(response.data);
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
         }
       },
       error: (e) => {
@@ -1149,7 +1150,7 @@ export class CrearExhortoComponent {
     //}
     else {
       ValidateForm.validateAllFormFields(this.doctosForm);
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Tipo documento requerido' })
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Tipo documento requerido', life:10000 })
     }
 
   }
@@ -1212,7 +1213,7 @@ export class CrearExhortoComponent {
           this.listagenero.set(response.data);
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
         }
       },
       error: (e) => {
@@ -1233,7 +1234,7 @@ export class CrearExhortoComponent {
           this.listaTipoParte.set(response.data);
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
         }
       },
       error: (e) => {
@@ -1254,7 +1255,7 @@ export class CrearExhortoComponent {
           this.listaTipoDocumento = response.data;
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
         }
       },
       error: (e) => {
@@ -1499,12 +1500,12 @@ export class CrearExhortoComponent {
             }
           }
           else {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.error });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.error, sticky: true });
           }
         },
         error: (e) => {
           //console.error('Error al recibir el archivo', e);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           this.isLoading = false;
           this.cd.detectChanges();
         },
@@ -1556,15 +1557,15 @@ export class CrearExhortoComponent {
               this.listaDocumentos().splice(index, 1);
             }
             //console.log("Documento eliminado");
-            this.messageService.add({ severity: 'success', summary: 'Error', detail: 'Documento eliminado' });
+            this.messageService.add({ severity: 'success', summary: 'Ok', detail: 'Documento eliminado' });
           } else {
             //console.error('Error al eliminar el archivo:', response.message);
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
           }
         },
         error: (error) => {
           //console.error('Error en la petición eliminar:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
         },
         complete: () => {
           this.idArchivo = null;
@@ -1603,12 +1604,12 @@ export class CrearExhortoComponent {
 
           } else {
             //console.error('Error al eliminar el archivo:', response.message);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
           }
         },
         error: (e) => {
           //console.error('Error en la petición eliminar:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           this.isLoading = false;
           this.cd.detectChanges();
         },
@@ -1669,12 +1670,12 @@ export class CrearExhortoComponent {
 
           } else {
             //console.error('Error al eliminar el archivo:', response.message);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
           }
         },
         error: (e) => {
           //console.error('Error en la petición eliminar:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           this.isLoading = false;
           this.cd.detectChanges();
         },
@@ -1730,13 +1731,13 @@ export class CrearExhortoComponent {
             resolve();
           } else {
             //console.error('❌ Error en respuesta del backend:', response.message);
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
             reject(response.errors);
           }
         },
         error: (error) => {
           //console.error('❌ Error HTTP al obtener juzgados:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar juzgados.' });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar juzgados.', sticky: true });
           reject(error);
         }
       });
@@ -1761,14 +1762,14 @@ export class CrearExhortoComponent {
             resolve(true); //resolve cuando se requiere que el flujo continue
 
           } else {
-            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
             reject(false); //reject es cuando se desea sali del flujo, ya no requere que se continue.
             this.modalService.close('modal1');
           }
         },
         error: (e) => {
           //console.error('Error al guardar el documento Firmado en el NAS', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           reject(false);
         },
         complete: () => {
@@ -1833,12 +1834,12 @@ export class CrearExhortoComponent {
             resolve(true);
           }
           else {
-            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
             resolve(false);
           }
         },
         error: (e) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           reject(false);
         },
         complete: () => {
@@ -1987,13 +1988,13 @@ export class CrearExhortoComponent {
             resolve();
           } else {
             //console.error('❌ Error en respuesta del backend:', response.message);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message + '\n' + response.errors });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message + '\n' + response.errors, sticky: true });
             reject(response.errors);
           }
         },
         error: (error) => {
           //console.error('❌ Error HTTP al obtener juzgados:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
           reject(error);
         }
       });
@@ -2051,7 +2052,7 @@ export class CrearExhortoComponent {
 
           },
           error: (err) => {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message , sticky: true});
 
           }
         });
@@ -2085,11 +2086,11 @@ export class CrearExhortoComponent {
           this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
         }
         else {
-          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message });
+        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message, sticky: true });
       },
       complete: () => {
 
@@ -2116,11 +2117,11 @@ export class CrearExhortoComponent {
           this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
           this.actualizarListadoDocumentos(this.idExhorto)
         } else {
-          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message });
+        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message, sticky: true });
         this.isLoading = false;
         this.cd.detectChanges;
       },

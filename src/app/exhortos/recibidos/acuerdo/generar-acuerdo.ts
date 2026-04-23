@@ -149,12 +149,12 @@ export class GenerarAcuerdo {
             resolve();
           }
           else{
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: responseTipoDiligenciado.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: responseTipoDiligenciado.message, sticky: true });
           }
         },
         error:(e) => {
           //console.error('Error al cargar los tipos de diligenciado', e.message);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           reject(e);
         }
       });
@@ -168,12 +168,12 @@ export class GenerarAcuerdo {
           this.listadoTipoDocumento.set(responseTipoDocumento.data);
         }
         else{
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: responseTipoDocumento.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: responseTipoDocumento.message, sticky: true });
         }
       },
       error:(e) => {
         //console.log("Error al cargar los tipos de documentos", e.message);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
       }
     });
   }
@@ -192,7 +192,7 @@ export class GenerarAcuerdo {
           }
           else{
             //console.log(response.errors);
-            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${ response.errors==undefined ? "" : response.errors.join(", ")}` });
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${ response.errors==undefined ? "" : response.errors.join(", ")}`, sticky: true });
           }
         }),
         error: (error) => {
@@ -258,16 +258,16 @@ export class GenerarAcuerdo {
             }
           } else {
             //console.warn('La respuesta no contiene datos.');
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'La respuesta no contiene datos.' });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'La respuesta no contiene datos.', life:10000 });
           }
         } else {
           //console.warn('La respuesta fue incorrecta');
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
         }
       },
       error:(e) => {
         //console.error('Error al cargar respuesta de exhorto', error);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
       }
     });
     //console.log(this.listadoTipoDiligenciado);
@@ -336,13 +336,13 @@ export class GenerarAcuerdo {
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Respuesta guardada.' });
           }else{
             //console.log("No se pudo guardar la respuesta.", response.message);
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors[0] });
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors[0] , sticky: true});
           }
 
         },
         error:(e) => {
             //console.error('Error en la petición guardar:', e.message);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
             this.isLoading = false;
             this.cd.detectChanges();
         },
@@ -369,7 +369,7 @@ export class GenerarAcuerdo {
         },
         error:(e)=>{
           //console.log("Error en la petición actualizar: ", error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           this.isLoading = false;
           this.cd.detectChanges();
         },
@@ -397,13 +397,13 @@ export class GenerarAcuerdo {
           // Aquí podrías actualizar la lista de documentos si es necesario
         }
         else{
-          this.messageService.add({severity:'error',summary: 'Error', detail:`${response.message}\n${ response.errors == undefined ? "": response.errors.join(", ")}`});
+          this.messageService.add({severity:'error',summary: 'Error', detail:`${response.message}\n${ response.errors == undefined ? "": response.errors.join(", ")}`, sticky: true});
         }
 
       },
       error:(e)=>{
         //console.error('Error al recibir el archivo', e);
-        this.messageService.add({severity:'error',summary: 'Error', detail:e.message});
+        this.messageService.add({severity:'error',summary: 'Error', detail:e.message, sticky: true});
         this.isLoading=false;
         this.cd.detectChanges();
       },
@@ -432,7 +432,7 @@ export class GenerarAcuerdo {
           // Aquí podrías actualizar la lista de documentos si es necesario
         }
         else{
-          this.messageService.add({severity:'error',summary: 'Error', detail:`${response.message}\n${ response.errors == undefined ? "": response.errors.join(", ")}`});
+          this.messageService.add({severity:'error',summary: 'Error', detail:`${response.message}\n${ response.errors == undefined ? "": response.errors.join(", ")}`, sticky: true});
         }
 
         //this.cargarDetallesAcuerdo(idExhortoRecibido);
@@ -441,7 +441,7 @@ export class GenerarAcuerdo {
       },
       error:(e)=>{
         //console.error('Error al recibir el archivo', e);
-        this.messageService.add({severity:'error',summary: 'Error', detail:e.message});
+        this.messageService.add({severity:'error',summary: 'Error', detail:e.message, sticky: true});
         this.isLoading=false;
         this.cd.detectChanges();
       },
@@ -527,12 +527,12 @@ export class GenerarAcuerdo {
                 this.tienePermisoAplicarFirma.set(this.secciones.some(s => s.descripcion === 'AplicarFirma'));
               }
             } else {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor." });
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor.", sticky: true });
             }
             
           },
           error: (err) => {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, sticky: true });
             
           }
         });
@@ -611,11 +611,11 @@ export class GenerarAcuerdo {
           this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
         }
         else {
-          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message });
+        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message, sticky: true });
       },
       complete: () => {
 
@@ -635,7 +635,7 @@ export class GenerarAcuerdo {
       //}
       else {
         ValidateForm.validateAllFormFields(this.doctosForm);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Tipo documento requerido' })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Tipo documento requerido', life:10000 });
       }
   
   }
@@ -676,12 +676,12 @@ export class GenerarAcuerdo {
           this.verRespuestaExhortoRecibido(this.idExhortoRecibido); // Actualiza los detalles del acuerdo para reflejar el nuevo documento
           this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Documento guardado exitosamente' });
         } else {
-          this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+          this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
           this.nombreDocumento = ''; // Restablece el nombre del documento en caso de error
         }
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar el documento' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar el documento', sticky: true });
       }
     });
   }
@@ -701,11 +701,11 @@ export class GenerarAcuerdo {
           this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
           this.verRespuestaExhortoRecibido(this.idExhortoRecibido);
         } else {
-          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` , sticky: true});
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message });
+        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message, sticky: true });
         this.isLoading=false;
         this.cd.detectChanges;
       },
@@ -748,12 +748,12 @@ export class GenerarAcuerdo {
               }
             }
             else{
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: response.error });
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: response.error, sticky: true });
             }
           },
           error:(e)=>{
             //console.error('Error al recibir el archivo', e);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
             this.isLoading=false;
             this.cd.detectChanges();
           },
@@ -822,15 +822,15 @@ export class GenerarAcuerdo {
               this.cd.detectChanges(); // Asegura que la vista se actualice después de modificar el arreglo
             }
             //console.log("Documento eliminado");
-            this.messageService.add({ severity: 'success', summary: 'Error', detail: 'Documento eliminado' });
+            this.messageService.add({ severity: 'success', summary: 'Ok', detail: 'Documento eliminado' });
           } else {
             //console.error('Error al eliminar el archivo:', response.message);
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
           }
         },
         error:(error) => {
           //console.error('Error en la petición eliminar:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
         },
         complete:()=>{
           //this.idArchivo=null;
@@ -859,7 +859,7 @@ export class GenerarAcuerdo {
           this.firmaDialog = false;
         }
         else {
-          this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Selecciona el o los archivos que deseas firmar.' });
+          this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Selecciona el o los archivos que deseas firmar.', sticky: true });
         }
 
       }/*else{
@@ -868,7 +868,7 @@ export class GenerarAcuerdo {
     }
     else {
       ValidateForm.validateAllFormFields(this.formularioFirma);
-      this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ingrese la contraseña.' });
+      this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ingrese la contraseña.', sticky: true });
     }
     this.isLoading = false;
   }
@@ -890,14 +890,14 @@ export class GenerarAcuerdo {
             resolve(true); //resolve cuando se requiere que el flujo continue
 
           } else {
-            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
             reject(false); //reject es cuando se desea sali del flujo, ya no requere que se continue.
             
           }
         },
         error: (e) => {
           //console.error('Error al guardar el documento Firmado en el NAS', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           reject(false);
         },
         complete: () => {
@@ -925,12 +925,12 @@ export class GenerarAcuerdo {
             resolve(true);
           }
           else {
-            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
             resolve(false);
           }
         },
         error: (e) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           reject(false);
         },
         complete: () => {
@@ -959,7 +959,7 @@ export class GenerarAcuerdo {
           }),
         error:(error) => {
             //console.error('Error al cargar los movimientos del exhorto', error);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
         }
     });
   }
