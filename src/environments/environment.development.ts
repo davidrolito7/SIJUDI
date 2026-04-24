@@ -1,8 +1,8 @@
 export const environment = {
     production: false,
     //* false para producción  
-    //* true para pruebas y si eres abogado para no ingresar tu llave/auth
-    DEV_SKIP_2FA: false,
+    //* true para pruebas y si eres abogado para que no solicituar llave/auth
+    DEV_SKIP_2FA: true,
     //* true para producción (abogado no seleciona perfil y empleados si)
     //* false para que abogado tenga que seleccionar perfil
     DEV_SKIP_PERFIL: true,

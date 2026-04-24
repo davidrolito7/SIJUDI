@@ -83,14 +83,23 @@ export class Login2 implements OnInit {
     this.cd.detectChanges();
 
     this.authService.obtenerDatosUsuario(user.idGeneral).subscribe({
-      next: (resp) => {
+      next: async (resp) => {
         const abogado = resp.data?.pD_Abogados?.[0];
-        if (environment.DEV_SKIP_2FA && (abogado?.idTipoPersona ?? null) === 1) {
-          const nombre = (abogado?.nombre ?? '').toString().trim();
-          const foto   = (abogado?.foto   ?? '').toString().trim();
-          sessionStorage.setItem('AbogadoNombre',     nombre);
-          sessionStorage.setItem('AbogadoFotoBase64', foto);
-          this.loginContextoAutomatico(nombre, foto);
+        const idTipoPersona = abogado?.idTipoPersona ?? null;
+        const nombre = (abogado?.nombre ?? '').toString().trim();
+        const foto   = (abogado?.foto   ?? '').toString().trim();
+        sessionStorage.setItem('AbogadoNombre',     nombre);
+        sessionStorage.setItem('AbogadoFotoBase64', foto);
+
+        if (environment.DEV_SKIP_2FA) {
+          if (idTipoPersona === 1) {
+            // Abogado: completar contexto automáticamente
+            this.loginContextoAutomatico(nombre, foto);
+          } else {
+            // Empleado u otro tipo: saltar 2FA e ir a perfil
+            await this.tokenService.setTwoFactorValidated(true);
+            this.router.navigate(['/perfil']);
+          }
         } else {
           this.getGoogle();
         }
