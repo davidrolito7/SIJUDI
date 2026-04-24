@@ -2,7 +2,7 @@ export const environment = {
     production: false,
     //* false para producción  
     //* true para pruebas y si eres abogado para que no solicituar llave/auth
-    DEV_SKIP_2FA: true,
+    DEV_SKIP_2FA: false,
     //* true para producción (abogado no seleciona perfil y empleados si)
     //* false para que abogado tenga que seleccionar perfil
     DEV_SKIP_PERFIL: true,
@@ -24,7 +24,7 @@ export const environment = {
     //urlApiJuicioOral: 'http://10.1.10.50:81',
     urlApiJuicioOral: 'http://127.0.0.1:8000',
 
-    //* api juicio oral penal
+    //* api juicio oral penal 0.o
     urlApiJuicioOralPenal: 'https://pruebas.tribunaloaxaca.gob.mx/ApiJuicioOral/api/PromocionesJuicioOral'
     //urlApiJuicioOralPenal:'https://localhost:7057/api/PromocionesJuicioOral'
 

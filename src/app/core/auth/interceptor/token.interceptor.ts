@@ -1,6 +1,6 @@
 import { HttpContext, HttpContextToken, HttpHandlerFn, HttpRequest, HttpEvent } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Observable, switchMap, catchError, throwError, take, filter, tap, finalize } from 'rxjs';
+import { from, Observable, switchMap, catchError, throwError, take, filter, tap, finalize } from 'rxjs';
 import { TokenService } from '../service/token.service';
 import { AuthService } from '../service/auth.service';
 import { NetworkService } from '../service/network.service';
@@ -63,12 +63,13 @@ export function tokenInterceptor(
           authService.getRefreshTokenSubject().next(null);
 
           return authService.refresToken(remember).pipe(
-            tap(() => {}),
             switchMap(response => {
-                const newAccessToken = response.data.access_token;
-                authService.getRefreshTokenSubject().next(newAccessToken);
-                return addToken(request);
-              
+              const newAccessToken = response.data.access_token;
+              authService.getRefreshTokenSubject().next(newAccessToken);
+              // Re-firmar HMACs de sesión: el payload del JWT cambió tras el refresh
+              return from(tokenService.resignSessionSigsAfterRefresh()).pipe(
+                switchMap(() => addToken(request))
+              );
             }),
             catchError((e) => {
               //tokenService.removeToken();
