@@ -13,12 +13,18 @@ import { base64ToFile } from '../../../shared/functions/utils';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { DetalleDemandaResponse } from '../../interfaces/juicioenlinea.model';
 import { TokenService } from '../../../core/auth/service/token.service';
-
+import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+import { DialogModule } from 'primeng/dialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { FormBuilder, FormGroup, Validators, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
+import { ToastModule } from 'primeng/toast';
 @Component({
   selector: 'app-detalle-demanda',
-  imports: [CommonModule, TableModule, Breadcrub, ButtonModule, TagModule, PdfDialog, TooltipModule, Spinner],
+  imports: [CommonModule, TableModule, Breadcrub, ButtonModule, TagModule, PdfDialog, TooltipModule, Spinner, ConfirmDialog, DialogModule, ɵInternalFormsSharedModule, ReactiveFormsModule,ToastModule],
   templateUrl: './detalle-demanda.html',
   styleUrl: './detalle-demanda.css',
+  providers: [ConfirmationService, MessageService],
+
 })
 export class DetalleDemanda implements OnInit {
 
@@ -27,17 +33,24 @@ export class DetalleDemanda implements OnInit {
   documentoUrl: SafeResourceUrl | null = null;
   detalleDemanda: DetalleDemandaResponse | null = null;
   isLoading = false;
-
+  modalTurnar = false;
   mostrarDocumento = signal<boolean>(false);
+  turnarForm!: FormGroup;
 
   constructor(
     private juicioService: JuicioService,
-    private router: Router,
     private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef,
     private tokenService: TokenService,
+    private readonly fb: FormBuilder,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
 
-  ) { }
+  ) {
+    this.turnarForm = this.fb.group({
+      observaciones: ['', [Validators.required, Validators.maxLength(250)]],
+    });
+  }
 
   ngOnInit(): void {
     const state = window.history.state as { idExpediente: number };
@@ -49,7 +62,9 @@ export class DetalleDemanda implements OnInit {
       console.warn('No se proporcionó idExpediente. Redirigiendo a la página de inicio.');
       // this.router.navigate(['/layout/inicio']);
     }
+
   }
+
 
   getDetalleInicio(idExpediente: number): void {
     this.juicioService.getDetalleDemanda(idExpediente).subscribe({
@@ -98,9 +113,10 @@ export class DetalleDemanda implements OnInit {
       }
     });
   }
+
   permisoBoton(): boolean {
     const user = this.tokenService.getUserFromToken();
-    if (user && (user.idSistemaPerfil === 7180 || user.idSistemaPerfil === 7181 )) { //oficialia y secretaria 0.o
+    if (user && (user.idSistemaPerfil === 7180 || user.idSistemaPerfil === 7181)) { //oficialia y secretaria 0.o
       return true;
     } else {
       return false;
@@ -123,5 +139,47 @@ export class DetalleDemanda implements OnInit {
     const mov = this.ultimoMovimiento;
     if (!mov) return false;
     return mov.fechaRecepcion !== null && mov.idGeneralTurna === null;
+  }
+
+  mostrarModalTurnar() {
+    this.modalTurnar = true;
+  }
+
+  mostrarModalRecibir() {
+    this.confirmationService.confirm({
+      key: 'confirmar-recepcion',
+      accept: () => { },
+      reject: () => { }
+    }
+    );
+  }
+
+  onTurnarDemanda() {
+    this.isLoading = true;
+    const payload: any = {
+      idDemanda: [this.detalleDemanda?.demanda.idDemanda],
+    };
+    const observaciones = this.turnarForm.get('observaciones')?.value;
+    if (observaciones) {
+      payload.observaciones = observaciones;
+    }
+    ////console.log('Payload para turnar demanda:', payload);
+    this.juicioService.putSiguienteMovimiento(payload).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          this.messageService.add({ severity: 'success', summary: 'Existoso', detail: response.message || 'Demanda turnada correctamente' });
+        } else {
+          this.messageService.add({ severity: 'info', summary: 'Aviso', detail: response.message || 'No se pudo turnar la demanda' });
+        }
+        this.getDetalleInicio(this.idInicio!);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.messageService.add({
+          severity: 'error', summary: 'Error', detail: error.error?.message || 'Error al conectar con el servidor'
+        });
+      }
+    });
   }
 }

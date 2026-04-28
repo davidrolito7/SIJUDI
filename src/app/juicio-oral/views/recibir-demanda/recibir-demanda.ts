@@ -80,7 +80,7 @@ export class RecibirDemanda implements OnInit {
   ];
   accionesItems: MenuItem[] = [
     {
-      label: 'Turnar demandas',
+      label: 'Recibir demandas',
       icon: 'pi pi-file-export',
       command: () => this.turnarSeleccionados()
     },

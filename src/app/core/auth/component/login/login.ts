@@ -94,7 +94,11 @@ export class Login implements OnInit {
         if (response.success) {
           this.authService.actualizaPerfilSeleccionado('');
 
-          if (environment.DEV_SKIP_2FA) {
+          if (environment.DEV_SKIP_2FA && environment.DEV_SKIP_PERFIL) {
+            // Ambos activos: login2fase detecta tipo persona 1 y completa el contexto automáticamente
+            this.router.navigate(['login2fase']);
+          } else if (environment.DEV_SKIP_2FA) {
+            // Solo 2FA: salta al perfil directamente
             await this.tokenService.setTwoFactorValidated(true);
             this.router.navigate(['/perfil']);
           } else {

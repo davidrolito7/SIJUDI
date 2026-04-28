@@ -194,6 +194,25 @@ export class TokenService {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
+  // RE-FIRMA tras refresh de token
+  //* El secreto HMAC es el payload del JWT; cuando el token rota por refresh,
+  //* las firmas anteriores quedan inválidas. Este método las re-firma con el
+  //* nuevo secreto solo si ya existían
+  // ─────────────────────────────────────────────────────────────────────────
+
+  async resignSessionSigsAfterRefresh(): Promise<void> {
+    const secret = this.getSigningSecret();
+    if (!secret) return;
+
+    if (sessionStorage.getItem(this.TWO_FACTOR_KEY) !== null) {
+      sessionStorage.setItem(this.TWO_FACTOR_KEY, await hmacSign(secret, 'twoFactor:true'));
+    }
+    if (sessionStorage.getItem(this.PERFIL_KEY) !== null) {
+      sessionStorage.setItem(this.PERFIL_KEY, await hmacSign(secret, 'perfil:true'));
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
   // DATOS DE PERFIL
   // ─────────────────────────────────────────────────────────────────────────
 
