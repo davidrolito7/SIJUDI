@@ -4,7 +4,7 @@ import { Button } from "primeng/button";
 import { InputTextModule} from 'primeng/inputtext';
 import {CommonModule} from '@angular/common';
 import { FormControl, FormGroup, Validators,ReactiveFormsModule } from '@angular/forms';
-import { CatalogoAmbito, CatalogoCircuitoResponse, CatalogoClasificacionResponse, CatalogoEstadoResponse, CatalogoMateriasResponse, CatalogoOrganoResponse, CatalogoTipoAsuntoResponse, CatalogoTipoOrganoResponse, ConsultarAsuntoRequest, NotifiViaConsultaAsuntoResponse } from '../../interfaces/amparos.models';
+import { CatalogoAmbito, CatalogoCircuitoResponse, CatalogoClasificacionResponse, CatalogoEstadoResponse, CatalogoMateriasResponse, CatalogoOrganoResponse, CatalogoTipoAsuntoResponse, CatalogoTipoOrganoResponse, CatalogoTipoProcedimientoRespose, ConsultarAsuntoRequest, NotifiViaConsultaAsuntoResponse } from '../../interfaces/amparos.models';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { AmparosService } from '../../services/amparo.service';
@@ -47,6 +47,7 @@ tipoOrganoLista= signal<CatalogoTipoOrganoResponse[]>([]);
 materiaLista= signal<CatalogoMateriasResponse[]>([]);
 organoLista= signal<CatalogoOrganoResponse[]>([]);
 tipoAsuntoLista= signal<CatalogoTipoAsuntoResponse[]>([]);
+tipoProcedimientoLista = signal<CatalogoTipoProcedimientoRespose[]>([]);
 asuntoResponse: NotifiViaConsultaAsuntoResponse | undefined;
 resultadoDialog = signal<boolean>(false);
 
@@ -336,6 +337,7 @@ constructor(
         if(response.success) {
           //console.log('Datos recibidios de organo', response);
           this.tipoAsuntoLista.set(response.data);
+          this.tipoProcedimientoLista.set([]);
         }else{
           this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
         }
@@ -353,6 +355,36 @@ constructor(
       }
     });
   }
+  cargaCatalogoTipoProcedimiento() {
+    if(this.acuerdoForm.value.tipoAsunto === null || this.acuerdoForm.value.tipoAsunto === undefined){
+      this.tipoProcedimientoLista.set([]);
+      return;
+    }
+    this.isLoading=true;
+    this.cd.detectChanges();
+    this.amparosService.getCatalogoTipoProcedimiento(this.acuerdoForm.value.tipoAsunto.id ?? 0).subscribe({
+      next:(response:any)=>{
+        if(response.success) {
+          this.tipoProcedimientoLista.set(response.data);
+        }else{
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+        }
+      },
+      error:(e) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de Tipo procedimiento' });
+        this.isLoading=false;
+        this.cd.detectChanges();
+
+      },
+      complete:()=>{
+        this.isLoading=false;
+        this.cd.detectChanges();
+      }
+    });
+  }
+
+  
+
   buscarAsunto(): void {
       // Verificar si alguno de los campos requeridos está vacío o no definido
       if (!this.acuerdoForm.valid) {
@@ -487,5 +519,8 @@ constructor(
   }
   get dropdownTipoAsuntoDisabled(): boolean {
     return !this.acuerdoForm.value.organo || this.tipoAsuntoLista().length===0;
+  }
+  get dropdownTipoProcedimientoDisabled(): boolean {
+    return !this.acuerdoForm.value.tipoAsunto || this.tipoProcedimientoLista().length === 0;
   }
 }

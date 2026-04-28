@@ -26,7 +26,8 @@ import {
   CatalogoTipoAsuntoResponse,
   NotifiViaConsultaAsuntoResponse,
   ConsultarAsuntoRequest,
-  EnviarPromocionResponse
+  EnviarPromocionResponse,
+  CatalogoTipoProcedimientoRespose
 } from '../interfaces/amparos.models';
 import { GenericResponse } from '../../shared/interface/shared.interface';
 import { environment } from '../../../environments/environment';
@@ -191,7 +192,9 @@ export class AmparosService {
   guardarAsunto(params: ConsultarAsuntoRequest): Observable<any> {
     return this.http.post(`${this.apiUrlPromocion}GuardarAsunto`, params, { context: checkToken() });
   }
-
+  getCatalogoTipoProcedimiento(idTipoAsunto: number): Observable<CatalogoTipoProcedimientoRespose[]> {
+    return this.http.post<CatalogoTipoProcedimientoRespose[]>(`${this.catalogoCFJurl}TipoProcedimiento?idTipoAsunto=`+idTipoAsunto, null, { context: checkToken() });
+  }
   // ─── Turnos ────────────────────────────────────────────────────────────────
 
   recibir(idNot: number): Observable<any> {

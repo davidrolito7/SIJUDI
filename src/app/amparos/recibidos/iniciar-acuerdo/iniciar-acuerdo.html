@@ -89,9 +89,17 @@
     <!-- tipo asunto -->
     <div class="col-span-12 sm:col-span-6">
       <label class="block mb-2 text-sm font-medium">Tipo asunto*</label>
-      <p-select id="tipoAsunto" [options]="tipoAsuntoLista()" formControlName="tipoAsunto" [disabled]="dropdownTipoAsuntoDisabled"
+      <p-select id="tipoAsunto" [options]="tipoAsuntoLista()" formControlName="tipoAsunto" [disabled]="dropdownTipoAsuntoDisabled" (onChange)="cargaCatalogoTipoProcedimiento()"
         optionLabel="descripcion" appendTo="body" filterPlaceholder="Buscar tipoAsunto..."
         inputId="tipoAsunto-dropdown" fluid></p-select>
+
+    </div>
+     <!-- tipo procedimienot -->
+    <div class="col-span-12 sm:col-span-3">
+      <label class="block mb-2 text-sm font-medium">Tipo de procedimiento</label>
+      <p-select id="tipoProcedimiento" [options]="tipoProcedimientoLista()" formControlName="tipoProcedimiento" [disabled]="dropdownTipoProcedimientoDisabled"
+        optionLabel="descripcion" appendTo="body" filterPlaceholder="Buscar tipo procedimiento..."
+        inputId="tipoProcedimiento-dropdown" fluid></p-select>
 
     </div>
     <!-- Numero de asunto -->
@@ -101,11 +109,12 @@
         maxlength="100" />
     </div>
      <!-- Tipo procedimiento -->
-    <div class="col-span-12 sm:col-span-3">
+    <!--<div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Tipo de procedimiento</label>
       <input pInputText type="text" id="tipoProcedimiento" name="tipoProcedimiento" formControlName="tipoProcedimiento" class="w-full"
         maxlength="100" />
-    </div>
+    </div>-->
+    
     <div class="flex items-center">
             <div class="relative">
                 <p-button type="button"  (click)="buscarAsunto()"
