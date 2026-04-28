@@ -79,38 +79,54 @@ export class CrearExhortoComponent {
     materiaEstadoDestino: new FormControl(null as CatalogoMateriasEstadoDestino | null, Validators.required),
     municipioOrigen: new FormControl(null as CatalogoMunicipioOrigen | null, Validators.required),
     juzgadoOrigen: new FormControl(null as CatalogoJuzgadoOrigen | null, Validators.required),
-    noExpediente: new FormControl('', Validators.required),
-    OficioOrigen: new FormControl(''),
+    noExpediente: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+    OficioOrigen: new FormControl('', [Validators.maxLength(50)]),
     //Tipojuicio: new FormControl('',Validators.required),
     tipojuicio: new FormControl(null as tipoVia | null, Validators.required),
-    nombreJuez: new FormControl(''),
-    numeroFojas: new FormControl(null, Validators.required),
-    DiasResponder: new FormControl(null, Validators.required),
+    nombreJuez: new FormControl('',[Validators.maxLength(100)]),
+    //numeroFojas: new FormControl(null, Validators.required),
+    numeroFojas: new FormControl<number | null>(null, [Validators.required,Validators.min(1),Validators.pattern(/^\d+$/)]),
+//    DiasResponder: new FormControl(null, Validators.required),
+    DiasResponder: new FormControl<number | null>(null, [Validators.required,Validators.min(1),Validators.pattern(/^\d+$/)]),
     TipoDiligencia: new FormControl(null as catTipoDiligencia | null, Validators.required),
-    observaciones: new FormControl('')
+    //observaciones: new FormControl('')
+    observaciones: new FormControl<string>('', [Validators.maxLength(1000)])
   });
 
   partesForm = new FormGroup({
-    nombre: new FormControl('', Validators.required),
-    paterno: new FormControl(''),
-    materno: new FormControl(''),
+   // nombre: new FormControl('', Validators.required),
+    nombre: new FormControl('', [Validators.required,Validators.maxLength(500)]),
+    //paterno: new FormControl(''),
+     paterno: new FormControl<string>('', [Validators.maxLength(50)]), 
+//    materno: new FormControl(''),
+    materno: new FormControl<string>('', [Validators.maxLength(50)]),
     genero: new FormControl(''),
     moral: new FormControl(false, { nonNullable: true, validators: [Validators.required] }),
     //moral: new FormControl(false,[Validators.required]),
-    tipoParte: new FormControl('', Validators.required),
-    correoElectronico: new FormControl(''),
-    telefono: new FormControl('')
+    //tipoParte: new FormControl('', Validators.required),
+    tipoParte: new FormControl<number | null>(null, Validators.required),
+    //correoElectronico: new FormControl(''),
+    correoElectronico: new FormControl('', [Validators.maxLength(50)]),
+    //telefono: new FormControl('')
+    telefono: new FormControl('', [Validators.maxLength(50)])
   });
   promoventesForm = new FormGroup({
-    nombrePromo: new FormControl('', Validators.required),
-    paternoPromo: new FormControl(''),
-    maternoPromo: new FormControl(''),
+    //nombrePromo: new FormControl('', Validators.required),
+    nombrePromo: new FormControl('', [Validators.required,Validators.maxLength(500)]),
+    //paternoPromo: new FormControl(''),
+    paternoPromo: new FormControl<string>('', [Validators.maxLength(50)]), 
+    //maternoPromo: new FormControl(''),
+    maternoPromo: new FormControl<string>('', [Validators.maxLength(50)]), 
     generoPromo: new FormControl(''),
     moralPromo: new FormControl(false, { nonNullable: true, validators: [Validators.required] }),
     //moralPromo: new FormControl(false,[Validators.required]),
-    tipoPartePromo: new FormControl('', Validators.required),
-    correoElectronicoPromo: new FormControl(''),
-    telefonoPromo: new FormControl('')
+    //tipoPartePromo: new FormControl('', Validators.required),
+    tipoPartePromo: new FormControl<number | null>(null, Validators.required),
+    //correoElectronicoPromo: new FormControl(''),
+    correoElectronicoPromo: new FormControl('', [Validators.maxLength(50)]),
+    //telefonoPromo: new FormControl('')
+    telefonoPromo: new FormControl('', [Validators.maxLength(50)])
+    
   });
   doctosForm = new FormGroup({
     tipoDocumento: new FormControl(null as ListadoCatalogoTipoDocumento | null, Validators.required),
@@ -363,7 +379,7 @@ export class CrearExhortoComponent {
       materiaO ? juicioControl?.enable() : juicioControl?.disable();
       this.exhortosForm.get('juzgadoOrigen')?.setValue(null);
       this.exhortosForm.get('tipojuicio')?.setValue(null);
-      
+
     });*/
 
     // Reglas para partes y promoventes (omitidas aquí por brevedad, asumes que ya están bien implementadas)
@@ -529,7 +545,7 @@ export class CrearExhortoComponent {
   // Abrir el modal cuando el select recibe foco
   /*openSearchModal() {
    this.searchModalOpen = true;
- 
+
  }*/
 
   // Prevenir el cierre del modal al hacer clic en él
@@ -565,7 +581,7 @@ export class CrearExhortoComponent {
   /*onTipoDocumentoChange(event: any) {
     const tipoDocId = event.target.value;
     const tipoSeleccionado = this.listadoTipoDocumento.find(doc => doc.idTipoDocumento === +tipoDocId);
-  
+
     if (tipoSeleccionado) {
       this.selectedTipoDocumento = tipoSeleccionado;
       //console.log('Tipo de documento seleccionado:', this.selectedTipoDocumento);
@@ -938,7 +954,7 @@ export class CrearExhortoComponent {
       numeroExpedienteOrigen: this.exhortosForm.value.noExpediente,
       numeroOficioOrigen: this.exhortosForm.value.OficioOrigen,
       idCatTipoVia: this.exhortosForm.value.tipojuicio?.idCatTipoVia,//this.tipoViaSelect.idCatTipoVia,
-      tipoJuicioAsuntoDelitos: this.exhortosForm.value.tipojuicio?.descripcion,//this.tipoViaSelect.descripcion, 
+      tipoJuicioAsuntoDelitos: this.exhortosForm.value.tipojuicio?.descripcion,//this.tipoViaSelect.descripcion,
       juezExhortante: this.exhortosForm.value.nombreJuez,
       fojas: this.exhortosForm.value.numeroFojas ?? 1,
       diasResponder: this.exhortosForm.value.DiasResponder ?? 1,
@@ -1536,7 +1552,7 @@ export class CrearExhortoComponent {
   }
 
   onEliminarDocumento(documento: archivoExhortoEnviado, tipoDocumento: number, index: number) {
-    //validamos si idArchivo no trae nada, quiere decir que son archivos nuevos que no se han guardado y se 
+    //validamos si idArchivo no trae nada, quiere decir que son archivos nuevos que no se han guardado y se
     //eliminan solo en el array, sin llamar la api
     if (documento.idArchivo == 0) {
       this.onEliminarIndex(index);
@@ -1575,12 +1591,12 @@ export class CrearExhortoComponent {
   }
 
 
-  /*abrirConfirmacionEnviarGenerales(){ 
+  /*abrirConfirmacionEnviarGenerales(){
     if(this.idExhorto !== undefined){
       this.confirmacionEnviarGenerales = true
     }else{
       this.messageService.add({ severity: 'error', summary: 'Error', detail: "No se ha guardado el Exhorto" });
-    } 
+    }
   }*/
   enviarGenerales() {
     this.confirmationService.confirm({
@@ -1629,7 +1645,7 @@ export class CrearExhortoComponent {
     if(this.idExhorto !== undefined)
     {
       this.confirmacionEnviarArchivos = true
-    }else{ 
+    }else{
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se a guardado el exhorto' });
     }
   }*/
@@ -2019,7 +2035,7 @@ export class CrearExhortoComponent {
       const perfilSeleccionado = this.authService.getPerfilSeleccionado();
 
       //const idAreaSistemaUsuario = getStorageValue('idAreaSistemaUsuario');
-      //const perfilSeleccionado = getStorageValue('perfilSeleccionado'); 
+      //const perfilSeleccionado = getStorageValue('perfilSeleccionado');
       this.authService.GetSeccionesUsuario(idAreaSistemaUsuario, this.idPantalla.toString(), perfilSeleccionado)
         .subscribe({
           next: (res) => {
@@ -2135,7 +2151,7 @@ export class CrearExhortoComponent {
     this.showPassword = !this.showPassword;
   }
   validarTelefono() {
-    if (!this.partesForm.value.telefono || this.partesForm.value.telefono.length !== 10) { // 
+    if (!this.partesForm.value.telefono || this.partesForm.value.telefono.length !== 10) { //
       this.partesForm.get('telefono')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });
     }
 
