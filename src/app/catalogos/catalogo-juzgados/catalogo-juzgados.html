@@ -67,6 +67,18 @@
                 </th>
                 <th style="min-width:15rem">
                     <div class="flex items-center justify-between">
+                        Instancia
+                        <p-columnFilter type="text" field="descripcion" display="menu"></p-columnFilter>
+                    </div>
+                </th>
+                <th style="min-width:15rem">
+                    <div class="flex items-center justify-between">
+                        Municipio
+                        <p-columnFilter type="text" field="descripcion" display="menu"></p-columnFilter>
+                    </div>
+                </th>
+                <th style="min-width:15rem">
+                    <div class="flex items-center justify-between">
                         Activo
                         <p-columnFilter type="text" field="activo" display="menu"></p-columnFilter>
                     </div>
@@ -84,6 +96,8 @@
                 <td>{{ lista.idJuzgado }}</td>
                 <td>{{ lista.clave }}</td>
                 <td>{{ lista.descripcion }}</td>
+                <td> {{lista.instancia}}</td>
+                <td> {{lista.municipio?.descripcion}}</td>
                 <td>
                     <p-tag [value]="lista.activo ? 'Activo' : 'Inactivo'" [severity]="lista.activo ? 'info' : 'danger'"
                         [rounded]="true">

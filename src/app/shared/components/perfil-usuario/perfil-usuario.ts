@@ -121,7 +121,7 @@ constructor(
               this.resetForm();  
                 
               } else {
-                this.messageService.add({ severity: 'warn', summary: 'Error', detail: response.message,sticky:true}); //life: 8000 // tiempo en milisegundos (8 segundos)
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message,sticky:true}); //life: 8000 // tiempo en milisegundos (8 segundos)
 
                 
                 

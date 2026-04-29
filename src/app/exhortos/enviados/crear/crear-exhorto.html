@@ -376,7 +376,7 @@
                 </div>
               }
               <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
-                  accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
+                  accept="application/pdf" (onSelect)="onAnexosSelect($event)" [auto]="true"
                   chooseLabel="Agregar documento" />
 
               <!-- <p-button routerLink="/form" [outlined]="true" class="mr-3">
@@ -1073,8 +1073,11 @@
       <!-- Teléfono -->
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Teléfono</label>
-        <p-inputmask id="telefono" mask="(999) 999-9999" formControlName="telefono" [unmask]="true" uid placeholder="(999) 999-9999"
-          slotChar="_" (onBlur)="validarTelefono()"></p-inputmask>
+        <input id="telefono" pInputText type="text" formControlName="telefono"  placeholder="9999999999" maxlength="10" class="w-full"
+          (onBlur)="validarTelefono()"/>
+          <div *ngIf="partesForm.get('telefono')?.hasError('pattern')" class="error-text">
+            Debe capturar exactamente 10 dígitos
+          </div>
       </div>
     </div>
   </form>
@@ -1140,8 +1143,11 @@
       <!-- Teléfono -->
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Teléfono</label>
-        <p-inputmask id="telefonoPromo" mask="(999) 999-9999" [unmask]="true" formControlName="telefonoPromo" class="w-full"
-          placeholder="(999) 999-9999"></p-inputmask>
+        <input id="telefonoPromo" pInputText type="text" formControlName="telefonoPromo" class="w-full" maxlength="10"
+          (onBlur)="validarTelefonoPromo()" placeholder="9999999999"/>
+           <div *ngIf="promoventesForm.get('telefonoPromo')?.hasError('pattern')" class="error-text">
+            Debe capturar exactamente 10 dígitos
+          </div>
       </div>
     </div>
   </form>

@@ -108,7 +108,7 @@ export class CrearExhortoComponent {
     //correoElectronico: new FormControl(''),
     correoElectronico: new FormControl('', [Validators.maxLength(50)]),
     //telefono: new FormControl('')
-    telefono: new FormControl('', [Validators.maxLength(50)])
+    telefono: new FormControl('', [Validators.pattern(/^\d{10}$/)])
   });
   promoventesForm = new FormGroup({
     //nombrePromo: new FormControl('', Validators.required),
@@ -125,7 +125,7 @@ export class CrearExhortoComponent {
     //correoElectronicoPromo: new FormControl(''),
     correoElectronicoPromo: new FormControl('', [Validators.maxLength(50)]),
     //telefonoPromo: new FormControl('')
-    telefonoPromo: new FormControl('', [Validators.maxLength(50)])
+    telefonoPromo: new FormControl('', [Validators.pattern(/^\d{10}$/)])
     
   });
   doctosForm = new FormGroup({
@@ -1821,15 +1821,18 @@ export class CrearExhortoComponent {
           this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Selecciona el o los archivos que deseas firmar.' });
         }
 
-      }/*else{
-        this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Archivo PFX invalido.' });
-      }*/
+      }else{
+        //this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Archivo PFX invalido.' });
+        this.isLoading = false;
+        this.cd.detectChanges();
+      }
     }
     else {
       ValidateForm.validateAllFormFields(this.formularioFirma);
       this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ingrese la contraseña.' });
     }
     this.isLoading = false;
+    this.cd.detectChanges();
   }
   //Nueva funcion para firmar documentos, solo se debe de guardar el id de documento que se va a firmar,
   // y el idGeneral del usuario que firma
@@ -2154,6 +2157,11 @@ export class CrearExhortoComponent {
   validarTelefono() {
     if (!this.partesForm.value.telefono || this.partesForm.value.telefono.length !== 10) { //
       this.partesForm.get('telefono')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });
+    }
+  }
+  validarTelefonoPromo() {
+    if (!this.promoventesForm.value.telefonoPromo || this.promoventesForm.value.telefonoPromo.length !== 10) { //
+      this.promoventesForm.get('telefonoPromo')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });
     }
 
   }
