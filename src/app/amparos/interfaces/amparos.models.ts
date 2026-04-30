@@ -331,11 +331,15 @@ export interface CatalogoTipoAsuntoRequest {
 
 }
 
-    export interface CatalogoTipoAsuntoResponse {
-        id: number;
-        descripcion: string;
-    }
+export interface CatalogoTipoAsuntoResponse {
+    id: number;
+    descripcion: string;
+}
 
+export interface CatalogoTipoProcedimientoRespose {
+    id: number;
+    descripcion: string;
+}
 
 //Api/Notificacion/NotificacionesViaConsultaAsunto para mostrar las
 // notificaciones que se iniciarion a travéz de un expediente físico

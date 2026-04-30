@@ -5,3 +5,7 @@
   background: #fff;
   padding: 1rem;
 }
+.error-text {
+  color: red;
+  font-weight: bold;
+}

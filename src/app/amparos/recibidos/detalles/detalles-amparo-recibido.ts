@@ -84,7 +84,7 @@ export class DetallesAmparoRecibido {
                         }
                 }),
                 error:(err => {
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, sticky: true });
                     this.isLoading=false;
                     this.cd.detectChanges();
                 }),
@@ -116,7 +116,7 @@ export class DetallesAmparoRecibido {
                     }
                 }),
                 error:(err=>{
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, sticky: true });
                     this.isLoading=false;
                 }),
                 complete:()=>{
@@ -144,7 +144,7 @@ export class DetallesAmparoRecibido {
                     }
                 }),
                 error:(err=>{
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, sticky: true });
                     this.isLoading=false;
                 }),
                 complete:()=>{
@@ -183,11 +183,11 @@ export class DetallesAmparoRecibido {
                     //Solo puede turnar si ya fue recibido
                     this.puedeTurnarRevocar.set(this.detallesNotificacion()?.generales?.recibido ?? false);
                 }else{
-                    this.messageService.add({severity: 'error', summary: response.message, detail:response.message})
+                    this.messageService.add({severity: 'error', summary: response.message, detail:response.message, sticky: true})
                 }
             },
             error:(e) => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el detalle' });
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el detalle', sticky: true });
                 this.isLoading=false;
             },
             complete:()=>{
@@ -239,10 +239,10 @@ export class DetallesAmparoRecibido {
                       }
           }
           else
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message , sticky: true});
         },
         error: (error) => {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
             this.isLoading=false;
           this.cd.detectChanges();
         },

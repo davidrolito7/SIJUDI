@@ -135,7 +135,7 @@ export class DetallesExhortoEnviado {
   }
 
   promoverExhortoEnviado(){
-    this.router.navigate(['/exhortos/promocion-exhorto-enviado'], {state: {idExhortoEnviado: this.idExhortoEnviado} });
+    this.router.navigate(['/exhortos/promocion-exhorto-enviado'], {state: {idExhortoEnviado: this.idExhortoEnviado, numExhorto: this.detallesExhortos()?.generales.numeroExhorto} });
   }
 
   async loadDetalles(idExhortoEnviado: number){
@@ -310,7 +310,7 @@ export class DetallesExhortoEnviado {
    redirectToPromocion(idExhortoEnviado: number | undefined, idPromocionEnviado: number) {
 //    console.log('Navegando a promoción con idNotificacion:', idNotificacion, 'y idRespuesta:', idRespuesta);
     this.router.navigate(['/exhortos/promocion-exhorto-enviado'], {
-      state: { idExhortoEnviado, idPromocionEnviado }
+      state: { idExhortoEnviado, idPromocionEnviado, numExhorto: this.detallesExhortos()?.generales.numeroExhorto }
     }); 
   }
 
@@ -490,7 +490,7 @@ cargarActualizacionesDelExhorto()
                     this.tienePermisoEditarExhorto.set(this.secciones.some(s => s.descripcion === 'EditarExhorto'));
                     this.tienePermisoPromocionEditar.set(this.secciones.some(s => s.descripcion === 'PromocionEditar'));
                     this.tienePermisoPromocionEnviarGenerales.set(this.secciones.some(s => s.descripcion === 'PromocionEnviarGenerales'));
-                    this.tienePermisoPromocionEnviarArchivos.set(this.secciones.some(s => s.descripcion === 'CargarPromocionEnviarArchivosArchivo'));
+                    this.tienePermisoPromocionEnviarArchivos.set(this.secciones.some(s => s.descripcion === 'PromocionEnviarArchivos'));
                   });
                 }
                //this.cd.detectChanges();

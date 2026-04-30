@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 })
 export class PerfilUsuarioService {
   private baseUrlPermisos:string= environment.ConstantsService.ruta+"/api/Permisos";
-  private baseUrlEfirma:string = environment.urlApiEfirma+"/efirma";
+  private baseUrlEfirma:string = environment.urlApiEfirma;
   //private baseUrlEfirma:string="https://api.tribunaloaxaca.gob.mx/efirma/api/efirma";
   //private baseUrlPermisos:string="https://api.tribunaloaxaca.gob.mx/permisos/api/Permisos";
 

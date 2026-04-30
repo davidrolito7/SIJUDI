@@ -79,38 +79,54 @@ export class CrearExhortoComponent {
     materiaEstadoDestino: new FormControl(null as CatalogoMateriasEstadoDestino | null, Validators.required),
     municipioOrigen: new FormControl(null as CatalogoMunicipioOrigen | null, Validators.required),
     juzgadoOrigen: new FormControl(null as CatalogoJuzgadoOrigen | null, Validators.required),
-    noExpediente: new FormControl('', Validators.required),
-    OficioOrigen: new FormControl(''),
+    noExpediente: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+    OficioOrigen: new FormControl('', [Validators.maxLength(50)]),
     //Tipojuicio: new FormControl('',Validators.required),
     tipojuicio: new FormControl(null as tipoVia | null, Validators.required),
-    nombreJuez: new FormControl(''),
-    numeroFojas: new FormControl(null, Validators.required),
-    DiasResponder: new FormControl(null, Validators.required),
+    nombreJuez: new FormControl('',[Validators.maxLength(100)]),
+    //numeroFojas: new FormControl(null, Validators.required),
+    numeroFojas: new FormControl<number | null>(null, [Validators.required,Validators.min(1),Validators.pattern(/^\d+$/)]),
+//    DiasResponder: new FormControl(null, Validators.required),
+    DiasResponder: new FormControl<number | null>(null, [Validators.required,Validators.min(1),Validators.pattern(/^\d+$/)]),
     TipoDiligencia: new FormControl(null as catTipoDiligencia | null, Validators.required),
-    observaciones: new FormControl('')
+    //observaciones: new FormControl('')
+    observaciones: new FormControl<string>('', [Validators.maxLength(1000)])
   });
 
   partesForm = new FormGroup({
-    nombre: new FormControl('', Validators.required),
-    paterno: new FormControl(''),
-    materno: new FormControl(''),
+   // nombre: new FormControl('', Validators.required),
+    nombre: new FormControl('', [Validators.required,Validators.maxLength(500)]),
+    //paterno: new FormControl(''),
+     paterno: new FormControl<string>('', [Validators.maxLength(50)]), 
+//    materno: new FormControl(''),
+    materno: new FormControl<string>('', [Validators.maxLength(50)]),
     genero: new FormControl(''),
     moral: new FormControl(false, { nonNullable: true, validators: [Validators.required] }),
     //moral: new FormControl(false,[Validators.required]),
-    tipoParte: new FormControl('', Validators.required),
-    correoElectronico: new FormControl(''),
-    telefono: new FormControl('')
+    //tipoParte: new FormControl('', Validators.required),
+    tipoParte: new FormControl<number | null>(null, Validators.required),
+    //correoElectronico: new FormControl(''),
+    correoElectronico: new FormControl('', [Validators.maxLength(50)]),
+    //telefono: new FormControl('')
+    telefono: new FormControl('', [Validators.pattern(/^\d{10}$/)])
   });
   promoventesForm = new FormGroup({
-    nombrePromo: new FormControl('', Validators.required),
-    paternoPromo: new FormControl(''),
-    maternoPromo: new FormControl(''),
+    //nombrePromo: new FormControl('', Validators.required),
+    nombrePromo: new FormControl('', [Validators.required,Validators.maxLength(500)]),
+    //paternoPromo: new FormControl(''),
+    paternoPromo: new FormControl<string>('', [Validators.maxLength(50)]), 
+    //maternoPromo: new FormControl(''),
+    maternoPromo: new FormControl<string>('', [Validators.maxLength(50)]), 
     generoPromo: new FormControl(''),
     moralPromo: new FormControl(false, { nonNullable: true, validators: [Validators.required] }),
     //moralPromo: new FormControl(false,[Validators.required]),
-    tipoPartePromo: new FormControl('', Validators.required),
-    correoElectronicoPromo: new FormControl(''),
-    telefonoPromo: new FormControl('')
+    //tipoPartePromo: new FormControl('', Validators.required),
+    tipoPartePromo: new FormControl<number | null>(null, Validators.required),
+    //correoElectronicoPromo: new FormControl(''),
+    correoElectronicoPromo: new FormControl('', [Validators.maxLength(50)]),
+    //telefonoPromo: new FormControl('')
+    telefonoPromo: new FormControl('', [Validators.pattern(/^\d{10}$/)])
+    
   });
   doctosForm = new FormGroup({
     tipoDocumento: new FormControl(null as ListadoCatalogoTipoDocumento | null, Validators.required),
@@ -363,7 +379,7 @@ export class CrearExhortoComponent {
       materiaO ? juicioControl?.enable() : juicioControl?.disable();
       this.exhortosForm.get('juzgadoOrigen')?.setValue(null);
       this.exhortosForm.get('tipojuicio')?.setValue(null);
-      
+
     });*/
 
     // Reglas para partes y promoventes (omitidas aquí por brevedad, asumes que ya están bien implementadas)
@@ -529,7 +545,7 @@ export class CrearExhortoComponent {
   // Abrir el modal cuando el select recibe foco
   /*openSearchModal() {
    this.searchModalOpen = true;
- 
+
  }*/
 
   // Prevenir el cierre del modal al hacer clic en él
@@ -565,7 +581,7 @@ export class CrearExhortoComponent {
   /*onTipoDocumentoChange(event: any) {
     const tipoDocId = event.target.value;
     const tipoSeleccionado = this.listadoTipoDocumento.find(doc => doc.idTipoDocumento === +tipoDocId);
-  
+
     if (tipoSeleccionado) {
       this.selectedTipoDocumento = tipoSeleccionado;
       //console.log('Tipo de documento seleccionado:', this.selectedTipoDocumento);
@@ -596,7 +612,7 @@ export class CrearExhortoComponent {
             //console.log('Juzgados filtrados:', response.data);
             this.listaJuzgadoOrigen.set(response.data);
           } else {
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
           }
         },
         error: () => {
@@ -617,12 +633,12 @@ export class CrearExhortoComponent {
           this.listaMateria.set(response.data);
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
         }
       },
       error: (e) => {
         //console.error('Error al cargar el catálogo de Materia', e);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias', sticky: true });
       },
     });
   }
@@ -721,11 +737,11 @@ export class CrearExhortoComponent {
           this.messageService.add({ severity: 'success', summary: 'ok', detail: "Los datos fueron guardados correctamente" });
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error, sticky: true });
         this.isLoading = false;
         this.cd.detectChanges();
       },
@@ -792,7 +808,7 @@ export class CrearExhortoComponent {
         },
         (error) => {
           //console.error('❌ Error al cargar municipios:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar municipios' });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar municipios', sticky: true });
           reject(error);
         }
       );
@@ -814,7 +830,7 @@ export class CrearExhortoComponent {
         },
         error => {
           //console.error('Error al cargar el catálogo de órganos', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de órganos' });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de órganos', sticky: true });
           this.isLoading = false;
           this.cd.detectChanges();
           reject(error);
@@ -869,7 +885,8 @@ export class CrearExhortoComponent {
     formData.append('idUsuario', Usuario.idGeneral);
 
     //console.log('Datos enviados al backend:', formData);
-
+    this.isLoading = true;
+    this.cd.detectChanges();
     this.ExhortosService.guardarDocumento(formData).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -877,12 +894,19 @@ export class CrearExhortoComponent {
           this.actualizarListadoDocumentos(this.idExhorto); // <-- Agrega esta línea
           this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Documento guardado exitosamente' });
         } else {
-          this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+          this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
           this.resetForm();
         }
+
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar el documento' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar el documento', sticky: true });
+        this.isLoading = false;
+        this.cd.detectChanges();
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cd.detectChanges();
       }
     });
   }
@@ -914,9 +938,9 @@ export class CrearExhortoComponent {
       this.exhortosForm.updateValueAndValidity();
       ValidateForm.validateAllFormFields(this.exhortosForm);
 
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos', life:10000 });
     } else {
-      this.messageService.add({ severity: 'warn', summary: 'Formulario inválido', detail: 'Revisa los campos requeridos' });
+      this.messageService.add({ severity: 'warn', summary: 'Formulario inválido', detail: 'Revisa los campos requeridos', life:10000 });
       //datos generales
       this.exhortosForm.markAllAsTouched();
       ValidateForm.validateAllFormFields(this.exhortosForm);
@@ -938,7 +962,7 @@ export class CrearExhortoComponent {
       numeroExpedienteOrigen: this.exhortosForm.value.noExpediente,
       numeroOficioOrigen: this.exhortosForm.value.OficioOrigen,
       idCatTipoVia: this.exhortosForm.value.tipojuicio?.idCatTipoVia,//this.tipoViaSelect.idCatTipoVia,
-      tipoJuicioAsuntoDelitos: this.exhortosForm.value.tipojuicio?.descripcion,//this.tipoViaSelect.descripcion, 
+      tipoJuicioAsuntoDelitos: this.exhortosForm.value.tipojuicio?.descripcion,//this.tipoViaSelect.descripcion,
       juezExhortante: this.exhortosForm.value.nombreJuez,
       fojas: this.exhortosForm.value.numeroFojas ?? 1,
       diasResponder: this.exhortosForm.value.DiasResponder ?? 1,
@@ -990,11 +1014,11 @@ export class CrearExhortoComponent {
         if (response.success) {
           this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Exhorto actualizado correctamente' });
         } else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors,  sticky: true });
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error, sticky: true });
         this.isLoading = false;
         this.cd.detectChanges();
       },
@@ -1085,7 +1109,7 @@ export class CrearExhortoComponent {
           this.messageService.add({
             severity: 'warn',
             summary: 'Advertencia',
-            detail: 'No se encontraron documentos asociados al exhorto.'
+            detail: 'No se encontraron documentos asociados al exhorto.',life:10000
           });
         }
       },
@@ -1094,7 +1118,8 @@ export class CrearExhortoComponent {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'No se pudieron cargar los documentos del exhorto.'
+          detail: 'No se pudieron cargar los documentos del exhorto.',
+          sticky: true
         });
       }
     });
@@ -1108,7 +1133,7 @@ export class CrearExhortoComponent {
           this.listaJuzgadoOrigen.set(response.data);
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
         }
       },
       error: (e) => {
@@ -1149,7 +1174,7 @@ export class CrearExhortoComponent {
     //}
     else {
       ValidateForm.validateAllFormFields(this.doctosForm);
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Tipo documento requerido' })
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Tipo documento requerido', life:10000 })
     }
 
   }
@@ -1212,7 +1237,7 @@ export class CrearExhortoComponent {
           this.listagenero.set(response.data);
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
         }
       },
       error: (e) => {
@@ -1233,7 +1258,7 @@ export class CrearExhortoComponent {
           this.listaTipoParte.set(response.data);
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
         }
       },
       error: (e) => {
@@ -1254,7 +1279,7 @@ export class CrearExhortoComponent {
           this.listaTipoDocumento = response.data;
         }
         else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
         }
       },
       error: (e) => {
@@ -1499,12 +1524,12 @@ export class CrearExhortoComponent {
             }
           }
           else {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.error });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.error, sticky: true });
           }
         },
         error: (e) => {
           //console.error('Error al recibir el archivo', e);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           this.isLoading = false;
           this.cd.detectChanges();
         },
@@ -1536,7 +1561,7 @@ export class CrearExhortoComponent {
   }
 
   onEliminarDocumento(documento: archivoExhortoEnviado, tipoDocumento: number, index: number) {
-    //validamos si idArchivo no trae nada, quiere decir que son archivos nuevos que no se han guardado y se 
+    //validamos si idArchivo no trae nada, quiere decir que son archivos nuevos que no se han guardado y se
     //eliminan solo en el array, sin llamar la api
     if (documento.idArchivo == 0) {
       this.onEliminarIndex(index);
@@ -1556,15 +1581,15 @@ export class CrearExhortoComponent {
               this.listaDocumentos().splice(index, 1);
             }
             //console.log("Documento eliminado");
-            this.messageService.add({ severity: 'success', summary: 'Error', detail: 'Documento eliminado' });
+            this.messageService.add({ severity: 'success', summary: 'Ok', detail: 'Documento eliminado' });
           } else {
             //console.error('Error al eliminar el archivo:', response.message);
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
           }
         },
         error: (error) => {
           //console.error('Error en la petición eliminar:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
         },
         complete: () => {
           this.idArchivo = null;
@@ -1575,12 +1600,12 @@ export class CrearExhortoComponent {
   }
 
 
-  /*abrirConfirmacionEnviarGenerales(){ 
+  /*abrirConfirmacionEnviarGenerales(){
     if(this.idExhorto !== undefined){
       this.confirmacionEnviarGenerales = true
     }else{
       this.messageService.add({ severity: 'error', summary: 'Error', detail: "No se ha guardado el Exhorto" });
-    } 
+    }
   }*/
   enviarGenerales() {
     this.confirmationService.confirm({
@@ -1603,12 +1628,12 @@ export class CrearExhortoComponent {
 
           } else {
             //console.error('Error al eliminar el archivo:', response.message);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
           }
         },
         error: (e) => {
           //console.error('Error en la petición eliminar:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           this.isLoading = false;
           this.cd.detectChanges();
         },
@@ -1629,7 +1654,7 @@ export class CrearExhortoComponent {
     if(this.idExhorto !== undefined)
     {
       this.confirmacionEnviarArchivos = true
-    }else{ 
+    }else{
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se a guardado el exhorto' });
     }
   }*/
@@ -1669,12 +1694,12 @@ export class CrearExhortoComponent {
 
           } else {
             //console.error('Error al eliminar el archivo:', response.message);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
           }
         },
         error: (e) => {
           //console.error('Error en la petición eliminar:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           this.isLoading = false;
           this.cd.detectChanges();
         },
@@ -1730,13 +1755,13 @@ export class CrearExhortoComponent {
             resolve();
           } else {
             //console.error('❌ Error en respuesta del backend:', response.message);
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
             reject(response.errors);
           }
         },
         error: (error) => {
           //console.error('❌ Error HTTP al obtener juzgados:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar juzgados.' });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar juzgados.', sticky: true });
           reject(error);
         }
       });
@@ -1761,14 +1786,14 @@ export class CrearExhortoComponent {
             resolve(true); //resolve cuando se requiere que el flujo continue
 
           } else {
-            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
             reject(false); //reject es cuando se desea sali del flujo, ya no requere que se continue.
             this.modalService.close('modal1');
           }
         },
         error: (e) => {
           //console.error('Error al guardar el documento Firmado en el NAS', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           reject(false);
         },
         complete: () => {
@@ -1804,15 +1829,18 @@ export class CrearExhortoComponent {
           this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Selecciona el o los archivos que deseas firmar.' });
         }
 
-      }/*else{
-        this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Archivo PFX invalido.' });
-      }*/
+      }else{
+        //this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Archivo PFX invalido.' });
+        this.isLoading = false;
+        this.cd.detectChanges();
+      }
     }
     else {
       ValidateForm.validateAllFormFields(this.formularioFirma);
       this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ingrese la contraseña.' });
     }
     this.isLoading = false;
+    this.cd.detectChanges();
   }
   //Nueva funcion para firmar documentos, solo se debe de guardar el id de documento que se va a firmar,
   // y el idGeneral del usuario que firma
@@ -1833,12 +1861,12 @@ export class CrearExhortoComponent {
             resolve(true);
           }
           else {
-            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
             resolve(false);
           }
         },
         error: (e) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           reject(false);
         },
         complete: () => {
@@ -1987,13 +2015,13 @@ export class CrearExhortoComponent {
             resolve();
           } else {
             //console.error('❌ Error en respuesta del backend:', response.message);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message + '\n' + response.errors });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message + '\n' + response.errors, sticky: true });
             reject(response.errors);
           }
         },
         error: (error) => {
           //console.error('❌ Error HTTP al obtener juzgados:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
           reject(error);
         }
       });
@@ -2019,7 +2047,7 @@ export class CrearExhortoComponent {
       const perfilSeleccionado = this.authService.getPerfilSeleccionado();
 
       //const idAreaSistemaUsuario = getStorageValue('idAreaSistemaUsuario');
-      //const perfilSeleccionado = getStorageValue('perfilSeleccionado'); 
+      //const perfilSeleccionado = getStorageValue('perfilSeleccionado');
       this.authService.GetSeccionesUsuario(idAreaSistemaUsuario, this.idPantalla.toString(), perfilSeleccionado)
         .subscribe({
           next: (res) => {
@@ -2051,7 +2079,7 @@ export class CrearExhortoComponent {
 
           },
           error: (err) => {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message , sticky: true});
 
           }
         });
@@ -2085,11 +2113,11 @@ export class CrearExhortoComponent {
           this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
         }
         else {
-          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message });
+        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message, sticky: true });
       },
       complete: () => {
 
@@ -2116,11 +2144,11 @@ export class CrearExhortoComponent {
           this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
           this.actualizarListadoDocumentos(this.idExhorto)
         } else {
-          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
+          this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
         }
       },
       error: (e) => {
-        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message });
+        this.messageService.add({ severity: 'error', summary: 'error', detail: e.message, sticky: true });
         this.isLoading = false;
         this.cd.detectChanges;
       },
@@ -2135,8 +2163,13 @@ export class CrearExhortoComponent {
     this.showPassword = !this.showPassword;
   }
   validarTelefono() {
-    if (!this.partesForm.value.telefono || this.partesForm.value.telefono.length !== 10) { // 
+    if (!this.partesForm.value.telefono || this.partesForm.value.telefono.length !== 10) { //
       this.partesForm.get('telefono')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });
+    }
+  }
+  validarTelefonoPromo() {
+    if (!this.promoventesForm.value.telefonoPromo || this.promoventesForm.value.telefonoPromo.length !== 10) { //
+      this.promoventesForm.get('telefonoPromo')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });
     }
 
   }
