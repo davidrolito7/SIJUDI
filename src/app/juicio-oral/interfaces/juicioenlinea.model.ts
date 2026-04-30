@@ -41,22 +41,14 @@ export interface CatTipoVia {
     descripcion: string;
 }
 
+export interface ContadoresDemandas {
+    pendientes_recibir: number;
+    pendientes_turnar: number;
+}
 
 //########################################################################
 // DETALLE DE PREREGISTROS RESPONSE   //http://127.0.0.1:8000/api/Inicio/DetallePreregistro/{idDemanda}
-
-export interface DetalleDemandaResponse {  //* OK
-    idExpediente: number;
-    NumExpediente: string;
-    idCatJuzgado: string;
-    fechaResponse: string;
-    idDemanda: string;
-    idSecretario: string;
-    numSecretaria: string;
-    juzgado: Juzgado;
-    demanda: DemandaResponse;
-}
-export interface DemandaResponse {
+export interface DetalleDemandaResponse {
     idDemanda: number;
     folio: string;
     idCatViaMateria: number;
@@ -64,6 +56,7 @@ export interface DemandaResponse {
     fechaHoraRecepcion: string;
     descripcionDemanda: string;
     idGeneral: string;
+    expediente: ListarExpedientesResponse;
     partes: Partes[];
     anexos_declarados: AnexosDeclarados[];
     documentos: Documentos[];
@@ -151,9 +144,9 @@ export interface HistorialEstado { //* OK
     idDemanda: number;
     idCatEstadoInicio: number;
     fechaEstado: string;
-    estado: Estado;
+    cat_estado_demanda: CatEstadoDemanda;
 }
-export interface Estado { //* OK
+export interface CatEstadoDemanda { //* OK
     idCatEstadoInicio: number;
     descripcion: string;
 }
@@ -279,7 +272,7 @@ export interface ListarExpedientesResponse {
     idSecretario: string;
     numSecretaria: string;
     tramites: DetalleTramites[];
-    demanda: DemandaResponse;
+    demanda: DetalleDemandaResponse;
     juzgado: Juzgado;
     ultimo_historial: HistorialExpediente;
 
@@ -290,10 +283,10 @@ export interface HistorialExpediente {
     idEstadoExpediente: string;
     descripcion: string;
     created_at: Date;
-    estado: Estado;
+    cat_estado_expediente: CatEstadoExpediente;
 }
 
-export interface Estado { //* OK
+export interface CatEstadoExpediente { //* OK
     idEstadoExpediente: number;
     descripcion: string;
 }
@@ -400,7 +393,7 @@ export interface DetalleExpedienteResponse { //* OK
     numSecretaria: string;
     juzgado: Juzgado;
     tramites: DetalleTramites[];
-    pre_registro: DemandaResponse;
+    demanda: DetalleDemandaResponse;
     requerimientos: DetalleRequerimiento;
 
 }
@@ -633,66 +626,64 @@ export interface Pantalla {
 }
 
 //Tramites
-export interface ListadoTramites {
-    idTramite: number
-    idCatTramite: number
-    idGeneral: number
-    usr: number
-    folioOficio: string
-    sintesis: string
-    observaciones: string
-    idExpediente: number
-    notificado: number
+export interface ListadoTramitesResponse {
+    idTramite: number;
+    idCatTramite: number;
+    idGeneral: number;
+    folio: string;
+    sintesis: string;
+    observaciones: string;
+    idExpediente: number;
+    notificado: number;
     idDocumentoTramite: number
-    created_at: Date
-    historial: HistorialTramite[];
-    cat_tramite: TipoTramite;
+    created_at: Date;
     expediente: ListarExpedientesResponse;
+    cat_tramite: TipoTramite;
+    ultimo_estado: HistorialTramite;
 }
 
 export interface DetalleTramites {
-    idTramite: number
-    idCatTramite: number
-    idGeneral: number
-    usr: number
-    folioOficio: string
-    sintesis: string
-    observaciones: string
-    idExpediente: number
-    notificado: number
-    idDocumentoTramite: number
-    created_at: Date
-    idAcuerdo?: number | null;
-    historial: HistorialTramite;
-    cat_tramite: TipoTramite;
-    documento: Documentos;
-    // expediente: DetalleExpediente;
-    partes_tramite: Partes[];
+    idTramite: number;
+    idCatTramite: number;
+    idGeneral: number;
+    usr: number;
+    folioOficio: string;
+    sintesis: string;
+    observaciones: string;
+    idExpediente: number;
+    notificado: number;
+    idDocumentoTramite: number;
+    created_at: Date;
     idCatRemitente: number;
-    remitente: Remitente;
+    idAcuerdo?: number | null;
     expediente: ListarExpedientesResponse;
-
+    ultimo_estado: HistorialTramite;
+    documento: Documentos;
+    cat_tramite: TipoTramite;
+    partes_tramite: Partes[];
+    remitente: Remitente;
+    movimientos: Movimiento[];
 }
 
 export interface HistorialTramite {
-    idHistorialEstadoTramite: number
-    idTramite: number,
-    idCatEstadoTramite: number,
-    created_at: Date,
+    idHistorialEstadoTramite: number;
+    idTramite: number;
+    idCatEstadoTramite: number;
+    created_at: Date;
     cat_estado_tramite: catEstadoTramite;
 }
 
 export interface catEstadoTramite {
-    idCatEstadoTramite: number
-    nombre: string
-    activo: number
-    created_at: Date
+    idCatEstadoTramite: number;
+    nombre: string;
+    activo: number;
+    created_at: Date;
 }
 export interface TipoTramite {
     idCatTramite: number,
     nombre: string,
     activo: number,
-    created_at: Date
+    created_at: Date;
 }
 
 export interface Juzgado {
@@ -723,33 +714,6 @@ export interface RespuestaRequerimientos {
         last_page: number;
     };
 }
-
-export interface RespuestaTramites {
-    status: number;
-    message: string;
-    data: ListadoTramites[];
-    pagination: {
-        current_page: number;
-        per_page: number;
-        total: number;
-        last_page: number;
-    };
-}
-
-export interface RespuestaIniciosCreados {
-    status: number;
-    message: string;
-    data: ListadoDemandasResponse[];
-    pagination: {
-        current_page: number;
-        last_page: number;
-        per_page: number;
-        total: number;
-
-    };
-}
-
-
 
 export interface RespuestaExpedienteDetalle {
     success: boolean;

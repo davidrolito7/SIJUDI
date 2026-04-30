@@ -35,6 +35,7 @@ import { DetalleDemandaResponse, ListarExpedientesResponse } from '../../interfa
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
+import { ContadoresService } from '../../services/contadores.service';
 
 @Component({
   selector: 'app-recibir-demanda',
@@ -82,16 +83,15 @@ export class RecibirDemanda implements OnInit {
     {
       label: 'Recibir demandas',
       icon: 'pi pi-file-export',
-      command: () => this.turnarSeleccionados()
+      command: () => this.recibirSeleccionados()
     },
-    // Agrega más acciones masivas aquí si necesitas
     // {
     //   label: 'Exportar seleccionados',
     //   icon: 'pi pi-download',
     //   command: () => this.exportarSeleccionados()
     // },
   ];
-  
+
   selectedExpedientes: DetalleDemandaResponse[] = [];
 
   inicios = signal<DetalleDemandaResponse[]>([]);
@@ -115,7 +115,7 @@ export class RecibirDemanda implements OnInit {
     private route: ActivatedRoute,
     private messageService: MessageService,
     private readonly confirmationService: ConfirmationService,
-
+    private contadoresService: ContadoresService
 
   ) { }
 
@@ -156,7 +156,7 @@ export class RecibirDemanda implements OnInit {
     this.cargarDatos(page, rows);
   }
 
-  private cargarDatos(page: number, perPage: number): void {
+  private cargarDatos(page: number, perPage: number, onComplete?: () => void): void {
     this.isLoading.set(true);
 
     const params: Record<string, string | number> = { page, per_page: perPage };
@@ -174,7 +174,8 @@ export class RecibirDemanda implements OnInit {
       next: (response) => {
         this.isLoading.set(false);
         this.inicios.set(response.data);
-        this.totalRecords = response.pagination?.total ?? 0; // ← total del backend
+        this.totalRecords = response.pagination?.total ?? 0;
+        onComplete?.(); // ← ejecuta el callback si existe
       },
       error: (error) => {
         this.isLoading.set(false);
@@ -245,13 +246,13 @@ export class RecibirDemanda implements OnInit {
   // Estado helpers for UI tags
   // ============================
   getEstadoDescripcion(inicio: unknown): string | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { estado?: { descripcion?: string } } } };
-    return i.demanda?.ultimo_estado?.estado?.descripcion ?? null;
+    const i = inicio as { demanda?: { ultimo_estado?: { cat_estado_demanda?: { descripcion?: string } } } };
+    return i.demanda?.ultimo_estado?.cat_estado_demanda?.descripcion ?? null;
   }
 
   getEstadoId(inicio: unknown): number | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { estado?: { idCatEstadoDemanda?: number } } } };
-    return i.demanda?.ultimo_estado?.estado?.idCatEstadoDemanda ?? null;
+    const i = inicio as { demanda?: { ultimo_estado?: { cat_estado_demanda?: { idCatEstadoDemanda?: number } } } };
+    return i.demanda?.ultimo_estado?.cat_estado_demanda?.idCatEstadoDemanda ?? null;
   }
 
   getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
@@ -268,35 +269,28 @@ export class RecibirDemanda implements OnInit {
     }
   }
 
-  onConfirmarTurnar(event: Event, idDemanda: number): void {
-    this.confirmationService.confirm({
-      key: 'turnar',
-      target: event.target as EventTarget,
-      accept: () => this.onTurnarDemanda(idDemanda)
-    });
-
-  }
-  onTurnarDemanda(idDemanda: number): void {
+  onSiguienteMovimientoDemanda(idDemanda: (string | number)[]): void {
     this.isLoading.set(true);
-    this.juicioService.putSiguienteMovimiento(idDemanda).subscribe({
+    const payload: any = { idDemanda };
+
+    this.juicioService.putSiguienteMovimiento(payload).subscribe({
       next: (response) => {
+        this.contadoresService.refrescar()
         if (response.success) {
-          this.isLoading.set(false);
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: response.message
+          this.selectedExpedientes = [];
+          this.cargarDatos(1, this.rowsPerPage, () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Exitoso',
+              detail: response.message || 'Demanda(s) recibida(s) correctamente'
+            });
           });
-          // Remover el registro de inicios
-          const updated = this.inicios().filter(i => i.demanda?.idDemanda !== idDemanda);
-          this.inicios.set(updated);
-          this.totalRecords--;
         } else {
           this.isLoading.set(false);
           this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: response.message
+            severity: 'info',
+            summary: 'Aviso',
+            detail: response.message || 'No se pudo recibir la demanda'
           });
         }
       },
@@ -311,19 +305,21 @@ export class RecibirDemanda implements OnInit {
     });
   }
 
-  turnarSeleccionados(): void {
+  recibirSeleccionados(): void {
     if (!this.selectedExpedientes.length) return;
 
-    const ids = this.selectedExpedientes.map(e => e.demanda?.idDemanda).filter(Boolean);
+    const ids = this.selectedExpedientes.map(e => e.idDemanda).filter(Boolean);
 
-    // Si tu backend acepta turnar en lote:
-    // this.juicioService.putTurnarLote(ids).subscribe(...)
+    if (!ids.length) {
+      this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: 'No se encontraron IDs válidos' });
+      return;
+    }
 
-    // Si solo acepta uno a uno:
-    ids.forEach(id => {
-      if (id) this.onTurnarDemanda(id);
+    // Mostrar confirmación
+    this.confirmationService.confirm({
+      key: 'recibir',
+      accept: () => this.onSiguienteMovimientoDemanda(ids),
+      reject: () => { }
     });
-
-    this.selectedExpedientes = [];
   }
 }

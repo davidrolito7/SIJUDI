@@ -30,7 +30,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 // App - feature
 // ============================
 import { JuicioService } from '../../services/juicioenlinea.service';
-import { Juzgado, ListadoTramites } from '../../interfaces/juicioenlinea.model';
+import { Juzgado, ListadoTramitesResponse } from '../../interfaces/juicioenlinea.model';
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { PantallasService } from '../../services/pantallas.service';
 
@@ -73,7 +73,7 @@ export class ListarTramite implements OnInit {
     { label: 'Promociones', value: '2' },
   ];
 
-  tramites: ListadoTramites[] = [];
+  tramites: ListadoTramitesResponse[] = [];
   isLoading = false;
   visible = false;
 
@@ -124,7 +124,7 @@ export class ListarTramite implements OnInit {
     const page = params['page'] ? +params['page'] : 1;
     this.cargarDatos(page);
 
-        this.cargarJuzgados();
+    //this.cargarJuzgados();
 
   }
 
@@ -163,7 +163,7 @@ export class ListarTramite implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.tramites = response.data ?? [];
-        this.pagination = response.pagination;
+        // this.pagination = response.pagination;
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -309,34 +309,54 @@ export class ListarTramite implements OnInit {
   // Estado helpers para UI tags
   // ============================
   getEstadoDescripcion(tramite: unknown): string | null {
-    const t = tramite as { historial?: Array<{ cat_estado_tramite?: { nombre?: string } }> };
-    const historial = t.historial;
-    if (!historial || historial.length === 0) return null;
-    return historial[historial.length - 1]?.cat_estado_tramite?.nombre ?? null;
+    const i = tramite as { ultimo_estado?: { cat_estado_tramite?: { nombre?: string } } };
+    return i.ultimo_estado?.cat_estado_tramite?.nombre ?? null;
   }
 
   getEstadoId(tramite: unknown): number | null {
-    const t = tramite as { historial?: Array<{ idCatEstadoTramite?: number }> };
-    const historial = t.historial;
-    if (!historial || historial.length === 0) return null;
-    return historial[historial.length - 1]?.idCatEstadoTramite ?? null;
+    const i = tramite as { ultimo_estado?: { cat_estado_tramite?: { idCatEstadoTramite?: number } } };
+    return i.ultimo_estado?.cat_estado_tramite?.idCatEstadoTramite ?? null;
   }
 
   getEstadoTag(tramite: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
     const id = this.getEstadoId(tramite);
     switch (id) {
       case 1:
-        return { severity: 'info', icon: 'pi pi-send' };
+        return { severity: 'secondary', icon: 'pi pi-send' };
       case 2:
+        return { severity: 'info', icon: 'pi pi-clock' };
+      case 3:
         return { severity: 'success', icon: 'pi pi-check' };
-      case 10002:
-        return { severity: 'warn', icon: 'pi pi-file-edit' };
       default:
-        return { severity: 'secondary' };
+        return { severity: 'secondary', icon: 'pi pi-question' };
     }
   }
+  getDescripcionTramite(tramite: unknown): string | null {
+    const i = tramite as { cat_tramite?: { nombre?: string } };
+    return i.cat_tramite?.nombre ?? null;
+  }
 
-    cargarJuzgados() {
+  getIdTramite(tramite: unknown): number | null {
+    const i = tramite as { cat_tramite?: { idCatTramite?: number } };
+    return i.cat_tramite?.idCatTramite ?? null;
+  }
+
+  getTagTramite(tramite: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+    const id = this.getIdTramite(tramite);
+    switch (id) {
+      case 0:
+        return { severity: 'success', icon: 'pi pi-file-pdf' };
+      case 1:
+        return { severity: 'info', icon: 'pi pi-file-pdf' };
+      case 2:
+        return { severity: 'warn', icon: 'pi pi-flag' };
+      case 3:
+        return { severity: 'secondary', icon: 'pi pi-check' };
+      default:
+        return { severity: 'secondary', icon: 'pi pi-question' };
+    }
+  }
+  cargarJuzgados() {
     this.juicioService.getJuzgados().subscribe({
       next: (juzgados) => {
         this.juzgados = juzgados;

@@ -15,6 +15,7 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { TagModule } from 'primeng/tag';
 // Shared
 import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
 import { Spinner } from '../../../shared/components/spinner/spinner';
@@ -41,6 +42,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     TooltipModule,
     InputGroupModule,
     InputGroupAddonModule,
+    TagModule,
     // Shared
     Breadcrub,
     Spinner,
@@ -58,18 +60,14 @@ export class CrearAcuerdo implements OnInit {
   // ============================
   // State
   // ============================
-  isLoading= signal<boolean>(false);
+  isLoading = signal<boolean>(false);
   expediente: DetalleExpedienteResponse | null = null;
   idExpediente: number | undefined;
 
   acuerdo!: FormGroup;
-  firmaForm!: FormGroup;
 
   isAllSelected = false;
-  selectedTramites: number[] = [];
-
-  firmaVerificada = false;
-  showPassword = false;
+  selectedTramites: any[] = [];
 
   // Documento subido
   nombreArchivo = '';
@@ -90,7 +88,7 @@ export class CrearAcuerdo implements OnInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private router: Router,
-  ) {}
+  ) { }
 
   // ============================
   // Lifecycle
@@ -106,13 +104,9 @@ export class CrearAcuerdo implements OnInit {
     }
 
     this.acuerdo = this.fb.group({
-      sintesis:      ['', [Validators.required, Validators.minLength(10), Validators.maxLength(255)]],
+      sintesis: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(255)]],
       observaciones: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(255)]],
-      documento:     [null, Validators.required],
-    });
-
-    this.firmaForm = this.fb.group({
-      password_Efirma: ['', [Validators.required, Validators.maxLength(50)]],
+      documento: [null, Validators.required],
     });
   }
 
@@ -123,11 +117,11 @@ export class CrearAcuerdo implements OnInit {
     this.isLoading.set(true);
     this.juicioService.getTramitesExpediente(idExpediente).subscribe({
       next: (response) => {
-    this.isLoading.set(false);
+        this.isLoading.set(false);
         this.expediente = response.data;
       },
       error: () => {
-    this.isLoading.set(false);
+        this.isLoading.set(false);
       },
     });
   }
@@ -138,16 +132,16 @@ export class CrearAcuerdo implements OnInit {
   toggleSelectAll(): void {
     this.isAllSelected = !this.isAllSelected;
     this.selectedTramites = this.isAllSelected
-      ? (this.expediente?.tramites.map(t => t.idTramite) ?? [])
+      ? [...(this.expediente?.tramites ?? [])]
       : [];
   }
 
-  toggleSelection(id: number): void {
-    const index = this.selectedTramites.indexOf(id);
+  toggleSelection(tramite: any): void {
+    const index = this.selectedTramites.findIndex(t => t === tramite);
     if (index > -1) {
       this.selectedTramites.splice(index, 1);
     } else {
-      this.selectedTramites.push(id);
+      this.selectedTramites.push(tramite);
     }
     this.isAllSelected = this.selectedTramites.length === this.expediente?.tramites.length;
   }
@@ -193,60 +187,30 @@ export class CrearAcuerdo implements OnInit {
   // ============================
   // Visor PDF desde servidor
   // ============================
-  openModal(idDocumento: number): void {
-    this.isLoading.set(true);
-    this.juicioService.getDocumento(idDocumento).subscribe({
-      next: (response) => {
-    this.isLoading.set(false);
-        if (response?.data?.file) {
-          const byteCharacters = atob(response.data.file);
-          const byteArray = new Uint8Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteArray[i] = byteCharacters.charCodeAt(i);
-          }
-          const blob = new Blob([byteArray], { type: 'application/pdf' });
-          const blobUrl = URL.createObjectURL(blob);
-          this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl);
-          this.visibleDocumento = true;
-        }
-      },
-      error: () => {
-    this.isLoading.set(false);
-      },
-    });
-  }
+  // openModal(idDocumento: number): void {
+  //   this.isLoading.set(true);
+  //   this.juicioService.getDocumento(idDocumento).subscribe({
+  //     next: (response) => {
+  //       this.isLoading.set(false);
+  //       if (response?.data?.file) {
+  //         const byteCharacters = atob(response.data.file);
+  //         const byteArray = new Uint8Array(byteCharacters.length);
+  //         for (let i = 0; i < byteCharacters.length; i++) {
+  //           byteArray[i] = byteCharacters.charCodeAt(i);
+  //         }
+  //         const blob = new Blob([byteArray], { type: 'application/pdf' });
+  //         const blobUrl = URL.createObjectURL(blob);
+  //         this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl);
+  //         this.visibleDocumento = true;
+  //       }
+  //     },
+  //     error: () => {
+  //       this.isLoading.set(false);
+  //     },
+  //   });
+  // }
 
-  // ============================
-  // FIREL
-  // ============================
-  autorizarFirel(event: Event): void {
-    this.confirmationService.confirm({
-      key: 'firma',
-      target: event.target as EventTarget,
-      accept: () => this.onVerificarFirma(),
-      reject: () => {},
-    });
-  }
 
-  onVerificarFirma(): void {
-    this.isLoading.set(true);
-    this.juicioService.verificarFirma({ password_Efirma: this.firmaForm.value.password_Efirma }).subscribe({
-      next: (response) => {
-    this.isLoading.set(false);
-        if (response?.success) {
-          this.firmaVerificada = true;
-          this.messageService.add({ severity: 'success', summary: 'Firma verificada', detail: 'La firma digital es válida.' });
-        } else {
-          this.messageService.add({ severity: 'info', summary: 'Lo sentimos', detail: response?.message });
-          this.firmaForm.reset();
-        }
-      },
-      error: () => {
-    this.isLoading.set(false);
-        this.firmaForm.reset();
-      },
-    });
-  }
 
   // ============================
   // Enviar acuerdo
@@ -256,7 +220,7 @@ export class CrearAcuerdo implements OnInit {
       key: 'acuerdo',
       target: event.target as EventTarget,
       accept: () => this.crearAcuerdo(),
-      reject: () => {},
+      reject: () => { },
     });
   }
 
@@ -273,34 +237,42 @@ export class CrearAcuerdo implements OnInit {
     }
 
     const formData = new FormData();
-    formData.append('idExpediente',   String(this.expediente?.idExpediente ?? ''));
-    formData.append('observaciones',  values.observaciones.toUpperCase());
-    formData.append('sintesis',       values.sintesis.toUpperCase());
-    formData.append('documento',      values.documento);
-    formData.append('password_Efirma', this.firmaForm.value.password_Efirma);
-    this.selectedTramites.forEach(id => formData.append('idTramite[]', id.toString()));
+    formData.append('idExpediente', String(this.expediente?.idExpediente ?? ''));
+    formData.append('observaciones', values.observaciones.toUpperCase());
+    formData.append('sintesis', values.sintesis.toUpperCase());
+    formData.append('documento', values.documento);
+    
+    let idDemandaAgregada = false;
+    this.selectedTramites.forEach(t => {
+      if (t.idTramite) {
+        formData.append('idTramite[]', t.idTramite.toString());
+      }
+      if (t.idDemanda && !idDemandaAgregada) {
+        formData.append('idDemanda', t.idDemanda.toString());
+        idDemandaAgregada = true;
+      }
+    });
 
     this.isLoading.set(true);
-    this.juicioService.enviarAcuerdo(formData).subscribe({
+    this.juicioService.postAcuerdo(formData).subscribe({
       next: (response) => {
-    this.isLoading.set(false);
+        this.isLoading.set(false);
         if (response.status === 200) {
           this.messageService.add({ severity: 'success', summary: 'Acuerdo creado', detail: 'Acuerdo enviado al juez para firma.' });
           this.acuerdo.reset();
           this.selectedTramites = [];
           this.quitarArchivo();
-          this.firmaVerificada = false;
           this.detalle(response.data.idAcuerdo);
         }
       },
       error: (error) => {
-    this.isLoading.set(false);
+        this.isLoading.set(false);
         this.acuerdo.reset();
         this.selectedTramites = [];
         this.quitarArchivo();
         const apiMsg = error?.error?.message ?? 'No se pudo enviar el acuerdo.';
         const severity = [409, 403].includes(error.status) ? 'info' : 'error';
-        const summary  = [409, 403].includes(error.status) ? 'Solicitud pendiente' : 'Error';
+        const summary = [409, 403].includes(error.status) ? 'Solicitud pendiente' : 'Error';
         this.messageService.add({ severity, summary, detail: apiMsg });
       },
     });
@@ -323,10 +295,67 @@ export class CrearAcuerdo implements OnInit {
 
   getError(controlName: string, form: FormGroup = this.acuerdo): string {
     const control = form.get(controlName);
-    if (control?.hasError('required'))   return 'Este campo es obligatorio';
-    if (control?.hasError('minlength'))  return `Mínimo ${control.errors?.['minlength']?.requiredLength} caracteres`;
-    if (control?.hasError('maxlength'))  return `Máximo ${control.errors?.['maxlength']?.requiredLength} caracteres`;
-    if (control?.hasError('pattern'))    return 'Formato inválido';
+    if (control?.hasError('required')) return 'Este campo es obligatorio';
+    if (control?.hasError('minlength')) return `Mínimo ${control.errors?.['minlength']?.requiredLength} caracteres`;
+    if (control?.hasError('maxlength')) return `Máximo ${control.errors?.['maxlength']?.requiredLength} caracteres`;
+    if (control?.hasError('pattern')) return 'Formato inválido';
     return '';
   }
+
+  // ============================
+  // Estado helpers for UI tags
+  // ============================
+  getEstadoDescripcion(tramite: unknown): string | null {
+    const i = tramite as { ultimo_estado?: { cat_estado_tramite?: { nombre?: string } } };
+    return i.ultimo_estado?.cat_estado_tramite?.nombre ?? null;
+  }
+
+  getEstadoId(tramite: unknown): number | null {
+    const i = tramite as { ultimo_estado?: { cat_estado_tramite?: { idCatEstadoTramite?: number } } };
+    return i.ultimo_estado?.cat_estado_tramite?.idCatEstadoTramite ?? null;
+  }
+
+  getEstadoTag(tramite: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+    const id = this.getEstadoId(tramite);
+    switch (id) {
+      case 0:
+        return { severity: 'success', icon: 'pi pi-file-send' };
+      case 1:
+        return { severity: 'secondary', icon: 'pi pi-send' };
+      case 2:
+        return { severity: 'info', icon: 'pi pi-clock' };
+      case 3:
+        return { severity: 'success', icon: 'pi pi-check' };
+      default:
+        return { severity: 'secondary', icon: 'pi pi-question' };
+    }
+  }
+
+  getDescripcionTramite(tramite: unknown): string | null {
+    const i = tramite as { cat_tramite?: { nombre?: string } };
+    return i.cat_tramite?.nombre ?? null;
+  }
+
+  getIdTramite(tramite: unknown): number | null {
+    const i = tramite as { cat_tramite?: { idCatTramite?: number } };
+    return i.cat_tramite?.idCatTramite ?? null;
+  }
+
+  getTagTramite(tramite: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+    const id = this.getIdTramite(tramite);
+    switch (id) {
+      case 0:
+        return { severity: 'success', icon: 'pi pi-file-pdf' };
+      case 1:
+        return { severity: 'info', icon: 'pi pi-file-pdf' };
+      case 2:
+        return { severity: 'warn', icon: 'pi pi-flag' };
+      case 3:
+        return { severity: 'secondary', icon: 'pi pi-check' };
+      default:
+        return { severity: 'secondary', icon: 'pi pi-question' };
+    }
+  }
+
+
 }

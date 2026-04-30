@@ -32,15 +32,15 @@ export interface ModulosUsuario {
 }
 
 export interface Pantallas {
-  IdPantalla: string;
+  idPantalla: 14158;
   nombre: string;
   descripcion: string;
-  IdSistemaModulo: string;
-  TipoCatalogo: string;
-  IdCatalogo: string;
-  Ejecutable: string;
-  Valores: string;
-  Exe: string;
+  idSistemaModulo: string;
+  tipoCatalogo: string;
+  idCatalogo: string;
+  ejecutable: string;
+  valores: string;
+  exe: string;
   imagen: string;
   Acceso: string;
   orden: number; // para que (a.orden ?? 0) no truene si viene string

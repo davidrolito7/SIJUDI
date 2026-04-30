@@ -63,7 +63,7 @@
 
                         <!-- Pantallas del módulo -->
                         <ul class="list-none p-0 m-0 hidden overflow-y-hidden transition-all duration-400 ease-in-out">
-                            @for (p of pantallasDeModulo(mod); track p.IdPantalla ?? $index) {
+                            @for (p of pantallasDeModulo(mod); track p.idPantalla ?? $index) {
                             <li class="px-4">
                                 <a pRipple class="flex items-center gap-2 cursor-pointer px-6 py-2.5 rounded-lg 
             text-surface-700 dark:text-surface-100 hover:bg-emphasis duration-150
@@ -259,19 +259,6 @@
                     <i class="pi pi-cog" aria-hidden="true"></i>
                 </button>
             </div>
-
-            <!--   <div class="flex items-center justify-center">
-                <button type="button" (click)="visibleDrawer = true" class="rounded-xl cursor-pointer"
-                    aria-label="Abrir menú de usuario">
-                    <p-avatar [image]="abogadoFotoUrl"
-                        size="large" class="rounded-xl overflow-hidden p-avatar p-avatar-image p-avatar-lg p-component"
-                        data-p="square large" pc1573="" data-pc-section="root" data-pc-name="avatar">
-                    </p-avatar> 
-                     <p-avatar [image]="abogadoFotoUrl" size="large" shape="circle"
-                        class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component"></p-avatar> 
-
-                </button>
-            </div>-->
         </div>
     </aside>
 
@@ -290,11 +277,15 @@
                 <div class="text-sm font-medium leading-5 text-surface-400 dark:text-surface-500">
                     Navegación
                 </div>
-                @for (p of pantallasVisibles(); track p.IdPantalla ?? $index) {
+                @for (p of pantallasVisibles(); track p.idPantalla ?? $index) {
                 <a class="px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-emphasis transition-all text-color bg-transparent"
                     [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis">
                     <img class="w-5 h-5" [src]="svgSrcForPantalla(p)" alt="" aria-hidden="true" />
                     <span class="font-medium text-sm uppercase">{{ p.nombre }}</span>
+
+                    @if (getBadge(p.idPantalla) | async; as count) {
+                    <p-badge [value]="count.toString()" badgeSize="small" />
+                    }
                 </a>
                 }
 

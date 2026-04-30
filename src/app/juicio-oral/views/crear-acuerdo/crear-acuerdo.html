@@ -1,43 +1,6 @@
 <app-spinner [isLoading]="isLoading()"></app-spinner>
 <p-toast></p-toast>
 
-<!--* DIALOGO DE CONFIRMACION VALIDAR FIREL -->
-<p-confirmdialog key="firma">
-    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
-        <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded">
-            <div
-                class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
-                <svg class="w-14 h-14 text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                    height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-            </div>
-            <p class="text-2xl font-medium mt-2.5  ">
-                Autorización
-            </p>
-            <p class="font-medium mb-0">Ingrese su contraseña FIREL para continuar</p>
-            <div class="w-full mt-2">
-                <p-inputgroup>
-                    <input id="password_Efirma" pInputText [type]="showPassword ? 'text' : 'password'"
-                        formControlName="password_Efirma" maxlength="20" placeholder="Contraseña FIREL"
-                        class="w-full" />
-                    <p-inputgroup-addon>
-                        <p-button [icon]="showPassword ? 'pi pi-eye' : 'pi pi-eye-slash'" [text]="true"
-                            (onClick)="showPassword = !showPassword" [tabindex]="-1" />
-                    </p-inputgroup-addon>
-                </p-inputgroup>
-                <div *ngIf="shouldShowError('password_Efirma', firmaForm)" class="text-red-500 text-sm mt-1">
-                    {{ getError("password_Efirma", firmaForm) }}
-                </div>
-            </div>
-            <div class="flex items-center gap-2 mt-6">
-                <p-button label="Autorizar" (onClick)="onAccept()" />
-                <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" />
-            </div>
-        </div>
-    </ng-template>
-</p-confirmdialog>
 
 <!-- Confirmación Envío -->
 <app-confirm-dialog key="acuerdo" title="Confirmación" message="Confirme la acción para enviar el acuerdo"
@@ -46,10 +9,14 @@
 </app-confirm-dialog>
 
 <!-- BREADCRUMB -->
-<div class="sticky top-0 z-50  flex flex-col ">
-    <app-breadcrub></app-breadcrub>
-</div>
 
+<div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-960">
+    <app-breadcrub></app-breadcrub>
+
+    <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 pl-2 mb-2 tracking-tight">
+        Crear acuerdo
+    </h2>
+</div>
 <!-- ===================== DETALLES DEL EXPEDIENTE ===================== -->
 <div *ngIf="expediente" class=" bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
 
@@ -65,24 +32,23 @@
             <p class="text-sm"><span class="font-semibold">Fecha asignación:</span>
                 {{ expediente.fechaResponse | date: 'dd/MM/yyyy' }}</p>
             <p class="text-sm wrap-break-word whitespace-pre-line"><span class="font-semibold">Síntesis:</span>
-                {{ expediente.pre_registro.descripcionDemanda }}</p>
+                {{ expediente.demanda.descripcionDemanda }}</p>
         </div>
         <!-- Columna derecha -->
         <div class="flex flex-col gap-2">
             <p class="text-sm"><span class="font-semibold">Juzgado asignado:</span>
                 {{ expediente.juzgado.Descripcion }}</p>
             <p class="text-sm"><span class="font-semibold">Materia:</span>
-                {{ expediente.pre_registro.cat_via_materia.cat_materia.Descripcion }}</p>
+                {{ expediente.demanda.cat_via_materia.cat_materia.Descripcion }}</p>
             <p class="text-sm"><span class="font-semibold">Vía:</span>
-                {{ expediente.pre_registro.cat_via_materia.cat_via.descripcion }}</p>
+                {{ expediente.demanda.cat_via_materia.cat_via.descripcion }}</p>
         </div>
     </div>
 </div>
 
 <!-- ===================== GENERALES DEL ACUERDO ===================== -->
-<div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
-
-    <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-2 block">
+<div class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
+    <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-2 block">
         Generales del acuerdo
     </label>
 
@@ -92,8 +58,8 @@
             <!-- Síntesis -->
             <div class="col-span-12 sm:col-span-6">
                 <label class="block mb-2 text-sm font-medium">Síntesis</label>
-                <textarea pInputTextarea rows="3" formControlName="sintesis" class="w-full uppercase"
-                    maxlength="255" placeholder="ESCRIBE UN RESUMEN DEL TRÁMITE..."></textarea>
+                <textarea pInputTextarea rows="3" formControlName="sintesis" class="w-full uppercase" maxlength="255"
+                    placeholder="ESCRIBE UN RESUMEN DEL TRÁMITE..."></textarea>
                 <small *ngIf="shouldShowError('sintesis')" class="text-red-500 text-xs mt-1 block">
                     {{ getError('sintesis') }}
                 </small>
@@ -113,16 +79,15 @@
     </form>
 </div>
 
-<!-- ===================== PROMOCIONES ===================== -->
+<!-- ===================== TRAMITES ===================== -->
 <div class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
 
-    <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 block">
-        Promociones
+    <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 block">
+        Tramites
     </label>
 
     <div class="card">
-        <p-table [value]="expediente?.tramites ?? []" styleClass="p-datatable-sm p-datatable-gridlines"
-            [scrollable]="true" scrollHeight="300px">
+        <p-table [value]="expediente?.tramites ?? []" stripedRows [scrollable]="true" scrollHeight="300px">
 
             <ng-template #header>
                 <tr>
@@ -131,36 +96,34 @@
                             (onChange)="toggleSelectAll()"></p-checkbox>
                     </th>
                     <th>Folio</th>
-                    <th>Fecha Promoción</th>
-                    <th>Síntesis</th>
-                    <th>Observaciones</th>
-                    <th style="width: 8rem">Documento</th>
-                    <th style="width: 8rem">Acciones</th>
+                    <th>Tipo tramite</th>
+                    <th>Fecha recepción</th>
+                    <th>Último estado</th>
+                    <th>Acciones</th>
                 </tr>
             </ng-template>
 
-            <ng-template #body let-promocion let-i="rowIndex">
+            <ng-template #body let-tramite let-i="rowIndex">
                 <tr>
                     <td>
-                        <p-checkbox [binary]="true"
-                            [ngModel]="selectedTramites.includes(promocion.idTramite)"
+                        <p-checkbox [binary]="true" [ngModel]="selectedTramites.includes(tramite)"
                             [ngModelOptions]="{ standalone: true }"
-                            (onChange)="toggleSelection(promocion.idTramite)"></p-checkbox>
+                            (onChange)="toggleSelection(tramite)"></p-checkbox>
                     </td>
-                    <td>{{ promocion.folioOficio }}</td>
-                    <td>{{ promocion.created_at | date:'d \'de\' MMMM \'de\' y HH:mm' }} h</td>
-                    <td>{{ promocion.sintesis }}</td>
-                    <td>{{ promocion.observaciones }}</td>
+                    <td>{{ tramite.folio }}</td>
                     <td>
-                        <p-button [text]="true" [raised]="true" severity="warn" icon="pi pi-file-pdf"
-                            pTooltip="Ver documento" tooltipPosition="top"
-                            (click)="openModal(promocion.documento.idDocumento)">
-                        </p-button>
+                        <p-tag [value]="(getDescripcionTramite(tramite) | uppercase) ?? ''"
+                            [severity]="getTagTramite(tramite).severity" [icon]="getTagTramite(tramite).icon" />
                     </td>
+                    <td>{{ tramite.fechaRecepcion | date:'d \'de\' MMMM \'de\' y HH:mm' }} h</td>
                     <td>
-                        <p-button [rounded]="true" [text]="true" [raised]="true" severity="info"
-                            icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top"
-                            (click)="detalle(promocion.idTramite)">
+                        <p-tag [value]="(getEstadoDescripcion(tramite) | uppercase) ?? ''"
+                            [severity]="getEstadoTag(tramite).severity" [icon]="getEstadoTag(tramite).icon ?? ''" />
+                    </td>
+ 
+                    <td>
+                        <p-button [rounded]="true" [text]="true" [raised]="true" severity="info" icon="pi pi-eye"
+                            pTooltip="Ver detalle" tooltipPosition="top" (click)="detalle(tramite.idTramite)">
                         </p-button>
                     </td>
                 </tr>
@@ -179,7 +142,7 @@
 <!-- ===================== SUBIR ACUERDO ===================== -->
 <div *ngIf="expediente" class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
 
-    <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 block">
+    <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 block">
         Subir Acuerdo
     </label>
 
@@ -217,17 +180,12 @@
     </object>
 </p-dialog>
 
-<!-- ===================== BOTONES FIREL / ENVIAR ===================== -->
+<!-- ===================== BOTONES ENVIAR ===================== -->
 <div class="mt-4 mb-4 flex flex-wrap justify-end gap-3">
 
-    <!-- Autorizar FIREL -->
-    <p-button *ngIf="!firmaVerificada" icon="pi pi-shield" label="Autorizar FIREL"
-        [disabled]="acuerdo.invalid" (click)="autorizarFirel($event)">
-    </p-button>
-
     <!-- Enviar acuerdo -->
-    <p-button *ngIf="firmaVerificada" icon="pi pi-upload" label="Enviar acuerdo"
-        severity="warn" [disabled]="acuerdo.invalid" (click)="onAcuerdoConfirm($event)">
+    <p-button icon="pi pi-upload" label="Enviar acuerdo" severity="warn"
+        [disabled]="acuerdo.invalid" (click)="onAcuerdoConfirm($event)">
     </p-button>
 
 </div>

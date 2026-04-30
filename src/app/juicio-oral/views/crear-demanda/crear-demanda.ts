@@ -107,7 +107,6 @@ export class CrearDemanda implements OnInit {
     });
 
     this.parteForm = this.fb.group({
-      //// idUsr: [''],
       nombre: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoPaterno: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoMaterno: ['', [Validators.required, Validators.maxLength(100)]],
@@ -619,8 +618,8 @@ export class CrearDemanda implements OnInit {
     this.folio = null;
   }
 
-  detalle(idInicio: number) {
-    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idInicio } });
+  detalle(idExpediente: number) {
+    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idExpediente } });
   }
 
   // =============================================
