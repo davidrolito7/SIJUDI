@@ -19,10 +19,10 @@
         </div>
       </div>
 
-      <div class="mt-6 md:mt-0 flex items-center">
+      <div class="mt-6 md:mt-0 flex items-center gap-2">
         @if(tienePermisoGuardar()){
           @if (mostrarBotonGuardar) {
-          <p-button  (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-check"> 
+          <p-button  (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-check">
           </p-button>
           }
         }
@@ -367,7 +367,7 @@
           <div class="flex items-center">
              @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
                 <div class="relative" style="margin-right: 1rem;">
-                  <p-button 
+                  <p-button
                     (click)="openNewFirma()"
                     severity="warn"
                     icon="pi pi-pen-to-square"
@@ -387,7 +387,7 @@
                   <i pButtonIcon class="pi pi-check"></i>
                   <span pButtonLabel>Guardar </span>
               </p-button> -->
-             
+
           </div>
       </div>
 
@@ -425,7 +425,7 @@
                                       formControlName="tipoDocumento"
                                       [options]="listadoTipoDocumento"
                                       optionLabel="nombre"
-                                      placeholder="seleccione" 
+                                      placeholder="seleccione"
                                       appendTo="body"
                                       filterPlaceholder="Buscar tipo..."
                                       class="w-full md:w-56"
@@ -460,7 +460,7 @@
                                 </table>
                               </td>
                               <td style="font-size: small;">{{ ((documento.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
-                            
+
                               <td class="text-center">
                                 @if(documento.idArchivo === 0){
                                   <p-button (click)="onUpload(documento.file)" severity="success" [rounded]="true"
@@ -472,7 +472,7 @@
                                     <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
                                       icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                                     </p-button>
-                                                            
+
                                 }
                                 <!--VER O DESCARGAR DOCUMENTO-->
                                 <p-button (click)="getFile(documento,2)" severity="success" [rounded]="true"
@@ -483,7 +483,7 @@
                                   @if(tienePermisoEliminarArchivo()){
                                     <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                                     (click)="eliminarDocumento(documento,2,i)" ></p-button>
-                                    
+
                                   }
                                 }
 
@@ -494,10 +494,10 @@
                    @if(mostrarDocumento()){
                     <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
                     </app-pdf-dialog>
-                  } 
+                  }
               </div>
               }
-              
+
 
               <!-- <div class="col-span-6 sm:col-span-1 flex justify-end">
                   <p-button routerLink="/form">
@@ -511,7 +511,7 @@
       </div>
   </div>
 }
-<!-- 
+<!--
     <section class="bg-gray-50 dark:bg-gray-900 mt-10">
       <div class="w-full max-w-screen-xl px-0 mx-auto ">
         <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
@@ -521,7 +521,7 @@
                 <h5 class="mr-3 font-semibold dark:text-white">Generales</h5>
                 <p class="text-gray-500 dark:text-gray-400">Datos generales del exhorto </p>
               </div
-         
+
 
             </div>
 
@@ -629,7 +629,7 @@
                   </div>
                 </div>
 
-                
+
                 <div class="w-full">
                   <div class="p-float-label mt-4"
                     [ngClass]="{ 'error-border': formSubmitted &&  exhortosForm.controls['tipojuicio'].invalid }">
@@ -765,7 +765,7 @@
                   <td class="px-6 py-3">
                     {{ partes.telefono }}
                   </td>
-                  @if(idEstatus == 1 ){ 
+                  @if(idEstatus == 1 ){
                   <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                     (click)="eliminarParte(partes)"></p-button>
                   }
