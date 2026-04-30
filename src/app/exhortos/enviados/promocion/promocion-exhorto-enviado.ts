@@ -31,13 +31,14 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { InputIconModule } from "primeng/inputicon";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { validarFirmasUsuarioPromEnviado } from '../../functions/firmas';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 
 
 
 @Component({
   selector: 'app-PromocionExhortoEnviadoComponent',
-  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, PdfDialog, InputIconModule, ConfirmDialogModule],
+  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, PdfDialog, InputIconModule, ConfirmDialogModule, Breadcrub],
   templateUrl: './promocion-exhorto-enviado.html',
   styleUrl: './promocion-exhorto-enviado.css',
   providers:[MessageService,ConfirmationService]
@@ -73,6 +74,7 @@ export class PromocionExhortoEnviadoComponent {
 @ViewChild('fileUpload') fileUpload!: FileUpload;
   idExhortoEnviado: number = 0;
   idPromocionEnviado: number = 0;
+  numExhorto: string = '';
   folioOrigenPromocion: string = '';
   provomenteExhortoEnviado : ProvomenteExhortoEnviado[] =[];
   archivoPromocionExhortoEnviado : archivoPromocionExhortoEnviado[]=[];
@@ -136,7 +138,7 @@ export class PromocionExhortoEnviadoComponent {
     genero: new FormControl(''),
     moral: new FormControl(false),
     tipoParte: new FormControl('',Validators.required),
-    telefono: new FormControl(''),
+    telefono: new FormControl('',[Validators.pattern(/^\d{10}$/)]),
     correo: new FormControl('')
   });
 
@@ -199,10 +201,11 @@ export class PromocionExhortoEnviadoComponent {
   //documento!:archivoPromocionExhortoEnviado;
 
   ngOnInit() {
-    const state = window.history.state as { idExhortoEnviado: number , idPromocionEnviado: number};
+    const state = window.history.state as { idExhortoEnviado: number , idPromocionEnviado: number, numExhorto:string };
     //console.log (state)
     if (state && state.idExhortoEnviado) {
       this.idExhortoEnviado = state.idExhortoEnviado;
+      this.numExhorto = state.numExhorto;
       if(state.idPromocionEnviado!=undefined){
         this.idPromocionEnviado = state.idPromocionEnviado;
       }
@@ -494,6 +497,7 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
     this.provomenteExhortoEnviado.push(promovente);
     this.promoventesForm.reset();
     this.promoventeSinGuardar = false
+    this.promoDialog=false;
 
   }
 
@@ -613,6 +617,8 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
     formData.append('idPromocionEnviada', this.idPromocionEnviado.toString());
     formData.append('archivo', file, file.name);
 
+    this.isLoading= true; // Inicia la carga
+    this.cd.detectChanges(); // Asegura que el cambio de estado se refleje en la vista
     this.ExhortosService.postGuardarArchivosPromocionExhortoEnviado(formData).subscribe({
       next: (response) => {
           if (response.success) {
@@ -631,6 +637,12 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
       error: (error) => {
           //console.error('Error en la petición guardar:', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+          this.isLoading= false; // cierra la carga
+          this.cd.detectChanges(); // Asegura que el cambio de estado se refleje en la vista
+      },
+      complete: () => {
+          this.isLoading= false; // cierra la carga
+          this.cd.detectChanges(); // Asegura que el cambio de estado se refleje en la vista
       }
     });
 
@@ -698,7 +710,8 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
               this.idPromocionEnviado=  response.data.idPromocionEnviado;
               const newState = {
                 idExhortoEnviado: this.idExhortoEnviado,    // nuevo valor para idExhortoEnviado
-                idPromocionEnviado: this.idPromocionEnviado    // nuevo valor para idPromocionEnviado
+                idPromocionEnviado: this.idPromocionEnviado,    // nuevo valor para idPromocionEnviado
+                numExhorto: this.numExhorto
               };
               
               // Reemplazar el estado actual con el nuevo estado
@@ -977,9 +990,15 @@ showDialog(idArchivo: number): void {
         this.ExhortosService.eliminarArchivo(documento.idArchivo, tipo).subscribe({
           next: (response) => {
             if(response.success){
-              this.uploadedFiles = this.uploadedFiles.filter(archivo => {
+              /*this.uploadedFiles = this.uploadedFiles.filter(archivo => {
                 (archivo.idArchivo !== documento.idArchivo);
-              });
+              });*/
+              // Encuentra el índice del documento que quieres eliminar
+              const index = this.listaDocumentos().findIndex(doc => doc.idArchivo === documento.idArchivo);
+              if (index !== -1) {
+                // Elimina el elemento del arreglo
+                this.listaDocumentos().splice(index, 1);
+              }
               this.messageService.add({ severity: 'info', summary: 'Eliminado', detail: 'Documento eliminado exitosamente' });
               // Aquí podrías actualizar la lista de documentos si es necesario
             }
@@ -1262,4 +1281,10 @@ showDialog(idArchivo: number): void {
             console.error('Documento inválido');
           } 
         }
+  validarTelefonoPromo() {
+    if (!this.promoventesForm.value.telefono || this.promoventesForm.value.telefono.length !== 10) { //
+      this.promoventesForm.get('telefono')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });
+    }
+
+  }
 }

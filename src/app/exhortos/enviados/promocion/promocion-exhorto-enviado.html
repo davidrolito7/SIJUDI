@@ -1,43 +1,43 @@
 <p-toast></p-toast>
-
+  <!-- BREADCRUMB -->
+  <app-breadcrub></app-breadcrub>
 <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4 sticky-header">
+  
     <!-- Start coding here -->
         <div class="flex items-start flex-col md:justify-between md:flex-row">
             <div>
-                <p class="mr-3 text-3xl font-semibold dark:text-white">Promover exhorto</p>
-                <p class="text-gray-500 dark:text-gray-400">Promover exhortos</p>
+                <p class="mr-3 text-3xl font-semibold dark:text-white">Crear promoción</p>
+                <p class="text-gray-500 dark:text-gray-400">Crear promoción para el exhorto: <span class="text-red-500 font-bold">{{numExhorto}}</span> </p>
             </div>
-            <div class="flex items-center">
+            <div class="flex items-center gap-3">
                 @if(fechaHora == null){
                     @if(tienePermisoGuardar()){
                       <div class="relative">
-                        <p-button (onClick)="guardarPromocion(myForm)" icon="">
+                        <p-button (onClick)="guardarPromocion(myForm)" icon="" styleClass="w-full">
                             Guardar
                         </p-button>
                       </div>
+                  }
                 }
-                @if(!hayCambiosSinGuardar){
-
+                @if(!hayCambiosSinGuardar && listaDocumentos().length >=1){
                     @if(fechaHora == null){
                         @if(tienePermisoEnviarGenerales()){
                             <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                            <div class="relative">
-                              <p-button (onClick)="enviarPromocionGenerales(idExhortoEnviado)" icon="">
-                                  Enviar
+                              <p-button (onClick)="enviarPromocionGenerales(idExhortoEnviado)" icon="" styleClass="w-full">
+                                  Enviar generales
                               </p-button>
-                            </div>
                         }
                         
                     }   
                     @if(tienePermisoEnviarArchvios()){
                         @if(fechaRecepcion == null && fechaHora != null){
                             <p-button  (onClick)="enviarPromocionArchivos(idPromocionEnviado,idExhortoEnviado)"
-                                icon="pi pi-send"> Enviar archivos
+                                icon="pi pi-send" styleClass="w-full"> Enviar archivos
                             </p-button>
                         }
                     }
                 }
-            }
+            
             </div>
     </div>
 </div>
@@ -183,7 +183,7 @@
                   </div>
                 }
                 <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
-                    accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
+                    accept="application/pdf"  (onSelect)="onAnexosSelect($event)" [auto]="true"
                     chooseLabel="Agregar documento" />
 
                 <!-- <p-button routerLink="/form" [outlined]="true" class="mr-3">
@@ -313,59 +313,6 @@
   }
 }
 
-<!--    
-<SECTION >
-  <div>
-    <app-modal #modal>
-        <div class="relative p-4 w-full max-w-md max-h-full">
-            
-            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-               
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        Datos para firmar los documentos
-                    </h3>
-                </div>
-                
-                <div class="p-4 md:p-5">
-                    <form [formGroup]="formularioFirma"   class="space-y-4">
-                        <div class="relative">
-                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contraseña</label>
-                            <input 
-                                formControlName="password" 
-                                [type]="showPassword ? 'text' : 'password'"
-                                name="password" 
-                                id="password" 
-                                placeholder="••••••••"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-10 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" 
-                                required />
-                                <button
-                                    type="button"
-                                    (click)="togglePasswordVisibility()"
-                                    class="absolute top-3 right-0 h-full px-3 flex items-center text-gray-600 dark:text-gray-300"
-                                    style="height: 75px;"
-                                    aria-label="Mostrar u ocultar contraseña"
-                                    >
-                                    <i [ngClass]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" class="text-lg"></i>
-
-                                </button>
-                        </div>
-                       
-
-                        @if(tienePermisoFirmarArchivo){
-                            <button (click)="iniciarFirmaDocumentos()" type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Firmar.</button>
-                        }
-                        
-                    </form>
-                </div>
-            </div>
-        </div>
-
-    </app-modal>
-
-    </div>
-
-  </SECTION>-->
 <!--* MODAL DE CONFIRMACION GUADAR PROMOCION -->
 <app-confirm-dialog key="guardarPromocion" title="Confirmación" message="¿Está seguro de guardar la promoción?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
@@ -447,8 +394,11 @@
       <!-- Teléfono -->
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Teléfono</label>
-        <p-inputmask id="telefono" name="telefono" mask="(999) 999-9999" [unmask]="true" formControlName="telefono" class="w-full"
-          placeholder="(999) 999-9999"></p-inputmask>
+        <input id="telefono" pInputText type="text" formControlName="telefono" class="w-full" maxlength="10"
+          (onBlur)="validarTelefonoPromo()" placeholder="9999999999"/>
+           <div *ngIf="promoventesForm.get('telefono')?.hasError('pattern')" class="error-text">
+            Debe capturar exactamente 10 dígitos
+          </div>
       </div>
     </div>
   </form>

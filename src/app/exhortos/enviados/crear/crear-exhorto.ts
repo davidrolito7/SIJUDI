@@ -885,7 +885,8 @@ export class CrearExhortoComponent {
     formData.append('idUsuario', Usuario.idGeneral);
 
     //console.log('Datos enviados al backend:', formData);
-
+    this.isLoading = true;
+    this.cd.detectChanges();
     this.ExhortosService.guardarDocumento(formData).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -896,9 +897,16 @@ export class CrearExhortoComponent {
           this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
           this.resetForm();
         }
+
       },
       error: (error) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar el documento', sticky: true });
+        this.isLoading = false;
+        this.cd.detectChanges();
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cd.detectChanges();
       }
     });
   }

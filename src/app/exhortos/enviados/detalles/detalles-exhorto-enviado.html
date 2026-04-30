@@ -582,35 +582,32 @@
                                     <td style="font-size: small;"> {{item?.observaciones }}</td>
 
                                     <td class="text-center">
+                                        <div class="flex items-center gap-3">
                                         @if(item.fechaHora == null){
                                         @if(tienePermisoPromocionEditar()){
-                                        <div class="relative">
                                             <p-button type="button" severity="warn"
                                                 (onClick)="redirectToPromocion(idExhortoEnviado, item.idPromocionEnviado)"
                                                 >Editar
                                             </p-button>
-                                        </div>
+
                                         }
                                         @if(tienePermisoPromocionEnviarGenerales()){
                                         <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                                        <div class="relative">
                                             <p-button type="button" (onClick)="enviarPromocionGenerales( item.idPromocionEnviado)"
                                                  > Enviar generales
                                             </p-button>
-                                        </div>
                                         }
                                         }
                                         @if(item.fechaRecepcion == null && item.fechaHora != null){
                                             @if(tienePermisoPromocionEnviarArchivos()){
-                                            <div class="relative">
                                                 <p-button type="button"
                                                     (click)="enviarPromocionArchivos(item.idPromocionEnviado)" 
                                                     > Enviar archivos
                                                 </p-button>
-                                            </div>
 
                                             }
                                         }
+                                        </div>
                                     </td>
                                 </tr>
                                 <!-- Expanded row details -->
