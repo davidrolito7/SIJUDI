@@ -32,13 +32,14 @@ import { InputIconModule } from "primeng/inputicon";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { validarFirmasUsuarioPromEnviado } from '../../functions/firmas';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Spinner } from "../../../shared/components/spinner/spinner";
 
 
 
 
 @Component({
   selector: 'app-PromocionExhortoEnviadoComponent',
-  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, PdfDialog, InputIconModule, ConfirmDialogModule, Breadcrub],
+  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, PdfDialog, InputIconModule, ConfirmDialogModule, Breadcrub, Spinner],
   templateUrl: './promocion-exhorto-enviado.html',
   styleUrl: './promocion-exhorto-enviado.css',
   providers:[MessageService,ConfirmationService]
@@ -375,7 +376,8 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
     });
  }
  onEnviarPromocionArchivos(idPromocionEnviado : number, idExhortoEnviado:number){
-
+  this.isLoading = true;
+  this.cd.detectChanges();
   this.ExhortosService.enviarPromocionArchivos(idPromocionEnviado,).subscribe({
       next: (response:any) => {
         if(response.success){
@@ -387,15 +389,19 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
           // Aquí podrías actualizar la lista de documentos si es necesario
         }
         else{
-          this.messageService.add({severity:'error',summary: response.message, detail: response.errors});
+          this.messageService.add({severity:'error',summary: response.message, detail: response.errors,sticky:true});
         }
 
       },
       error:(e)=>{
         //console.error('Error al recibir el archivo', e);
-        this.messageService.add({severity:'error',summary: 'Error', detail:e.message});
+        this.messageService.add({severity:'error',summary: 'Error', detail:e.message,sticky:true});
+        this.isLoading = false;
+        this.cd.detectChanges();
       },
       complete:() =>{
+        this.isLoading = false;
+        this.cd.detectChanges();
         this.router.navigate(['/inicio/exhortos/exhortos-enviados/detalle'], { state: { idExhortoEnviado } });
        // this.modalService.open('modal2');
       },
@@ -426,25 +432,30 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
 
   onEnviarPromocionGenerales(idExhortoEnviado:number) {
   if (!this.idPromocionEnviado) return;
-
-  this.ExhortosService.enviarPromocionGenerales(this.idPromocionEnviado).subscribe({
+    this.isLoading = true;
+    this.cd.detectChanges();
+    this.ExhortosService.enviarPromocionGenerales(this.idPromocionEnviado).subscribe({
     next: (response: any) => {
-      if (response.success) {
-        this.messageService.add({ severity: 'success', summary: 'Enviado', detail: 'Datos generales enviados' });
-        // Actualiza la tabla si es necesario
-      } else {
-        this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
+        if (response.success) {
+          this.messageService.add({ severity: 'success', summary: 'Enviado', detail: 'Datos generales enviados' });
+          // Actualiza la tabla si es necesario
+        } else {
+          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors,sticky:true });
+        }
+      },
+      error: (e) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message ,sticky:true});
+        this.isLoading = false;
+        this.cd.detectChanges();
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cd.detectChanges();
+        if(this.idPromocionEnviado!=0){
+          this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado,this.idPromocionEnviado);
+        }
       }
-    },
-    error: (e) => {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message });
-    },
-    complete: () => {
-      if(this.idPromocionEnviado!=0){
-        this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado,this.idPromocionEnviado);
-      }
-    }
-  });
+    });
 }
 
   /*abrirConfirmarAgregarPromovente(){
@@ -631,12 +642,12 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
             });
             this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado, this.idPromocionEnviado);
           } else {
-              this.messageService.add({ severity: 'warn', summary: 'Error', detail: response.message });
+              this.messageService.add({ severity: 'warn', summary: 'Error', detail: response.message,sticky:true });
           }
       },
       error: (error) => {
           //console.error('Error en la petición guardar:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message,sticky:true });
           this.isLoading= false; // cierra la carga
           this.cd.detectChanges(); // Asegura que el cambio de estado se refleje en la vista
       },
@@ -692,7 +703,7 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
       },
       error:(error) => {
         //console.log("Error al cargar los tipos de documentos", error);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message,sticky:true });
       }
     });
   }
@@ -700,6 +711,8 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
   guardarPromocionExhortoEnviado(){
     if(this.idPromocionEnviado == 0){
       //Crea nuevo registro si no existe id de Promocion
+      this.isLoading = true;
+      this.cd.detectChanges();
       this.ExhortosService.postGuardarPromocionExhortoEnviado(this.promocionExhortoEnviadoGeneral!).subscribe({
         next: (response:any) => {
           if(response.success)
@@ -728,12 +741,24 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
             }
             else
             {
-              this.messageService.add({severity: 'error', summary: response.message, detail:response.errors});
+              this.messageService.add({severity: 'error', summary: response.message, detail:response.errors,sticky:true});
             }
-          }
-        })
-      }else{
+          },
+          error:(e) => {
+            //console.error('Error al guardar la promoción', e);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message,sticky:true });
+            this.isLoading = false;
+            this.cd.detectChanges();
+          },
+          complete:() =>{
+            this.isLoading = false;
+            this.cd.detectChanges();
+        }
+      });
+    }else{
         //Guarda o actualiza si existe id de promocion 
+        this.isLoading = true;
+        this.cd.detectChanges();
         this.ExhortosService.postActualizarPromocion(this.promocionExhortoEnviadoGeneral!).subscribe({
         next: (response:any) => {
           if(response.success)
@@ -758,10 +783,20 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
             }
             else
             {
-              this.messageService.add({severity: 'error', summary: response.message, detail:response.errors});
+              this.messageService.add({severity: 'error', summary: response.message, detail:response.errors,sticky:true});
             }
-          }
-        })
+          },
+          error:(e) => {
+            //console.error('Error al guardar la promoción', e);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message ,sticky:true});
+            this.isLoading = false;
+            this.cd.detectChanges();
+          },
+          complete:() =>{
+            this.isLoading = false;
+            this.cd.detectChanges();
+        }
+      });
       }
   }
 
@@ -986,6 +1021,8 @@ showDialog(idArchivo: number): void {
       this.onEliminarIndex(index);
     }
     else{
+        this.isLoading=true;
+        this.cd.detectChanges();
         const tipo = 4; // Puedes cambiar este valor según sea necesario
         this.ExhortosService.eliminarArchivo(documento.idArchivo, tipo).subscribe({
           next: (response) => {
@@ -1009,9 +1046,13 @@ showDialog(idArchivo: number): void {
           error: (error) => {
             //console.error('Error al eliminar el documento', error);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+            this.isLoading=false;
+            this.cd.detectChanges();
           },
           complete:()=>{
             this.idArchivo=null;
+            this.isLoading=false;
+            this.cd.detectChanges();
           }
         }); 
     }
@@ -1075,6 +1116,7 @@ showDialog(idArchivo: number): void {
   }
    eliminarFirma(idFirmaTmp:number, idArchivo:number){
     this.isLoading=true;
+    this.cd.detectChanges();
     this.ExhortosService.eliminarUnaFirma(idFirmaTmp).subscribe({
       next:(response:any)=>{
           if(response.success)
@@ -1107,9 +1149,11 @@ showDialog(idArchivo: number): void {
       error:(e)=>{
         this.messageService.add({ severity: 'error', summary: 'error', detail: e.message });
         this.isLoading=false;
+        this.cd.detectChanges();
       },
       complete:()=>{
         this.isLoading=false;
+        this.cd.detectChanges();
       }
     });
   }
@@ -1135,6 +1179,8 @@ showDialog(idArchivo: number): void {
     });
   }
   onAplicarFirmas(idArchivo:number){
+    this.isLoading=true;
+    this.cd.detectChanges();
     this.ExhortosService.aplicarFirmasPromocion(idArchivo).subscribe({
       next:(response:any)=>{
           if(response.success){
@@ -1146,9 +1192,12 @@ showDialog(idArchivo: number): void {
       },
       error:(e)=>{
         this.messageService.add({ severity: 'error', summary: 'error', detail: e.message });
+        this.isLoading=false;
+        this.cd.detectChanges();
       },
       complete:()=>{
-
+        this.isLoading=false;
+        this.cd.detectChanges();
       }
     });
   }
