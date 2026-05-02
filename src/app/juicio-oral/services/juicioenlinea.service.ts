@@ -22,8 +22,6 @@ import {
     CancelarAudienciaRequest,
     AudienciaCreadaResponse,
     RespuestaRequerimientos,
-    RespuestaTramites,
-    RespuestaIniciosCreados,
     RespuestaExpedienteDetalle,
     RespuestaListadoAudiencia,
     RespuestaListadoSolicitud,
@@ -32,6 +30,8 @@ import {
     DocumentoResponse,
     ListadoAcuerdosResponse,
     DetalleDemandaResponse,
+    ContadoresDemandas,
+    ListadoTramitesResponse,
 
 } from "../interfaces/juicioenlinea.model";
 import { HttpClient } from "@angular/common/http";
@@ -39,6 +39,8 @@ import { inject, Injectable } from "@angular/core";
 import { TokenService } from "../../core/auth/service/token.service";
 import { checkToken } from "../../core/auth/interceptor/token.interceptor";
 import { environment } from "../../../environments/environment";
+import { url } from "node:inspector";
+import { GenericResponse } from "../../shared/interface/shared.interface";
 @Injectable({
     providedIn: 'root' // <-- Esto lo registra en el módulo raíz
 })
@@ -53,10 +55,12 @@ export class JuicioService {
     private expediente = `${environment.urlApiJuicioOral}/api/Expediente/`;
     private documentos = `${environment.urlApiJuicioOral}/api/Documento/`;
     private tramites = `${environment.urlApiJuicioOral}/api/Tramites/`;
+    private entregaRecepcion = `${environment.urlApiJuicioOral}/api/EntregaRecepcion/`;
     private juzgados = `${environment.urlApiJuicioOral}/api/Juzgados/`;
     private remitente = `${environment.urlApiJuicioOral}/api/Remitentes/`;
     private audiencia = `${environment.urlApiJuicioOral}/api/Audiencia/`
     private solicitud = `${environment.urlApiJuicioOral}/api/Solicitud/`
+    private acuerdo = `${environment.urlApiJuicioOral}/api/Acuerdo`;
 
 
     constructor(private http: HttpClient, private tokenService: TokenService) { }
@@ -154,6 +158,10 @@ export class JuicioService {
         );
     }
 
+    getContadores(): Observable<ApiResponse<ContadoresDemandas>> {
+        const url = `${this.demanda}ContadorDemandas`;
+        return this.http.get<ApiResponse<ContadoresDemandas>>(url, { context: checkToken() });
+    }
 
     //########################################################################
     // Requerimientos  
@@ -280,30 +288,23 @@ export class JuicioService {
         const url = `${this.expediente}Relacionar/${idExpediente}`;
         return this.http.post<ApiResponse<any>>(url, {}, { context: checkToken() });
     }
+    //########################################################################
+    // Tramites  //{{urlApiJuicioOral}}/api/Tramites/
+    //########################################################################
 
-
-    getListarTramites(params?: any): Observable<RespuestaTramites> {
-        return this.http.get<RespuestaTramites>(
-            `${this.tramites}Listar`,
-            {
-                params,
-                context: checkToken()
-            }
-        );
+    getListarTramites(params?: any): Observable<GenericResponse<ListadoTramitesResponse[]>> {
+        const url = `${this.tramites}Listar`;
+        return this.http.get<GenericResponse<ListadoTramitesResponse[]>>(url, { params, context: checkToken() });
     }
 
     getDetalleTramite(idTramite: number): Observable<DetalleTramites> {
         const url = `${this.tramites + 'Detalle'}/${idTramite}`;
-        return this.http.get<DetalleTramites>(url, {
-            context: checkToken()
-        });
+        return this.http.get<DetalleTramites>(url, { context: checkToken() });
     }
 
     crearTramite(formData: FormData): Observable<any> {
         const url = `${this.tramites + 'CrearTramite'}`;
-        return this.http.post<any>(url, formData,
-            { context: checkToken() }
-        );
+        return this.http.post<any>(url, formData, { context: checkToken() } );
     }
 
     busquedaExpediente(formData: any): Observable<any> {
@@ -333,6 +334,27 @@ export class JuicioService {
         return this.http.get<{ data: Remitente[] }>(this.remitente + 'Listar', { params, context: checkToken() });
     }
 
+
+    getTramitesPendientesTurnar(params?: any): Observable<ApiResponse<ListadoTramitesResponse[]>> {
+        return this.http.get<ApiResponse<ListadoTramitesResponse[]>>(
+            `${this.tramites}ListadoPendientesTurnar`, { params, context: checkToken() }
+        );
+    }
+
+    //########################################################################
+    // Entrega Recepción 
+    //########################################################################
+
+
+    getTramitesPendientesRecibir(params?: any): Observable<ApiResponse<ListadoTramitesResponse[]>> {
+        return this.http.get<ApiResponse<ListadoTramitesResponse[]>>(
+            `${this.entregaRecepcion}ListadoPendientesRecibir`, { params, context: checkToken() }
+        );
+    }
+    putSiguienteMovimientoTramite(payload: any): Observable<ApiResponse<any>> {
+        const url = `${this.entregaRecepcion}SiguienteMovimiento`;
+        return this.http.put<ApiResponse<any>>(url, payload, { context: checkToken() });
+    }
 
     //########################################################################
     // Audiencias  //http://10.1.10.50:81/api/Audiencia/Listar
@@ -427,15 +449,12 @@ export class JuicioService {
     // Acuerdo  //http://10.1.10.50:81/api/Audiencia/Listar
     //########################################################################
 
-    private acuerdo = 'http://10.1.10.50:81/api/Acuerdo';
-
-
     getTramitesExpediente(idExpediente: number): Observable<ApiResponse<DetalleExpedienteResponse>> {
         const url = `${this.tramites + 'Expediente'}/${idExpediente}`;
         return this.http.post<ApiResponse<DetalleExpedienteResponse>>(url, null, { context: checkToken() });
     }
 
-    enviarAcuerdo(formData: FormData): Observable<ApiResponse<any>> {
+    postAcuerdo(formData: FormData): Observable<ApiResponse<any>> {
         const url = `${this.acuerdo}/Crear`;
         return this.http.post<ApiResponse<any>>(url, formData, { context: checkToken() });
     }
