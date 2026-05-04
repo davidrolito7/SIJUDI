@@ -87,7 +87,7 @@ const generateExRecibidosPDF = (
       { text: "Nombre archivo", style: "tableHeader",fontSize:10 ,fillColor: '#D3D3D3'},
       { text: "Tipo documento", style: "tableHeader",fontSize:10,fillColor: '#D3D3D3' },
       { text: "Páginas", style: "tableHeader",fontSize:10,fillColor: '#D3D3D3' },
-      { text: "Tamaño (Kilobytes)", style: "tableHeader",fontSize:10,fillColor: '#D3D3D3' },
+      { text: "Tamaño (MB)", style: "tableHeader",fontSize:10,fillColor: '#D3D3D3' },
       { text: "Firmado", style: "tableHeader",fontSize:10,fillColor: '#D3D3D3' },
       { text: "Fecha firmado", style: "tableHeader",fontSize:10,fillColor: '#D3D3D3' },
     ],
@@ -95,7 +95,7 @@ const generateExRecibidosPDF = (
       {text: archivo.nombreArchivo, fontSize:8},
       {text: archivo.tipoDocumento?.nombre, fontSize:8},
       {text: archivo.paginas, fontSize:8},
-      {text: ((archivo.tamanio === null ? 0 : archivo.tamanio)  /1024).toFixed(2), fontSize:8},
+      {text: (((archivo.tamanio === null ? 0 : archivo.tamanio)  /1024)/1024).toFixed(2), fontSize:8},
       {text: archivo.firmado, fontSize:8},
       {text: archivo.fechaFirmado, fontSize:8},
     ]),
@@ -184,13 +184,13 @@ const generateExRecibidosPDF = (
                     {text:"Nombre", style:"tableHeader",fontSize:9,fillColor: '#A9A9A9'},
                     {text:"Tipo documento", style:"tableHeader",fontSize:9,fillColor: '#A9A9A9'},
                     {text:"Páginas", style:"tableHeader",fontSize:9,fillColor: '#A9A9A9'},
-                    {text:"Tamaño (Kilobytes)", style:"tableHeader",fontSize:9,fillColor: '#A9A9A9'},
+                    {text:"Tamaño (MB)", style:"tableHeader",fontSize:9,fillColor: '#A9A9A9'},
                 ],
                 ...(Array.isArray(p.archivos) ? p.archivos.map((h) =>[
                   {text: `  ➜${h.nombreArchivo}`,fontSize:8},
                   {text: h.tipoDocumento?.nombre, fontSize:8},
                   {text: h.paginas,fontSize:8},
-                  {text: ((h.tamaño === null ? 0 : h.tamaño)  /1024).toFixed(2),fontSize:8},
+                  {text: (((h.tamanio === null ? 0 : h.tamanio)  /1024)/1024).toFixed(2),fontSize:8},
                 ]):[])
               ]
             },
@@ -230,13 +230,13 @@ const generateExRecibidosPDF = (
                     {text:"Nombre", style:"tableHeader",fontSize:9,fillColor: '#A9A9A9'},
                     {text:"Tipo documento", style:"tableHeader",fontSize:9,fillColor: '#A9A9A9'},
                     {text:"Páginas", style:"tableHeader",fontSize:9,fillColor: '#A9A9A9'},
-                    {text:"Tamaño (Kilobytes)", style:"tableHeader",fontSize:9,fillColor: '#A9A9A9'},
+                    {text:"Tamaño (MB)", style:"tableHeader",fontSize:9,fillColor: '#A9A9A9'},
                 ],
                 ...(Array.isArray(r.archivos) ? r.archivos.map((h) =>[
                   {text: `  ➜${h.nombreArchivo}`,fontSize:8},
                   {text: h.tipoDocumento?.nombre, fontSize:8},
                   {text: h.paginas,fontSize:8},
-                  {text: ((h.tamanio === null ? 0 : h.tamanio)  /1024).toFixed(2),fontSize:8},
+                  {text: (((h.tamanio === null ? 0 : h.tamanio)  /1024)/1024).toFixed(2),fontSize:8},
                 ]):[])
               ]
             },

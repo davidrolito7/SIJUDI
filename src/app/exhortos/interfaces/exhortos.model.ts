@@ -263,7 +263,7 @@ export interface archivoPromocion{
       nombre: string;
       activo: boolean;
     },
-    tamaño: number;
+    tamanio: number;
     paginas: number;
     recibido: boolean;
     idClasificacionArchivo: number;
@@ -507,7 +507,7 @@ export interface archivoExhortoEnviado{
       nombre: string;
       activo: boolean;
     },
-    tamaño: number;
+    tamanio: number;
     paginas: number;
     recibido: boolean;
     idClasificacionArchivo: number;
@@ -723,7 +723,7 @@ export interface archivoPromocionExhortoEnviado{
       nombre: string;
       activo: boolean;
     },
-    tamaño: number
+    tamanio: number
     paginas: number
     enviado: boolean
     idClasificacionArchivo: number

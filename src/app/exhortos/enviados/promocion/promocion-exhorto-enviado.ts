@@ -1238,7 +1238,7 @@ showDialog(idArchivo: number): void {
           hashSha256: '',
           idTipoDocumento: 0,
           tipoDocumento: { idTipoDocumento: 0, nombre: '', activo: false },
-          tamaño: file.size ?? 0,
+          tamanio: file.size ?? 0,
           paginas: 0,
           enviado: false,
           idClasificacionArchivo: 0,
@@ -1263,7 +1263,7 @@ showDialog(idArchivo: number): void {
         const FIVE_MB = 5 * 1024 * 1024; // menos a 5 megas se abren en modal... los mayores se descargan
         if(documento.idArchivo ==0) // son archivos que no se han guardado
         {
-          if(documento.tamaño<= FIVE_MB && documento.nombreArchivo.split('.')[1]==='pdf')
+          if(documento.tamanio<= FIVE_MB && documento.nombreArchivo.split('.')[1]==='pdf')
             this.onVerDocumentoFile(documento.file); // se visualiza en modal
           else
           { 
@@ -1281,7 +1281,7 @@ showDialog(idArchivo: number): void {
             if (response.success) {
               const fileData = response.data.documento;
               //console.log(fileData);
-                if(documento.tamaño<= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
+                if(documento.tamanio<= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
                   this.onVerDocumentoBase64(fileData,documento.nombreArchivo, 'application/pdf'); // se visualiza en modal
                 else{
                   const nombre= response.data.fileName;
