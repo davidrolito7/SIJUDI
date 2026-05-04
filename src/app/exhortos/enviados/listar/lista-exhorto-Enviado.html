@@ -82,7 +82,7 @@
 
     <div class="card">
         <p-table #dt1 [value]="listadosSignal()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
-            [globalFilterFields]="['estadoDestino','municipioDestino','folioSeguimiento','areaTurnadoNombre']">
+            [globalFilterFields]="['numeroExhorto','estadoDestino','municipioDestino','folioSeguimiento','areaTurnadoNombre']">
             <ng-template #caption>
                 <div class="flex">
                     <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
@@ -95,18 +95,23 @@
             </ng-template>
 
             <ng-template #header>
+
                 <tr>
-                    <th>
-                        <div class="flex items-center justify-between">Estado exhortado</div>
+                  <th>
+                        <div class="flex items-center justify-between">Número de exhorto origen</div>
                     </th>
                     <th>
-                        <div class="flex items-center justify-between">Municipio</div>
+                        <div class="flex items-center justify-between">Estado destino</div>
+                    </th>
+                    
+                    <th>
+                        <div class="flex items-center justify-between">Municipio destino</div>
                     </th>
                     <th>
                         <div class="flex items-center justify-between">Materia</div>
                     </th>
                     <th>
-                        <div class="flex items-center justify-between">Folio</div>
+                        <div class="flex items-center justify-between">Folio de Seguimiento</div>
                     </th>
                     <th>
                         <div class="flex items-center justify-between">Area turnado</div>
@@ -128,6 +133,7 @@
 
             <ng-template #body let-listado>
                 <tr>
+                    <td style="font-size: small;">{{ listado.numeroExhorto }}</td>
                     <td style="font-size: small;">{{ listado.estadoDestino }}</td>
                     <td style="font-size: small;">{{ listado.municipioDestino}}</td>
                     <td style="font-size: small;">{{ listado.materiaNombre }}</td>
@@ -150,7 +156,7 @@
 
             <ng-template #emptymessage>
                 <tr>
-                    <td colspan="9">Sin exhortos</td>
+                    <td colspan="10">Sin exhortos</td>
                 </tr>
             </ng-template>
         </p-table>
