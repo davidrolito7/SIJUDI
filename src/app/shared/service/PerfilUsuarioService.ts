@@ -28,4 +28,10 @@ export class PerfilUsuarioService {
         const url = `${this.baseUrlPermisos}/DatosUsuario?Usuario=${nue}&TipoBusqueda=${tipoBusqueda}`;
         return this.http.post(url, null,{context:checkToken()});
         }
+
+        getDatosInformacionPFX(): Observable<any> {
+        const url = `${this.baseUrlEfirma}/datosFirma`;
+        //return this.http.get(url, null,{context:checkToken()});
+        return this.http.get<any>(url, { context: checkToken() });
+        }
 }
