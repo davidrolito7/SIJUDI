@@ -27,6 +27,7 @@ import { base64ToFile } from '../../../shared/functions/utils';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { PantallasService } from '../../services/pantallas.service';
 import { DetalleTramites, Partes } from '../../interfaces/juicioenlinea.model';
+import { TokenService } from '../../../core/auth/service/token.service';
 
 @Component({
   selector: 'app-detalle-tramite',
@@ -76,6 +77,7 @@ export class DetalleTramite implements OnInit {
     private readonly cdr: ChangeDetectorRef,
     private readonly messageService: MessageService,
     private readonly au: PantallasService,
+    private tokenService: TokenService,
   ) {}
 
   // ============================
@@ -165,35 +167,34 @@ export class DetalleTramite implements OnInit {
   // ============================
   // Navegación
   // ============================
-  detalle(idExpediente: number): void {
+  onRedirectCrearAcuerdo(idExpediente: number): void {
     this.router.navigate(['/juicioenlinea/acuerdos/crear'], { state: { idExpediente } });
   }
 
   // ============================
-  // Estado — igual que listar-tramite
+  // Estado helpers for UI tags
   // ============================
   getEstadoDescripcion(tramite: unknown): string | null {
-    const t = tramite as { historial?: Array<{ cat_estado_tramite?: { nombre?: string } }> };
-    const historial = t.historial;
-    if (!historial || historial.length === 0) return null;
-    return historial[historial.length - 1]?.cat_estado_tramite?.nombre ?? null;
+    const i = tramite as { ultimo_estado?: { cat_estado_tramite?: { nombre?: string } } };
+    return i.ultimo_estado?.cat_estado_tramite?.nombre ?? null;
   }
 
   getEstadoId(tramite: unknown): number | null {
-    const t = tramite as { historial?: Array<{ idCatEstadoTramite?: number | string }> };
-    const historial = t.historial;
-    if (!historial || historial.length === 0) return null;
-    const id = historial[historial.length - 1]?.idCatEstadoTramite;
-    return id != null ? Number(id) : null;
+    const i = tramite as { ultimo_estado?: { cat_estado_tramite?: { idCatEstadoTramite?: number } } };
+    return i.ultimo_estado?.cat_estado_tramite?.idCatEstadoTramite ?? null;
   }
 
   getEstadoTag(tramite: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
     const id = this.getEstadoId(tramite);
     switch (id) {
-      case 1:  return { severity: 'info',      icon: 'pi pi-send' };
-      case 2:  return { severity: 'success',   icon: 'pi pi-check' };
-      case 10002: return { severity: 'warn',   icon: 'pi pi-file-edit' };
-      default: return { severity: 'secondary' };
+      case 1:
+        return { severity: 'secondary', icon: 'pi pi-send' };
+      case 2:
+        return { severity: 'info', icon: 'pi pi-clock' };
+      case 3:
+        return { severity: 'success', icon: 'pi pi-check' };
+      default:
+        return { severity: 'secondary', icon: 'pi pi-question' };
     }
   }
 
@@ -201,6 +202,40 @@ export class DetalleTramite implements OnInit {
   // Helpers
   // ============================
   mostrarBoton(): boolean {
-    return this.au.tienePermiso('requerimiento/crear');
+    return true;
   }
+
+  get ultimoMovimiento() {
+    const movimientos = this.detalleTramite?.movimientos;
+    if (!movimientos || movimientos.length === 0) return null;
+    return movimientos[movimientos.length - 1];
+  }
+
+
+  get mostrarBotonAcordar(): boolean {
+    const movimientos = this.detalleTramite?.movimientos || [];
+
+    // Si no hay movimientos, no se puede turnar 0.o
+    if (movimientos.length === 0) {
+      return false;
+    }
+
+    const mov = this.ultimoMovimiento;
+    if (!mov) return false;
+
+    // Si idMovimiento es 9 e idGeneralTurna es null, secretario puede turnar 0.o
+    if (Number(mov.idMovimiento) === 9 && !mov.idGeneralTurna) {
+      return this.esSecretario();
+    }
+
+    return false;
+  }
+
+  esSecretario(): boolean {
+    const user = this.tokenService.getUserFromToken();
+    return user && user.idSistemaPerfil === 7181;
+  }
+
+
+
 }

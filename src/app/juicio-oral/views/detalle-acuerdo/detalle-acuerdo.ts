@@ -142,7 +142,7 @@ export class DetalleAcuerdo implements OnInit {
     this.isLoading = true;
     this.cdr.detectChanges();
 
-    this.juicioService.getDocumentoAcuerdo(idDocumento).subscribe({
+    this.juicioService.getDocumento(idDocumento).subscribe({
       next: (response) => {
         if (response?.data?.file) {
           this.nombre = response.data.nombre ?? 'documento.pdf';
@@ -210,6 +210,6 @@ export class DetalleAcuerdo implements OnInit {
   // Navegación
   // ============================
   detalle(idTramite: number): void {
-    this.router.navigate(['/tramites/detalle'], { state: { idTramite } });
+    this.router.navigate(['/juicioenlinea/tramites/detalle'], { state: { idTramite } });
   }
 }

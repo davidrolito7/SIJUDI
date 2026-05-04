@@ -34,14 +34,13 @@
                 </div>
 
                 <!-- Tipo de trámite -->
-                @if (mostrarBoton()) {
                 <div class="col-span-12 md:col-span-6 lg:col-span-3 w-full">
                     <label for="tipo" class="block mb-2 text-sm font-medium">Tipo</label>
                     <p-select inputId="tipo" name="tipo" class="w-full" [options]="tipoOptions"
                         [(ngModel)]="filtro.tipo" optionLabel="label" optionValue="value" appendTo="body" fluid>
                     </p-select>
                 </div>
-                }
+                
 
                 <!-- Fecha -->
                 <div class="col-span-12 md:col-span-8 lg:col-span-3">
@@ -95,9 +94,7 @@
                 <tr>
                     <th scope="col">Folio trámite</th>
                     <th scope="col">Expediente</th>
-                    @if (mostrarBoton()) {
                     <th scope="col">Juzgado</th>
-                    }
                     <th scope="col">Tipo trámite</th>
                     <th scope="col">Fecha Creado</th>
                     <th scope="col">Estatus</th>
@@ -111,10 +108,11 @@
                         # <span class="font-semibold">{{ tramite.folioOficio }}</span>
                     </td>
                     <td>{{ tramite.expediente?.NumExpediente }}</td>
-                    @if (mostrarBoton()) {
                     <td>{{ tramite.expediente?.juzgado?.Descripcion }}</td>
-                    }
-                    <td class="uppercase">{{ tramite.cat_tramite?.nombre }}</td>
+                    <td>
+                        <p-tag [value]="(getDescripcionTramite(tramite) | uppercase) ?? ''"
+                            [severity]="getTagTramite(tramite).severity" [icon]="getTagTramite(tramite).icon" />
+                    </td>
                     <td>{{ tramite.created_at | date: 'dd/MM/yyyy HH:mm' }} h</td>
                     <td>
                         <p-tag [value]="(getEstadoDescripcion(tramite) | uppercase) ?? ''"

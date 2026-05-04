@@ -91,7 +91,7 @@ responseRespuestaExhortos= signal<respuestExhortoEnviado | null>(null);
       next: (response) => {
         //console.log("recibe respuesta");
         const base64String = response.data.documento;
-          if(documento.tamaño<= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
+          if(documento.tamanio<= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
               
               this.onVerDocumento(base64String,documento.nombreArchivo, 'application/pdf'); // se visualiza en modal
           else{

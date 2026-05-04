@@ -18,17 +18,18 @@ import { DialogModule } from 'primeng/dialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
+import { ContadoresService } from '../../services/contadores.service';
+
 @Component({
   selector: 'app-detalle-demanda',
-  imports: [CommonModule, TableModule, Breadcrub, ButtonModule, TagModule, PdfDialog, TooltipModule, Spinner, ConfirmDialog, DialogModule, ɵInternalFormsSharedModule, ReactiveFormsModule,ToastModule],
+  imports: [CommonModule, TableModule, Breadcrub, ButtonModule, TagModule, PdfDialog, TooltipModule, Spinner, ConfirmDialog, DialogModule, ɵInternalFormsSharedModule, ReactiveFormsModule, ToastModule],
   templateUrl: './detalle-demanda.html',
   styleUrl: './detalle-demanda.css',
   providers: [ConfirmationService, MessageService],
-
 })
 export class DetalleDemanda implements OnInit {
 
-  idInicio: number | undefined;
+  idDemanda: number | undefined;
   nombre: string = '';
   documentoUrl: SafeResourceUrl | null = null;
   detalleDemanda: DetalleDemandaResponse | null = null;
@@ -45,7 +46,8 @@ export class DetalleDemanda implements OnInit {
     private readonly fb: FormBuilder,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-
+    private contadoresService: ContadoresService,
+    private router: Router
   ) {
     this.turnarForm = this.fb.group({
       observaciones: ['', [Validators.required, Validators.maxLength(250)]],
@@ -53,21 +55,21 @@ export class DetalleDemanda implements OnInit {
   }
 
   ngOnInit(): void {
-    const state = window.history.state as { idExpediente: number };
+    const state = window.history.state as { idDemanda: number };
 
-    if (state?.idExpediente) {
-      this.idInicio = state.idExpediente;
-      this.getDetalleInicio(this.idInicio);
+    if (state?.idDemanda) {
+      this.idDemanda = state.idDemanda;
+      this.getDetalleInicio(this.idDemanda);
     } else {
-      console.warn('No se proporcionó idExpediente. Redirigiendo a la página de inicio.');
+      console.warn('No se proporcionó idDemanda. Redirigiendo a la página de inicio.');
       // this.router.navigate(['/layout/inicio']);
     }
 
   }
 
 
-  getDetalleInicio(idExpediente: number): void {
-    this.juicioService.getDetalleDemanda(idExpediente).subscribe({
+  getDetalleInicio(idDemanda: number): void {
+    this.juicioService.getDetalleDemanda(idDemanda).subscribe({
       next: (response: any) => {
         this.detalleDemanda = response.data || null;
         this.cdr.markForCheck();
@@ -124,55 +126,91 @@ export class DetalleDemanda implements OnInit {
   }
 
   get ultimoMovimiento() {
-    const movimientos = this.detalleDemanda?.demanda?.movimientos;
+    const movimientos = this.detalleDemanda?.movimientos;
     if (!movimientos || movimientos.length === 0) return null;
     return movimientos[movimientos.length - 1];
   }
 
   get mostrarBotonRecibir(): boolean {
+    const movimientos = this.detalleDemanda?.movimientos || [];
+
+    // Si viene movimientos[] vacío, el oficial puede recibir la demanda 0.o
+    if (movimientos.length === 0) {
+      return this.esOficialia();
+    }
+
     const mov = this.ultimoMovimiento;
     if (!mov) return false;
-    return mov.fechaRecepcion === null;
+
+    // Si idMovimiento es 8 e idGeneralTurna está asignado, secretario puede recibir
+    if (Number(mov.idMovimiento) === 8 && mov.idGeneralTurna) {
+      return this.esSecretaria();
+    }
+
+    return false;
   }
 
   get mostrarBotonTurnar(): boolean {
+    const movimientos = this.detalleDemanda?.movimientos || [];
+
+    // Si no hay movimientos, no se puede turnar 0.o
+    if (movimientos.length === 0) {
+      return false;
+    }
+
     const mov = this.ultimoMovimiento;
     if (!mov) return false;
-    return mov.fechaRecepcion !== null && mov.idGeneralTurna === null;
+
+    // Si idMovimiento es 8 e idGeneralTurna es null, oficial puede turnar 0.o
+    if (Number(mov.idMovimiento) === 8 && !mov.idGeneralTurna) {
+      return this.esOficialia();
+    }
+
+    // Si idGeneralTurna está vacío e idMovimiento es 9, puede turnar 0.o
+    if (Number(mov.idMovimiento) === 9 && !mov.idGeneralTurna) {
+      return this.esSecretaria();
+    }
+
+    return false;
   }
 
-  mostrarModalTurnar() {
-    this.modalTurnar = true;
+  // ============================
+  // Navegación
+  // ============================
+  onRedirectCrearAcuerdo(idExpediente: number): void {
+    this.router.navigate(['/juicioenlinea/acuerdos/crear'], { state: { idExpediente } });
   }
 
-  mostrarModalRecibir() {
+
+  onModalRecibir() {
     this.confirmationService.confirm({
       key: 'confirmar-recepcion',
-      accept: () => { },
+      accept: () => { this.onSiguienteMovimientoDemanda(); },
       reject: () => { }
     }
     );
   }
 
-  onTurnarDemanda() {
+  onSiguienteMovimientoDemanda() {
+    this.modalTurnar = false;
     this.isLoading = true;
     const payload: any = {
-      idDemanda: [this.detalleDemanda?.demanda.idDemanda],
+      idDemanda: [this.detalleDemanda?.idDemanda],
     };
     const observaciones = this.turnarForm.get('observaciones')?.value;
     if (observaciones) {
       payload.observaciones = observaciones;
     }
-    ////console.log('Payload para turnar demanda:', payload);
     this.juicioService.putSiguienteMovimiento(payload).subscribe({
       next: (response) => {
+        this.contadoresService.refrescar()
         this.isLoading = false;
         if (response.success) {
           this.messageService.add({ severity: 'success', summary: 'Existoso', detail: response.message || 'Demanda turnada correctamente' });
         } else {
           this.messageService.add({ severity: 'info', summary: 'Aviso', detail: response.message || 'No se pudo turnar la demanda' });
         }
-        this.getDetalleInicio(this.idInicio!);
+        this.getDetalleInicio(this.idDemanda!);
       },
       error: (error) => {
         this.isLoading = false;
@@ -182,4 +220,23 @@ export class DetalleDemanda implements OnInit {
       }
     });
   }
+
+
+  esOficialia(): boolean {
+    const user = this.tokenService.getUserFromToken();
+    if (user && (user.idSistemaPerfil === 7180)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  esSecretaria(): boolean {
+    const user = this.tokenService.getUserFromToken();
+    if (user && (user.idSistemaPerfil === 7181)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 }

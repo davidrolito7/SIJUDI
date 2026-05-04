@@ -1,3 +1,4 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
 <p-toast></p-toast>
   <!-- BREADCRUMB -->
   <app-breadcrub></app-breadcrub>
@@ -286,7 +287,7 @@
                                                             icon="pi pi-file-pdf" class="mr-2" title="Descargar PDF"></p-button>
 
                                   <!--ELIMINAR DOCUMENTO-->
-                                  @if(idEstatus == 1 || idEstatus==0 ){ <!--//Pendiente de enviar-->
+                                  @if((idEstatus == 1 || idEstatus==0) && fechaHora == null ){ <!--//Pendiente de enviar-->
                                     @if(tienePermisoEliminarArchivo()){
                                       <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                                       (click)="eliminarDocumento(documento,i)" ></p-button>

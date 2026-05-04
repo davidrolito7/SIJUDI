@@ -154,7 +154,8 @@
             <ng-template #caption>
                 <div class="flex">
                     <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Anexos declarados</div>
-                    <p-button id="declaraAnexos" icon="pi pi-file-plus" class="ml-auto" label="Agregar" (click)="showModalListAnexo()" />
+                    <p-button id="declaraAnexos" icon="pi pi-file-plus" class="ml-auto" label="Agregar"
+                        (click)="showModalListAnexo()" />
                 </div>
             </ng-template>
             <ng-template #header>
@@ -200,9 +201,9 @@
             <ng-template #caption>
                 <div class="flex">
                     <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Archivos adjuntos</div>
-                    <p-fileupload id="agregarArchivos" mode="basic" styleClass="btn-morado" class=" ml-auto" name="demo[]" accept=".pdf"
-                        (onSelect)="onAnexosSelect($event)" [multiple]="true" [auto]="true" maxFileSize="1000000"
-                        chooseIcon="pi pi-upload" chooseLabel="Agregar" />
+                    <p-fileupload id="agregarArchivos" mode="basic" styleClass="btn-morado" class=" ml-auto"
+                        name="demo[]" accept=".pdf" (onSelect)="onAnexosSelect($event)" [multiple]="true" [auto]="true"
+                        [customUpload]="true" maxFileSize="1000000" chooseIcon="pi pi-upload" chooseLabel="Agregar" />
                 </div>
             </ng-template>
             <ng-template #header>
@@ -304,8 +305,8 @@
 
 <!--* DIALOGO DE CONFIRMACION ENVIAR DEMANDA -->
 <app-confirm-dialog key="demanda" title="Confirmación" message="Confirme la acción para enviar demanda"
-    icon="pi pi pi-send" circleClass="bg-primary" acceptLabel="Confirmar"
-    acceptStyleClass="bg-primary" rejectLabel="Cancelar">
+    icon="pi pi pi-send" circleClass="bg-primary" acceptLabel="Confirmar" acceptStyleClass="bg-primary"
+    rejectLabel="Cancelar">
 </app-confirm-dialog>
 
 <!--* DIALOGO DE CONFIRMACION VER DEMANDA -->
@@ -338,22 +339,21 @@
                         {{ demandaResponse?.folio || '—' }}
                     </span>
                 </div>
-                <div
-                    class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg ">
+                <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg ">
                     <span class="font-semibold text-color-secondary shrink-0">Expediente</span>
                     <span class="font-medium text-right min-w-0">
                         {{ demandaResponse?.expediente?.NumExpediente }}
                     </span>
                 </div>
-                <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+                <div
+                    class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Juzgado</span>
                     <span class="font-medium text-right min-w-0">
                         {{ demandaResponse?.expediente?.juzgado?.Descripcion || '—' }}
                     </span>
                 </div>
 
-                <div
-                    class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg ">
+                <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg ">
                     <span class="font-semibold text-color-secondary shrink-0">Fecha de envío</span>
                     <span class="font-medium text-right min-w-0">
                         {{ demandaResponse?.fechaHoraRecepcion| date:'dd/MM/yyyy HH:mm' : '—' }} h
@@ -364,7 +364,7 @@
             </div>
 
             <div class="flex justify-end gap-2 mt-6 w-full">
-                <p-button label="Ver demanda" (onClick)="onAccept()" ></p-button>
+                <p-button label="Ver demanda" (onClick)="onAccept()"></p-button>
                 <p-button label="Cerrar" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
 
             </div>

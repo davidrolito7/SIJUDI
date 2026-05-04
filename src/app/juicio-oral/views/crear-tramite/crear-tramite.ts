@@ -98,7 +98,6 @@ export class CrearTramite implements OnInit {
   // Formularios
   // ============================
   tramite!: FormGroup;
-  buscarUsr!: FormGroup;
   parteForm!: FormGroup;
   remitente!: FormGroup;
 
@@ -107,9 +106,8 @@ export class CrearTramite implements OnInit {
   // ============================
   idExpediente!: number;
   NumExpediente!: string;
-  detalleExpediente: RegistroExpediente[] | null = null;
+  detalleExpediente = signal<RegistroExpediente[]>([])
   expediente: ListarExpedientesResponse | null = null;
-  detalleDemanda: DetalleDemandaResponse | null = null;
 
   // ============================
   // Catálogos
@@ -124,14 +122,7 @@ export class CrearTramite implements OnInit {
   listaPartes: PartesRequest[] = [];  // Partes nuevas a agregar
   editandoParte = false;
   indiceParteEditando = -1;
-  filtroParte: 'busqueda' | 'manual' = 'busqueda';
-  usrData: DatosUsuarioResponse | null = null;
   formEnviado = false;
-
-  // ============================
-  // Búsqueda de usuario (igual que crear-demanda)
-  // ============================
-  tipoBusqueda: string | null = null;
 
   // ============================
   // Remitente
@@ -152,7 +143,8 @@ export class CrearTramite implements OnInit {
   // ============================
   // UI flags
   // ============================
-  isLoading = false;
+  isLoading = signal(false);
+  tramiteResponse: any = null;
   visible = false;
   visibleDocumento = signal<boolean>(false);
   visibleM = false;
@@ -195,17 +187,18 @@ export class CrearTramite implements OnInit {
     });
 
     this.parteForm = this.fb.group({
-     // idUsr: [''],
       nombre: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoPaterno: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoMaterno: ['', [Validators.required, Validators.maxLength(100)]],
       direccion: ['', [Validators.required, Validators.maxLength(250)]],
       correo: ['', [Validators.required, Validators.email, Validators.maxLength(250)]],
       correoAlterno: ['', [Validators.email, Validators.maxLength(250)]],
-      esMenorEdad: [false], // valor por defecto: false (no menor de edad)
+      esMenorEdad: [false],
       idCatSexo: [null, Validators.required],
       idCatTipoParte: [null, Validators.required],
+      curp: ['', [Validators.required, Validators.maxLength(18), Validators.pattern(/^[A-Z0-9]{18}$/)]],
     }, { validators: this.correosDiferentesValidator.bind(this) });
+
 
     this.remitente = this.fb.group({
       cargo: ['', [Validators.required, Validators.maxLength(100)]],
@@ -214,12 +207,7 @@ export class CrearTramite implements OnInit {
       remitente: ['', [Validators.required, Validators.maxLength(100)]],
     });
 
-    // buscarUsr igual que crear-demanda (tipoBusqueda + curp + usuario)
-    this.buscarUsr = this.fb.group({
-      tipoBusqueda: [null, Validators.required],
-      curp: ['', [Validators.required, Validators.maxLength(18)]],
-      usuario: [null, [Validators.required, Validators.maxLength(20)]],
-    });
+
 
     const state = window.history.state as { idExpediente: number; NumExpediente: string };
     if (state?.idExpediente) {
@@ -235,19 +223,20 @@ export class CrearTramite implements OnInit {
   getDetalleExpediente(idExpediente: number): void {
     this.juicioService.getDetalleExpediente(idExpediente).subscribe({
       next: (response) => {
-        this.detalleExpediente = response.data.registros;
+        this.detalleExpediente.set(response.data.registros);
         const exp = response.data.expediente;
         this.expediente = exp;
-        this.detalleDemanda = Array.isArray(this.expediente?.demanda)
-          ? this.expediente.demanda[0]
-          : this.expediente?.demanda;
-        this.partes = this.detalleDemanda ? this.detalleDemanda.demanda.partes : [];
+        
+        if (this.expediente?.demanda?.partes) {
+          this.partes = this.expediente.demanda.partes;
+        } else {
+          this.partes = [];
+        }
         this.cdr.markForCheck();
-
       },
       error: (error) => {
         console.error('Error:', error);
-        this.detalleExpediente = null;
+        this.detalleExpediente.set([]);
         this.partes = [];
       },
     });
@@ -288,7 +277,7 @@ export class CrearTramite implements OnInit {
       this.messageService.add({ severity: 'error', summary: 'Formato inválido', detail: 'Solo se pueden visualizar archivos PDF.' });
       return;
     }
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.nombre = this.nombreArchivo || 'Documento';
     const reader = new FileReader();
     reader.onload = () => {
@@ -298,11 +287,11 @@ export class CrearTramite implements OnInit {
         this.visibleDocumento.set(true);
       } catch {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo procesar el archivo.' });
-      } finally { this.isLoading = false; }
+      } finally { this.isLoading.set(false); }
     };
     reader.onerror = () => {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo leer el archivo.' });
-      this.isLoading = false;
+      this.isLoading.set(false);
     };
     reader.readAsDataURL(this.archivoSeleccionado);
   }
@@ -311,189 +300,128 @@ export class CrearTramite implements OnInit {
   // Partes — lógica exacta de crear-demanda
   // ============================
   showDialog(): void {
-    this.buscarUsr.reset();
     this.editandoParte = false;
-    this.visible = true;
-    this.formEnviado = false;
-    this.actualizarValidadores();
-  }
-
-  // igual que crear-demanda
-  onTipoBusquedaChange(): void {
-    this.tipoBusqueda = this.buscarUsr.get('tipoBusqueda')?.value;
-    this.buscarUsr.get('usuario')?.setValue('');
-    this.buscarUsr.clearValidators();
-  }
-
-  getPlaceholder(): string {
-    switch (this.tipoBusqueda) {
-      case '2': return '00000/2025';
-      case '1': return 'ID General';
-      case '3': return 'Código de llave';
-      case '4': return 'Número de empleado';
-      default: return '';
-    }
-  }
-
-  aplicarMascaraBusqueda(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    let valor = input.value;
-    if (this.tipoBusqueda === '2') {
-      valor = valor.replace(/\D/g, '').slice(0, 9);
-      if (valor.length > 5) valor = valor.slice(0, 5) + '/' + valor.slice(5, 9);
-    } else if (this.tipoBusqueda === '1') {
-      valor = valor.replace(/\D/g, '').slice(0, 6);
-    } else if (this.tipoBusqueda === '3') {
-      valor = valor.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
-    } else if (this.tipoBusqueda === '4') {
-      valor = valor.replace(/[^0-9]/g, '').slice(0, 4);
-    }
-    this.buscarUsr.get('usuario')?.setValue(valor, { emitEvent: false });
-  }
-
-  onBuscarUsuario(): void {
-    this.parteForm.reset();
-    this.isLoading = true;
-    const datosParte = this.buscarUsr.value;
-    const request = {
-      usuario: datosParte.usuario,
-      curp: datosParte.curp,
-      tipoBusqueda: datosParte.tipoBusqueda,
-    };
-
-    this.juicioService.getDatosUsuario(request).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        if (response?.success) {
-          this.usrData = response.data;
-          const camposReadonly = ['nombre', 'correo', 'correoAlterno', 'direccion'];
-          camposReadonly.forEach(c => this.parteForm.get(c)?.enable({ emitEvent: false }));
-          this.parteForm.patchValue({
-            //idUsr: this.usrData?.idUsr,
-            nombre: this.usrData?.nombre,
-            correo: this.usrData?.correo,
-            correoAlterno: this.usrData?.correoAlterno,
-            direccion: this.usrData?.direccion,
-          });
-          camposReadonly.forEach(c => this.parteForm.get(c)?.disable({ emitEvent: false }));
-          this.messageService.add({ severity: 'success', summary: 'Datos encontrados', detail: 'Verifique si los datos son correctos.' });
-        } else {
-          this.messageService.add({ severity: 'info', summary: 'Verifique la información', detail: response.message });
-        }
-      },
-      error: () => {
-        this.isLoading = false;
-        this.messageService.add({ severity: 'warn', summary: 'Ocurrió un error inesperado', detail: 'Intente más tarde.' });
-      },
+    this.indiceParteEditando = -1;
+    this.parteForm.reset({
+      esMenorEdad: false
     });
+    this.formEnviado = false;
+    this.visible = true;
   }
   get todasLasPartes(): any[] {
     return [...this.partes, ...this.listaPartes];
   }
-  agregarParte(): void {
+  agregarParte() {
     this.formEnviado = true;
-    if (this.parteForm.invalid) { this.parteForm.markAllAsTouched(); return; }
+
+    if (this.parteForm.invalid) {
+      this.parteForm.markAllAsTouched();
+      return;
+    }
 
     const valores = this.parteForm.getRawValue();
+
     const nuevaParte: PartesRequest = {
       ...valores,
-     // idUsr: valores.idUsr?.toString().trim() || null,
+      //// idUsr: valores.idUsr?.toString().trim() || null,
       nombre: (valores.nombre ?? '').toUpperCase(),
       apellidoPaterno: (valores.apellidoPaterno ?? '').toUpperCase(),
       apellidoMaterno: (valores.apellidoMaterno ?? '').toUpperCase(),
       direccion: (valores.direccion ?? '').toUpperCase(),
       correo: (valores.correo ?? '').toUpperCase(),
       correoAlterno: (valores.correoAlterno ?? '').toUpperCase(),
-      filtroParte: this.filtroParte,
     };
 
-     //! Validar duplicado en listaPartes
-    // if ( this.listaPartes.some((p, idx) =>
-    //   p.idUsr === nuevaParte.idUsr && idx !== this.indiceParteEditando)) {
-    //   this.messageService.add({ severity: 'warn', summary: 'Usuario duplicado', detail: 'Este usuario ya fue agregado como parte.' });
-    //   this.parteForm.markAsUntouched();
-    //   this.parteForm.updateValueAndValidity({ emitEvent: false });
-    //   this.formEnviado = false;
-    //   return;
-    // }
+    // Normaliza el nombre completo quitando espacios extra para comparar
+    const normalizar = (s: string) => (s ?? '').replace(/\s+/g, ' ').trim().toUpperCase();
+    const nombreCompleto = normalizar(
+      `${nuevaParte.nombre} ${nuevaParte.apellidoPaterno} ${nuevaParte.apellidoMaterno}`
+    );
 
-    // // Validar duplicado en partes del expediente
-    // if ( this.partes.some(p => String(p.curp) === String(nuevaParte.curp))) {
-    //   this.messageService.add({ severity: 'warn', summary: 'Usuario ya existe', detail: 'Este usuario ya está registrado en el expediente.' });
-    //   return
-    // }
+    const duplicado = this.listaPartes.some((p: PartesRequest, idx: number) => {
+      if (idx === this.indiceParteEditando) return false;
+      const nombreExistente = normalizar(
+        `${p.nombre} ${p.apellidoPaterno} ${p.apellidoMaterno}`
+      );
+      return nombreExistente === nombreCompleto;
+    });
 
-    const tipoSeleccionado = this.catTipoPartes.find(t => t.idCatTipoParte === Number(nuevaParte.idCatTipoParte));
-    if (tipoSeleccionado) nuevaParte.descripcionTipoParte = tipoSeleccionado.descripcion;
+    if (duplicado) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Parte duplicada',
+        detail: 'Ya existe una parte con el mismo nombre completo.'
+      });
+      this.formEnviado = false;
+      this.parteForm.markAsUntouched();
+      return;
+    }
+
+    // Validar duplicado por correo
+    if (
+      nuevaParte.correo &&
+      this.listaPartes.some((p: PartesRequest, idx: number) =>
+        p.correo === nuevaParte.correo && idx !== this.indiceParteEditando
+      )
+    ) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Correo duplicado',
+        detail: 'Ya existe una parte con este correo electrónico.'
+      });
+      this.formEnviado = false;
+      this.parteForm.markAsUntouched();
+      return;
+    }
+
+    const tipoParteSeleccionada = this.catTipoPartes.find(
+      (tipo) => tipo.idCatTipoParte === Number(nuevaParte.idCatTipoParte)
+    );
+    if (tipoParteSeleccionada) {
+      nuevaParte.descripcionTipoParte = tipoParteSeleccionada.descripcion;
+    }
 
     if (this.editandoParte) {
       this.listaPartes[this.indiceParteEditando] = { ...nuevaParte };
       this.editandoParte = false;
       this.indiceParteEditando = -1;
     } else {
-      this.listaPartes = [...this.listaPartes, { ...nuevaParte }];
+      this.listaPartes.push({ ...nuevaParte });
     }
-    console.info('nueva parte agregada:', this.listaPartes);
-    this.sincronizarFormArrayPartes();
+
     this.visible = false;
-    this.parteForm.reset();
+    this.parteForm.reset({ esMenorEdad: false });
     this.formEnviado = false;
-    this.tramite.get('partes')?.updateValueAndValidity();
   }
 
-  editarParte(index: number): void {
+  editarParte(index: number) {
     this.editandoParte = true;
     this.indiceParteEditando = index;
+
     const parte = this.listaPartes[index];
-    this.filtroParte = parte.filtroParte || ((!parte.apellidoPaterno && !parte.apellidoMaterno) ? 'busqueda' : 'manual');
-    this.buscarUsr.reset();
-    this.actualizarValidadores();
+    this.parteForm.reset({ esMenorEdad: false });
     this.parteForm.patchValue(parte);
+    this.formEnviado = false;
     this.visible = true;
   }
 
-  eliminarParte(index: number): void {
-    this.listaPartes = this.listaPartes.filter((_, i) => i !== index);
-    this.sincronizarFormArrayPartes();
-    this.tramite.get('partes')?.updateValueAndValidity();
+  eliminarParte(index: number) {
+    this.listaPartes.splice(index, 1);
   }
 
   eliminarPartePreregistro(index: number): void {
     this.partes.splice(index, 1);
-    this.sincronizarFormArrayPartes();
   }
 
   resetParteForm(): void {
-    this.buscarUsr.reset();
-    this.parteForm.reset();
-    this.visible = false;
+    this.parteForm.reset({ esMenorEdad: false });
+    this.editandoParte = false;
+    this.indiceParteEditando = -1;
     this.formEnviado = false;
+    this.visible = false;
   }
 
-  // igual que crear-demanda
-  actualizarValidadores(): void {
-    const camposReadonly = ['nombre', 'correo', 'correoAlterno', 'direccion'];
-    if (this.filtroParte === 'manual') {
-      this.parteForm.get('nombre')?.setValidators([Validators.required, Validators.maxLength(100)]);
-      this.parteForm.get('apellidoPaterno')?.setValidators([Validators.required]);
-      this.parteForm.get('apellidoMaterno')?.setValidators([Validators.required]);
-      camposReadonly.forEach(c => this.parteForm.get(c)?.enable({ emitEvent: false }));
-      this.parteForm.reset();
 
-    } else {
-      this.parteForm.get('nombre')?.setValidators([Validators.required, Validators.maxLength(90)]);
-      this.parteForm.get('apellidoPaterno')?.clearValidators();
-      this.parteForm.get('apellidoMaterno')?.clearValidators();
-      this.parteForm.get('apellidoPaterno')?.setValue('');
-      this.parteForm.get('apellidoMaterno')?.setValue('');
-      this.parteForm.reset();
-      this.buscarUsr.reset();
-      camposReadonly.forEach(c => this.parteForm.get(c)?.disable({ emitEvent: false }));
-    }
-    this.parteForm.get('nombre')?.updateValueAndValidity();
-    this.parteForm.get('apellidoPaterno')?.updateValueAndValidity();
-    this.parteForm.get('apellidoMaterno')?.updateValueAndValidity();
-  }
 
   confirm1(event: Event, index: number): void {
     this.confirmationService.confirm({
@@ -513,24 +441,7 @@ export class CrearTramite implements OnInit {
     });
   }
 
-  private sincronizarFormArrayPartes(): void {
-    const partesFormArray = this.tramite.get('partes') as FormArray;
-    partesFormArray.clear();
-    this.listaPartes.forEach(item => {
-      const esBusqueda = !item.apellidoPaterno && !item.apellidoMaterno;
-      partesFormArray.push(this.fb.group({
-       // idUsr: [item.idUsr],
-        filtroParte: [item.filtroParte],
-        nombre: [item.nombre, [Validators.required, Validators.maxLength(100)]],
-        apellidoMaterno: [item.apellidoMaterno, esBusqueda ? [] : [Validators.required, Validators.maxLength(100)]],
-        apellidoPaterno: [item.apellidoPaterno, esBusqueda ? [] : [Validators.required, Validators.maxLength(100)]],
-        direccion: [item.direccion, [Validators.required, Validators.maxLength(250)]],
-        idCatSexo: [item.idCatSexo, Validators.required],
-        idCatTipoParte: [item.idCatTipoParte, Validators.required],
-      }));
-    });
-    partesFormArray.updateValueAndValidity();
-  }
+
 
   // ============================
   // Remitente
@@ -556,25 +467,16 @@ export class CrearTramite implements OnInit {
   // ============================
   // Confirmación / envío
   // ============================
-  confirm(): void {
+  confirm(event: Event): void {
     if (this.tramite.invalid) {
-      this.messageService.add({ severity: 'warn', summary: 'Formulario incompleto', detail: 'Por favor complete todos los campos requeridos.' });
+      this.tramite.markAllAsTouched();
       return;
     }
     this.confirmationService.confirm({
       key: 'tramite',
+      target: event.target as EventTarget,
       accept: () => {
-        this.isLoading = true;
-        this.onCrearTramite((exito, mensajeError, idTramite) => {
-          if (exito) {
-            this.isLoading = false;
-            setTimeout(() => { if (idTramite !== undefined) this.detalleTramite(idTramite); }, 1000);
-          } else {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo crear el trámite: ' + mensajeError });
-            this.isLoading = false;
-            this.botonHabilitado = false;
-          }
-        });
+        this.onCrearTramite();
       },
       reject: () => {
         this.messageService.add({ severity: 'info', summary: 'Cancelado', detail: 'Acción cancelada.' });
@@ -582,9 +484,11 @@ export class CrearTramite implements OnInit {
     });
   }
 
-  onCrearTramite(callback?: (exito: boolean, mensaje?: string, idTramite?: number) => void): void {
+  onCrearTramite(): void {
     this.botonHabilitado = true;
-    if (this.tramite.invalid) { callback?.(false); return; }
+    if (this.tramite.invalid) return;
+
+    this.isLoading.set(true);
 
     if (this.mostrarBoton()) {
       if (this.tipoSeleccionado === 'promocion') {
@@ -613,7 +517,7 @@ export class CrearTramite implements OnInit {
             const { descripcionTipoParte, ...parteSinDescripcion } = parte;
             Object.keys(parteSinDescripcion).forEach(subKey => {
               if (
-                (subKey === 'apellidoPaterno' || subKey === 'apellidoMaterno' ) &&
+                (subKey === 'apellidoPaterno' || subKey === 'apellidoMaterno') &&
                 (!parteSinDescripcion[subKey] || parteSinDescripcion[subKey].toString().trim() === '')
               ) return;
               formData.append(`partes[${index}][${subKey}]`, parteSinDescripcion[subKey]);
@@ -633,12 +537,25 @@ export class CrearTramite implements OnInit {
 
     this.juicioService.crearTramite(formData).subscribe({
       next: (response) => {
+        this.isLoading.set(false);
         this.creado = true;
-        callback?.(true, undefined, response?.data?.tramite?.idTramite);
+        this.tramiteResponse = response?.data;
+        const idTramite = response?.data?.idTramite;
+        this.confirmationService.confirm({
+          key: 'success',
+          accept: () => {
+            if (idTramite !== undefined) this.detalleTramite(idTramite);
+          },
+          reject: () => {
+            this.limpiarFormulario();
+          }
+        });
       },
       error: (error) => {
         console.error('Error al crear el trámite:', error);
-        callback?.(false, error?.error?.message || 'Ocurrió un error desconocido');
+        const mensajeError = error?.error?.message || 'Ocurrió un error desconocido';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo crear el trámite: ' + mensajeError });
+        this.isLoading.set(false);
         this.botonHabilitado = false;
       },
     });
@@ -646,6 +563,18 @@ export class CrearTramite implements OnInit {
 
   detalleTramite(idTramite: number): void {
     this.router.navigate(['/juicioenlinea/tramites/detalle'], { state: { idTramite, mensajeExito: 'Trámite creado con éxito' } });
+  }
+
+  limpiarFormulario(): void {
+    this.tramite.reset();
+    this.parteForm.reset({ esMenorEdad: false });
+    this.listaPartes = [];
+    this.remitenteSeleccionado = undefined;
+    this.remitente.reset();
+    this.quitarArchivo();
+    this.formEnviado = false;
+    this.tramiteResponse = null;
+    this.tipoSeleccionado = 'promocion';
   }
 
   // ============================
@@ -703,10 +632,10 @@ export class CrearTramite implements OnInit {
   }
 
   correosDiferentesValidator(form: FormGroup) {
-    if (this.filtroParte === 'manual') {
-      const correo = form.get('correo')?.value?.toLowerCase().trim();
-      const correoAlterno = form.get('correoAlterno')?.value?.toLowerCase().trim();
-      if (correo && correoAlterno && correo === correoAlterno) return { correosIguales: true };
+    const correo = form.get('correo')?.value?.toLowerCase().trim();
+    const correoAlterno = form.get('correoAlterno')?.value?.toLowerCase().trim();
+    if (correo && correoAlterno && correo === correoAlterno) {
+      return { correosIguales: true };
     }
     return null;
   }

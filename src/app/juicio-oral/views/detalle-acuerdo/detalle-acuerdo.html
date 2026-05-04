@@ -161,14 +161,14 @@
                 </ng-template>
                 <ng-template #body let-tramite>
                     <tr>
-                        <td class="font-semibold">{{ tramite.folioOficio }}</td>
+                        <td class="font-semibold">{{ tramite.folio }}</td>
                         <td>{{ tramite.created_at | date: 'dd/MM/yyyy HH:mm' }} h</td>
                         <td>{{ tramite.sintesis }}</td>
                         <td>{{ tramite.observaciones }}</td>
                         <td>
                             @if (tramite.idDocumentoTramite) {
                             <p-button icon="pi pi-file-pdf" [rounded]="true" [raised]="true" severity="warn"
-                                (click)="openModal(tramite.idDocumentoTramite)" pTooltip="Ver PDF"
+                                (click)="openModal(tramite.idDocumento)" pTooltip="Ver PDF"
                                 tooltipPosition="top">
                             </p-button>
                             }

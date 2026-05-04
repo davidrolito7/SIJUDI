@@ -17,6 +17,10 @@ import { AppIcon } from "./icon/app-icon.component";
 import { StyleClassModule } from 'primeng/styleclass';
 import { RippleModule } from 'primeng/ripple';
 import { DrawerService } from '../../../shared/service/drawer.service';
+import { ContadoresService } from '../../../juicio-oral/services/contadores.service';
+import { Observable } from 'rxjs';
+import { BadgeModule } from 'primeng/badge';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
 @Component({
   selector: 'app-siderbar',
   imports: [
@@ -30,7 +34,9 @@ import { DrawerService } from '../../../shared/service/drawer.service';
     DrawerModule,
     ButtonModule,
     StyleClassModule,
-    RippleModule
+    RippleModule,
+    BadgeModule,
+    OverlayBadgeModule,
 
   ],
   templateUrl: './siderbar.html',
@@ -42,8 +48,8 @@ export class Siderbar {
   private readonly authService = inject(AuthService);
   private readonly menuStore = inject(UserMenuStore);
   readonly drawerService = inject(DrawerService);
-  
-      visibleDrawer: boolean = false;
+
+  visibleDrawer: boolean = false;
 
   readonly svgSrcForPantalla = svgSrcForPantalla;
   readonly svgSrcForModulo = svgSrcForModulo;
@@ -64,7 +70,7 @@ export class Siderbar {
     return (mod.pantallas ?? []).filter((p) => p.visibleMenu);
   });
 
-  constructor() {
+  constructor(private contadoresService: ContadoresService) {
     this.menuStore
       .ensureLoaded()
       .pipe(takeUntilDestroyed())
@@ -79,7 +85,17 @@ export class Siderbar {
     effect(() => {
       this.showMenu.set(!!this.selectedModulo());
     });
+
+
   }
+
+  ngOnInit(): void {
+    this.contadoresService.iniciarPolling();
+  }
+  ngOnDestroy(): void {
+    this.contadoresService.detenerPolling();
+  }
+
 
   onLogout(): void {
     this.tokenService.logout();
@@ -134,4 +150,8 @@ export class Siderbar {
   get perfilNombre(): string {
     return this.tokenService.getPerfilNombre();
   }
+  getBadge(IdPantalla: number): Observable<number | null> {
+    return this.contadoresService.getContadorParaPantalla(IdPantalla);
+  }
+
 }

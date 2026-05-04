@@ -31,14 +31,14 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 // ============================
 // App - feature
 // ============================
-import { DetalleDemandaResponse } from '../../interfaces/juicioenlinea.model';
+import { DetalleDemandaResponse, ListadoTramitesResponse } from '../../interfaces/juicioenlinea.model';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { ContadoresService } from '../../services/contadores.service';
 
 @Component({
-  selector: 'app-turnar-demanda',
+  selector: 'app-turnar-tramite',
   imports: [
     CommonModule,
     RouterModule,
@@ -63,12 +63,12 @@ import { ContadoresService } from '../../services/contadores.service';
     Spinner,
     ConfirmDialog
   ],
-  templateUrl: './turnar-demanda.html',
-  styleUrl: './turnar-demanda.css',
+  templateUrl: './turnar-tramite.html',
+  styleUrl: './turnar-tramite.css',
   providers: [ConfirmationService, MessageService]
 
 })
-export class TurnarDemanda implements OnInit {
+export class TurnarTramite {
 
   // ===========================
   // UI options / state
@@ -81,7 +81,7 @@ export class TurnarDemanda implements OnInit {
   ];
   accionesItems: MenuItem[] = [
     {
-      label: 'Turnar demandas',
+      label: 'Turnar trámites',
       icon: 'pi pi-file-export',
       command: () => this.turnarSeleccionados()
     },
@@ -93,9 +93,9 @@ export class TurnarDemanda implements OnInit {
     // },
   ];
 
-  selectedExpedientes: DetalleDemandaResponse[] = [];
+  tramitesSeleccionados: ListadoTramitesResponse[] = [];
 
-  inicios = signal<DetalleDemandaResponse[]>([]);
+  tramites = signal<ListadoTramitesResponse[]>([]);
   isLoading = signal(false);
   totalRecords = 0;        // ← total para que PrimeNG sepa cuántas páginas hay
   rowsPerPage = 10;        // ← rows actuales, se actualiza desde el evento lazy
@@ -170,10 +170,10 @@ export class TurnarDemanda implements OnInit {
 
     if (this.filtro.estado > 0) params['estado'] = this.filtro.estado;
 
-    this.juicioService.getDemandasPendientesTurnar(params).subscribe({
+    this.juicioService.getTramitesPendientesTurnar(params).subscribe({
       next: (response) => {
         this.isLoading.set(false);
-        this.inicios.set(response.data);
+        this.tramites.set(response.data);
         this.totalRecords = response.pagination?.total ?? 0;
         onComplete?.(); // ← ejecuta el callback si existe
       },
@@ -234,29 +234,26 @@ export class TurnarDemanda implements OnInit {
     return new Date(year, month - 1, day);
   }
 
-  detalle(idDemanda: number) {
-    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idDemanda } });
+  detalle(idTramite: number): void {
+    this.router.navigate(['/juicioenlinea/tramites/detalle'], { state: { idTramite } });
   }
 
-  onRedirigirCrear() {
-    this.router.navigate(['/juicioenlinea/demandas/crear']);
-  }
 
-  // ============================
+// ============================
   // Estado helpers for UI tags
   // ============================
-  getEstadoDescripcion(inicio: unknown): string | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { cat_estado_demanda?: { descripcion?: string } } } };
-    return i.demanda?.ultimo_estado?.cat_estado_demanda?.descripcion ?? null;
+  getEstadoDescripcion(tramite: unknown): string | null {
+    const i = tramite as { ultimo_estado?: { cat_estado_tramite?: { nombre?: string } } };
+    return i.ultimo_estado?.cat_estado_tramite?.nombre ?? null;
   }
 
-  getEstadoId(inicio: unknown): number | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { cat_estado_demanda?: { idCatEstadoDemanda?: number } } } };
-    return i.demanda?.ultimo_estado?.cat_estado_demanda?.idCatEstadoDemanda ?? null;
+  getEstadoId(tramite: unknown): number | null {
+    const i = tramite as { ultimo_estado?: { cat_estado_tramite?: { idCatEstadoTramite?: number } } };
+    return i.ultimo_estado?.cat_estado_tramite?.idCatEstadoTramite ?? null;
   }
 
-  getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
-    const id = this.getEstadoId(inicio);
+  getEstadoTag(tramite: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+    const id = this.getEstadoId(tramite);
     switch (id) {
       case 1:
         return { severity: 'secondary', icon: 'pi pi-send' };
@@ -269,39 +266,66 @@ export class TurnarDemanda implements OnInit {
     }
   }
 
-  onSiguienteMovimientoDemanda(idDemanda: (string | number)[]): void {
-    this.isLoading.set(true);
-    const payload: any = { idDemanda };
+    getDescripcionTramite(tramite: unknown): string | null {
+    const i = tramite as { cat_tramite?: { nombre?: string } };
+    return i.cat_tramite?.nombre ?? null;
+  }
 
-    this.juicioService.putSiguienteMovimiento(payload).subscribe({
+  getIdTramite(tramite: unknown): number | null {
+    const i = tramite as { ultimo_estado?: { idCatEstadoTramite?: number } };
+    return i.ultimo_estado?.idCatEstadoTramite ?? null;
+  }
+
+  getTagTramite(tramite: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+    const id = this.getIdTramite(tramite);
+    switch (id) {
+      case 1:
+        return { severity: 'success', icon: 'pi pi-file-pdf' };
+      case 2:
+        return { severity: 'info', icon: 'pi pi-flag' };
+      case 3:
+        return { severity: 'secondary', icon: 'pi pi-check' };
+      default:
+        return { severity: 'secondary', icon: 'pi pi-question' };
+    }
+  }
+
+  onSiguienteMovimientoTramite(idTramite: (string | number)[]): void {
+    this.isLoading.set(true);
+    const payload: any = { idTramite };
+
+    this.juicioService.putSiguienteMovimientoTramite(payload).subscribe({
       next: (response) => {
-               // this.contadoresService.refrescar()
+       // this.contadoresService.refrescar()
 
         if (response.success) {
-          this.selectedExpedientes = [];
+          this.tramitesSeleccionados = [];
           this.cargarDatos(1, this.rowsPerPage, () => {
             // Mensaje DESPUÉS de que la tabla ya se actualizó
-            this.messageService.add({ severity: 'success', summary: 'Exitoso', detail: response.message || 'Demanda(s) recibida(s) correctamente'
+            this.messageService.add({
+              severity: 'success', summary: 'Exitoso', detail: response.message || 'Tramite(s) turnado(s) correctamente'
             });
           });
         } else {
           this.isLoading.set(false);
-          this.messageService.add({ severity: 'info', summary: 'Aviso', detail: response.message || 'No se pudo recibir la demanda'
+          this.messageService.add({
+            severity: 'info', summary: 'Aviso', detail: response.message || 'No se pudo turnar el tramite'
           });
         }
       },
       error: (error) => {
         this.isLoading.set(false);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: error.error?.message || 'Error al conectar con el servidor'
+        this.messageService.add({
+          severity: 'error', summary: 'Error', detail: error.error?.message || 'Error al conectar con el servidor'
         });
       }
     });
   }
 
   turnarSeleccionados(): void {
-    if (!this.selectedExpedientes.length) return;
+    if (!this.tramitesSeleccionados.length) return;
 
-    const ids = this.selectedExpedientes.map(e => e.idDemanda).filter(Boolean);
+    const ids = this.tramitesSeleccionados.map(e => e.idTramite).filter(Boolean);
 
     if (!ids.length) {
       this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: 'No se encontraron IDs válidos' });
@@ -311,7 +335,7 @@ export class TurnarDemanda implements OnInit {
     // Mostrar confirmación
     this.confirmationService.confirm({
       key: 'turnar',
-      accept: () => this.onSiguienteMovimientoDemanda(ids),
+      accept: () => this.onSiguienteMovimientoTramite(ids),
       reject: () => { }
     });
   }
