@@ -8,7 +8,7 @@
         <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded">
             <div
                 class="rounded-full bg-secondary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
-                                <i class="pi pi-key text-white" style="font-size: 3rem"></i>
+                <i class="pi pi-key text-white" style="font-size: 3rem"></i>
 
             </div>
             <p class="text-2xl font-medium mt-2.5  ">
@@ -25,7 +25,7 @@
                             (onClick)="showPassword = !showPassword" [tabindex]="-1" />
                     </p-inputgroup-addon>
                 </p-inputgroup>
-             
+
             </div>
             <div class="flex items-center gap-2 mt-6">
                 <p-button label="Continuar" styleClass="btn-secondary" (onClick)="onAccept()" />
@@ -46,8 +46,9 @@
                 Detalle del acuerdo #{{ detalleAcuerdo.folio }}
             </label>
 
-            @if (!mostrarBoton() && detalleAcuerdo.ultimo_estado?.estado?.idCatEstadoAcuerdo !== 4) {
-            <p-button icon="pi pi-key" label="Firma FIREL" styleClass="btn-tertiary" (click)="autorizarFirel($event)"></p-button>
+            @if (mostrarBoton() && detalleAcuerdo.ultimo_estado?.estado?.idCatEstadoAcuerdo !== 4) {
+            <p-button icon="pi pi-key" label="Firma FIREL" styleClass="btn-tertiary"
+                (click)="autorizarFirel($event)"></p-button>
             }
         </div>
 
@@ -80,29 +81,33 @@
                     <p class="text-surface-600 dark:text-surface-200 text-sm">
                         <b>Estado: </b>
                         @switch (detalleAcuerdo.ultimo_estado?.estado?.idCatEstadoAcuerdo) {
-                            @case (1) {
-                                <span class="ml-2 bg-green-100 text-green-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-green-400 border border-green-500">
-                                    {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
-                                </span>
-                            }
-                            @case (2) {
-                                <span class="ml-2 bg-red-100 text-red-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-red-400 border border-red-400">
-                                    {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
-                                </span>
-                            }
-                            @case (3) {
-                                <span class="ml-2 bg-orange-100 text-orange-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-orange-300 border border-orange-300">
-                                    {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
-                                </span>
-                            }
-                            @case (4) {
-                                <span class="ml-2 bg-purple-100 text-purple-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-purple-400 border border-purple-500">
-                                    {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
-                                </span>
-                            }
-                            @default {
-                                <span>{{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}</span>
-                            }
+                        @case (1) {
+                        <span
+                            class="ml-2 bg-green-100 text-green-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-green-400 border border-green-500">
+                            {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
+                        </span>
+                        }
+                        @case (2) {
+                        <span
+                            class="ml-2 bg-red-100 text-red-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-red-400 border border-red-400">
+                            {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
+                        </span>
+                        }
+                        @case (3) {
+                        <span
+                            class="ml-2 bg-orange-100 text-orange-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-orange-300 border border-orange-300">
+                            {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
+                        </span>
+                        }
+                        @case (4) {
+                        <span
+                            class="ml-2 bg-purple-100 text-purple-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-purple-400 border border-purple-500">
+                            {{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}
+                        </span>
+                        }
+                        @default {
+                        <span>{{ detalleAcuerdo.ultimo_estado?.estado?.descripcion }}</span>
+                        }
                         }
                     </p>
                 </div>
@@ -115,14 +120,16 @@
                     </p>
                     <p class="text-surface-600 dark:text-surface-200 text-sm">
                         <b>Observaciones: </b>
-                        <span class="uppercase wrap-break-word whitespace-pre-line">{{ detalleAcuerdo.observaciones }}</span>
+                        <span class="uppercase wrap-break-word whitespace-pre-line">{{ detalleAcuerdo.observaciones
+                            }}</span>
                     </p>
                 </div>
 
                 <!-- Columna 3: Ver documento del acuerdo -->
                 <div class="flex items-center justify-center">
                     <div class="border border-surface rounded-xl p-4 flex flex-col items-center gap-3 w-full">
-                        <span class="font-semibold text-surface-700 dark:text-surface-200">📬 Documento del acuerdo</span>
+                        <span class="font-semibold text-surface-700 dark:text-surface-200">📬 Documento del
+                            acuerdo</span>
                         <p-button icon="pi pi-file-pdf" label="Ver documento" severity="info"
                             (click)="openModal(detalleAcuerdo.idAcuerdo)" pTooltip="Ver PDF" tooltipPosition="top">
                         </p-button>
@@ -152,31 +159,42 @@
                 <ng-template #header>
                     <tr>
                         <th>Folio</th>
-                        <th>Fecha creado</th>
+                        <th>Fecha Recepción</th>
+                        <th>Tipo</th>
                         <th>Síntesis</th>
                         <th>Observaciones</th>
-                        <th>Documento</th>
                         <th>Acciones</th>
                     </tr>
                 </ng-template>
                 <ng-template #body let-tramite>
                     <tr>
                         <td class="font-semibold">{{ tramite.folio }}</td>
-                        <td>{{ tramite.created_at | date: 'dd/MM/yyyy HH:mm' }} h</td>
+                        <td>{{ tramite.fechaRecepcion | date: 'dd/MM/yyyy HH:mm' }} h</td>
+                        <td>
+                            <p-tag [value]="(getDescripcionTramite(tramite) | uppercase) ?? ''"
+                                [severity]="getTagTramite(tramite).severity" [icon]="getTagTramite(tramite).icon" />
+
+                        </td>
                         <td>{{ tramite.sintesis }}</td>
                         <td>{{ tramite.observaciones }}</td>
-                        <td>
-                            @if (tramite.idDocumentoTramite) {
+                        <!-- <td>
+                            @if (tramite.idDocumento) {
                             <p-button icon="pi pi-file-pdf" [rounded]="true" [raised]="true" severity="warn"
                                 (click)="openModal(tramite.idDocumento)" pTooltip="Ver PDF"
                                 tooltipPosition="top">
                             </p-button>
                             }
-                        </td>
+                        </td> -->
                         <td>
-                            <p-button [rounded]="true" [text]="true" [raised]="true" severity="info" icon="pi pi-eye"
-                                pTooltip="Ver detalle" tooltipPosition="top" (click)="detalle(tramite.idTramite)">
+                            @if (tramite.cat_tramite?.idCatTramite === 0) {
+                            <p-button (click)="detalleDemanda(tramite.idDemanda)" [rounded]="true" [raised]="true"
+                                icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top">
                             </p-button>
+                            } @else {
+                            <p-button (click)="detalleTramite(tramite.idTramite)" [rounded]="true" [raised]="true"
+                                icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top">
+                            </p-button>
+                            }
                         </td>
                     </tr>
                 </ng-template>

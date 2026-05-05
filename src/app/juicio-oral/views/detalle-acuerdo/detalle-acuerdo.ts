@@ -27,6 +27,7 @@ import { ListadoAcuerdosResponse } from '../../interfaces/juicioenlinea.model';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { PantallasService } from '../../services/pantallas.service';
+import { TokenService } from '../../../core/auth/service/token.service';
 
 @Component({
   selector: 'app-detalle-acuerdo',
@@ -83,8 +84,8 @@ export class DetalleAcuerdo implements OnInit {
     private messageService: MessageService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
-    private pantallasService: PantallasService
-
+    private pantallasService: PantallasService,
+    private tokenService: TokenService
   ) { }
 
   // ============================
@@ -138,11 +139,11 @@ export class DetalleAcuerdo implements OnInit {
     }
   }
 
-  openModal(idDocumento: number): void {
+  openModal(idAcuerdo: number): void {
     this.isLoading = true;
     this.cdr.detectChanges();
 
-    this.juicioService.getDocumento(idDocumento).subscribe({
+    this.juicioService.getDocumentoAcuerdo(idAcuerdo).subscribe({
       next: (response) => {
         if (response?.data?.file) {
           this.nombre = response.data.nombre ?? 'documento.pdf';
@@ -165,8 +166,14 @@ export class DetalleAcuerdo implements OnInit {
   // FIREL
   // ============================
 
+
   mostrarBoton(): boolean {
-    return this.pantallasService.tienePermiso('demandas/crear') && this.pantallasService.tienePermiso('audiencias/crear') ;
+    const user = this.tokenService.getUserFromToken();
+    if (user && (user.idSistemaPerfil === 7179 || user.idSistemaPerfil === 7182)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   autorizarFirel(event: Event): void {
@@ -209,7 +216,38 @@ export class DetalleAcuerdo implements OnInit {
   // ============================
   // Navegación
   // ============================
-  detalle(idTramite: number): void {
+  detalleDemanda(idDemanda: number): void {
+    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idDemanda } });
+  }
+  detalleTramite(idTramite: number): void {
     this.router.navigate(['/juicioenlinea/tramites/detalle'], { state: { idTramite } });
+  }
+
+
+
+  getDescripcionTramite(tramite: unknown): string | null {
+    const i = tramite as { cat_tramite?: { nombre?: string } };
+    return i.cat_tramite?.nombre ?? null;
+  }
+
+  getIdTramite(tramite: unknown): number | null {
+    const i = tramite as { cat_tramite?: { idCatTramite?: number } };
+    return i.cat_tramite?.idCatTramite ?? null;
+  }
+
+  getTagTramite(tramite: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+    const id = this.getIdTramite(tramite);
+    switch (id) {
+      case 0:
+        return { severity: 'success', icon: 'pi pi-file-pdf' };
+      case 1:
+        return { severity: 'info', icon: 'pi pi-file-pdf' };
+      case 2:
+        return { severity: 'warn', icon: 'pi pi-flag' };
+      case 3:
+        return { severity: 'secondary', icon: 'pi pi-check' };
+      default:
+        return { severity: 'secondary', icon: 'pi pi-question' };
+    }
   }
 }

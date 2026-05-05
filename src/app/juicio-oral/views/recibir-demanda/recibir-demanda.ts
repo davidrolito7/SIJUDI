@@ -273,7 +273,7 @@ export class RecibirDemanda implements OnInit {
     this.isLoading.set(true);
     const payload: any = { idDemanda };
 
-    this.juicioService.putSiguienteMovimiento(payload).subscribe({
+    this.juicioService.putSiguienteMovimientoTramite(payload).subscribe({
       next: (response) => {
         this.contadoresService.refrescar()
         if (response.success) {

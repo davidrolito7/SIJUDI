@@ -21,6 +21,11 @@
                 </p-button>
                 }
                 @if(detalleDemanda && mostrarBotonTurnar ){
+                <p-button [raised]="true" (click)="onModalTurnar()" severity="info" icon="pi pi-file-export"
+                    pTooltip="Turnar demanda" tooltipPosition="top" label="Turnar">
+                </p-button>
+                }
+                @if(detalleDemanda && mostrarBotonAcordar ){
                 <p-button [raised]="true" (click)="onRedirectCrearAcuerdo(detalleDemanda.expediente.idExpediente)"
                     styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:bg-[#ff830a]/80"
                     icon="pi pi-sitemap" pTooltip="Acordar demanda" tooltipPosition="top" label="Acordar">
@@ -241,7 +246,7 @@
                         <td class="font-semibold">
                             {{ documento.nombre ? documento.nombre : documento.cat_tipo_documento.descripcion }}
                         </td>
-                        <td>{{ documento.created_at }} h</td>
+                        <td>{{ documento.created_at | date: 'dd/MM/yyyy HH:mm' }} h</td>
                         <!-- <td>
                             {{ documento.montoAnexo ? ('$' + (documento.montoAnexo | number:'1.2-2':'en-US')) : 'N/A' }}
                         </td> -->
@@ -265,6 +270,10 @@
 </div>
 <app-confirm-dialog key="confirmar-recepcion" title="Confirmación" message="¿Deseas recibir la demanda?"
     icon="pi pi-check" circleClass="bg-primary" acceptLabel="Recibir" rejectLabel="Cerrar"
+    acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<app-confirm-dialog key="confirmar-turnar" title="Confirmación" message="¿Deseas turnar la demanda?"
+    icon="pi pi-check" circleClass="bg-primary" acceptLabel="Turnar" rejectLabel="Cerrar"
     acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 

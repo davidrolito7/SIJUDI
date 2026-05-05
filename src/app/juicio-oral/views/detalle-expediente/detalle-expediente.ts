@@ -197,7 +197,7 @@ export class DetalleExpediente {
   }
 
   verDetalle(item: any): void {
-    if (item.tipo === 'Pre-registro') {
+    if (item.tipo === 'Demanda') {
       this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idInicio: item.id } });
     } else if (item.tipo === 'Requerimiento') {
       this.router.navigate(['/juicioenlinea/requerimientos/detalle'], { state: { idRequerimiento: item.id } });
@@ -262,7 +262,7 @@ export class DetalleExpediente {
             tipo: 'Demanda',
             nombre: 'Demanda',
             fecha: item.fechaHoraRecepcion || item.fechaCreada || item.created_at,
-            estado: item.ultimo_estado?.estado?.descripcion || 'Sin estado',
+            estado: item.ultimo_estado?.cat_estado_demanda?.descripcion || 'Sin estado',
             datosOriginales: item
           });
           break;

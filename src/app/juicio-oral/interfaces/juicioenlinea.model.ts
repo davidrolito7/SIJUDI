@@ -41,9 +41,10 @@ export interface CatTipoVia {
     descripcion: string;
 }
 
-export interface ContadoresDemandas {
+export interface ContadoresTramites {
+    demandas_pendientes_turnar: number;
+    tramites_pendientes_turnar: number;
     pendientes_recibir: number;
-    pendientes_turnar: number;
 }
 
 //########################################################################
@@ -647,7 +648,7 @@ export interface DetalleTramites {
     idCatTramite: number;
     idGeneral: number;
     usr: number;
-    folioOficio: string;
+    folio: string;
     sintesis: string;
     observaciones: string;
     idExpediente: number;
@@ -777,7 +778,7 @@ export interface ListadoAcuerdosResponse {
     expediente?: DetalleExpedienteResponse;
     tramites?: DetalleTramites[];
     ultimo_estado?: HistorialEstadoAcuerdoResponse;
-    documento?: DocumentoAcuerdoResponse;
+    ultimo_documento: DocumentoAcuerdoResponse;
 }
 
 export interface HistorialEstadoAcuerdoResponse {
