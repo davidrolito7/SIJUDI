@@ -36,12 +36,8 @@ export class ListarExpediente {
 
   expedientes = signal<ListarExpedientesResponse[]>([]);
 
-  pagination: { current_page: number; per_page: number; total: number; last_page: number } = {
-    current_page: 1,
-    last_page: 1,
-    per_page: 5,
-    total: 0,
-  };
+  totalRecords = 0;
+  rowsPerPage = 10;
 
   Math = Math;
 
@@ -55,84 +51,89 @@ export class ListarExpediente {
   ) { }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      const currentPage = params['page'] ? +params['page'] : 1;
-      this.filtro.expediente = params['expediente'] || '';
+    const params = this.route.snapshot.queryParams;
+    this.sincronizarFiltrosDesdeURL(params);
+  }
 
-      if (params['fechaInicio'] && params['fechaFinal']) {
-        this.filtro.rangeDates = [
-          this.parseDateFromString(params['fechaInicio']),
-          this.parseDateFromString(params['fechaFinal'])
-        ];
-      } else {
-        this.filtro.rangeDates = '';
-      }
+  private sincronizarFiltrosDesdeURL(params: Record<string, string>): void {
+    this.filtro.expediente = params['expediente'] || '';
+    if (params['fechaInicio'] && params['fechaFinal']) {
+      this.filtro.rangeDates = [
+        this.parseDateFromString(params['fechaInicio']),
+        this.parseDateFromString(params['fechaFinal'])
+      ];
+    } else {
+      this.filtro.rangeDates = '';
+    }
+  }
 
-      if (!params['page'] || params['page'] !== currentPage.toString()) {
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: { ...params, page: currentPage },
-          queryParamsHandling: 'merge',
-          replaceUrl: true
-        });
-        return; // no activar spinner aquí, el re-emit lo hará
-      }
+  onLazyLoad(event: any): void {
+    const rows = event.rows ?? this.rowsPerPage;
+    const first = event.first ?? 0;
 
-      // ← mover el spinner a AQUÍ, solo cuando sí vas a hacer la petición
-      this.isLoading.set(true);
+    this.rowsPerPage = rows;
+    const page = Math.floor(first / rows) + 1;
 
-      const requestParams = {
-        page: currentPage,
-        per_page: 5,
-        ...(params['expediente'] && { expediente: params['expediente'] }),
-        ...(params['fechaInicio'] && { fechaInicio: params['fechaInicio'] }),
-        ...(params['fechaFinal'] && { fechaFinal: params['fechaFinal'] })
-      };
+    this.actualizarURL(page);
+    this.cargarDatos(page, rows);
+  }
 
-      this.juicioService.getListadoExpedientes(requestParams).subscribe({
-        next: (response) => {
-          this.isLoading.set(false);
-          if (response.success) {
-            this.expedientes.set(response.data);
-          } else {
-            this.messageService.add({
-              severity: 'info',
-              summary: 'Lo sentimos',
-              detail: response.message
-            });
-          }
-        },
-        error: (error) => {
-          this.isLoading.set(false);
-          this.messageService.add({
-            severity: 'info',
-            summary: 'Lo sentimos',
-            detail: error.error?.message || 'Error al conectar con el servidor'
-          });
+  private cargarDatos(page: number, perPage: number): void {
+    this.isLoading.set(true);
+
+    const requestParams: any = {
+      page: page,
+      per_page: perPage,
+    };
+
+    if (this.filtro.expediente) requestParams['expediente'] = this.filtro.expediente;
+
+    if (Array.isArray(this.filtro.rangeDates) && this.filtro.rangeDates.length === 2) {
+      requestParams['fechaInicio'] = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
+      requestParams['fechaFinal'] = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
+    }
+
+    this.juicioService.getListadoExpedientes(requestParams).subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        if (response.success) {
+          this.expedientes.set(response.data);
+          this.totalRecords = response.pagination?.total ?? 0;
+        } else {
+          this.messageService.add({ severity: 'info', summary: 'Lo sentimos', detail: response.message });
         }
-      });
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        this.messageService.add({ severity: 'info', summary: 'Lo sentimos', detail: error.error?.message || 'Error al conectar con el servidor' });
+      }
     });
   }
 
   aplicarFiltros(): void {
+    this.actualizarURL(1);
+    this.cargarDatos(1, this.rowsPerPage);
+  }
+
+  private actualizarURL(page: number): void {
     const queryParams: any = {
-      expediente: this.filtro.expediente || undefined,
-      fechaInicio: undefined,
-      fechaFinal: undefined,
-      page: undefined
+      page,
+      expediente: this.filtro.expediente || null,
+      fechaInicio: null,
+      fechaFinal: null
     };
 
-    if (this.filtro.rangeDates?.length === 2) {
-      queryParams.fechaInicio = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
-      queryParams.fechaFinal = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
+    if (Array.isArray(this.filtro.rangeDates) && this.filtro.rangeDates.length === 2) {
+      queryParams['fechaInicio'] = formatDate(this.filtro.rangeDates[0], 'yyyy-MM-dd', 'en-US');
+      queryParams['fechaFinal'] = formatDate(this.filtro.rangeDates[1], 'yyyy-MM-dd', 'en-US');
     }
 
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
+      replaceUrl: true
     });
-
   }
 
   limpiarFiltros(): void {
@@ -153,6 +154,7 @@ export class ListarExpediente {
     });
 
     this.mostrarDropdown = false;
+    this.cargarDatos(1, this.rowsPerPage);
   }
 
   detalle(idExpediente: number): void {
@@ -160,12 +162,7 @@ export class ListarExpediente {
   }
 
   cambiarPagina(page: number): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page },
-      queryParamsHandling: 'merge',
-      replaceUrl: true
-    });
+    // Ya no es necesario, lo maneja onLazyLoad
   }
 
   parseDateFromString(dateStr: string): Date {

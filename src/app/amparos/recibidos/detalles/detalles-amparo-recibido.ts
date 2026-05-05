@@ -18,7 +18,7 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 
 @Component({
   selector: 'app-DetallesAmparoRecibido',
-  imports: [Toast, CommonModule, TableModule, Button, Spinner, Breadcrub, Tag, PdfDialog],
+  imports: [CommonModule, TableModule, Button, Spinner, Breadcrub, Tag, PdfDialog],
   templateUrl: './detalles-amparo-recibido.html',
   styleUrl: './detalles-amparo-recibido.css',
   providers: [MessageService]

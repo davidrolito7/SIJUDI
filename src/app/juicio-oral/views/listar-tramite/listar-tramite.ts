@@ -83,12 +83,8 @@ export class ListarTramite implements OnInit {
     tipo: '',
   };
 
-  pagination = {
-    current_page: 1,
-    last_page: 1,
-    per_page: 10,
-    total: 0,
-  };
+  totalRecords = 0;
+  rowsPerPage = 10;
 
   expedienteForm!: FormGroup;
   juzgados: Juzgado[] = [];
@@ -121,8 +117,8 @@ export class ListarTramite implements OnInit {
 
     const params = this.route.snapshot.queryParams;
     this.sincronizarFiltrosDesdeURL(params);
-    const page = params['page'] ? +params['page'] : 1;
-    this.cargarDatos(page);
+
+    //this.cargarJuzgados();
 
     //this.cargarJuzgados();
 
@@ -143,12 +139,23 @@ export class ListarTramite implements OnInit {
         : '';
   }
 
-  private cargarDatos(page: number): void {
+  onLazyLoad(event: any): void {
+    const rows = event.rows ?? this.rowsPerPage;
+    const first = event.first ?? 0;
+
+    this.rowsPerPage = rows;
+    const page = Math.floor(first / rows) + 1;
+
+    this.actualizarURL(page);
+    this.cargarDatos(page, rows);
+  }
+
+  private cargarDatos(page: number, perPage: number): void {
     this.isLoading = true;
 
     const requestParams: Record<string, string | number> = {
       page,
-      per_page: 10,
+      per_page: perPage,
     };
 
     if (this.filtro.folio) requestParams['folio'] = this.filtro.folio;
@@ -163,7 +170,7 @@ export class ListarTramite implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.tramites = response.data ?? [];
-        // this.pagination = response.pagination;
+        this.totalRecords = response.pagination?.total ?? 0;
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -178,8 +185,13 @@ export class ListarTramite implements OnInit {
   // Actions (filters / paging)
   // ============================
   aplicarFiltros(): void {
+    this.actualizarURL(1);
+    this.cargarDatos(1, this.rowsPerPage);
+  }
+
+  private actualizarURL(page: number): void {
     const queryParams: Record<string, string | number | null> = {
-      page: 1,
+      page,
       folio: this.filtro.folio || null,
       tipo: this.filtro.tipo || null,
       fechaInicio: null,
@@ -195,9 +207,8 @@ export class ListarTramite implements OnInit {
       relativeTo: this.route,
       queryParams,
       queryParamsHandling: 'merge',
+      replaceUrl: true
     });
-
-    this.cargarDatos(1);
   }
 
   limpiarFiltros(): void {
@@ -209,18 +220,11 @@ export class ListarTramite implements OnInit {
       queryParamsHandling: 'merge',
     });
 
-    this.cargarDatos(1);
+    this.cargarDatos(1, this.rowsPerPage);
   }
 
   cambiarPagina(page: number): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-
-    this.cargarDatos(page);
+    // Ya no es necesario, lo maneja onLazyLoad
   }
 
   // ============================

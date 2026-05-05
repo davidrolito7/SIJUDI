@@ -67,7 +67,8 @@
 <!-- TABLA -->
 <div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
     <div class="card">
-        <p-table #dtAcuerdos [value]="acuerdos" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+        <p-table #dtAcuerdos [value]="acuerdos" [rows]="5" [rowsPerPageOptions]="[5, 10, 25, 50]" [paginator]="true"
+            [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
             [globalFilterFields]="['folio', 'expediente.NumExpediente', 'ultimo_estado.estado.descripcion']">
 
             <ng-template #caption>

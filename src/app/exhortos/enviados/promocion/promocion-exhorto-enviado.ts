@@ -39,7 +39,7 @@ import { Spinner } from "../../../shared/components/spinner/spinner";
 
 @Component({
   selector: 'app-PromocionExhortoEnviadoComponent',
-  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, PdfDialog, InputIconModule, ConfirmDialogModule, Breadcrub, Spinner],
+  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, InputIconModule, ConfirmDialogModule, Breadcrub, Spinner],
   templateUrl: './promocion-exhorto-enviado.html',
   styleUrl: './promocion-exhorto-enviado.css',
   providers:[MessageService,ConfirmationService]

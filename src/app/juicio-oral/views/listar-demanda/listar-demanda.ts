@@ -119,6 +119,7 @@ export class ListarDemanda implements OnInit {
         ]
         : '';
   }
+
   // ── Evento lazy de PrimeNG ──────────────────────────────────────────
   // Se dispara al cargar, cambiar página y cambiar rows per page
   onLazyLoad(event: TableLazyLoadEvent): void {
@@ -164,6 +165,7 @@ export class ListarDemanda implements OnInit {
       },
     });
   }
+  
   // ============================
   // Actions (filters / paging)
   // ============================

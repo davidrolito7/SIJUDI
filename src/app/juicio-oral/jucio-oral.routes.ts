@@ -17,7 +17,6 @@ import { DetalleTramite } from './views/detalle-tramite/detalle-tramite';
 import { ListarAcuerdos } from './views/listar-acuerdo/listar-acuerdo';
 import { CrearAcuerdo } from './views/crear-acuerdo/crear-acuerdo';
 import { DetalleAcuerdo } from './views/detalle-acuerdo/detalle-acuerdo';
-import { RecibirDemanda } from './views/recibir-demanda/recibir-demanda';
 import { TurnarDemanda } from './views/turnar-demanda/turnar-demanda';
 import { EntregaRecepcion } from './views/entrega-recepcion/entrega-recepcion';
 import { TurnarTramite } from './views/turnar-tramite/turnar-tramite';
@@ -31,7 +30,6 @@ export const JUICIO_ORAL_ROUTES: Routes = [
             { path: 'listar', component: ListarDemanda, data: { title: 'Listar' } },
             { path: 'detalle', component: DetalleDemanda, data: { title: 'Detalle' } },
             { path: 'crear', component: CrearDemanda, data: { title: 'Crear' } },
-            { path: 'recibir', component: RecibirDemanda, data: { title: 'Recibir' } },
             { path: 'turnar', component: TurnarDemanda, data: { title: 'Turnar' } },
 
         ]

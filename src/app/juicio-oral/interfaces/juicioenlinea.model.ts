@@ -390,13 +390,15 @@ export interface DetalleExpedienteResponse { //* OK
     idCatJuzgado: string;
     fechaResponse: string;
     idDemanda: string;
-    idSecretario: string;
-    numSecretaria: string;
+    idSecretario?: string;
+    numSecretaria?: string;
+    idSubArea?: string;
     juzgado: Juzgado;
     tramites: DetalleTramites[];
     demanda: DetalleDemandaResponse;
-    requerimientos: DetalleRequerimiento;
-
+    requerimientos: DetalleRequerimiento[];
+    acuerdos: ListadoAcuerdosResponse[];
+    audiencias: AudienciasResponse[];
 }
 
 export interface UsuarioPermisosResponse {

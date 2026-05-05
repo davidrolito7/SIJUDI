@@ -63,7 +63,7 @@
 
     <div class="card">
         <p-table #dtInicio stripedRows [value]="expedientes()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
-            [paginator]="true" [globalFilterFields]="[
+            [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)" [globalFilterFields]="[
     'folio',
     'cat_via_materia.cat_materia.Descripcion',
     'cat_via_materia.cat_via.descripcion',

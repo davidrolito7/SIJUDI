@@ -288,9 +288,9 @@ export class JuicioService {
     // Tramites  //{{urlApiJuicioOral}}/api/Tramites/
     //########################################################################
 
-    getListarTramites(params?: any): Observable<GenericResponse<ListadoTramitesResponse[]>> {
+    getListarTramites(params?: any): Observable<ApiResponse<ListadoTramitesResponse[]>> {
         const url = `${this.tramites}Listar`;
-        return this.http.get<GenericResponse<ListadoTramitesResponse[]>>(url, { params, context: checkToken() });
+        return this.http.get<ApiResponse<ListadoTramitesResponse[]>>(url, { params, context: checkToken() });
     }
 
     getDetalleTramite(idTramite: number): Observable<DetalleTramites> {
@@ -362,8 +362,8 @@ export class JuicioService {
     //     return this.http.get<ApiResponse<AudienciasResponse[]>>(url, { params, context: checkToken() });
     // }
 
-    getAudiencias(params?: any): Observable<RespuestaListadoAudiencia> {
-        return this.http.get<RespuestaListadoAudiencia>(
+    getAudiencias(params?: any): Observable<ApiResponse<AudienciasResponse[]>> {
+        return this.http.get<ApiResponse<AudienciasResponse[]>>(
             `${this.audiencia}Listar`,
             {
                 params,
