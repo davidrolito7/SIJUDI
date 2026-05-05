@@ -48,7 +48,7 @@
     {{ usuario.direccionPartEstado }}
   </p>
 </p-tabpanel>
-                    
+
                     <p-tabpanel [value]="1">
   <p class="text-base m-0 mb-2"><strong>Tel. Celular:</strong> {{ usuario.celular }}</p>
   <p class="text-base m-0 mb-2"><strong>Tel. Particular:</strong> {{ usuario.telefono }}</p>
@@ -58,16 +58,60 @@
                     }
                     <p-tabpanel [value]="2">
                         <form [formGroup]="formularioFirma" class="space-y-4">
+@if (datosFirma) {
+  <div
+    class="mt-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm
+           dark:border-[#242424] dark:bg-[#050505]"
+  >
+    <div class="mb-4">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+        Firma FIREL
+      </h3>
+
+      <p class="text-sm text-gray-500 dark:text-zinc-400">
+        Información del certificado digital.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div
+        class="rounded-xl border border-gray-200 bg-gray-50 p-4
+               dark:border-[#2f2f2f] dark:bg-[#111111]"
+      >
+        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-zinc-400">
+          Nombre
+        </p>
+
+        <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+          {{ datosFirma.nombre }}
+        </p>
+      </div>
+
+      <div
+        class="rounded-xl border border-gray-200 bg-gray-50 p-4
+               dark:border-[#2f2f2f] dark:bg-[#111111]"
+      >
+        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-zinc-400">
+          Fecha de expiración FIREL
+        </p>
+
+        <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+          {{ datosFirma.pfxVigencia | date: 'dd/MM/yyyy' : 'UTC' }}
+        </p>
+      </div>
+    </div>
+  </div>
+}
         <label class="block font-semibold">Selecciona un archivo .pfx</label>
-       
-          <p-fileupload 
-  #fu 
-  mode="basic" 
-  chooseLabel="Seleccionar .pfx" 
-  chooseIcon="pi pi-upload" 
+
+          <p-fileupload
+  #fu
+  mode="basic"
+  chooseLabel="Seleccionar .pfx"
+  chooseIcon="pi pi-upload"
   name="file_pfx"
-  accept=".pfx" 
-  maxFileSize="1000000" 
+  accept=".pfx"
+  maxFileSize="1000000"
   (onSelect)="onFileSelected($event)"
   (onClear)="onFileClear()"
   [auto]="false"
@@ -80,11 +124,11 @@
          <label class="block font-semibold">Contraseña del certificado (.pfx)</label>
 
 
-<p-password 
-  formControlName="password" 
-  [feedback]="false" 
+<p-password
+  formControlName="password"
+  [feedback]="false"
   [toggleMask]="true"
-  styleClass="cursor-pointer" 
+  styleClass="cursor-pointer"
   (keydown.enter)="onUpload()">
 </p-password>
 
@@ -112,14 +156,14 @@
         [class.border-blue-500]="selectedTab === 'info'"
         (click)="selectedTab = 'info'"
         >
-        
+
       </button>
       <button
         class="pb-2 border-b-2"
         [class.border-blue-500]="selectedTab === 'contacto'"
         (click)="selectedTab = 'contacto'"
         >
-        
+
       </button>
       <button
         class="pb-2 border-b-2"

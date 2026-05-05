@@ -169,13 +169,13 @@ export class ListaExhortosEnviados implements OnInit {
 
         }else
             {
-              this.messageService.add({severity: 'error', summary: response.message, detail: response.errors[0]})
+              this.messageService.add({severity: 'error', summary: response.message, detail: response.errors[0],sticky: true});
             }
         
       }),
       error: (err => {
         // Manejo de errores
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias',sticky: true });
         this.isLoading=false;
         this.cdr.detectChanges();
       }),
@@ -246,6 +246,8 @@ export class ListaExhortosEnviados implements OnInit {
   }
   getlistadoEstatus(): Promise<void>{
     return new Promise((resolve,reject) =>{
+        this.isLoading=true;
+        this.cdr.detectChanges();
         this.exhortoService.getListadoEstatus(2).subscribe({
           next: (response:any) => {
             if(response.success)
@@ -258,14 +260,20 @@ export class ListaExhortosEnviados implements OnInit {
             }
             else
             {
-              this.messageService.add({severity: 'error', summary: response.message, detail:response.errors})
+              this.messageService.add({severity: 'error', summary: response.message, detail:response.errors,sticky: true});
             }
           },
           error:(e)=>
           {
             //console.error('Error al cargar el catálogo de Materia', e);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
+            this.isLoading=false;
+            this.cdr.detectChanges();
           },
+          complete:()=>{
+            this.isLoading=false;
+            this.cdr.detectChanges();
+          }
         });
     });
   }

@@ -27,3 +27,10 @@ export interface GenericResponse<T>{
     foto : string
 
   }
+
+  export interface datosFirma {
+    nombre: string,
+    pfxFileName : string,
+    pfxVigencia : Date, 
+    fechaAlta: Date
+  }

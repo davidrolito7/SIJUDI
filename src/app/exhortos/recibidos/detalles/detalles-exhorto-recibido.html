@@ -386,10 +386,10 @@
                                     <div class="flex items-center justify-between">Tipo de documento</div>
                                 </th>
                                 <th>
-                                    <div class="flex items-center justify-between">Firmado</div>
+                                    <div class="flex items-center justify-between">Páginas</div>
                                 </th>
                                 <th>
-                                    <div class="flex items-center justify-between">Fecha firmado</div>
+                                    <div class="flex items-center justify-between">Tamaño</div>
                                 </th>
                                 <th>
                                     <div class="flex items-center justify-between">Acciones</div>
@@ -402,15 +402,8 @@
                             <tr>
                                 <td style="font-size: small;">{{ archivo?.nombreArchivo }}</td>
                                 <td style="font-size: small;">{{ archivo?.tipoDocumento.nombre }}</td>
-                                <td style="font-size: small;">
-                                    @if (archivo.firmado) {
-                                            <span>Sí</span>
-                                        }
-                                        @else  {
-                                            <span>No</span>
-                                        }
-                                </td>
-                                <td style="font-size: small;">{{ archivo?.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td style="font-size: small;">{{ archivo?.paginas }}</td>
+                                <td style="font-size: small;">{{ ((archivo.tamanio / 1024)/1024) | number:'1.0-2'  }} MB</td>
                                 <td class="text-center"> 
                                     <p-button (click)="mostrarArchivo(archivo,1)" severity="success" [rounded]="true"
                                             icon="pi pi-file-pdf" class="mr-2" title="descargar">
@@ -583,8 +576,8 @@
                                             <tr class="">
                                             <th class="px-4 py-2">NOMBRE</th>
                                             <th class="px-4 py-2">TIPO DOCUMENTO</th>
-                                            <th class="px-4 py-2">FIRMADO</th>
-                                            <th class="px-4 py-2">FECHA FIRMADO</th>
+                                            <th class="px-4 py-2">PÁGINAS</th>
+                                            <th class="px-4 py-2">TAMAÑO</th>
                                             <th class="px-4 py-2"></th>
                                             </tr>
                                         </thead>
@@ -593,15 +586,9 @@
                                             <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
                                                 <td class="px-4 py-2">{{ archivos.nombreArchivo}}</td>
                                                 <td class="px-4 py-2">{{ archivos.tipoDocumento.nombre }}</td>
-                                                <td class="px-4 py-2">
-                                                @if(archivos.firmado){
-                                                    <p>Si</p>
-                                                }
-                                                @else{
-                                                <p>No</p>
-                                                }
-                                            </td>
-                                            <td class="px-4 py-2">{{ archivos.fechaFirmado }}</td>
+                                                <td class="px-4 py-2">{{ archivos.paginas }}</td>                                              
+                                            
+                                            <td class="px-4 py-2">{{ ((archivos.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
                                             <td class="text-center">
                                                 <p-button (click)="mostrarArchivo(archivos,3)" severity="success" [rounded]="true"
                                                         icon="pi pi-file-pdf" class="mr-2" title="descargar">

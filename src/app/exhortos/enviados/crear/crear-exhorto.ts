@@ -1497,7 +1497,7 @@ export class CrearExhortoComponent {
     const FIVE_MB = 5 * 1024 * 1024; // menos a 5 megas se abren en modal... los mayores se descargan
     if (documento.idArchivo == 0) // son archivos que no se han guardado
     {
-      if (documento.tamaño <= FIVE_MB && documento.nombreArchivo.split('.')[1] === 'pdf')
+      if (documento.tamanio <= FIVE_MB && documento.nombreArchivo.split('.')[1] === 'pdf')
         this.onVerDocumentoFile(documento.file); // se visualiza en modal
       else {
         downloadFile(documento.file); // se descarga
@@ -1514,7 +1514,7 @@ export class CrearExhortoComponent {
           if (response.success) {
             const fileData = response.data.documento;
             //console.log(fileData);
-            if (documento.tamaño <= FIVE_MB && response.data.fileName.split('.')[1] === 'pdf')
+            if (documento.tamanio <= FIVE_MB && response.data.fileName.split('.')[1] === 'pdf')
               this.onVerDocumentoBase64(fileData, documento.nombreArchivo, 'application/pdf'); // se visualiza en modal
             else {
               const nombre = response.data.fileName;
@@ -1568,6 +1568,8 @@ export class CrearExhortoComponent {
     }
     else {
       // Llamada al servicio para eliminar el documento
+      this.isLoading = true;
+      this.cd.detectChanges();
       this.ExhortosService.eliminarArchivo(documento.idArchivo, tipoDocumento).subscribe({
         next: (response: any) => {
           //console.log('¿Se eliminó archivo?:', response);
@@ -1590,9 +1592,13 @@ export class CrearExhortoComponent {
         error: (error) => {
           //console.error('Error en la petición eliminar:', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
+          this.isLoading = false;
+          this.cd.detectChanges();
         },
         complete: () => {
           this.idArchivo = null;
+          this.isLoading = false;
+          this.cd.detectChanges();
         }
       });
     }
@@ -2230,7 +2236,7 @@ export class CrearExhortoComponent {
         hashSha256: '',
         idTipoDocumento: 0,
         tipoDocumento: { idTipoDocumento: 0, nombre: '', activo: false },
-        tamaño: file.size ?? 0,
+        tamanio: file.size ?? 0,
         paginas: 0,
         recibido: false,
         idClasificacionArchivo: 0,
