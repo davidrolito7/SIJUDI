@@ -3,28 +3,13 @@
 
 <div class="lg:sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-950">
     <app-breadcrub></app-breadcrub>
-    <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 pl-2 mb-2 tracking-tight">
-        Crear trámite
-    </h2>
+    <h1 class="font-semibold text-2xl text-surface-800 dark:text-surface-200 mb-4">Crear trámite</h1>
+
 </div>
 
 <!--* DETALLES DEL EXPEDIENTE -->
 <div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
-    <div class="flex items-start flex-col md:justify-between md:flex-row">
-        <div class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Detalles del expediente</div>
-
-        @if (detalleExpediente()) {
-        <div class="flex items-center gap-3">
-            <label class="text-sm font-medium">Tipo de trámite</label>
-            <p-select [options]="tipoOptions" [(ngModel)]="tipoSeleccionado" optionLabel="label" optionValue="value"
-                placeholder="Selecciona una opción" appendTo="body" [style]="{ width: '200px' }">
-            </p-select>
-            @if (tipoSeleccionado === '' && mostrarAlerta) {
-            <small class="text-red-500">⚠️ Debes seleccionar un tipo de trámite</small>
-            }
-        </div>
-        }
-    </div>
+    <h2 class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Detalles del expediente</h2>
 
     @if (detalleExpediente()) {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -54,8 +39,17 @@
     <div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
         <div class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Generales del trámite</div>
         @if (detalleExpediente()) {
-        <div class="grid grid-cols-6 gap-6">
-            <div class="col-span-6 sm:col-span-3">
+        <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 sm:col-span-2">
+                <label class="block mb-2 text-sm font-medium">Tipo de trámite</label>
+                <p-select [options]="tipoOptions" [(ngModel)]="tipoSeleccionado" fluid optionLabel="label"
+                    optionValue="value" placeholder="Selecciona una opción" appendTo="body">
+                </p-select>
+                @if (tipoSeleccionado === '' && mostrarAlerta) {
+                <small class="text-red-500">⚠️ Debes seleccionar un tipo de trámite</small>
+                }
+            </div>
+            <div class="col-span-12 sm:col-span-5">
                 <label for="sintesis" class="block mb-2 text-sm font-medium">Síntesis</label>
                 <textarea pTextarea id="sintesis" formControlName="sintesis" rows="3" fluid maxlength="255"
                     placeholder="Escribe un resumen del trámite..." class="uppercase"></textarea>
@@ -63,7 +57,7 @@
                 <small class="text-red-500 mt-1 block">{{ getError('sintesis') }}</small>
                 }
             </div>
-            <div class="col-span-6 sm:col-span-3">
+            <div class="col-span-12 sm:col-span-5">
                 <label for="observaciones" class="block mb-2 text-sm font-medium">Observaciones</label>
                 <textarea pTextarea id="observaciones" formControlName="observaciones" rows="3" fluid maxlength="255"
                     placeholder="Escribe tus observaciones..." class="uppercase"></textarea>
@@ -180,7 +174,7 @@
     <!--* SUBIR ACUERDO -->
     @if (detalleExpediente()) {
     <div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
-        <div class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Subir Acuerdo</div>
+        <div class="font-medium text-xl text-surface-800 dark:text-surface-200 mb-4">Subir promoción</div>
         @if (!nombreArchivo) {
         <label class="block mb-2 text-sm font-medium">Seleccionar documento:</label>
         <input #fileInput type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" (change)="onFileChange($event)"
@@ -259,7 +253,7 @@
                     class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Folio</span>
                     <span class="font-medium text-right min-w-0">
-                        {{ tramiteResponse?.folioOficio || '—' }}
+                        {{ tramiteResponse?.folio || '—' }}
                     </span>
                 </div>
                 <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg ">

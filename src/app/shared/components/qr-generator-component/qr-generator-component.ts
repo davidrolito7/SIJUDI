@@ -11,14 +11,14 @@ import * as QRCode from 'qrcode';
   styleUrl: './qr-generator-component.css',
 })
 export class QrGeneratorComponent {
-@Input() qrData: string = ''; // Recibirá el valor desde el padre
+@Input() qrData: string | null = null; // Recibirá el valor desde el padre
 qrCodeUrl: string = '';
 ngOnInit() {
 this.generateQR();
 }
 
 async generateQR() {
-    if (!this.qrData.trim()) {
+    if (!this.qrData?.trim()) {
       this.qrCodeUrl = '';
       return;
     }

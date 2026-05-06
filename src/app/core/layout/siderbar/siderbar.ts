@@ -90,10 +90,10 @@ export class Siderbar {
   }
 
   ngOnInit(): void {
-    this.contadoresService.iniciarPolling();
+   // this.contadoresService.iniciarPolling();
   }
   ngOnDestroy(): void {
-    this.contadoresService.detenerPolling();
+  //  this.contadoresService.detenerPolling();
   }
 
 

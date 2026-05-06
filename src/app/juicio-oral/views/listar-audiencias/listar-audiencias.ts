@@ -65,12 +65,8 @@ export class ListarAudiencias implements OnInit {
   };
 
   //Paginacion
-  pagination: { current_page: number; per_page: number; total: number; last_page: number } = {
-    current_page: 1,
-    last_page: 1,
-    per_page: 2,
-    total: 0,
-  };
+  totalRecords = 0;
+  rowsPerPage = 10;
 
   Math = Math;
 
@@ -85,8 +81,6 @@ export class ListarAudiencias implements OnInit {
   ngOnInit(): void {
     const params = this.route.snapshot.queryParams;
     this.sincronizarFiltrosDesdeURL(params);
-    const page = params['page'] ? +params['page'] : 1;
-    this.cargarDatos(page);
   }
 
   private sincronizarFiltrosDesdeURL(params: Record<string, string>): void {
@@ -101,12 +95,23 @@ export class ListarAudiencias implements OnInit {
         ]
         : '';
   }
-  private cargarDatos(page: number): void {
+  onLazyLoad(event: any): void {
+    const rows = event.rows ?? this.rowsPerPage;
+    const first = event.first ?? 0;
+
+    this.rowsPerPage = rows;
+    const page = Math.floor(first / rows) + 1;
+
+    this.actualizarURL(page);
+    this.cargarDatos(page, rows);
+  }
+
+  private cargarDatos(page: number, perPage: number): void {
     this.isLoading = true;
 
     const requestParams: Record<string, string | number> = {
       page,
-      per_page: 5,
+      per_page: perPage,
     };
 
     if (this.filtro.folio) requestParams['folio'] = this.filtro.folio;
@@ -122,7 +127,7 @@ export class ListarAudiencias implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.audiencias = response?.data ?? [];
-        this.pagination = response.pagination;
+        this.totalRecords = response.pagination?.total ?? 0;
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -168,7 +173,7 @@ export class ListarAudiencias implements OnInit {
       (response) => {
         this.isLoading = false;
         this.audiencias = response?.data ?? [];
-        this.pagination = response.pagination;
+        this.totalRecords = response.pagination?.total ?? 0;
       },
       (error) => {
         this.isLoading = false;
@@ -210,8 +215,13 @@ export class ListarAudiencias implements OnInit {
 
 
   aplicarFiltros(): void {
+    this.actualizarURL(1);
+    this.cargarDatos(1, this.rowsPerPage);
+  }
+
+  private actualizarURL(page: number): void {
     const queryParams: Record<string, string | number | null> = {
-      page: 1,
+      page,
       estado: this.filtro.estado > 0 ? this.filtro.estado : null,
       folio: this.filtro.folio || null,
       fechaInicio: null,
@@ -227,9 +237,8 @@ export class ListarAudiencias implements OnInit {
       relativeTo: this.route,
       queryParams,
       queryParamsHandling: 'merge',
+      replaceUrl: true
     });
-
-    this.cargarDatos(1);
   }
 
 
@@ -244,18 +253,11 @@ export class ListarAudiencias implements OnInit {
       queryParamsHandling: 'merge',
     });
 
-    this.cargarDatos(1);
+    this.cargarDatos(1, this.rowsPerPage);
   }
 
   cambiarPagina(page: number): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-
-    this.cargarDatos(page);
+    // Ya no es necesario, lo maneja onLazyLoad
   }
 
   estadoOptions = [

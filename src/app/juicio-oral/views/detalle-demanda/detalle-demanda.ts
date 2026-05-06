@@ -167,13 +167,31 @@ export class DetalleDemanda implements OnInit {
     }
 
     // Si idGeneralTurna está vacío e idMovimiento es 9, puede turnar 0.o
+    // if (Number(mov.idMovimiento) === 9 && !mov.idGeneralTurna) {
+    //   return this.esSecretaria();
+    // }
+
+    return false;
+  }
+
+  get mostrarBotonAcordar(): boolean {
+    const movimientos = this.detalleDemanda?.movimientos || [];
+
+    // Si no hay movimientos, no se puede turnar 0.o
+    if (movimientos.length === 0) {
+      return false;
+    }
+
+    const mov = this.ultimoMovimiento;
+    if (!mov) return false;
+
+    // Si idGeneralTurna está vacío e idMovimiento es 9, puede turnar 0.o
     if (Number(mov.idMovimiento) === 9 && !mov.idGeneralTurna) {
       return this.esSecretaria();
     }
 
     return false;
   }
-
   // ============================
   // Navegación
   // ============================
@@ -191,6 +209,15 @@ export class DetalleDemanda implements OnInit {
     );
   }
 
+  onModalTurnar() {
+    this.confirmationService.confirm({
+      key: 'confirmar-turnar',
+      accept: () => { this.onSiguienteMovimientoDemanda(); },
+      reject: () => { }
+    }
+    );
+  }
+
   onSiguienteMovimientoDemanda() {
     this.modalTurnar = false;
     this.isLoading = true;
@@ -201,7 +228,7 @@ export class DetalleDemanda implements OnInit {
     if (observaciones) {
       payload.observaciones = observaciones;
     }
-    this.juicioService.putSiguienteMovimiento(payload).subscribe({
+    this.juicioService.putSiguienteMovimientoTramite(payload).subscribe({
       next: (response) => {
         this.contadoresService.refrescar()
         this.isLoading = false;

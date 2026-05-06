@@ -21,7 +21,7 @@ import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-perfil-usuario',
 
-  imports: [DatePipe, JsonPipe, ReactiveFormsModule, FormsModule, ToastModule, Breadcrub, Button, ButtonModule, TabsModule, FileUploadModule, PasswordModule, TagModule, Spinner],
+  imports: [ DatePipe, ReactiveFormsModule, FormsModule, ToastModule, Breadcrub, Button, ButtonModule, TabsModule, FileUploadModule, PasswordModule, TagModule, Spinner],
   templateUrl: './perfil-usuario.html',
   styleUrl: './perfil-usuario.css',
   providers: [MessageService]

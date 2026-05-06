@@ -20,6 +20,8 @@
       </div>
 
       <div class="mt-6 md:mt-0 flex items-center gap-2">
+
+       
         @if(tienePermisoGuardar()){
           @if (mostrarBotonGuardar) {
           <p-button  (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-check">
@@ -1000,8 +1002,8 @@
           <!-- QR -->
           <div class="mt-4 flex flex-col items-center gap-2 border-t border-surface pt-4">
             <span class="text-surface-500 dark:text-surface-400 font-medium text-sm">Código QR de verificación</span>
-            @if (archivoRecibidoConAcuse.acuse.urlInfo) {
-            <app-qr-generator-component [qrData]="archivoRecibidoConAcuse.acuse.urlInfo" />
+            @if (archivoRecibidoConAcuse?.acuse?.urlInfo) {
+            <app-qr-generator-component qrData="archivoRecibidoConAcuse?.acuse?.urlInfo" />
             } @else {
             <app-qr-generator-component qrData="https://tribunaloaxaca.gob.mx" />
             }

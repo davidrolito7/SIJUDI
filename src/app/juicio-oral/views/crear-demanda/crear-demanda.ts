@@ -587,7 +587,7 @@ export class CrearDemanda implements OnInit {
           this.demandaResponse = respuesta.data;
           this.confirmationService.confirm({
             key: 'success',
-            accept: () => this.detalle(respuesta.data.expediente.idExpediente),
+            accept: () => this.detalle(respuesta.data.idDemanda),
             reject: () => this.limpiarTodo()
           });
         } else {
@@ -618,8 +618,8 @@ export class CrearDemanda implements OnInit {
     this.folio = null;
   }
 
-  detalle(idExpediente: number) {
-    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idExpediente } });
+  detalle(idDemanda: number) {
+    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idDemanda } });
   }
 
   // =============================================

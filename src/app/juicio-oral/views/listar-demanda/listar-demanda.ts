@@ -119,6 +119,7 @@ export class ListarDemanda implements OnInit {
         ]
         : '';
   }
+
   // ── Evento lazy de PrimeNG ──────────────────────────────────────────
   // Se dispara al cargar, cambiar página y cambiar rows per page
   onLazyLoad(event: TableLazyLoadEvent): void {
@@ -164,6 +165,7 @@ export class ListarDemanda implements OnInit {
       },
     });
   }
+  
   // ============================
   // Actions (filters / paging)
   // ============================
@@ -211,8 +213,8 @@ export class ListarDemanda implements OnInit {
     return new Date(year, month - 1, day);
   }
 
-  detalle(idExpediente: number) {
-    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idExpediente } });
+  detalle(idDemanda: number) {
+    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idDemanda } });
   }
 
   // // onRedirigirCrear() {
@@ -223,13 +225,13 @@ export class ListarDemanda implements OnInit {
   // Estado helpers for UI tags
   // ============================
   getEstadoDescripcion(inicio: unknown): string | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { estado?: { descripcion?: string } } } };
-    return i.demanda?.ultimo_estado?.estado?.descripcion ?? null;
+    const i = inicio as { demanda?: { ultimo_estado?: { cat_estado_demanda?: { descripcion?: string } } } };
+    return i.demanda?.ultimo_estado?.cat_estado_demanda?.descripcion ?? null;
   }
 
   getEstadoId(inicio: unknown): number | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { estado?: { idCatEstadoDemanda?: number } } } };
-    return i.demanda?.ultimo_estado?.estado?.idCatEstadoDemanda ?? null;
+    const i = inicio as { demanda?: { ultimo_estado?: { cat_estado_demanda?: { idCatEstadoDemanda?: number } } } };
+    return i.demanda?.ultimo_estado?.cat_estado_demanda?.idCatEstadoDemanda ?? null;
   }
 
   getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {

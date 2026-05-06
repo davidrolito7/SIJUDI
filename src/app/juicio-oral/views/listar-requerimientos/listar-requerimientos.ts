@@ -41,12 +41,8 @@ export class ListarRequerimientos implements OnInit {
     estado: 0,
   };
 
-  pagination = {
-    current_page: 1,
-    per_page: 5,
-    total: 0,
-    last_page: 1
-  };
+  totalRecords = 0;
+  rowsPerPage = 10;
 
   constructor(
     private juicioService: JuicioService,
@@ -59,8 +55,6 @@ export class ListarRequerimientos implements OnInit {
   ngOnInit(): void {
     const params = this.route.snapshot.queryParams;
     this.sincronizarFiltrosDesdeURL(params);
-    const page = params['page'] ? +params['page'] : 1;
-    this.cargarDatos(page);
   }
 
   private sincronizarFiltrosDesdeURL(params: Record<string, string>): void {
@@ -75,12 +69,23 @@ export class ListarRequerimientos implements OnInit {
         : '';
   }
 
-  private cargarDatos(page: number): void {
+  onLazyLoad(event: any): void {
+    const rows = event.rows ?? this.rowsPerPage;
+    const first = event.first ?? 0;
+
+    this.rowsPerPage = rows;
+    const page = Math.floor(first / rows) + 1;
+
+    this.actualizarURL(page);
+    this.cargarDatos(page, rows);
+  }
+
+  private cargarDatos(page: number, perPage: number): void {
     this.isLoading = true;
 
     const requestParams: Record<string, string | number> = {
       page,
-      per_page: 5,
+      per_page: perPage,
     };
 
     if (Array.isArray(this.filtro.rangeDates) && this.filtro.rangeDates.length === 2) {
@@ -94,7 +99,7 @@ export class ListarRequerimientos implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.listaRequerimientos.set(response?.data ?? []);
-        this.pagination = response.pagination;
+        this.totalRecords = response.pagination?.total ?? 0;
         this.listaRequerimientos().forEach(r => this.actualizarTiempo(r));
         this.cdr.markForCheck();
       },
@@ -107,8 +112,13 @@ export class ListarRequerimientos implements OnInit {
   }
 
   aplicarFiltros(): void {
+    this.actualizarURL(1);
+    this.cargarDatos(1, this.rowsPerPage);
+  }
+
+  private actualizarURL(page: number): void {
     const queryParams: Record<string, string | number | null> = {
-      page: 1,
+      page,
       estado: this.filtro.estado > 0 ? this.filtro.estado : null,
       fechaInicio: null,
       fechaFinal: null,
@@ -123,9 +133,8 @@ export class ListarRequerimientos implements OnInit {
       relativeTo: this.route,
       queryParams,
       queryParamsHandling: 'merge',
+      replaceUrl: true
     });
-  
-    this.cargarDatos(1);
   }
   
   limpiarFiltros(): void {
@@ -137,20 +146,13 @@ export class ListarRequerimientos implements OnInit {
       queryParamsHandling: 'merge',
     });
   
-    this.cargarDatos(1);
+    this.cargarDatos(1, this.rowsPerPage);
   }
 
 
 
   cambiarPagina(page: number): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-
-    this.cargarDatos(page);
+    // Ya no es necesario, lo maneja onLazyLoad
   }
 
   parseDateFromString(dateStr: string): Date {

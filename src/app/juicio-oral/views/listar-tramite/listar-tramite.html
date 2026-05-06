@@ -71,6 +71,7 @@
 <div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
     <div class="card">
         <p-table #dtTramites stripedRows [value]="tramites" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
             [globalFilterFields]="[
                 'folioOficio',
                 'expediente.NumExpediente',

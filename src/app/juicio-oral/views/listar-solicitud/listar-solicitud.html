@@ -80,7 +80,8 @@
 <div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
   <div class="card">
     <p-table #dtSolicitudes  stripedRows [value]="solicitudes" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
-      [paginator]="true" [globalFilterFields]="['folio', 'audiencia.title', 'ultimo_estado.estado.descripcion']">
+      [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
+      [globalFilterFields]="['folio', 'audiencia.title', 'ultimo_estado.estado.descripcion']">
 
       <ng-template #caption>
         <div class="flex">

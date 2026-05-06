@@ -63,7 +63,7 @@
 
     <div class="card">
         <p-table #dtInicio stripedRows [value]="expedientes()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
-            [paginator]="true" [globalFilterFields]="[
+            [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)" [globalFilterFields]="[
     'folio',
     'cat_via_materia.cat_materia.Descripcion',
     'cat_via_materia.cat_via.descripcion',
@@ -84,7 +84,7 @@
             <ng-template #header class="bg-red-500">
                 <tr>
                     <th scope="col">Expediente</th>
-                    <th scope="col">Preregistro</th>
+                    <th scope="col">Folio Demanda</th>
                     <th scope="col">Fecha asignado</th>
                     <th scope="col">Juzgado</th>
                     <th scope="col">Materia</th>
@@ -116,7 +116,7 @@
                         {{ expediente.demanda.cat_via_materia.cat_via.descripcion}}
                     </td>
                     <td>
-                        <p-tag value="{{ (expediente.ultimo_historial.cat_estado_expediente.descripcion).toUpperCase() }}"
+                        <p-tag value="{{ (expediente.ultimo_historial.cat_estado_expediente.descripcion || 'Desconocido').toUpperCase() }}"
                             severity="info" icon="pi pi-bell" />
                     </td>
                     <td>

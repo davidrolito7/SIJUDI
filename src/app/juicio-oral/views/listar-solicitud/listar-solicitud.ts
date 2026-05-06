@@ -90,12 +90,8 @@ export class ListarSolicitud implements OnInit {
     estado: '',
   };
 
-  pagination = {
-    current_page: 1,
-    last_page: 1,
-    per_page: 10,
-    total: 0,
-  };
+  totalRecords = 0;
+  rowsPerPage = 10;
 
   // Modal PDF
   visiblePdfModal = false;
@@ -138,8 +134,6 @@ export class ListarSolicitud implements OnInit {
 
     const params = this.route.snapshot.queryParams;
     this.sincronizarFiltrosDesdeURL(params);
-    const page = params['page'] ? +params['page'] : 1;
-    this.cargarDatos(page);
   }
 
   // ============================
@@ -157,12 +151,23 @@ export class ListarSolicitud implements OnInit {
         : '';
   }
 
-  private cargarDatos(page: number): void {
+  onLazyLoad(event: any): void {
+    const rows = event.rows ?? this.rowsPerPage;
+    const first = event.first ?? 0;
+
+    this.rowsPerPage = rows;
+    const page = Math.floor(first / rows) + 1;
+
+    this.actualizarURL(page);
+    this.cargarDatos(page, rows);
+  }
+
+  private cargarDatos(page: number, perPage: number): void {
     this.isLoading = true;
 
     const requestParams: Record<string, string | number> = {
       page,
-      per_page: this.pagination.per_page,
+      per_page: perPage,
     };
 
     if (this.filtro.expediente) requestParams['expediente'] = this.filtro.expediente;
@@ -177,7 +182,7 @@ export class ListarSolicitud implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.solicitudes = response.data;
-        this.pagination = response.pagination;
+        this.totalRecords = response.pagination?.total ?? 0;
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -192,8 +197,13 @@ export class ListarSolicitud implements OnInit {
   // Actions (filters / paging)
   // ============================
   aplicarFiltros(): void {
+    this.actualizarURL(1);
+    this.cargarDatos(1, this.rowsPerPage);
+  }
+
+  private actualizarURL(page: number): void {
     const queryParams: Record<string, string | number | null> = {
-      page: 1,
+      page,
       estado: this.filtro.estado || null,
       expediente: this.filtro.expediente || null,
       fechaInicio: null,
@@ -209,9 +219,8 @@ export class ListarSolicitud implements OnInit {
       relativeTo: this.route,
       queryParams,
       queryParamsHandling: 'merge',
+      replaceUrl: true
     });
-
-    this.cargarDatos(1);
   }
 
   limpiarFiltros(): void {
@@ -223,17 +232,11 @@ export class ListarSolicitud implements OnInit {
       queryParamsHandling: 'merge',
     });
 
-    this.cargarDatos(1);
+    this.cargarDatos(1, this.rowsPerPage);
   }
 
   cambiarPagina(page: number): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-    this.cargarDatos(page);
+    // Ya no es necesario, lo maneja onLazyLoad
   }
 
   // ============================
@@ -313,7 +316,7 @@ onFileSelectedSolicitud(event: any): void {
       next: () => {
         this.isLoading = false;
         this.messageService.add({ severity: 'info', summary: 'Solicitud actualizada', detail: 'El estado de la solicitud cambió' });
-        this.cargarDatos(this.pagination.current_page);
+        this.cargarDatos(1, this.rowsPerPage);
         this.resetAnexoForm();
         this.cdr.markForCheck();
       },
