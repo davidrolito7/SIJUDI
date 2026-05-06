@@ -267,7 +267,7 @@ export class CrearExhortoComponent {
   //idExhortoEnviado:number | undefined;
   idTipoDiligenciadoGuardado!: number;
   //objeto que se recibe cuando se envia los archivos al estado exhortado
-  archivoRecibidoConAcuse!: EnviadoArchivoRecibidoConAcuseResponse;
+  archivoRecibidoConAcuse: EnviadoArchivoRecibidoConAcuseResponse | null = null;
   numeroExhorto!: string;
 
   listaTipoVias!: tipoVia[];

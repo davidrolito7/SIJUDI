@@ -15,7 +15,6 @@ import { Tag } from "primeng/tag";
 import { base64ToFile, blobToBase64, downloadBase64, downloadFile } from '../../../shared/functions/utils';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 
-
 @Component({
   selector: 'app-DetallesAmparoRecibido',
   imports: [CommonModule, TableModule, Button, Spinner, Breadcrub, Tag, PdfDialog],
