@@ -511,7 +511,7 @@ export class CrearExhortoComponent {
 
         if (this.idEstatus == 1) { //estatus 1 es pendientes de enviar
           this.mostrarBotonGuardar = true;
-          this.mostrarBotonEnviarGenerales = true;
+          //this.mostrarBotonEnviarGenerales = true;
           this.mostrarBotonEnviarArchivos = false;
         }
         else {
@@ -1104,6 +1104,7 @@ export class CrearExhortoComponent {
             tam: archivo.tamaño
           })));*/
           //console.log(this.listaDocumentos()[0].tipoDocumento);
+          this.mostrarBotonEnviarGenerales = true;
         } else {
           this.listaDocumentos.set([]);
           this.messageService.add({
