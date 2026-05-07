@@ -76,7 +76,7 @@
 
 /* Caption: sin borde superior, padding inferior */
 .p-datatable-header {
-  @apply border-t-0 !p-0 !pb-4;
+  @apply border-t-0 !p-2;
   background: transparent;
 }
 

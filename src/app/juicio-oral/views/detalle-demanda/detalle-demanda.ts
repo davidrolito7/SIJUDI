@@ -210,12 +210,8 @@ export class DetalleDemanda implements OnInit {
   }
 
   onModalTurnar() {
-    this.confirmationService.confirm({
-      key: 'confirmar-turnar',
-      accept: () => { this.onSiguienteMovimientoDemanda(); },
-      reject: () => { }
-    }
-    );
+    this.modalTurnar = true;
+    this.turnarForm.reset();
   }
 
   onSiguienteMovimientoDemanda() {

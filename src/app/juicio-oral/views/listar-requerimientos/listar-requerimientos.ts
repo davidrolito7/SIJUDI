@@ -13,10 +13,13 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TagModule } from 'primeng/tag';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { Spinner } from "../../../shared/components/spinner/spinner";
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-listar-requerimientos',
-  imports: [CommonModule, Breadcrub, RadioButtonModule, TableModule, FormsModule, SelectModule, DatePicker, Button, TagModule, Spinner],
+  imports: [CommonModule, Breadcrub, RadioButtonModule, TableModule, FormsModule, SelectModule, DatePicker, Button, TagModule, Spinner, IconFieldModule,
+    InputIconModule,],
   templateUrl: './listar-requerimientos.html',
   styleUrl: './listar-requerimientos.css',
   providers: [MessageService]

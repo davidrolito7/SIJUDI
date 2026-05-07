@@ -5,24 +5,29 @@
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
 
-    <!-- BUSQUEDA -->
-    <div class="border border-surface rounded-2xl p-4">
-
-        <div class="flex items-start flex-col md:flex-row justify-between">
-            <div class="font-medium text-2xl">
+    <!-- TÍTULO DE PÁGINA Y BOTONES -->
+    <div class="mt-2 mb-4 px-2 flex items-start flex-col md:flex-row justify-between">
+        <div>
+            <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
                 Trámites {{ titulo }}
-            </div>
-
-            @if (mostrarBoton()) {
-            <div class="flex items-center">
-                <p-button (click)="abrirModal()">
-                    <i pButtonIcon class="pi pi-search"></i>
-                    <span pButtonLabel>Buscar expediente</span>
-                </p-button>
-            </div>
-            }
+            </h1>
+            <p class="text-surface-500 dark:text-surface-400 mt-1">
+                Consulta y gestiona los trámites electrónicos.
+            </p>
         </div>
 
+        @if (mostrarBoton()) {
+        <div class="flex items-center mt-4 md:mt-0">
+            <p-button (click)="abrirModal()">
+                <i pButtonIcon class="pi pi-search"></i>
+                <span pButtonLabel>Buscar expediente</span>
+            </p-button>
+        </div>
+        }
+    </div>
+
+    <!-- SECCIÓN DE FILTROS -->
+    <div class="border border-surface border-b-0 rounded-t-2xl bg-surface-50 dark:bg-surface-900 p-4 shadow-sm">
         <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de trámites">
             <div class="grid grid-cols-12 gap-4 w-full items-end mt-4">
 
@@ -68,8 +73,7 @@
 </div>
 
 <!-- TABLA -->
-<div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
-    <div class="card">
+<div class="border border-surface rounded-b-2xl bg-surface-0 dark:bg-surface-950 shadow-sm overflow-hidden mb-4 p-0">
         <p-table #dtTramites stripedRows [value]="tramites" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
             [globalFilterFields]="[
@@ -80,13 +84,12 @@
             ]">
 
             <ng-template #caption>
-                <div class="flex">
-                    <div class="font-medium text-xl mb-4">Resultado</div>
-                    <p-iconfield iconPosition="left" class="ml-auto">
+                <div class="flex items-center justify-end">
+                    <p-iconfield iconPosition="left">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
                         <input pInputText type="text"
                             (input)="dtTramites.filterGlobal($any($event.target).value, 'contains')"
-                            placeholder="Buscar una palabra" aria-label="Buscar" />
+                            placeholder="Buscar en la tabla..." aria-label="Buscar" class="w-full md:w-64" />
                     </p-iconfield>
                 </div>
             </ng-template>
@@ -135,7 +138,6 @@
             </ng-template>
 
         </p-table>
-    </div>
 </div>
 
 <!-- MODAL BUSCAR EXPEDIENTE -->

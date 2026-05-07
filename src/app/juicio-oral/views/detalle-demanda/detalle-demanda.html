@@ -272,12 +272,36 @@
     icon="pi pi-check" circleClass="bg-primary" acceptLabel="Recibir" rejectLabel="Cerrar"
     acceptStyleClass="bg-primary">
 </app-confirm-dialog>
-<app-confirm-dialog key="confirmar-turnar" title="Confirmación" message="¿Deseas turnar la demanda?"
+<!-- <app-confirm-dialog key="confirmar-turnar" title="Confirmación" message="¿Deseas turnar la demanda?"
     icon="pi pi-check" circleClass="bg-primary" acceptLabel="Turnar" rejectLabel="Cerrar"
     acceptStyleClass="bg-primary">
-</app-confirm-dialog>
+</app-confirm-dialog> -->
 
+<p-dialog header="Turnar demanda" [(visible)]="modalTurnar" [modal]="true" maskStyleClass="bg-primary/40!"
+    [style]="{ width: '25rem' }" [closable]="false">
 
+    <form [formGroup]="turnarForm" class="relative rounded-lg">
+        <div class="grid grid-cols-6 gap-6">
+
+            <!-- Observaciones (opcional) -->
+            <div class="col-span-6">
+                <label for="observaciones" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Observaciones (opcional)
+                </label>
+                <textarea id="observaciones" rows="4" formControlName="observaciones" pInputTextarea
+                    class="block p-2.5 uppercase w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Escribe tus observaciones aquí..."></textarea>
+
+            </div>
+
+        </div>
+
+        <div class="flex justify-end gap-2 mt-4">
+            <p-button label="Cancelar" severity="secondary" (click)="modalTurnar = false"></p-button>
+            <p-button type="submit" label="Confirmar" (click)="onSiguienteMovimientoDemanda()"></p-button>
+        </div>
+    </form>
+</p-dialog>
 
 <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
 </app-pdf-dialog>
