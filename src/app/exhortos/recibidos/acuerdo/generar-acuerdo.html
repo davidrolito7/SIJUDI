@@ -25,7 +25,7 @@
           
             @if (tienePermisoGuardar()) {
                 <div class="relative">
-                    @if ([0, 11].includes(detallesAcuerdo().generales.idEstatus )) {
+                    @if ([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)) {
                     <p-button type="button" (click)="guardarRespuestaExhorto()">
                     Guardar</p-button>
                     }
@@ -47,7 +47,7 @@
               }
               @if (tienePermisoEnviarArchvios()) {
               <div class="relative">
-                  @if (detallesAcuerdo().generales.idEstatus === 12) {
+                  @if (detallesAcuerdo()?.generales?.idEstatus === 12) {
                   <p-button type="button" (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"
                       ><i class="bi bi-send"></i> Enviar Archivos</p-button>
                   }
@@ -81,15 +81,15 @@
 
     </div>
   </div>
-</div>
-@if(detallesAcuerdo().generales.idRespuesta !== 0)
+</div>{{detallesAcuerdo().generales | json}}
+@if(detallesAcuerdo().generales?.idRespuesta !== 0)
 {
   <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
       <div class="flex items-start flex-col md:justify-between md:flex-row">
           <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
 
           <div class="flex items-center">
-            @if([0, 11].includes(detallesAcuerdo().generales.idEstatus)){
+            @if([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ??-1 )){
               @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
                   <div class="relative" style="margin-right: 1rem;">
                     <p-button type="button"
