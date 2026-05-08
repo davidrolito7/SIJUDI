@@ -1,10 +1,9 @@
 <app-spinner [isLoading]="isLoading()"></app-spinner>
-<div class="relative min-h-screen lg:h-screen bg-surface-0 dark:bg-surface-950 flex lg:flex-row flex-col">
-    <div class="flex lg:flex lg:flex-row flex-col justify-center md:justify-normal h-full flex-1">
-        <div class="relative flex-1 z-20 flex items-center justify-center">
-            <div class="flex items-center justify-center h-full">
-
-                <div class="w-full max-w-2xl px-6 py-12 lg:p-12 xl:p-16 text-center lg:text-left">
+<div class="relative min-h-screen lg:h-screen overflow-hidden bg-surface-0 dark:bg-surface-950 flex flex-col lg:flex-row">
+    
+    <!-- Lado Izquierdo: Formulario -->
+    <div class="w-full lg:w-5/12 flex flex-col justify-center items-center lg:items-start h-full z-20 overflow-y-auto relative shrink-0">
+        <div class="w-full max-w-2xl px-6 py-12 lg:p-12 xl:p-16 text-center lg:text-left mx-auto">
 
                     <h1 class="text-4xl xl:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-6 leading-tight!">
                         <span class="block">Configura tu acceso</span>
@@ -15,20 +14,28 @@
                     </p>
                     <div class="flex flex-col gap-6">
                         <!--SELECCIONA ADSCRIPCION /AREA -->
-                        <p-select inputId="areaSelect" [options]="listaAreas()" optionLabel="area" optionValue="idArea"
-                            [ngModel]="areaSeleccionada()" (ngModelChange)="onAreaChange($event)"
-                            placeholder="Selecciona un área" class="w-full" />
+                        <div class="flex flex-col w-full">
+                            <label for="areaSelect" class="block mb-2 text-sm font-medium">Adscripción</label>
+                            <p-select inputId="areaSelect" [options]="listaAreas()" optionLabel="area" appendTo="body" optionValue="idArea"
+                                [ngModel]="areaSeleccionada()" (ngModelChange)="onAreaChange($event)"
+                                placeholder="Selecciona un área" class="w-full" />
+                        </div>
                         <!--SELECCIONA PERFIL-->
-                        <p-select inputId="perfilSelect" [options]="perfiles()" optionLabel="descripcion"
-                            optionValue="idSistemaPerfil" [ngModel]="perfilSeleccionado()"
-                            (ngModelChange)="onPerfilChange($event)" placeholder="Selecciona tu perfil"
-                            class="w-full" />
+                        <div class="flex flex-col    w-full">
+                            <label for="perfilSelect" class="block mb-2 text-sm font-medium">Perfil</label>
+                            <p-select inputId="perfilSelect" [options]="perfiles()" optionLabel="descripcion"
+                                appendTo="body" optionValue="idSistemaPerfil" [ngModel]="perfilSeleccionado()"
+                                (ngModelChange)="onPerfilChange($event)" placeholder="Selecciona tu perfil"
+                                class="w-full" />
+                        </div>
                         <!--SELECCIONA SUBAREA-->
-                        
-                        <p-select inputId="subAreaSelect" [options]="subAreas()" optionLabel="descripcion"
-                            optionValue="idSubArea" [ngModel]="subAreaId()"
-                            (ngModelChange)="onSubAreaChange($event)" placeholder="Selecciona una subarea"
-                            class="w-full" />
+                        <div class="flex flex-col w-full">
+                            <label for="subAreaSelect" class="block mb-2 text-sm font-medium">Subárea</label>
+                            <p-select inputId="subAreaSelect" [options]="subAreas()" optionLabel="descripcion"
+                                optionValue="idSubArea" [ngModel]="subAreaId()" appendTo="body"
+                                (ngModelChange)="onSubAreaChange($event)" placeholder="Selecciona una subárea"
+                                class="w-full" />
+                        </div>
                         <div class="flex items-center text-white/80">
                             <p-checkbox [(ngModel)]="recordar" id="rememberme" [binary]="true"
                                 class="mr-3"></p-checkbox>
@@ -47,15 +54,13 @@
                         </div>
                     </div>
 
-                </div>
-
-            </div>
-            <p-toast></p-toast>
-
-            <div class="hidden lg:block lg:static lg:inset-auto lg:z-0 lg:flex-1">
-                <img src="fondo-autenticar.png" alt="hero-1"
-                    class="h-full w-full object-cover lg:[clip-path:polygon(12%_0,100%_0%,100%_100%,0_100%)] md:[clip-path:none]" />
-            </div>
         </div>
+        <p-toast></p-toast>
+    </div>
+
+    <!-- Lado Derecho: Imagen -->
+    <div class="hidden lg:block lg:w-7/12 relative h-full z-10 shrink-0">
+        <img src="config.png" alt="Fondo"
+            class="absolute inset-0 h-full w-full object-cover lg:[clip-path:polygon(12%_0,100%_0%,100%_100%,0_100%)]" />
     </div>
 </div>

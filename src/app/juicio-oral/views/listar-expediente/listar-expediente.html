@@ -1,21 +1,24 @@
 <app-spinner [isLoading]="isLoading()"></app-spinner>
             <p-toast />
 
-<div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-960">
+<div class="lg:sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-960">
 
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
 
-    <!-- BUSQUEDA -->
-    <div class=" border border-surface rounded-2xl p-4 bg-surface-50 dark:bg-surface-950">
+    <!-- TÍTULO DE PÁGINA -->
+    <div class="mt-2 mb-4 px-2">
+        <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
+            Expedientes asignados
+        </h1>
+        <p class="text-surface-500 dark:text-surface-400 mt-1">
+            Gestiona y consulta los expedientes asignados a tu juzgado.
+        </p>
+    </div>
 
-        <div class="flex items-start flex-col md:flex-row justify-between">
-            <div class="font-medium text-2xl mb-2">
-                Expedientes asignados
-            </div>
-
-        </div>
-        <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de exhortos enviados">
+    <!-- SECCIÓN DE FILTROS -->
+    <div class="border border-surface border-b-0 rounded-t-2xl bg-surface-50 dark:bg-surface-900 p-4 shadow-sm">
+        <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda">
             <div class="grid grid-cols-12 gap-4 w-full items-end">
                 <!-- Folio -->
                 <div class="col-span-12 md:col-span-6 lg:col-span-4 w-full">
@@ -54,14 +57,11 @@
                 </div>
             </div>
         </form>
-
     </div>
-
 </div>
 
-<div class="relative z-0 mt-4  border border-surface rounded-2xl mb-4 p-4">
-
-    <div class="card">
+<!-- SECCIÓN DE LA TABLA -->
+<div class="border border-surface rounded-b-2xl bg-surface-0 dark:bg-surface-950 shadow-sm overflow-hidden mb-4 p-0">
         <p-table #dtInicio stripedRows [value]="expedientes()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
             [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)" [globalFilterFields]="[
     'folio',
@@ -69,17 +69,15 @@
     'cat_via_materia.cat_via.descripcion',
     'historial_estado.0.estado.descripcion'
   ]">
-            <ng-template #caption>
-                <div class="flex">
-                    <div class="font-medium text-xl mb-4">Resultado</div>
-
-                    <p-iconfield iconPosition="left" class="ml-auto">
+            <!-- <ng-template #caption>
+                <div class="flex items-center justify-end">
+                    <p-iconfield iconPosition="left">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
                         <input pInputText type="text" (input)="dtInicio.filterGlobal($event.target.value, 'contains')"
-                            placeholder="Buscar una palabra" aria-label="Buscar" />
+                            placeholder="Buscar en la tabla..." aria-label="Buscar" class="w-full md:w-64" />
                     </p-iconfield>
                 </div>
-            </ng-template>
+            </ng-template> -->
 
             <ng-template #header class="bg-red-500">
                 <tr>
@@ -134,7 +132,5 @@
                     <td colspan="6">Sin registros</td>
                 </tr>
             </ng-template>
-        </p-table>
-
-    </div>
+    </p-table>
 </div>

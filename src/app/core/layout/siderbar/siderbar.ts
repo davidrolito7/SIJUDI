@@ -86,14 +86,14 @@ export class Siderbar {
       this.showMenu.set(!!this.selectedModulo());
     });
 
-
   }
 
   ngOnInit(): void {
-   // this.contadoresService.iniciarPolling();
+    this.contadoresService.iniciarPolling();
   }
+
   ngOnDestroy(): void {
-  //  this.contadoresService.detenerPolling();
+    this.contadoresService.detenerPolling();
   }
 
 
