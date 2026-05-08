@@ -97,7 +97,7 @@ export class CrearExhortoComponent {
    // nombre: new FormControl('', Validators.required),
     nombre: new FormControl('', [Validators.required,Validators.maxLength(500)]),
     //paterno: new FormControl(''),
-     paterno: new FormControl<string>('', [Validators.maxLength(50)]), 
+     paterno: new FormControl<string>('', [Validators.maxLength(50)]),
 //    materno: new FormControl(''),
     materno: new FormControl<string>('', [Validators.maxLength(50)]),
     genero: new FormControl(''),
@@ -114,9 +114,9 @@ export class CrearExhortoComponent {
     //nombrePromo: new FormControl('', Validators.required),
     nombrePromo: new FormControl('', [Validators.required,Validators.maxLength(500)]),
     //paternoPromo: new FormControl(''),
-    paternoPromo: new FormControl<string>('', [Validators.maxLength(50)]), 
+    paternoPromo: new FormControl<string>('', [Validators.maxLength(50)]),
     //maternoPromo: new FormControl(''),
-    maternoPromo: new FormControl<string>('', [Validators.maxLength(50)]), 
+    maternoPromo: new FormControl<string>('', [Validators.maxLength(50)]),
     generoPromo: new FormControl(''),
     moralPromo: new FormControl(false, { nonNullable: true, validators: [Validators.required] }),
     //moralPromo: new FormControl(false,[Validators.required]),
@@ -126,7 +126,7 @@ export class CrearExhortoComponent {
     correoElectronicoPromo: new FormControl('', [Validators.maxLength(50)]),
     //telefonoPromo: new FormControl('')
     telefonoPromo: new FormControl('', [Validators.pattern(/^\d{10}$/)])
-    
+
   });
   doctosForm = new FormGroup({
     tipoDocumento: new FormControl(null as ListadoCatalogoTipoDocumento | null, Validators.required),
@@ -1692,6 +1692,7 @@ export class CrearExhortoComponent {
             //this.openModalConfirmacion();
             //this.openModal2();
             //this.modalService.open('modal2');
+            this.isLoading = false;
             //Para pruebas
             if (this.archivoRecibidoConAcuse.acuse.urlInfo === null || this.archivoRecibidoConAcuse.acuse.urlInfo === undefined) {
               this.archivoRecibidoConAcuse.acuse.urlInfo = 'https://www.tribunaloaxaca.gob.mx';
@@ -1702,6 +1703,7 @@ export class CrearExhortoComponent {
           } else {
             //console.error('Error al eliminar el archivo:', response.message);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
+            this.isLoading = false;
           }
         },
         error: (e) => {
