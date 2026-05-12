@@ -1168,18 +1168,42 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
              var pdfBlob = base64ToFile(response.data.documento,response.data.nombre, response.data.mimetype);
             const blobUrl = URL.createObjectURL(pdfBlob);
             const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
+            //iframe.style.display = 'none';
             iframe.src = blobUrl;
+
+            // ✅ NO usar display:none en Edge
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = '0';
 
             document.body.appendChild(iframe);
 
             iframe.onload = () => {
-              iframe.contentWindow?.focus();
-              iframe.contentWindow?.print();
-
+               // ✅ Esperar render del PDF
               setTimeout(() => {
-                URL.revokeObjectURL(blobUrl);
-                document.body.removeChild(iframe);
+                iframe.contentWindow?.focus();
+                try{
+                      iframe.contentWindow?.print();
+                  }
+                  catch(e){
+                      console.error('Error al imprimir el documento:', e);
+                  }
+                  // ✅ Escuchar evento de impresión para limpiar después
+                  iframe.contentWindow!.onafterprint = () => {
+
+                    URL.revokeObjectURL(blobUrl);
+
+                    if (document.body.contains(iframe)) {
+                      document.body.removeChild(iframe);
+                    }
+                  };
+                  /*setTimeout(() => {
+                    URL.revokeObjectURL(blobUrl);
+                    document.body.removeChild(iframe);
+                  }, 1000);*/
               }, 1000);
             };
 
