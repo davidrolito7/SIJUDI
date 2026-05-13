@@ -7,7 +7,7 @@
     <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
         <div class="flex items-start flex-col md:flex-row justify-between">
             <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-                    Detalle de exhorto recibido 
+                    Detalle de exhorto recibido
             </label>
              @if (tienePermisoReasignarExhorto()) {
                 <div class="relative">
@@ -23,7 +23,7 @@
               @if (tienePermisoRecibir() && tienePermisoDeclararIncompetencia() && detallesExhortos()?.actualizaciones?.length==0) {
                 <div  class="relative">
                   @if (detallesExhortos() !== undefined ? detallesExhortos()?.generales?.estatus=='Recibido': false) {
-                    <p-button 
+                    <p-button
                       (onClick)="dialogIncomp.open(idExhortoRecibido)"
                       >
                       Declarar incompetencia
@@ -36,7 +36,7 @@
                 @if(puedeRecibir()){
                   <p-button type="button" (click)="recibir()">
                   Recibir</p-button>
-                  
+
                 }
               </div>
               @if(puedeTurnar()){
@@ -45,7 +45,7 @@
                     <p-button type="button" (click)="turnar()"
                       >
                     Turnar</p-button>
-                    
+
                   </div>
                 }
               }
@@ -56,7 +56,7 @@
                       >
                     Revocar</p-button>
                   }
-                  
+
                 </div>
               }
               @if (tienePermisoGenerarAcuerdo()) {
@@ -94,7 +94,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- empieza panel izquierdo -->
                     <div class="overflow-x-auto p-4">
-                        <div class="panel border bg-white">
+                        <div class="panel border bg-white dark:bg-surface-900 dark:border-surface-700">
                             <div class="panel-heading bg-secondary rounded-lg">
                                 <h3 class="pt-3 font-weight-bold">Información de origen</h3>
                             </div>
@@ -182,7 +182,7 @@
                     <!--fin panel izquierdo-->
                     <!--comienza panel derecho-->
                     <div class="overflow-x-auto p-4">
-                        <div class="panel border bg-white">
+                        <div class="panel border bg-white dark:bg-surface-900 dark:border-surface-700">
                             <div class="panel-heading bg-secondary rounded-lg">
                                 <h3 class="pt-3 font-weight-bold">Información destino</h3>
                             </div>
@@ -239,7 +239,7 @@
             <!--PARTES-->
             <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700">
                 <div class="relative overflow-x-auto">
-                    
+
                     <p-table [value]="detallesExhortos()?.partes || []" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
                         <ng-template #caption>
                             <div class="flex uppercase justify-center items-center font-bold text-lg">
@@ -267,8 +267,8 @@
                                 <th>
                                     <div class="flex items-center justify-between">TELÉFONO</div>
                                 </th>
-                                
-                                
+
+
                             </tr>
                         </ng-template>
 
@@ -287,7 +287,7 @@
                                 <td style="font-size: small;">{{ partes?.tipoParteNombre }}</td>
                                 <td style="font-size: small;">{{ partes?.correoElectronico }}</td>
                                 <td style="font-size: small;">{{ partes?.telefono  }}</td>
-                                
+
                             </tr>
                         </ng-template>
 
@@ -297,7 +297,7 @@
                             </tr>
                         </ng-template>
                     </p-table>
-                  
+
                 </div>
 
             </div>
@@ -332,8 +332,8 @@
                                 <th>
                                     <div class="flex items-center justify-between">TELÉFONO</div>
                                 </th>
-                                
-                                
+
+
                             </tr>
                         </ng-template>
 
@@ -352,7 +352,7 @@
                                 <td style="font-size: small;">{{ promoventes?.tipoParteNombre }}</td>
                                 <td style="font-size: small;">{{ promoventes?.correoElectronico }}</td>
                                 <td style="font-size: small;">{{ promoventes?.telefono  }}</td>
-                                
+
                             </tr>
                         </ng-template>
 
@@ -362,7 +362,7 @@
                             </tr>
                         </ng-template>
                     </p-table>
-                  
+
                 </div>
 
             </div>
@@ -394,7 +394,7 @@
                                 <th>
                                     <div class="flex items-center justify-between">Acciones</div>
                                 </th>
-  
+
                             </tr>
                         </ng-template>
 
@@ -404,7 +404,7 @@
                                 <td style="font-size: small;">{{ archivo?.tipoDocumento.nombre }}</td>
                                 <td style="font-size: small;">{{ archivo?.paginas }}</td>
                                 <td style="font-size: small;">{{ ((archivo.tamanio / 1024)/1024) | number:'1.0-2'  }} MB</td>
-                                <td class="text-center"> 
+                                <td class="text-center">
                                     <p-button (click)="mostrarArchivo(archivo,1)" severity="success" [rounded]="true"
                                             icon="pi pi-file-pdf" class="mr-2" title="descargar">
                                     </p-button>
@@ -422,7 +422,7 @@
                      @if(mostrarDocumento()){
                         <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
                         </app-pdf-dialog>
-                    } 
+                    }
                 </div>
             </div>
             <!--ACTUALIZACIONES-->
@@ -456,7 +456,7 @@
                                 <th>
                                     <span class="sr-only">Acciones</span>
                                 </th>
-  
+
                             </tr>
                         </ng-template>
 
@@ -469,11 +469,11 @@
                                 <td style="font-size: small;"> {{item?.enviado }}</td>
                                 <td >
                                     @if(item.enviado == 'No'){
-                                        <p-button  (click)="enviarActualizacion(item.idActualizacion)" 
+                                        <p-button  (click)="enviarActualizacion(item.idActualizacion)"
                                         >Enviar Actualización</p-button>
                                     }
                                 </td>
-                                
+
                             </tr>
                         </ng-template>
 
@@ -483,7 +483,7 @@
                             </tr>
                         </ng-template>
                     </p-table>
-                  
+
                 </div>
 
             </div>
@@ -502,23 +502,23 @@
                         <ng-template pTemplate="header">
                             <tr class="uppercase text-xs">
                                 <th></th>
-                                <th><div class="flex items-center justify-between">Folio origen</div></th>    
-                                <th><div class="flex items-center justify-between">Folio destino</div></th>       
+                                <th><div class="flex items-center justify-between">Folio origen</div></th>
+                                <th><div class="flex items-center justify-between">Folio destino</div></th>
                                 <th><div class="flex items-center justify-between">Fojas</div></th>
                                 <th><div class="flex items-center justify-between">Fecha origen</div></th>
                                 <th><div class="flex items-center justify-between">Fecha Recepción</div></th>
                                 <th><div class="flex items-center justify-between">Observaciones</div></th>
-  
+
                             </tr>
                         </ng-template>
 
                         <ng-template pTemplate="body" let-item let-expanded="expanded" >
                             <tr>
-                                <td><button 
-                                    type="button" 
-                                    pButton 
-                                    pRipple 
-                                    [icon]="filaExpandidaId === item.promo.idPromocionRecibida ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" 
+                                <td><button
+                                    type="button"
+                                    pButton
+                                    pRipple
+                                    [icon]="filaExpandidaId === item.promo.idPromocionRecibida ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
                                     (click)="toggleFilaExpandida(item.promo.idPromocionRecibida)">
                                     </button>
 
@@ -586,8 +586,8 @@
                                             <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
                                                 <td class="px-4 py-2">{{ archivos.nombreArchivo}}</td>
                                                 <td class="px-4 py-2">{{ archivos.tipoDocumento.nombre }}</td>
-                                                <td class="px-4 py-2">{{ archivos.paginas }}</td>                                              
-                                            
+                                                <td class="px-4 py-2">{{ archivos.paginas }}</td>
+
                                             <td class="px-4 py-2">{{ ((archivos.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
                                             <td class="text-center">
                                                 <p-button (click)="mostrarArchivo(archivos,3)" severity="success" [rounded]="true"
@@ -602,7 +602,7 @@
                             </tr>
                             }
                         </ng-template>
-                        
+
 
                         <ng-template pTemplate="emptymessage">
                             <tr>
@@ -610,7 +610,7 @@
                             </tr>
                         </ng-template>
                     </p-table>
-                  
+
                 </div>
 
             </div>
@@ -642,7 +642,7 @@
                                 <th>
                                     <div class="flex items-center justify-between">Movimiento</div>
                                 </th>
-  
+
                             </tr>
                         </ng-template>
 
@@ -653,7 +653,7 @@
                                 <td style="font-size: small;">{{item?.nombreUsuarioRecibe }}</td>
                                 <td style="font-size: small;">{{ item?.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                                 <td style="font-size: small;"> {{item?.movimiento }}</td>
-                                
+
                             </tr>
                         </ng-template>
 
@@ -663,7 +663,7 @@
                             </tr>
                         </ng-template>
                     </p-table>
-                  
+
                 </div>
 
             </div>

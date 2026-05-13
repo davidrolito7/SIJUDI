@@ -11,7 +11,7 @@ import { ExhortosService } from '../../services/exhorto.service';
 import { TokenService } from '../../../core/auth/service/token.service';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
-import { archivos, EnviadoRespuestaArchivosResponse, generales, guardaExhortoRespuesta, ListadoCatalogoTipoDiligenciado, ListadoCatalogoTipoDocumento, ListadoExhortosRecibidosI, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
+import { archivos, CONATRIB_ExhortosRecibidosArchivos, EnviadoRespuestaArchivosResponse, generales, guardaExhortoRespuesta, ListadoCatalogoTipoDiligenciado, ListadoCatalogoTipoDocumento, ListadoExhortosRecibidosI, promocionExhortos, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
@@ -21,7 +21,7 @@ import ValidateForm from '../../../helpers/validateform';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { Button } from "primeng/button";
 import { FileSelectEvent, FileUpload } from "primeng/fileupload";
-import { TableModule } from "primeng/table";
+import {TableModule, TableRowCollapseEvent, TableRowExpandEvent} from 'primeng/table';
 import { base64ToFile, downloadBase64, downloadFile, validaPdf } from '../../../shared/functions/utils';
 import {validarFirmasUsuario} from '../../functions/firmas';
 import { DialogModule } from "primeng/dialog";
@@ -30,6 +30,7 @@ import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { ToastModule } from "primeng/toast";
 import { ModalComponent } from "../../../shared/components/modal-component/modal-component";
 import { ModalService } from '../../../shared/services/modal.service';
+
 
 @Component({
   selector: 'app-GenerarAcuerdo',
@@ -82,6 +83,11 @@ export class GenerarAcuerdo {
   mostrarDocumento = signal<boolean>(false);
   seleccionadosParaFirma = signal(false);
 
+  promociones!: promocionExhortos[];
+    expandedRows = {};
+  filaExpandidaId: number | null = null;
+  
+
   acuerdosForm = new FormGroup({
       tipoDiligenciado: new FormControl(null as ListadoCatalogoTipoDiligenciado | null, Validators.required),
       observaciones: new FormControl('')
@@ -133,6 +139,7 @@ export class GenerarAcuerdo {
 
       this.getListadoTipoDocumento();
       this.getdatosExhortoRecibido(this.idExhortoRecibido);
+      this.getPromocionExhorto(this.idExhortoRecibido);
 
       this.GetSeccionesUsuario();
       this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccionado());
@@ -971,4 +978,106 @@ export class GenerarAcuerdo {
   printDivContent(): void {
     window.print();
   }
+
+  getPromocionExhorto(idExhorto:number){
+    this.isLoading=true;
+    this.cd.detectChanges();
+    this.exhortosService.getPromocionExhorto(idExhorto).subscribe({
+        next: (responsePromociones => {
+          if(responsePromociones.success){
+
+            //this.detallesAcuerdo = response.data;
+            if(responsePromociones.data.length>0){
+                this.promociones = responsePromociones.data;
+                //this.bandPromo = true;
+            }
+          }
+          else{
+            //console.log(responsePromociones.errors);
+            //this.bandPromo = false;
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: responsePromociones.message +'\n'+ responsePromociones.errors, sticky: true });
+          }
+        }),
+        error: (error) => {
+          //console.error('Error al cargar detalle de promoción', error);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
+          this.isLoading=false;
+          this.cd.detectChanges();
+        },
+        complete:()=>{
+          this.isLoading=false;
+          this.cd.detectChanges();
+        }
+      });
+  }
+
+  onRowExpand(event: TableRowExpandEvent) {
+        this.messageService.add({ severity: 'info', summary: 'Product Expanded', detail: event.data.name, life: 3000 });
+    }
+
+    onRowCollapse(event: TableRowCollapseEvent) {
+        this.messageService.add({ severity: 'success', summary: 'Product Collapsed', detail: event.data.name, life: 3000 });
+    }
+    
+
+  toggleFilaExpandida(id: number) {
+    this.filaExpandidaId = this.filaExpandidaId === id ? null : id;
+  }
+
+  //Llamada al servicio para obtener los Archivos base64 pdf
+  mostrarArchivo(documento: CONATRIB_ExhortosRecibidosArchivos, tipoDocumento: number): void {
+    const FIVE_MB = 5 * 1024 * 1024; // menos a 5 megas se abren en modal... los mayores se descargan
+    this.isLoading=true;
+    this.cd.detectChanges();
+    this.exhortosService.getFile(documento.idArchivo, tipoDocumento).subscribe({
+      next: (response) => {
+        //console.log("recibe respuesta");
+        if(response.success){
+          const base64String = response.data.documento;
+          if((documento.tamanio ?? 0) <= FIVE_MB && response.data.fileName.split('.')[1]==='pdf' )
+              
+              this.onVerDocumento(base64String,documento.nombreArchivo ?? 'sinnombre', 'application/pdf'); // se visualiza en modal
+          else{
+            const nombre= response.data.fileName;
+            this.dialogData.fileName=nombre;
+            const ext= nombre.split('.')[1];
+            downloadBase64(base64String, nombre,ext );
+          }
+        }
+        else
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
+        //const nombre= response.data.fileName;
+        //const ext= nombre.split('.')[1];
+
+        //downloadBase64(base64String, nombre,ext );
+        //this.fileContent = this.sanitizer.bypassSecurityTrustResourceUrl(`data:application/pdf;base64,${base64String}`);
+        //this.visible = true;
+      },
+      error: (error) => {
+        //console.error('Error al recibir el archivo', error);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
+          this.isLoading=false;
+        this.cd.detectChanges();
+      },
+      complete:()=>{
+        this.isLoading=false;
+        this.cd.detectChanges();
+      }
+    });
+  }
+  onVerDocumento(fileBase64: string, nombre:string, mime:string): void {
+      const file = base64ToFile(fileBase64,nombre, mime);
+      if (file instanceof File) {
+        const url = URL.createObjectURL(file);
+        //this.nombre = file.name;
+        this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        this.mostrarDocumento.set(true);
+        this.cd.detectChanges();
+      } else {
+        console.error('Documento inválido');
+    } 
+  }
+
+
 }
+

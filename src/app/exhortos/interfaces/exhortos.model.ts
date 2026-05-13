@@ -26,7 +26,7 @@ export interface ListadoExhortosRecibidosI{
     fechaOrigen:string;
     observaciones:string;
     tipoJuicioAsuntoDelitos:string;
-    diasResponder:number;
+    0:number;
     fojas:number;
     juezExhortante:string;
     tipoDiligenciacionNombre:string;

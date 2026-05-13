@@ -22,14 +22,14 @@
       </div>
 
       <div class="mt-6 md:mt-0 flex items-center">
-          
+
             @if (tienePermisoGuardar()) {
                 <div class="relative">
                     @if ([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)) {
                     <p-button type="button" (click)="guardarRespuestaExhorto()">
                     Guardar</p-button>
                     }
-                   
+
                 </div>
             }
             <td class="px-2 py-2">
@@ -64,6 +64,209 @@
     </div>
   </div>
 </div>
+@if(datosExhortoRecibido ){
+<div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4 mt-4">
+    <div class="border-b border-surface mb-4 pb-2">
+        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0">Información de Origen</h3>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Estado</span>
+            <span class="text-surface-900 dark:text-surface-50">{{ datosExhortoRecibido?.estadoOrigen }}</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Municipio</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.municipioOrigen}}</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Juzgado</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.juzgadoOrigenNombre}}</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Juez Exhortante</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.juezExhortante}}</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Vía</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.tipoJuicioAsuntoDelitos}}</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Diligencia</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.tipoDiligenciacionNombre}}</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Fecha de Envío</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.fechaOrigen}}</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Expediente</span>
+            <span class="text-surface-900 dark:text-surface-50 font-mono">{{datosExhortoRecibido?.numeroExpedienteOrigen}}</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Oficio</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.numeroOficioOrigen}}</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Término (Días)</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.diasResponder}}</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Fojas</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.fojas}}</span>
+        </div>
+
+        <div class="flex flex-col gap-1 md:col-span-2 lg:col-span-3">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Observaciones</span>
+            <p class="text-surface-900 dark:text-surface-50 italic">
+                {{datosExhortoRecibido?.observaciones}}
+            </p>
+        </div>
+
+    </div>
+</div>
+}
+@if(promociones && promociones.length > 0){
+<div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4 mt-4">
+    <div class="border-b border-surface mb-4 pb-2">
+        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0">Promociones</h3>
+    </div>
+<div class="relative overflow-x-auto">
+
+                    <p-table #dt [value]="promociones" dataKey="idActoReclamado" [expandedRowKeys]="expandedRows"
+                        (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
+                        <ng-template pTemplate="caption">
+                        </ng-template>
+
+                        <ng-template pTemplate="header">
+                            <tr class="uppercase text-xs">
+                                <th></th>
+                                <th><div class="flex items-center justify-between">Folio origen</div></th>
+                                <th><div class="flex items-center justify-between">Folio destino</div></th>
+                                <th><div class="flex items-center justify-between">Fojas</div></th>
+                                <th><div class="flex items-center justify-between">Fecha origen</div></th>
+                                <th><div class="flex items-center justify-between">Fecha Recepción</div></th>
+                                <th><div class="flex items-center justify-between">Observaciones</div></th>
+
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-item let-expanded="expanded" >
+                            <tr>
+                                <td>
+                                  <p-button
+  type="button"
+  [rounded]="true"
+  [text]="true"
+  [icon]="filaExpandidaId === item.promo.idPromocionRecibida ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+  (click)="toggleFilaExpandida(item.promo.idPromocionRecibida)">
+</p-button>
+
+                                </td>
+                                <td style="font-size: small;">{{item?.promo.folioOrigenPromocion}}</td>
+                                <td style="font-size: small;">{{item?.promo.folioPromocionRecibida}}</td>
+                                <td style="font-size: small;">{{item?.promo.fojas}}</td>
+                                <td style="font-size: small;">{{item?.promo.fechaOrigen | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td style="font-size: small;">{{ item?.promo.fechaRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td style="font-size: small;"> {{item?.promo.observaciones }}</td>
+                            </tr>
+                            <!-- Expanded row details -->
+                            @if (filaExpandidaId === item.promo.idPromocionRecibida) {
+                                <tr >
+                                <td colspan="12" class="px-4 py-4">
+                                    <p class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Promoventes:</p>
+                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                        <thead class="uppercase text-xs">
+                                            <tr class="">
+                                            <th class="px-4 py-2">NOMBRE</th>
+                                            <th class="px-4 py-2">GÉNERO</th>
+                                            <th class="px-4 py-2">PERSONA MORAL</th>
+                                            <th class="px-4 py-2">TIPO DE PARTE</th>
+                                            <th class="px-4 py-2">CORREO ELECTRÓNICO</th>
+                                            <th class="px-4 py-2">TELÉFONO</th>
+                                            </tr>
+                                        </thead>
+                                        @for (promoventes of item.promoventes; track promoventes) {
+                                            <tbody>
+                                            <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                                <td class="px-4 py-2">{{ promoventes.nombre}} {{ promoventes.apellidoPaterno}} {{ promoventes.apellidoMaterno}}</td>
+                                                <td class="px-4 py-2">{{ promoventes.genero }}</td>
+                                                <td class="px-4 py-2">
+                                                @if(promoventes.esPersonaMoral){
+                                                    <p>Si</p>
+                                                }
+                                                @else{
+                                                <p>No</p>
+                                                }
+                                            </td>
+                                            <td class="px-4 py-2">{{ promoventes.tipoParteNombre }}</td>
+                                            <td class="px-4 py-2">{{ promoventes.correoElectronico }}</td>
+                                            <td class="px-4 py-2">{{ promoventes.telefono }}</td>
+                                            </tr>
+                                        </tbody>
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr >
+                                <td colspan="12" class="px-4 py-4">
+                                    <p class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Documentos:</p>
+                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                        <thead class="uppercase text-xs">
+                                            <tr class="">
+                                            <th class="px-4 py-2">NOMBRE</th>
+                                            <th class="px-4 py-2">TIPO DOCUMENTO</th>
+                                            <th class="px-4 py-2">PÁGINAS</th>
+                                            <th class="px-4 py-2">TAMAÑO</th>
+                                            <th class="px-4 py-2"></th>
+                                            </tr>
+                                        </thead>
+                                        @for (archivos of item.archivos; track archivos) {
+                                            <tbody>
+                                            <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
+                                                <td class="px-4 py-2">{{ archivos.nombreArchivo}}</td>
+                                                <td class="px-4 py-2">{{ archivos.tipoDocumento.nombre }}</td>
+                                                <td class="px-4 py-2">{{ archivos.paginas }}</td>
+
+                                            <td class="px-4 py-2">{{ ((archivos.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
+                                            <td class="text-center">
+                                                <p-button (click)="mostrarArchivo(archivos,3)" severity="success" [rounded]="true"
+                                                        icon="pi pi-file-pdf" class="mr-2" title="descargar">
+                                                </p-button>
+                                            </td>
+                                            </tr>
+                                        </tbody>
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                            }
+                        </ng-template>
+
+
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="8">Sin promociones</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+                </div>
+</div>
+
+
+}
 <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4 mt-4">
   <div [formGroup]="acuerdosForm" class="grid grid-cols-12 gap-4 w-full items-end">
       <!-- Estado destino -->
@@ -81,7 +284,8 @@
 
     </div>
   </div>
-</div>{{detallesAcuerdo().generales | json}}
+</div>
+
 @if(detallesAcuerdo().generales?.idRespuesta !== 0)
 {
   <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
@@ -147,7 +351,7 @@
                                       formControlName="tipoDocumento"
                                       [options]="(listadoTipoDocumento())"
                                       optionLabel="nombre"
-                                      placeholder="seleccione" 
+                                      placeholder="seleccione"
                                       appendTo="body"
                                       filterPlaceholder="Buscar tipo..."
                                       class="w-full md:w-56"
@@ -182,7 +386,7 @@
                                 </table>
                               </td>
                               <td style="font-size: small;">{{ ((documento.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
-                            
+
                               <td class="text-center">
                                 @if(documento.idArchivo === 0){
                                   <p-button (click)="onUpload(documento.file)" severity="success" [rounded]="true"
@@ -194,7 +398,7 @@
                                     <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
                                       icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                                     </p-button>
-                                                            
+
                                 }
                                 <!--VER O DESCARGAR DOCUMENTO-->
                                 <p-button (click)="getFile(documento,1)" severity="success" [rounded]="true"
@@ -205,7 +409,7 @@
                                   @if(tienePermisoEliminarArchivo()){
                                     <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                                     (click)="eliminarDocumento(documento,1,i)" ></p-button>
-                                    
+
                                   }
                                 }
 
@@ -213,10 +417,7 @@
                           </tr>
                       </ng-template>
                   </p-table>
-                  @if(mostrarDocumento()){
-                    <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-                    </app-pdf-dialog>
-                  }
+
               </div>
               }
 
@@ -225,7 +426,11 @@
           </div>
       </div>
   </div>
-}
+}@if(mostrarDocumento()){
+                    <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                    </app-pdf-dialog>
+                  }
+
 <!--* MODAL DE CONFIRMACION PARA GUARDAR LOS DATOS GENERALES DEL ACUERDO -->
 <app-confirm-dialog key="guardarAcuerdo" title="Confirmación" message="¿Está seguro que desea guardar el acuerdo?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
@@ -305,11 +510,11 @@
                               </tr>
                               <tr>
                                 <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Estado : </b></p></td>
-                                <td class="col2">{{ datosExhortoRecibido.estadoOrigen || 'No disponible' }}</td>
+                                <td class="col2">{{ datosExhortoRecibido?.estadoOrigen || 'No disponible' }}</td>
                               </tr>
                               <tr>
                                 <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Juzgado : </b></p></td>
-                                <td class="col2">{{ datosExhortoRecibido.juzgadoOrigenNombre || 'No disponible' }}</td>
+                                <td class="col2">{{ datosExhortoRecibido?.juzgadoOrigenNombre || 'No disponible' }}</td>
                               </tr>
                             </table>
                           </div>
@@ -325,11 +530,11 @@
                               <!--INFORMACION ORIGEN-->
                               <tr>
                                 <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Municipio: </b></p></td>
-                                <td class="col2">{{ datosExhortoRecibido.municipioDestino || 'No disponible' }}</td>
+                                <td class="col2">{{ datosExhortoRecibido?.municipioDestino || 'No disponible' }}</td>
                               </tr>
                               <tr>
                                 <td class="col1"><p class="text-gray-700 dark:text-gray-300"><b>Materia: </b></p></td>
-                                <td class="col2">{{ datosExhortoRecibido.materiaNombre || 'No disponible' }}</td>
+                                <td class="col2">{{ datosExhortoRecibido?.materiaNombre || 'No disponible' }}</td>
                               </tr>
                             </table>
                           </div>

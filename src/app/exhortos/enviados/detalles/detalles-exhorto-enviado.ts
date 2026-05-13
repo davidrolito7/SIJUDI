@@ -22,6 +22,7 @@ import generateExEnviadosPDF from '../../reportes/rptExhortoEnviado';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { TagModule } from "primeng/tag";
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-DetallesExhortoEnviado',
