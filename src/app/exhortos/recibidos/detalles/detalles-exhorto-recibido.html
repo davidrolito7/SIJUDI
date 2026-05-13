@@ -28,7 +28,11 @@
                       >
                       Declarar incompetencia
                     </p-button>
-                    <app-incompetencia-dialog #dialogIncomp></app-incompetencia-dialog>
+                    
+                    <app-incompetencia-dialog
+  #dialogIncomp
+  (guardado)="recargarDetalleExhorto()">
+</app-incompetencia-dialog>
                   }
                 </div>
               }
