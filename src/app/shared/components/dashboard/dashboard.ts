@@ -1,18 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { Breadcrub } from "../breadcrub/breadcrub";
+import { Toast, ToastModule } from "primeng/toast";
 import { PerfilUsuarioService } from '../../service/PerfilUsuarioService';
 import { TokenService } from '../../../core/auth/service/token.service';
 import { MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
 import { datosFirma } from '../../interface/shared.interface';
-import { finalize } from 'rxjs';
+import { finalize, Observable } from 'rxjs';
+import { ContadoresService } from '../../../juicio-oral/services/contadores.service';
+
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
+    CommonModule,
     Breadcrub,
-    ToastModule
+    ToastModule,
+    RouterLink
   ],
   providers: [
     MessageService
@@ -24,17 +30,30 @@ export class Dashboard implements OnInit {
 
   isLoading = false;
   datosFirma!: datosFirma;
+  contadores$!: Observable<any>;
 
   constructor(
     private tokenService: TokenService,
     private messageService: MessageService,
-    private perfilUsuarioService: PerfilUsuarioService
-  ) {}
+    private perfilUsuarioService: PerfilUsuarioService,
+    private contadoresService: ContadoresService
+  ) {
+    this.contadores$ = this.contadoresService.contadores;
+  }
 
   ngOnInit(): void {
     this.getDatosInformacionPFX();
+    this.contadoresService.cargarContadores();
   }
 
+  ngOnDestroy(): void {
+    this.contadoresService.detenerPolling();
+  }
+
+  getContador(IdPantalla: number): Observable<number | null> {
+    return this.contadoresService.getContadorParaPantalla(IdPantalla);
+  }
+  
   getDatosInformacionPFX(): void {
     this.isLoading = true;
 
@@ -91,4 +110,9 @@ export class Dashboard implements OnInit {
         }
       });
   }
+
+  //funcion para obener la hora actual 
+  
+  
+   horaActual = new Date();
 }

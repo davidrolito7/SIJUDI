@@ -31,7 +31,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 // ============================
 // App - feature
 // ============================
-import { DetalleDemandaResponse, ListadoTramitesResponse } from '../../interfaces/juicioenlinea.model';
+import { DetalleDemandaResponse, DetalleTramiteResponse, ListadoTramitesResponse } from '../../interfaces/juicioenlinea.model';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
@@ -93,9 +93,9 @@ export class TurnarTramite {
     // },
   ];
 
-  tramitesSeleccionados: ListadoTramitesResponse[] = [];
+  tramitesSeleccionados: DetalleTramiteResponse[] = [];
 
-  tramites = signal<ListadoTramitesResponse[]>([]);
+  tramites = signal<DetalleTramiteResponse[]>([]);
   isLoading = signal(false);
   totalRecords = 0;        // ← total para que PrimeNG sepa cuántas páginas hay
   rowsPerPage = 10;        // ← rows actuales, se actualiza desde el evento lazy

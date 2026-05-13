@@ -245,17 +245,15 @@ export class TurnarDemanda implements OnInit {
   // ============================
   // Estado helpers for UI tags
   // ============================
-  getEstadoDescripcion(inicio: unknown): string | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { cat_estado_demanda?: { descripcion?: string } } } };
-    return i.demanda?.ultimo_estado?.cat_estado_demanda?.descripcion ?? null;
+  getEstadoDescripcion(inicio: DetalleDemandaResponse): string | null {
+    return inicio?.ultimo_estado?.cat_estado_tramite.nombre ?? null;
   }
 
-  getEstadoId(inicio: unknown): number | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { cat_estado_demanda?: { idCatEstadoDemanda?: number } } } };
-    return i.demanda?.ultimo_estado?.cat_estado_demanda?.idCatEstadoDemanda ?? null;
+  getEstadoId(inicio: DetalleDemandaResponse): number | null {
+    return inicio?.ultimo_estado?.cat_estado_tramite.idCatEstadoTramite ?? null;
   }
 
-  getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+  getEstadoTag(inicio: DetalleDemandaResponse): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
     const id = this.getEstadoId(inicio);
     switch (id) {
       case 1:
@@ -269,9 +267,9 @@ export class TurnarDemanda implements OnInit {
     }
   }
 
-  onSiguienteMovimientoDemanda(idDemanda: (string | number)[]): void {
+  onSiguienteMovimientoDemanda(idTramite: (string | number)[]): void {
     this.isLoading.set(true);
-    const payload: any = { idDemanda };
+    const payload: any = { idTramite };
 
     this.juicioService.putSiguienteMovimientoTramite(payload).subscribe({
       next: (response) => {
@@ -301,7 +299,7 @@ export class TurnarDemanda implements OnInit {
   turnarSeleccionados(): void {
     if (!this.selectedExpedientes.length) return;
 
-    const ids = this.selectedExpedientes.map(e => e.idDemanda).filter(Boolean);
+    const ids = this.selectedExpedientes.map(e => e.idTramite).filter(Boolean);
 
     if (!ids.length) {
       this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: 'No se encontraron IDs válidos' });

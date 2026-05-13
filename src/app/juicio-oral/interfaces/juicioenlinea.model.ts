@@ -1,3 +1,15 @@
+/**
+ * ============================================
+ * JUICIO EN LÍNEA - INTERFACES LIMPIAS
+ * ============================================
+ * 
+ * Archivo optimizado sin interfaces no utilizadas
+ * Organizado por módulos funcionales
+ */
+
+// ========================================
+// 1️⃣ CORE & BASE TYPES
+// ========================================
 
 export interface ApiResponse<T> {
     success: boolean;
@@ -7,81 +19,159 @@ export interface ApiResponse<T> {
     nombre?: string;
     descripcion?: string;
     pagination?: Pagination;
-
 }
+
 export interface Pagination {
     current_page: number;
     per_page: number;
     total: number;
     last_page: number;
 }
-//##########################################################
-// LISTADO DE PREREGISTROS RESPONSE  //http://127.0.0.1:8000/api/Inicio/ListadoPreregistros
 
-export interface ListadoDemandasResponse { //* OK
-    idDemanda: number;
-    folio: string;
-    //sintesis: string;
-    fechaHoraRecepcion: string;
-    descripcionDemanda: string;
-    idGeneral: string;
-    usr: number;
-    created_at: string;
-    updated_at: string;
-    cat_via_materia: CatMateriaVia;
-    ultimo_estado: HistorialEstado;
-}
+// ========================================
+// 2️⃣ CATALOGOS
+// ========================================
 
 export interface CatMateria {
-    idCatMateria: number;
-    descripcion: string;
+    IdCatMateria: number;
+    Descripcion: string;
+    activo?: string;
 }
+
 export interface CatTipoVia {
     idCatTipoVia: number;
     descripcion: string;
+    activo?: string;
+    created_at?: string;
+    updated_at?: string;
 }
 
-export interface ContadoresTramites {
-    demandas_pendientes_turnar: number;
-    tramites_pendientes_turnar: number;
-    pendientes_recibir: number;
+export interface CatVia {
+    idCatVia: number;
+    descripcion: string;
+    activo: string;
+    created_at: string;
+    updated_at: string;
 }
 
-//########################################################################
-// DETALLE DE PREREGISTROS RESPONSE   //http://127.0.0.1:8000/api/Inicio/DetallePreregistro/{idDemanda}
+export interface CatMunicipios {
+    idMunicipio: number;
+    Descripcion: string;
+}
+
+export interface CatSexos {
+    idCatSexo: number;
+    descripcion: string;
+}
+
+export interface CatTipoPartes {
+    idCatTipoParte: number;
+    descripcion: string;
+}
+
+export interface CatTipoDocumento {
+    idCatTipoDocumento: number;
+    nombre: string;
+    descripcion: string;
+    activo: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+// ========================================
+// 3️⃣ DEMANDAS
+// ========================================
+
 export interface DetalleDemandaResponse {
+    idTramite: number;
+    idCatTramite: string | number;
+    idGeneral: string;
+    folio: string;
+    sintesis: string;
+    observaciones: string;
+    idExpediente: string | number;
+    notificado: string | number;
+    idCatRemitente?: number | null;
+    idAcuerdo?: number | null;
+    created_at: string;
+    updated_at: string;
+    idEntidad: string | number;
+    tipoEntidad: 'Demanda';
+    fechaRecepcion: string;
+    entidad: DemandaEntity;
+    expediente: ListarExpedientesResponse;
+    ultimo_estado: HistorialEstadoTramite;
+    movimientos: MovimientoTramite[];
+    documentos: Documentos[];
+}
+
+export interface CrearDemandaResponse {
     idDemanda: number;
     folio: string;
-    idCatViaMateria: number;
-    sintesis: string;
-    fechaHoraRecepcion: string;
-    descripcionDemanda: string;
-    idGeneral: string;
+    fechaHoraRecepcion: Date;
     expediente: ListarExpedientesResponse;
-    partes: Partes[];
-    anexos_declarados: AnexosDeclarados[];
-    documentos: Documentos[];
-    cat_via_materia: CatMateriaVia;
-    ultimo_estado: HistorialEstado;
-    movimientos: Movimiento[];
-    //tipo: string;
 }
 
-export interface Partes { //* OK
-    idParte: number;
-    idDemanda: number;
-    idCatTipoParte: number;
+export interface DocumentoResponse {
+    did: string;
+    sid: string;
+    file: string;
     nombre: string;
-    apellidoMaterno: string;
-    apellidoPaterno: string;
+    descripcion: string;
+}
+
+// --- DEMANDAS: NESTED ---
+
+export interface DemandaEntity {
+    idDemanda: number;
+    idCatJuzgado?: number | null;
+    folioOficialia?: string | null;
+    folio: string;
+    idCatTipoExpediente?: number | null;
+    idCatViaMateria: string | number;
+    secretaria?: string | null;
+    fechaHoraRecepcion: string;
+    descripcionDemanda: string;
+    archivado: string;
+    activo: string;
+    certificacion: string;
+    idGeneralRecibe?: string | null;
+    importadoNS: string;
+    numContancia?: string | null;
+    idGeneral: string;
+    esCapturaOficialia: string;
+    idAcuerdo?: number | null;
+    created_at: string;
+    updated_at: string;
+    cveMunicipio: string;
+    expediente: DetalleExpedienteResponse;
+    partes: Partes[];
+    documentos?: Documentos[];
+    anexos_declarados?: AnexosDeclarados[];
+    ultimo_estado: HistorialEstadoDemanda;
+    cat_via_materia: CatMateriaVia;
+    movimientos: MovimientoTramite[];
+}
+
+export interface Partes {
+    idParte: number;
+    idDemanda: number | string;
+    idCatTipoParte: number | string;
+    nombre: string;
+    apellidoMaterno?: string;
+    apellidoPaterno?: string;
     direccion: string;
-    menorEdad: boolean;
+    menorEdad: boolean | string;
     curp: string;
-    idCatSexo: number;
+    idCatSexo: number | string;
     correo: string;
-    correoAlterno?: string;
+    correoAlterno?: string | null;
+    activo?: string;
+    created_at?: string;
+    updated_at?: string;
     cat_tipo_parte: CatTipoPartes;
 }
+
 export interface AnexosDeclarados {
     idAnexoDeclarado: number;
     idDemanda: number;
@@ -92,177 +182,70 @@ export interface AnexosDeclarados {
     updated_at: string;
     cat_tipo_documento: CatTipoDocumento;
 }
-export interface CatTipoDocumento { //* OK
-    idCatTipoDocumento: number;
-    nombre: string;
-    activo: string;
-    descripcion: string
 
-}
-export interface Documentos { //* OK
+export interface Documentos {
     idDocumento: number;
-    idDemanda: number;
-    idCatTipoDocumento: number | null;
+    idTramite?: number | string;
     nombre: string;
-    folio: string;
     documento: string;
-    montoAnexo: number | null;
+    activo?: string;
     created_at: string;
     updated_at: string;
-    //cat_tipo_documento: CatTipoDocumento;
-    cat_sexo: CatSexos;
 }
-export interface CatMateriaVia { //* OK
+
+export interface CatMateriaVia {
     idCatMateriaVia: number;
-    idCatMateria: number;
-    idCatVia: number;
+    idCatMateria: number | string;
+    idCatVia: number | string;
+    idCatTipoVia?: number | string;
+    activo?: string;
     created_at: string;
     updated_at: string;
     cat_materia: CatMateria;
     cat_via: CatVia;
 }
-export interface CatMateria { //* OK
-    IdCatMateria: number;
-    Descripcion: string;
-    activo: string;
-    created_at: string;
-    updated_at: string;
+
+export interface HistorialEstadoDemanda {
+    idHistorialEstadoDemanda: number;
+    idDemanda: string | number;
+    idCatEstadoDemanda: number;
+    fechaEstado: string;
+    idGeneral: string;
+    cat_estado_demanda: CatEstadoDemanda;
 }
 
-export interface CatVia { //* OK
-    idCatVia: number;
+export interface CatEstadoDemanda {
+    idCatEstadoDemanda: number;
     descripcion: string;
-    activo: string;
-    created_at: string;
-    updated_at: string;
+    activo?: string;
 }
-export interface CatMunicipios { //* OK
-    idMunicipio: number;
-    Descripcion: string;
-}
-export interface HistorialEstado { //* OK
+
+export interface HistorialEstado {
     descripcion: any;
     idDemanda: number;
     idCatEstadoInicio: number;
     fechaEstado: string;
     cat_estado_demanda: CatEstadoDemanda;
 }
-export interface CatEstadoDemanda { //* OK
-    idCatEstadoInicio: number;
-    descripcion: string;
-}
 
-export interface Movimiento {
-    idHistorialMovimientoDemanda: number;
-    idDemanda: number;
-    idCatEstadoDemanda: number;
-    idMovimiento: number;
+export interface MovimientoTramite {
+    idHistorialMovimientoTramite: number;
+    idTramite: string | number;
+    idMovimiento: string | number;
     cargoRecibe: string;
-    idGeneralRecibe: number;
-    fechaRecepcion: Date;
-    cargoTurna: string;
-    idGeneralTurna: number;
-    fechaTurnado: Date;
-    observaciones?: string;
+    idGeneralRecibe: string | number;
+    fechaRecepcion: string;
+    cargoTurna?: string | null;
+    idGeneralTurna?: string | null;
+    fechaTurnado?: string | null;
+    observaciones?: string | null;
     revocado: boolean;
     activo: boolean;
 }
-export interface DocumentoResponse {  //! QUITAR
-    did: string;
-    sid: string;
-    file: string;
-    nombre: string;
-    descripcion: string;
 
-}
-
-//########################################################################
-// CREAR DE PREREGISTRO REQUEST  //http://127.0.0.1:8000/api/Inicio/CrearPreregistro
-
-// export interface DetalleDemandaRequest {
-//     idCatMateria: number;
-//     idCatTipoVia: number;
-//     descripcionDemanda: string;
-//     partes: PartesRequest[];
-//     documentos: DocumentosRequest[];
-// }
-
-export interface PartesRequest { //* OK 
-    //// idUsr: string | null;
-    nombre: string;
-    apellidoMaterno?: string;
-    apellidoPaterno: string;
-    correo: string;
-    correoAlterno?: string;
-    direccion: string;
-    esMenorEdad: boolean;
-    idCatSexo: number | null;
-    idCatTipoParte: number | null;
-    // IU
-    descripcionTipoParte?: string;
-    filtroParte?: 'busqueda' | 'manual';
-
-}
-export interface AnexosDelcaradosRequest {
-    idCatTipoDocumento: number;
-    descripcion?: string;
-    cantidad: number;
-    valor?: number;
-
-}
-export interface DocumentosRequest { //* OK
-    //idCatTipoDocumento: number;
-    nombre: string;
-    documento: File;
-    firmaDigital: number;
-    // IU
-    peso?: number;
-
-}
-
-export interface CatSexos {
-    idCatSexo: number;
-    descripcion: string;
-
-}
-export interface CatTipoPartes {
-    idCatTipoParte: number;
-    descripcion: string;
-
-
-}
-export interface CatTipoDocumento {
-    idCatTipoDocumento: number;
-    descripcion: string;
-    activo: string;
-    created_at: string;
-    updated_at: string;
-}
-
-//REPONSE DE CREAR PREREGISTRO
-export interface CrearDemandaResponse {
-    idDemanda: number;
-    folio: string;
-    fechaHoraRecepcion: Date;
-    expediente: ListarExpedientesResponse;
-}
-//REPONSE DE DATOS PARA PARTES PREREGISTRO
-export interface DatosUsuarioResponse {
-    idUsr: string;
-    nombre: number;
-    direccion: string;
-    correo: string;
-    correoAlterno: string;
-}
-//REPONSE DE DATOS DE USUARIO
-export interface DatosUsRResponse {
-    nombre: string;
-    foto: string;
-    correo: string;
-    correoAlterno: string;
-}
-//########################################################################
-// LISTAR EXPEDIENTES  //http://127.0.0.1:8000/api/Expediente/Listar
+// ========================================
+// 4️⃣ EXPEDIENTES
+// ========================================
 
 export interface ListarExpedientesResponse {
     idExpediente: number;
@@ -272,61 +255,126 @@ export interface ListarExpedientesResponse {
     idDemanda: string;
     idSecretario: string;
     numSecretaria: string;
-    tramites: DetalleTramites[];
-    demanda: DetalleDemandaResponse;
+    tramites: DetalleTramiteResponse[];
+    demanda: DemandaEntity;
     juzgado: Juzgado;
     ultimo_historial: HistorialExpediente;
-
 }
+
+export interface DetalleExpedienteResponse {
+    idExpediente: number;
+    NumExpediente: string;
+    idCatJuzgado: string;
+    fechaResponse: string;
+    idDemanda: string;
+    idSecretario?: string;
+    numSecretaria?: string;
+    idSubArea?: string;
+    juzgado: Juzgado;
+    tramites: DetalleTramiteResponse[];
+    demanda: DemandaEntity;
+    requerimientos: DetalleRequerimiento[];
+    acuerdos: ListadoAcuerdosResponse[];
+    audiencias: AudienciasResponse[];
+}
+
+// --- EXPEDIENTES: NESTED ---
 
 export interface HistorialExpediente {
     idHistorialExpediente: number;
     idEstadoExpediente: string;
     descripcion: string;
     created_at: Date;
-    cat_estado_expediente: CatEstadoExpediente;
+    cat_estado_expediente?: CatEstadoExpediente;
 }
 
-export interface CatEstadoExpediente { //* OK
+export interface CatEstadoExpediente {
     idEstadoExpediente: number;
-    descripcion: string;
-}
-//########################################################################
-
-//Requerimiento
-export interface crearRequerimiento {
-    idExpediente: number
-    idAbogado: number
-    descripcion: String
-    documentoAcuerdo: File
-    idSecretario: number
-}
-export interface subirRequerimiento {
-    idCatTipoDocumento: number;
-    documentoNuevo: File
-    idAbogado: number
+    descripcion?: string;
 }
 
-export interface listarRequerimientos {
-    segundos: string;
-    minutos: string;
-    horas: string;
-    dias: string;
-    tiempoRestante: any;
-    idRequerimiento: number,
-    created_at: Date,
-    fechaLimite: Date,
-    idExpediente: number,
-    expediente: ListarExpedientesResponse,
-    abogado: abogado,
+// ========================================
+// 5️⃣ TRÁMITES
+// ========================================
+
+export interface ListadoTramitesResponse {
+    idTramite: number;
+    idCatTramite: number;
+    idGeneral: number;
+    folio: string;
+    sintesis: string;
+    observaciones: string;
+    idExpediente: number;
+    notificado: number;
+    idDocumentoTramite: number;
+    created_at: Date;
+    expediente: ListarExpedientesResponse;
+    cat_tramite: TipoTramite;
+    ultimo_estado: HistorialEstadoTramite;
 }
+
+export interface DetalleTramiteResponse {
+    idTramite: number;
+    idCatTramite: string | number;
+    idGeneral: string;
+    folio: string;
+    sintesis: string;
+    observaciones: string;
+    idExpediente: string | number;
+    notificado: string | number;
+    idCatRemitente?: number | null;
+    idAcuerdo?: number | null;
+    created_at: string;
+    updated_at: string;
+    idEntidad: string | number;
+    tipoEntidad: 'Tramite';
+    fechaRecepcion: string;
+    expediente: ListarExpedientesResponse;
+    ultimo_estado: HistorialEstadoTramite;
+    cat_tramite: TipoTramite;
+    movimientos: MovimientoTramite[];
+    documentos?: Documentos[];
+    partes_tramite?: Partes[];
+    documento?: Documentos;
+    remitente?: Remitente;
+}
+
+// --- TRÁMITES: NESTED ---
+
+export interface HistorialEstadoTramite {
+    idHistorialEstadoTramite: number;
+    idTramite: number | string;
+    idCatEstadoTramite: number;
+    fechaEstado?: string;
+    created_at: string | Date;
+    updated_at?: string;
+    cat_estado_tramite: catEstadoTramite;
+}
+
+export interface catEstadoTramite {
+    idCatEstadoTramite: number;
+    nombre: string;
+    activo: number | string;
+    created_at?: string | Date;
+}
+
+export interface TipoTramite {
+    idCatTramite: number;
+    nombre: string;
+    activo: number;
+    created_at: Date;
+}
+
+// ========================================
+// 6️⃣ REQUERIMIENTOS
+// ========================================
 
 export interface DetalleRequerimiento {
-    idRequerimiento: number,
-    descripcion: string,
-    idExpediente: number,
-    created_at: Date,
-    fechaLimite: Date,
+    idRequerimiento: number;
+    descripcion: string;
+    idExpediente: number;
+    created_at: Date;
+    fechaLimite: Date;
     idAbogado: number;
     idSecretario: number;
     usuarioAbogado: string;
@@ -343,35 +391,48 @@ export interface DetalleRequerimiento {
     abogado: abogado;
 }
 
-export interface usuario {
-    id: number,
-    name: string,
-}
-
-export interface abogado {
-    idAbogado: number,
-    idUsr: number;
-    idGeneral: number,
-    nombre: string,
-    correo: string,
-    correoAlterno: string,
-    created_at: Date,
-}
-
 export interface DocumentoRequerimiento {
     nombre: string;
     documento: string;
     idCatTipoDocumento: number;
 }
 
+export interface RespuestaRequerimientos {
+    status: number;
+    message: string;
+    data: listarRequerimientos[];
+    pagination: {
+        current_page: number;
+        per_page: number;
+        total: number;
+        last_page: number;
+    };
+}
+
+// --- REQUERIMIENTOS: NESTED ---
+
+export interface listarRequerimientos {
+    segundos: string;
+    minutos: string;
+    horas: string;
+    dias: string;
+    tiempoRestante: any;
+    idRequerimiento: number;
+    created_at: Date;
+    fechaLimite: Date;
+    idExpediente: number;
+    expediente: ListarExpedientesResponse;
+    abogado: abogado;
+}
+
 export interface Historial {
-    idHistorialEstadoRequerimientos: number
-    idRequerimiento: number
-    idCatEstadoRequerimientos: number,
-    idUsuario: number
-    created_at: Date,
-    updated_at: Date,
-    cat_estado_requerimiento: catEstadoRequerimientos
+    idHistorialEstadoRequerimientos: number;
+    idRequerimiento: number;
+    idCatEstadoRequerimientos: number;
+    idUsuario: number;
+    created_at: Date;
+    updated_at: Date;
+    cat_estado_requerimiento: catEstadoRequerimientos;
 }
 
 export interface catEstadoRequerimientos {
@@ -383,100 +444,40 @@ export interface catEstadoRequerimientos {
     idRequerimiento: number;
 }
 
-
-export interface DetalleExpedienteResponse { //* OK 
-    idExpediente: number;
-    NumExpediente: string;
-    idCatJuzgado: string;
-    fechaResponse: string;
-    idDemanda: string;
-    idSecretario?: string;
-    numSecretaria?: string;
-    idSubArea?: string;
-    juzgado: Juzgado;
-    tramites: DetalleTramites[];
-    demanda: DetalleDemandaResponse;
-    requerimientos: DetalleRequerimiento[];
-    acuerdos: ListadoAcuerdosResponse[];
-    audiencias: AudienciasResponse[];
-}
-
-export interface UsuarioPermisosResponse {
-    success: boolean;
-    message: string | null;
-    errors: any;
-    data: {
-        mS_UserProfile: any[];
-        pD_Abogados: any[];
-    };
-}
-
-
-
-//########################################################################
-// PARTES PARA CREAR AUDIENCIA  //http://127.0.0.1:8000/api/Audiencia/Crear
-
-
-export interface PartesAudiencia {
-    idParte?: string;
-    idDemanda?: string;
-    idUsr: number | null;
-    idGeneral?: number;
+export interface abogado {
+    idAbogado: number;
+    idUsr: number;
+    idGeneral: number;
     nombre: string;
-    apellidoPaterno?: string;
-    apellidoMaterno?: string;
     correo: string;
-    correoAlterno?: string;
-    direccion?: string;
-    idCatSexo: number | null;
-    sexoDescripcion?: string;
-    idCatTipoParte: number | null;
-    tipoParteDescripcion?: string;
-    descripcionTipoParte?: string;
-    filtroParte?: 'busqueda' | 'manual';
-    esNueva?: boolean
-    esAbogado: boolean;
-
+    correoAlterno: string;
+    created_at: Date;
 }
-export interface AudienciaCreadaResponse {
-    idAudiencia: number;
 
+export interface usuario {
+    id: number;
+    name: string;
 }
-export interface CrearAudienciaRequest {
+
+// --- REQUERIMIENTOS: REQUESTS ---
+
+export interface crearRequerimiento {
     idExpediente: number;
-    title: string;
-    agenda: string;
-    start: string; // formato: 'YYYY-MM-DD HH:mm:ss'
-    end: string;   // formato: 'YYYY-MM-DD HH:mm:ss'
-    invitees: CrearAudienciaInvitee[];
-}
-export interface CrearAudienciaInvitee {
-
-    correo: string;
-    correoAlterno?: string;
-    nombre: string
-    idUsr: number | null;
-    idCatSexo: number | null;
-    idCatTipoParte: number | null;
-    direccion: string;
-
+    idAbogado: number;
+    descripcion: String;
+    documentoAcuerdo: File;
+    idSecretario: number;
 }
 
-export interface InvitadosAudienciaResponse {
-    idInvitado: number;
-    idAudiencia: string;
-    email: string;
-    displayName: string;
-    coHost: boolean;
-    created_at: string;
-    updated_at: string;
-    idCatSexo: number;
-    sexoDescripcion: string;
-    idCatTipoParte: number;
-    tipoParteDescripcion: string;
+export interface subirRequerimiento {
+    idCatTipoDocumento: number;
+    documentoNuevo: File;
+    idAbogado: number;
 }
-//########################################################################
-// RESPONSE LISTADO DE AUDIENCIAS  //http://127.0.0.1:8000/api/Audiencia/Listar
+
+// ========================================
+// 7️⃣ AUDIENCIAS
+// ========================================
 
 export interface AudienciasResponse {
     idAudiencia: number;
@@ -497,9 +498,62 @@ export interface AudienciasResponse {
     expediente: ListarExpedientesResponse;
     ultimo_estado: UltimoEstadoAudienciaResponse;
     grabaciones?: GrabacionesAudienciaResponse[];
-
-
 }
+
+export interface AudienciaCreadaResponse {
+    idAudiencia: number;
+}
+
+export interface CrearAudienciaRequest {
+    idExpediente: number;
+    title: string;
+    agenda: string;
+    start: string;
+    end: string;
+    invitees: PartesAudiencia[];
+}
+
+export interface PartesAudiencia {
+    idParte?: string;
+    idDemanda?: string;
+    idUsr: number | null;
+    idGeneral?: number;
+    nombre: string;
+    apellidoPaterno?: string;
+    apellidoMaterno?: string;
+    correo: string;
+    correoAlterno?: string;
+    direccion?: string;
+    idCatSexo: number | null;
+    sexoDescripcion?: string;
+    idCatTipoParte: number | null;
+    tipoParteDescripcion?: string;
+    descripcionTipoParte?: string;
+    filtroParte?: 'busqueda' | 'manual';
+    esNueva?: boolean;
+    esAbogado: boolean;
+}
+
+export interface HorasStartDisponiblesResponse {
+    fecha: string;
+    ocupados: HorasOcupadas[];
+    disponibles: string[];
+}
+
+export interface HorasEndDisponiblesResponse {
+    fecha: string;
+    start: string;
+    end: string[];
+}
+
+export interface CancelarAudienciaRequest {
+    idCatTipoDocumento: number;
+    documento: File;
+    observaciones?: string;
+}
+
+// --- AUDIENCIAS: NESTED ---
+
 export interface Invitados {
     idInvitado: number;
     idAudiencia: string;
@@ -513,8 +567,6 @@ export interface Invitados {
     sexoDescripcion: string;
     idCatTipoParte: number;
     tipoParteDescripcion: string;
-
-
 }
 
 export interface UltimoEstadoAudienciaResponse {
@@ -536,43 +588,29 @@ export interface GrabacionesAudienciaResponse {
     password: string;
     durationSeconds: string;
 }
-export interface HorasStartDisponiblesResponse {
-    fecha: string;
-    ocupados: HorasOcupadas[];
-    disponibles: string[];
-}
 
 export interface HorasOcupadas {
     start: string;
     end: string;
 }
 
-export interface HorasEndDisponiblesResponse {
-    fecha: string;
-    start: string;
-    end: string[];
+// ========================================
+// 8️⃣ SOLICITUDES
+// ========================================
+
+export interface RespuestaListadoSolicitud {
+    success: boolean;
+    status: number;
+    data: SolicitudesGrabacionesResponse[];
+    pagination: {
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+    };
 }
 
-//########################################################################
-//*CANCELACION DE AUDIENCIA  //http://
-
-export interface CancelarAudienciaRequest {
-    idCatTipoDocumento: number;
-    documento: File;
-    observaciones?: string;
-
-}
-//########################################################################
-//*SOLICITAR GRABACIONES DE AUDIENCIA  //http://
-
-export interface SolicitarGrabacionRequest {
-    idAudiencia: number;
-    documento: File;
-    observaciones?: string;
-}
-
-//########################################################################
-//*LISTADO DE SOLICITUDES DE GRABACIONES  
+// --- SOLICITUDES: NESTED ---
 
 export interface SolicitudesGrabacionesResponse {
     idSolicitud: number;
@@ -586,6 +624,7 @@ export interface SolicitudesGrabacionesResponse {
     ultimo_estado: EstadosSolicitudResponse;
     audiencia: AudienciasResponse;
 }
+
 export interface EstadosSolicitudResponse {
     idHistorialEstadoSolicitud: number;
     idSolicitud: string;
@@ -601,175 +640,10 @@ export interface EstadoSolicitud {
     descripcion: string;
     activo: number;
 }
-//########################################################################
-//*PANTALLAS DE USUARIO  //http://127.0.0.1:8000/api/Permisos/ModulosYPantallas
 
-export interface SistemaModuloResponse {
-    idSistemaModulo: number;
-    nombre: string;
-    descripcion: string;
-    ejecutable: string;
-    pantallas: Pantalla[];
-}
-export interface Pantalla {
-    idPantalla: number;
-    nombre: string;
-    descripcion: string;
-    idSistemaModulo: number;
-    tipoCatalogo: number | null;
-    idCatalogo: number | null;
-    ejecutable: string;
-    valores: string;
-    exe: string;
-    imagen: string;
-    acceso: string;
-    orden: number;
-    fechaProduccion: string;
-    visibleMenu: boolean;
-}
-
-//Tramites
-export interface ListadoTramitesResponse {
-    idTramite: number;
-    idCatTramite: number;
-    idGeneral: number;
-    folio: string;
-    sintesis: string;
-    observaciones: string;
-    idExpediente: number;
-    notificado: number;
-    idDocumentoTramite: number
-    created_at: Date;
-    expediente: ListarExpedientesResponse;
-    cat_tramite: TipoTramite;
-    ultimo_estado: HistorialTramite;
-}
-
-export interface DetalleTramites {
-    idTramite: number;
-    idCatTramite: number;
-    idGeneral: number;
-    usr: number;
-    folio: string;
-    sintesis: string;
-    observaciones: string;
-    idExpediente: number;
-    notificado: number;
-    idDocumentoTramite: number;
-    created_at: Date;
-    idCatRemitente: number;
-    idAcuerdo?: number | null;
-    expediente: ListarExpedientesResponse;
-    ultimo_estado: HistorialTramite;
-    documento: Documentos;
-    cat_tramite: TipoTramite;
-    partes_tramite: Partes[];
-    remitente: Remitente;
-    movimientos: Movimiento[];
-}
-
-export interface HistorialTramite {
-    idHistorialEstadoTramite: number;
-    idTramite: number;
-    idCatEstadoTramite: number;
-    created_at: Date;
-    cat_estado_tramite: catEstadoTramite;
-}
-
-export interface catEstadoTramite {
-    idCatEstadoTramite: number;
-    nombre: string;
-    activo: number;
-    created_at: Date;
-}
-export interface TipoTramite {
-    idCatTramite: number,
-    nombre: string,
-    activo: number,
-    created_at: Date;
-}
-
-export interface Juzgado {
-    IdCatJuzgado: number
-    nombre: string
-    lugar: string
-    Descripcion: string
-}
-
-export interface Remitente {
-    idCatRemitente: number;
-    categoria: string;
-    dependencia: string;
-    remitente: string;
-    cargo: string;
-    juzgados: Juzgado[];
-}
-
-//para paginar
-export interface RespuestaRequerimientos {
-    status: number;
-    message: string;
-    data: listarRequerimientos[];
-    pagination: {
-        current_page: number;
-        per_page: number;
-        total: number;
-        last_page: number;
-    };
-}
-
-export interface RespuestaExpedienteDetalle {
-    success: boolean;
-    status: number;
-    data: {
-        expediente: ListarExpedientesResponse;
-        registros: RegistroExpediente[];
-        pagination: {
-            current_page: number;
-            last_page: number;
-            per_page: number;
-            total: number;
-        };
-    };
-}
-
-export interface RespuestaListadoAudiencia {
-    success: boolean;
-    status: number;
-    data: AudienciasResponse[],
-    pagination: {
-        current_page: number;
-        last_page: number;
-        per_page: number;
-        total: number;
-    };
-
-}
-
-export interface RespuestaListadoSolicitud {
-    success: boolean;
-    status: number;
-
-    data: SolicitudesGrabacionesResponse[],
-    pagination: {
-        current_page: number;
-        last_page: number;
-        per_page: number;
-        total: number;
-    };
-
-}
-
-export type RegistroExpediente =
-    | DetalleDemandaResponse
-    | DetalleRequerimiento
-    | DetalleTramites
-    | AudienciasResponse;
-
-
-
-//########################################################################
-//*ACUERDOS  //http://127.0.0.1:8000/api/Permisos/ModulosYPantallas
+// ========================================
+// 9️⃣ ACUERDOS
+// ========================================
 
 export interface ListadoAcuerdosResponse {
     idAcuerdo: number;
@@ -778,10 +652,12 @@ export interface ListadoAcuerdosResponse {
     observaciones: string;
     fechaAcuerdo: string;
     expediente?: DetalleExpedienteResponse;
-    tramites?: DetalleTramites[];
+    tramites?: DetalleTramiteResponse[];
     ultimo_estado?: HistorialEstadoAcuerdoResponse;
     ultimo_documento: DocumentoAcuerdoResponse;
 }
+
+// --- ACUERDOS: NESTED ---
 
 export interface HistorialEstadoAcuerdoResponse {
     idHistorialEstadoAcuerdo: number;
@@ -801,4 +677,110 @@ export interface DocumentoAcuerdoResponse {
     idDocumentoAcuerdo: number;
     idAcuerdo: number;
     nombre: string;
+}
+
+// ========================================
+// 🔟 JUZGADOS & REMITENTES
+// ========================================
+
+export interface Juzgado {
+    IdCatJuzgado: number;
+    CveJuzgado?: string;
+    nombre?: string;
+    lugar?: string;
+    Descripcion: string;
+    Tipo?: string;
+    'Activo '?: string;
+}
+
+export interface Remitente {
+    idCatRemitente: number;
+    categoria: string;
+    dependencia: string;
+    remitente: string;
+    cargo: string;
+    juzgados: Juzgado[];
+}
+
+// ========================================
+// 1️⃣1️⃣ USUARIOS
+// ========================================
+
+export interface DatosUsuarioResponse {
+    idUsr: string;
+    nombre: string;
+    direccion: string;
+    correo: string;
+    correoAlterno: string;
+}
+
+export interface ContadoresTramites {
+    demandas_pendientes_turnar: number;
+    tramites_pendientes_turnar: number;
+    pendientes_recibir: number;
+    expedientes_activos: number;
+    acuerdos_sin_firmar: number;
+}
+
+// ========================================
+// 1️⃣2️⃣ SISTEMA & PANTALLAS
+// ========================================
+
+export interface SistemaModuloResponse {
+    idSistemaModulo: number;
+    nombre: string;
+    descripcion: string;
+    ejecutable: string;
+    pantallas: Pantalla[];
+}
+
+export interface Pantalla {
+    idPantalla: number;
+    nombre: string;
+    descripcion: string;
+    idSistemaModulo: number;
+    tipoCatalogo: number | null;
+    idCatalogo: number | null;
+    ejecutable: string;
+    valores: string;
+    exe: string;
+    imagen: string;
+    acceso: string;
+    orden: number;
+    fechaProduccion: string;
+    visibleMenu: boolean;
+}
+
+// ========================================
+// 1️⃣3️⃣ REQUESTS (PARA CREAR/ACTUALIZAR)
+// ========================================
+
+export interface PartesRequest {
+    nombre: string;
+    apellidoMaterno?: string;
+    apellidoPaterno: string;
+    correo: string;
+    correoAlterno?: string;
+    direccion: string;
+    esMenorEdad: boolean;
+    idCatSexo: number | null;
+    idCatTipoParte: number | null;
+    descripcionTipoParte?: string;
+    filtroParte?: 'busqueda' | 'manual';
+}
+
+export interface AnexosDelcaradosRequest {
+    idCatTipoDocumento: number;
+    descripcion?: string;
+    cantidad: number;
+    valor?: number;
+    archivo: File;
+    firmaDigital: number;
+}
+
+export interface DocumentosRequest {
+    nombre: string;
+    documento: File;
+    firmaDigital: number;
+    peso?: number;
 }

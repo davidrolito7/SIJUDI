@@ -26,7 +26,7 @@ import { base64ToFile } from '../../../shared/functions/utils';
 // ============================
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { PantallasService } from '../../services/pantallas.service';
-import { DetalleTramites, Partes } from '../../interfaces/juicioenlinea.model';
+import { DetalleTramiteResponse, Partes } from '../../interfaces/juicioenlinea.model';
 import { TokenService } from '../../../core/auth/service/token.service';
 
 @Component({
@@ -54,7 +54,7 @@ export class DetalleTramite implements OnInit {
   // Data
   // ============================
   idTramite: number | undefined;
-  detalleTramite: DetalleTramites | null = null;
+  detalleTramite: DetalleTramiteResponse | null = null;
   partesTramite: Partes[] = [];
   anexos: any[] = [];
 

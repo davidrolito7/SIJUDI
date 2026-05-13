@@ -4,7 +4,7 @@
     <app-breadcrub></app-breadcrub>
 
     <!-- TÍTULO DE PÁGINA -->
-    <div class="mt-2 mb-4 px-2">
+    <div class="mb-4">
         <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
             Entrega Recepción
         </h1>
@@ -16,43 +16,42 @@
     <!-- SECCIÓN DE FILTROS  -->
     <div class="border border-surface border-b-0 rounded-t-2xl bg-surface-50 dark:bg-surface-900 p-4 shadow-sm">
         <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda de exhortos enviados">
-                <div class="grid grid-cols-12 gap-4 w-full items-end">
-                    <!-- Folio -->
-                    <div class="col-span-12 md:col-span-6 lg:col-span-4 w-full">
-                        <label for="folio" class="block mb-2 text-sm font-medium">Folio</label>
-
-                        <p-inputmask fluid [(ngModel)]="filtro.folio" name="folio" class="uppercase text-sm rounded-lg"
-                            mask="9999/9999" placeholder="0001/2026" />
-                    </div>
-
-                    <!-- Estatus -->
-                    <div class="col-span-12 md:col-span-6 lg:col-span-2 w-full">
-                        <label for="estado" class="block mb-2 text-sm font-medium">Estatus</label>
-
-                        <p-select inputId="estado" name="estado" class="w-full" [options]="estadoOptions"
-                            [(ngModel)]="filtro.estado" optionLabel="label" optionValue="value" appendTo="body" fluid
-                            [attr.aria-label]="'Estatus'"></p-select>
-                    </div>
-
-                    <!-- Fecha -->
-                    <div class="col-span-12 md:col-span-8 lg:col-span-3 ">
-                        <label for="rangeDates" class="block mb-2 text-sm font-medium">Fecha</label>
-
-                        <p-datepicker inputId="rangeDates" name="rangeDates" fluid placeholder="Selecciona rango"
-                            [(ngModel)]="filtro.rangeDates" selectionMode="range" [readonlyInput]="true"></p-datepicker>
-                    </div>
-
-                    <!-- Botones -->
-                    <div class="col-span-12 md:col-span-4 lg:col-span-2 flex gap-4 ">
-                        <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
-                            aria-label="Limpiar filtros"></p-button>
-
-                        <p-button type="submit" aria-label="Buscar">
-                            <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
-                            <span pButtonLabel>Buscar</span>
-                        </p-button>
-                    </div>
+            <div class="grid grid-cols-12 gap-4 w-full items-end">
+                <!-- Folio -->
+                <div class="col-span-12 md:col-span-6 lg:col-span-4 w-full">
+                    <label for="folio" class="block mb-2 text-sm font-medium">Folio</label>
+                    <p-inputmask fluid [(ngModel)]="filtro.folio" name="folio" class="uppercase text-sm rounded-lg"
+                        mask="9999/9999" placeholder="0001/2026" />
                 </div>
+
+                <!-- Estatus -->
+                <div class="col-span-12 md:col-span-6 lg:col-span-2 w-full">
+                    <label for="estado" class="block mb-2 text-sm font-medium">Estatus</label>
+
+                    <p-select inputId="estado" name="estado" class="w-full" [options]="estadoOptions"
+                        [(ngModel)]="filtro.estado" optionLabel="label" optionValue="value" appendTo="body" fluid
+                        [attr.aria-label]="'Estatus'"></p-select>
+                </div>
+
+                <!-- Fecha -->
+                <div class="col-span-12 md:col-span-8 lg:col-span-3 ">
+                    <label for="rangeDates" class="block mb-2 text-sm font-medium">Fecha</label>
+
+                    <p-datepicker inputId="rangeDates" name="rangeDates" fluid placeholder="Selecciona rango"
+                        [(ngModel)]="filtro.rangeDates" selectionMode="range" [readonlyInput]="true"></p-datepicker>
+                </div>
+
+                <!-- Botones -->
+                <div class="col-span-12 md:col-span-4 lg:col-span-2 flex gap-4 ">
+                    <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
+                        aria-label="Limpiar filtros"></p-button>
+
+                    <p-button type="submit" aria-label="Buscar">
+                        <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
+                        <span pButtonLabel>Buscar</span>
+                    </p-button>
+                </div>
+            </div>
         </form>
     </div>
     <!-- Fina de la sección sticky -->
@@ -121,7 +120,7 @@
                         [severity]="getEstadoTag(tramite).severity" [icon]="getEstadoTag(tramite).icon" />
                 </td>
                 <td pFrozenColumn alignFrozen="right">
-                    @if (tramite.cat_tramite?.idCatTramite === 0) {
+                    @if (tramite.cat_tramite?.idCatTramite === 3) {
                     <p-button (click)="detalleDemanda(tramite.idTramite)" [rounded]="true" [raised]="true"
                         icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top">
                     </p-button>

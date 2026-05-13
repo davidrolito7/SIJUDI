@@ -107,8 +107,8 @@
                 <tr>
                     <td>
                         <p-checkbox [binary]="true" [ngModel]="selectedTramites.includes(tramite)"
-                            [ngModelOptions]="{ standalone: true }"
-                            (onChange)="toggleSelection(tramite)"></p-checkbox>
+                            [ngModelOptions]="{ standalone: true }" (onChange)="toggleSelection(tramite)"
+                            [disabled]="tramite.cat_tramite?.idCatTramite === 3"></p-checkbox>
                     </td>
                     <td>{{ tramite.folio }}</td>
                     <td>
@@ -120,18 +120,25 @@
                         <p-tag [value]="(getEstadoDescripcion(tramite) | uppercase) ?? ''"
                             [severity]="getEstadoTag(tramite).severity" [icon]="getEstadoTag(tramite).icon ?? ''" />
                     </td>
- 
+
                     <td>
-                        <p-button [rounded]="true" [text]="true" [raised]="true" severity="info" icon="pi pi-eye"
-                            pTooltip="Ver detalle" tooltipPosition="top" (click)="detalle(tramite.idTramite)">
+
+                        @if (tramite.cat_tramite?.idCatTramite === 3) {
+                        <p-button (click)="detalleDemanda(tramite.idTramite)" [rounded]="true" [raised]="true"
+                            icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top">
                         </p-button>
+                        } @else {
+                        <p-button (click)="detalleTramite(tramite.idTramite)" [rounded]="true" [raised]="true"
+                            icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top">
+                        </p-button>
+                        }
                     </td>
                 </tr>
             </ng-template>
 
             <ng-template #emptymessage>
                 <tr>
-                    <td colspan="7">Sin promociones registradas.</td>
+                    <td colspan="7">Sin trámites registrados.</td>
                 </tr>
             </ng-template>
 
@@ -184,8 +191,8 @@
 <div class="mt-4 mb-4 flex flex-wrap justify-end gap-3">
 
     <!-- Enviar acuerdo -->
-    <p-button icon="pi pi-upload" label="Enviar acuerdo" severity="warn"
-        [disabled]="acuerdo.invalid" (click)="onAcuerdoConfirm($event)">
+    <p-button icon="pi pi-upload" label="Enviar acuerdo" severity="warn" [disabled]="acuerdo.invalid"
+        (click)="onAcuerdoConfirm($event)">
     </p-button>
 
 </div>

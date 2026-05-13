@@ -186,8 +186,8 @@
                             }
                         </td> -->
                         <td>
-                            @if (tramite.cat_tramite?.idCatTramite === 0) {
-                            <p-button (click)="detalleDemanda(tramite.idDemanda)" [rounded]="true" [raised]="true"
+                            @if (tramite.cat_tramite?.idCatTramite === 3) {
+                            <p-button (click)="detalleDemanda(tramite.idTramite)" [rounded]="true" [raised]="true"
                                 icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top">
                             </p-button>
                             } @else {

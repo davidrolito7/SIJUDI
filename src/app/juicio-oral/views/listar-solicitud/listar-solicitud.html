@@ -3,8 +3,10 @@
 <p-confirmdialog key="actualizar">
   <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
     <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded">
-      <div class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
-        <svg class="w-14 h-14 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+      <div
+        class="rounded-full bg-blue-500 text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
+        <svg class="w-14 h-14 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+          fill="none" viewBox="0 0 24 24">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
         </svg>
@@ -31,13 +33,13 @@
   <app-breadcrub></app-breadcrub>
 
   <!-- TÍTULO DE PÁGINA -->
-  <div class="mt-2 mb-4 px-2">
-      <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
-          Solicitudes de audiencia
-      </h1>
-      <p class="text-surface-500 dark:text-surface-400 mt-1">
-          Gestiona las solicitudes de audiencia recibidas.
-      </p>
+  <div class="mb-4">
+    <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
+      Solicitudes de audiencia
+    </h1>
+    <p class="text-surface-500 dark:text-surface-400 mt-1">
+      Gestiona las solicitudes de audiencia recibidas.
+    </p>
   </div>
 
   <!-- SECCIÓN DE FILTROS -->
@@ -48,16 +50,15 @@
         <!-- Folio/Expediente -->
         <div class="col-span-12 md:col-span-6 lg:col-span-3 w-full">
           <label for="expediente" class="block mb-2 text-sm font-medium">Folio</label>
-          <p-inputmask fluid [(ngModel)]="filtro.expediente" name="expediente"
-            mask="9999/9999" placeholder="0001/2026" />
+          <p-inputmask fluid [(ngModel)]="filtro.expediente" name="expediente" mask="9999/9999"
+            placeholder="0001/2026" />
         </div>
 
         <!-- Estatus -->
         <div class="col-span-12 md:col-span-6 lg:col-span-2 w-full">
           <label for="estado" class="block mb-2 text-sm font-medium">Estatus</label>
-          <p-select inputId="estado" name="estado" class="w-full" [options]="estadoOptions"
-            [(ngModel)]="filtro.estado" optionLabel="label" optionValue="value"
-            appendTo="body" fluid [attr.aria-label]="'Estatus'"></p-select>
+          <p-select inputId="estado" name="estado" class="w-full" [options]="estadoOptions" [(ngModel)]="filtro.estado"
+            optionLabel="label" optionValue="value" appendTo="body" fluid [attr.aria-label]="'Estatus'"></p-select>
         </div>
 
         <!-- Fecha -->
@@ -69,8 +70,8 @@
 
         <!-- Botones -->
         <div class="col-span-12 md:col-span-4 lg:col-span-3 flex gap-4">
-          <p-button type="button" icon="pi pi-filter-slash" [outlined]="true"
-            (click)="limpiarFiltros()" aria-label="Limpiar filtros"></p-button>
+          <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
+            aria-label="Limpiar filtros"></p-button>
           <p-button type="submit" aria-label="Buscar" styleClass="btn-secondary">
             <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
             <span pButtonLabel>Buscar</span>
@@ -84,166 +85,146 @@
 
 <!-- TABLA -->
 <div class="border border-surface rounded-b-2xl bg-surface-0 dark:bg-surface-950 shadow-sm overflow-hidden mb-4 p-0">
-    <p-table #dtSolicitudes  stripedRows [value]="solicitudes" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
-      [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
-      [globalFilterFields]="['folio', 'audiencia.title', 'ultimo_estado.estado.descripcion']">
+  <p-table #dtSolicitudes stripedRows [value]="solicitudes" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+    [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
+    [globalFilterFields]="['folio', 'audiencia.title', 'ultimo_estado.estado.descripcion']">
 
-      <ng-template #caption>
-        <div class="flex items-center justify-end">
-          <p-iconfield iconPosition="left">
-            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-            <input pInputText type="text"
-              (input)="dtSolicitudes.filterGlobal($any($event.target).value, 'contains')"
-              placeholder="Buscar en la tabla..." aria-label="Buscar" class="w-full md:w-64" />
-          </p-iconfield>
-        </div>
-      </ng-template>
+    <ng-template #caption>
+      <div class="flex items-center justify-end">
+        <p-iconfield iconPosition="left">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="dtSolicitudes.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar en la tabla..." aria-label="Buscar" class="w-full md:w-64" />
+        </p-iconfield>
+      </div>
+    </ng-template>
 
-      <ng-template #header>
-        <tr>
-          <th scope="col">Folio</th>
-          <th scope="col">Audiencia</th>
-          <th scope="col">Fecha de creación</th>
-          <th scope="col">Anexo</th>
-          <th scope="col">Estado</th>
-          <th scope="col">Acciones</th>
-        </tr>
-      </ng-template>
+    <ng-template #header>
+      <tr>
+        <th scope="col">Folio</th>
+        <th scope="col">Audiencia</th>
+        <th scope="col">Fecha de creación</th>
+        <th scope="col">Anexo</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </ng-template>
 
-      <ng-template #body let-solicitud>
-        <tr>
-          <td># <span>{{ solicitud.folio }}</span></td>
+    <ng-template #body let-solicitud>
+      <tr>
+        <td># <span>{{ solicitud.folio }}</span></td>
 
-          <td>{{ solicitud.audiencia?.title }}</td>
+        <td>{{ solicitud.audiencia?.title }}</td>
 
-          <td>{{ solicitud.created_at | date: 'dd/MM/yyyy HH:mm' }} h</td>
+        <td>{{ solicitud.created_at | date: 'dd/MM/yyyy HH:mm' }} h</td>
 
-          <td>
-            <p-button
-              (click)="openModal(+solicitud.primer_estado.idDocumento, solicitud, true)"
-              [rounded]="true" [text]="true" [raised]="true"
-              severity="warn" icon="pi pi-file-pdf"
-              pTooltip="Ver anexo" tooltipPosition="top">
+        <td>
+          <p-button (click)="openModal(+solicitud.primer_estado.idDocumento, solicitud, true)" [rounded]="true"
+            [text]="true" [raised]="true" severity="warn" icon="pi pi-file-pdf" pTooltip="Ver anexo"
+            tooltipPosition="top">
+          </p-button>
+        </td>
+
+        <td>
+          <p-tag [value]="(solicitud.ultimo_estado?.estado?.descripcion | uppercase) ?? ''"
+            [severity]="getEstadoTag(solicitud).severity" [icon]="getEstadoTag(solicitud).icon" />
+        </td>
+
+        <td>
+          <div class="flex items-center gap-2">
+            <!-- Ver respuesta -->
+            @if (solicitud.ultimo_estado?.estado?.idCatEstadoSolicitud !== 1) {
+            <p-button (click)="openModal(+solicitud.ultimo_estado.idDocumento, solicitud, false)" [rounded]="true"
+              [text]="true" [raised]="true" severity="info" icon="pi pi-info-circle" pTooltip="Ver respuesta"
+              tooltipPosition="top">
             </p-button>
-          </td>
+            }
 
-          <td>
-            <p-tag
-              [value]="(solicitud.ultimo_estado?.estado?.descripcion | uppercase) ?? ''"
-              [severity]="getEstadoTag(solicitud).severity"
-              [icon]="getEstadoTag(solicitud).icon" />
-          </td>
+            <!-- Ver audiencia -->
+            <p-button (click)="detalleAudiencia(solicitud.audiencia.idAudiencia)" [rounded]="true" [text]="true"
+              [raised]="true" severity="secondary" icon="pi pi-calendar" pTooltip="Ver audiencia" tooltipPosition="top">
+            </p-button>
 
-          <td>
-            <div class="flex items-center gap-2">
-              <!-- Ver respuesta -->
-              @if (solicitud.ultimo_estado?.estado?.idCatEstadoSolicitud !== 1) {
-                <p-button
-                  (click)="openModal(+solicitud.ultimo_estado.idDocumento, solicitud, false)"
-                  [rounded]="true" [text]="true" [raised]="true"
-                  severity="info" icon="pi pi-info-circle"
-                  pTooltip="Ver respuesta" tooltipPosition="top">
-                </p-button>
-              }
+            <!-- Aceptar -->
+            @if (mostrarBoton() &&
+            solicitud.ultimo_estado?.estado?.idCatEstadoSolicitud !== 2 &&
+            solicitud.ultimo_estado?.estado?.idCatEstadoSolicitud !== 3) {
+            <p-button (click)="showModalAccion(2, solicitud.idSolicitud)" [rounded]="true" [text]="true" [raised]="true"
+              severity="success" icon="pi pi-check" pTooltip="Aceptar" tooltipPosition="top">
+            </p-button>
+            }
 
-              <!-- Ver audiencia -->
-              <p-button
-                (click)="detalleAudiencia(solicitud.audiencia.idAudiencia)"
-                [rounded]="true" [text]="true" [raised]="true"
-                severity="secondary" icon="pi pi-calendar"
-                pTooltip="Ver audiencia" tooltipPosition="top">
-              </p-button>
+            <!-- Denegar -->
+            @if (mostrarBoton() &&
+            solicitud.ultimo_estado?.estado?.idCatEstadoSolicitud !== 2 &&
+            solicitud.ultimo_estado?.estado?.idCatEstadoSolicitud !== 3) {
+            <p-button (click)="showModalAccion(3, solicitud.idSolicitud)" [rounded]="true" [text]="true" [raised]="true"
+              severity="danger" icon="pi pi-times" pTooltip="Denegar" tooltipPosition="top">
+            </p-button>
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
 
-              <!-- Aceptar -->
-              @if (mostrarBoton() &&
-                   solicitud.ultimo_estado?.estado?.idCatEstadoSolicitud !== 2 &&
-                   solicitud.ultimo_estado?.estado?.idCatEstadoSolicitud !== 3) {
-                <p-button
-                  (click)="showModalAccion(2, solicitud.idSolicitud)"
-                  [rounded]="true" [text]="true" [raised]="true"
-                  severity="success" icon="pi pi-check"
-                  pTooltip="Aceptar" tooltipPosition="top">
-                </p-button>
-              }
-
-              <!-- Denegar -->
-              @if (mostrarBoton() &&
-                   solicitud.ultimo_estado?.estado?.idCatEstadoSolicitud !== 2 &&
-                   solicitud.ultimo_estado?.estado?.idCatEstadoSolicitud !== 3) {
-                <p-button
-                  (click)="showModalAccion(3, solicitud.idSolicitud)"
-                  [rounded]="true" [text]="true" [raised]="true"
-                  severity="danger" icon="pi pi-times"
-                  pTooltip="Denegar" tooltipPosition="top">
-                </p-button>
-              }
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-
-      <ng-template #emptymessage>
-        <tr>
-          <td colspan="6">Sin registros</td>
-        </tr>
-      </ng-template>
-    </p-table>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6">Sin registros</td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
 
 <!-- MODAL VER PDF -->
 <app-pdf-dialog
-    [header]="'OBSERVACIONES: ' + (esPrimerEstado ? solicitudSeleccionada?.observaciones : solicitudSeleccionada?.ultimo_estado?.observaciones)"
-    [url]="documentoUrl" 
-    [(visible)]="visiblePdfModal">
+  [header]="'OBSERVACIONES: ' + (esPrimerEstado ? solicitudSeleccionada?.observaciones : solicitudSeleccionada?.ultimo_estado?.observaciones)"
+  [url]="documentoUrl" [(visible)]="visiblePdfModal">
 </app-pdf-dialog>
 
 <!-- MODAL ACCIÓN (Aceptar / Denegar) -->
-<p-dialog [header]="estadoAccion === 2 ? 'Aceptar solicitud' : 'Denegar solicitud'"
-    [modal]="true" [(visible)]="visibleModal" [style]="{ width: '25rem' }" [closable]="false">
-    <form [formGroup]="anexoForm" (ngSubmit)="confirmSolicitud($event)" class="relative rounded-lg">
-        <div class="space-y-6">
-            <div class="grid grid-cols-6 gap-6">
+<p-dialog [header]="estadoAccion === 2 ? 'Aceptar solicitud' : 'Denegar solicitud'" [modal]="true"
+  [(visible)]="visibleModal" [style]="{ width: '25rem' }" [closable]="false">
+  <form [formGroup]="anexoForm" (ngSubmit)="confirmSolicitud($event)" class="relative rounded-lg">
+    <div class="space-y-6">
+      <div class="grid grid-cols-6 gap-6">
 
-                <!-- Mensaje -->
-                <div class="col-span-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Mensaje
-                    </label>
-                    <textarea rows="4" formControlName="observaciones" pInputTextarea
-                        class="block p-2.5 uppercase w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Escribe tu mensaje aquí..."></textarea>
-                    @if (shouldShowError('observaciones')) {
-                        <div class="text-red-500 text-sm mt-1">{{ getError('observaciones') }}</div>
-                    }
-                </div>
-
-                <!-- Archivo -->
-                <div class="col-span-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Anexo
-                    </label>
-                    <p-fileupload mode="basic" name="documento" chooseLabel="Seleccionar archivo"
-                        chooseIcon="pi pi-upload" [customUpload]="true" [multiple]="false"
-                        [accept]="'.pdf,.doc,.docx,.png,.jpg,.jpeg'" [maxFileSize]="10000000"
-                        (onSelect)="onFileSelectedSolicitud($event)" styleClass="w-full">
-                    </p-fileupload>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">
-                        PDF, DOC, JPG, PNG (solo 1 archivo)
-                    </p>
-                    @if (shouldShowError('documento')) {
-                        <div class="text-red-500 text-sm mt-1">{{ getError('documento') }}</div>
-                    }
-                </div>
-
-            </div>
-
-            <div class="flex justify-end gap-2 mt-4">
-                <p-button label="Cancelar" severity="secondary" type="button" (onClick)="resetAnexoForm()"></p-button>
-                <p-button type="submit"
-                    [label]="estadoAccion === 2 ? 'Aceptar' : 'Denegar'"
-                    [disabled]="!anexoForm.valid">
-                </p-button>
-            </div>
+        <!-- Mensaje -->
+        <div class="col-span-6">
+          <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Mensaje
+          </label>
+          <textarea rows="4" formControlName="observaciones" pInputTextarea
+            class="block p-2.5 uppercase w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Escribe tu mensaje aquí..."></textarea>
+          @if (shouldShowError('observaciones')) {
+          <div class="text-red-500 text-sm mt-1">{{ getError('observaciones') }}</div>
+          }
         </div>
-    </form>
+
+        <!-- Archivo -->
+        <div class="col-span-6">
+          <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Anexo
+          </label>
+          <p-fileupload mode="basic" name="documento" chooseLabel="Seleccionar archivo" chooseIcon="pi pi-upload"
+            [customUpload]="true" [multiple]="false" [accept]="'.pdf,.doc,.docx,.png,.jpg,.jpeg'"
+            [maxFileSize]="10000000" (onSelect)="onFileSelectedSolicitud($event)" styleClass="w-full">
+          </p-fileupload>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">
+            PDF, DOC, JPG, PNG (solo 1 archivo)
+          </p>
+          @if (shouldShowError('documento')) {
+          <div class="text-red-500 text-sm mt-1">{{ getError('documento') }}</div>
+          }
+        </div>
+
+      </div>
+
+      <div class="flex justify-end gap-2 mt-4">
+        <p-button label="Cancelar" severity="secondary" type="button" (onClick)="resetAnexoForm()"></p-button>
+        <p-button type="submit" [label]="estadoAccion === 2 ? 'Aceptar' : 'Denegar'" [disabled]="!anexoForm.valid">
+        </p-button>
+      </div>
+    </div>
+  </form>
 </p-dialog>

@@ -282,23 +282,22 @@ export class EntregaRecepcion implements OnInit {
     const id = this.getIdTramite(tramite);
     switch (id) {
       case 0:
-        return { severity: 'success', icon: 'pi pi-file-import' };
+        return { severity: 'secondary', icon: 'pi pi-file-pdf' };
       case 1:
         return { severity: 'warn', icon: 'pi pi-file-pdf' };
       case 2:
-        return { severity: 'info', icon: 'pi pi-file-plus' };
+        return { severity: 'info', icon: 'pi pi-flag' };``
       case 3:
-        return { severity: 'secondary', icon: 'pi pi-folder-plus' };
+        return { severity: 'success', icon: 'pi pi-file-pdf' };
       default:
         return { severity: 'secondary', icon: 'pi pi-question' };
     }
   }
 
-  onSiguienteMovimientoTramite(idTramite: (string | number)[], idDemanda: (string | number)[]): void {
+  onSiguienteMovimientoTramite(idTramite: (string | number)[]): void {
     this.isLoading.set(true);
     const payload: any = {};
     if (idTramite.length) payload.idTramite = idTramite;
-    if (idDemanda.length) payload.idDemanda = idDemanda;
 
     this.juicioService.putSiguienteMovimientoTramite(payload).subscribe({
       next: (response) => {
@@ -336,16 +335,10 @@ export class EntregaRecepcion implements OnInit {
     if (!this.tramitesSeleccionados.length) return;
 
     const idTramite = this.tramitesSeleccionados
-      .filter(t => t.cat_tramite?.idCatTramite === 2)
       .map(e => e.idTramite)
       .filter(Boolean);
 
-    const idDemanda = this.tramitesSeleccionados
-      .filter(t => t.cat_tramite?.idCatTramite === 0)
-      .map(e => e.idTramite)
-      .filter(Boolean);
-
-    if (!idTramite.length && !idDemanda.length) {
+    if (!idTramite.length) {
       this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: 'No se encontraron IDs válidos' });
       return;
     }
@@ -353,7 +346,7 @@ export class EntregaRecepcion implements OnInit {
     // Mostrar confirmación
     this.confirmationService.confirm({
       key: 'recibir',
-      accept: () => this.onSiguienteMovimientoTramite(idTramite, idDemanda),
+      accept: () => this.onSiguienteMovimientoTramite(idTramite),
       reject: () => { }
     });
   }

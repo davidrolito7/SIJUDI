@@ -225,13 +225,13 @@ export class ListarDemanda implements OnInit {
   // Estado helpers for UI tags
   // ============================
   getEstadoDescripcion(inicio: unknown): string | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { cat_estado_demanda?: { descripcion?: string } } } };
-    return i.demanda?.ultimo_estado?.cat_estado_demanda?.descripcion ?? null;
+    const i = inicio as { ultimo_estado?: { cat_estado_tramite?: { nombre?: string } } };
+    return i.ultimo_estado?.cat_estado_tramite?.nombre ?? null;
   }
 
   getEstadoId(inicio: unknown): number | null {
-    const i = inicio as { demanda?: { ultimo_estado?: { cat_estado_demanda?: { idCatEstadoDemanda?: number } } } };
-    return i.demanda?.ultimo_estado?.cat_estado_demanda?.idCatEstadoDemanda ?? null;
+    const i = inicio as { ultimo_estado?: { cat_estado_tramite?: { idCatEstadoTramite?: number } } };
+    return i.ultimo_estado?.cat_estado_tramite?.idCatEstadoTramite ?? null;
   }
 
   getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {

@@ -75,7 +75,9 @@
               "buildTarget": "SIJUDI:build:production"
             },
             "development": {
-              "buildTarget": "SIJUDI:build:development"
+              "buildTarget": "SIJUDI:build:development",
+              "liveReload": true,
+              "poll": 2000
             }
           },
           "defaultConfiguration": "development"

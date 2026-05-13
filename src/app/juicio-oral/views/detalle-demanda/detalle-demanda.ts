@@ -218,7 +218,7 @@ export class DetalleDemanda implements OnInit {
     this.modalTurnar = false;
     this.isLoading = true;
     const payload: any = {
-      idDemanda: [this.detalleDemanda?.idDemanda],
+      idTramite: [this.detalleDemanda?.idTramite],
     };
     const observaciones = this.turnarForm.get('observaciones')?.value;
     if (observaciones) {

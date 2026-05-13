@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
-import { SistemaModuloResponse } from '../interfaces/juicioenlinea.model';
-import { ApiResponse } from '../interfaces/juicioenlinea.model';
+import { ApiResponse, SistemaModuloResponse } from '../interfaces/juicioenlinea.model';
 import { checkToken } from '../../core/auth/interceptor/token.interceptor';
 
 @Injectable({ providedIn: 'root' })

@@ -41,10 +41,10 @@ import {
   CatTipoPartes,
   DatosUsuarioResponse,
   DetalleDemandaResponse,
+  DetalleExpedienteResponse,
   ListarExpedientesResponse,
   Partes,
   PartesRequest,
-  RegistroExpediente,
   Remitente,
 } from '../../interfaces/juicioenlinea.model';
 import { PantallasService } from '../../services/pantallas.service';
@@ -106,7 +106,7 @@ export class CrearTramite implements OnInit {
   // ============================
   idExpediente!: number;
   NumExpediente!: string;
-  detalleExpediente = signal<RegistroExpediente[]>([])
+  detalleExpediente = signal<DetalleExpedienteResponse | null>(null);
   expediente: ListarExpedientesResponse | null = null;
 
   // ============================
@@ -148,7 +148,9 @@ export class CrearTramite implements OnInit {
   visible = false;
   visibleDocumento = signal<boolean>(false);
   visibleM = false;
-  tipoSeleccionado = 'promocion';
+  get tipoSeleccionado(): string {
+    return this.tramite?.get('tipoTramite')?.value ?? 'promocion';
+  }
   mostrarAlerta = false;
   botonHabilitado = false;
   creado = false;
@@ -177,9 +179,10 @@ export class CrearTramite implements OnInit {
     this.mostrarAlerta = true;
     this.cargarCatalogoSexos();
     this.cargarCatalogoTipoPartes();
-    this.getRemitentes();
+    //this.getRemitentes();
 
     this.tramite = this.fb.group({
+      tipoTramite: ['promocion', [Validators.required]],
       sintesis: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(255)]],
       observaciones: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(255)]],
       documentoTramite: [null, Validators.required],
@@ -223,9 +226,9 @@ export class CrearTramite implements OnInit {
   getDetalleExpediente(idExpediente: number): void {
     this.juicioService.getDetalleExpediente(idExpediente).subscribe({
       next: (response) => {
-        this.detalleExpediente.set(response.data.registros);
-        const exp = response.data.expediente;
-        this.expediente = exp;
+        this.detalleExpediente.set(response.data);
+        const exp = response.data;
+        this.expediente = exp as any;
         
         if (this.expediente?.demanda?.partes) {
           this.partes = this.expediente.demanda.partes;
@@ -236,7 +239,7 @@ export class CrearTramite implements OnInit {
       },
       error: (error) => {
         console.error('Error:', error);
-        this.detalleExpediente.set([]);
+        this.detalleExpediente.set(null);
         this.partes = [];
       },
     });
@@ -566,7 +569,7 @@ export class CrearTramite implements OnInit {
   }
 
   limpiarFormulario(): void {
-    this.tramite.reset();
+    this.tramite.reset({ tipoTramite: 'promocion' });
     this.parteForm.reset({ esMenorEdad: false });
     this.listaPartes = [];
     this.remitenteSeleccionado = undefined;
@@ -574,7 +577,6 @@ export class CrearTramite implements OnInit {
     this.quitarArchivo();
     this.formEnviado = false;
     this.tramiteResponse = null;
-    this.tipoSeleccionado = 'promocion';
   }
 
   // ============================

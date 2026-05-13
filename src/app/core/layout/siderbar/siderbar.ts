@@ -88,13 +88,13 @@ export class Siderbar {
 
   }
 
-  ngOnInit(): void {
-    this.contadoresService.iniciarPolling();
-  }
+  // ngOnInit(): void {
+  //   this.contadoresService.cargarContadores();
+  // }
 
-  ngOnDestroy(): void {
-    this.contadoresService.detenerPolling();
-  }
+  // ngOnDestroy(): void {
+  //   this.contadoresService.detenerPolling();
+  // }
 
 
   onLogout(): void {
@@ -153,5 +153,4 @@ export class Siderbar {
   getBadge(IdPantalla: number): Observable<number | null> {
     return this.contadoresService.getContadorParaPantalla(IdPantalla);
   }
-
 }

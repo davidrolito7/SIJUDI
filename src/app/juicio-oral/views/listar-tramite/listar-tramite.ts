@@ -335,6 +335,7 @@ export class ListarTramite implements OnInit {
         return { severity: 'secondary', icon: 'pi pi-question' };
     }
   }
+  
   getDescripcionTramite(tramite: unknown): string | null {
     const i = tramite as { cat_tramite?: { nombre?: string } };
     return i.cat_tramite?.nombre ?? null;
@@ -349,17 +350,18 @@ export class ListarTramite implements OnInit {
     const id = this.getIdTramite(tramite);
     switch (id) {
       case 0:
-        return { severity: 'success', icon: 'pi pi-file-pdf' };
+        return { severity: 'secondary', icon: 'pi pi-file-pdf' };
       case 1:
-        return { severity: 'info', icon: 'pi pi-file-pdf' };
+        return { severity: 'warn', icon: 'pi pi-file-pdf' };
       case 2:
-        return { severity: 'warn', icon: 'pi pi-flag' };
+        return { severity: 'info', icon: 'pi pi-flag' };``
       case 3:
-        return { severity: 'secondary', icon: 'pi pi-check' };
+        return { severity: 'success', icon: 'pi pi-file-pdf' };
       default:
         return { severity: 'secondary', icon: 'pi pi-question' };
     }
   }
+
   cargarJuzgados() {
     this.juicioService.getJuzgados().subscribe({
       next: (juzgados) => {

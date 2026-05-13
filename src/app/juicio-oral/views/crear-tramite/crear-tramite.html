@@ -42,7 +42,7 @@
         <div class="grid grid-cols-12 gap-4">
             <div class="col-span-12 sm:col-span-2">
                 <label class="block mb-2 text-sm font-medium">Tipo de trámite</label>
-                <p-select [options]="tipoOptions" [(ngModel)]="tipoSeleccionado" fluid optionLabel="label"
+                <p-select [options]="tipoOptions" formControlName="tipoTramite" fluid optionLabel="label"
                     optionValue="value" placeholder="Selecciona una opción" appendTo="body">
                 </p-select>
                 @if (tipoSeleccionado === '' && mostrarAlerta) {

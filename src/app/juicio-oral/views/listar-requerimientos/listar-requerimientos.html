@@ -1,11 +1,11 @@
-<app-spinner [isLoading]="isLoading"></app-spinner> 
+<app-spinner [isLoading]="isLoading"></app-spinner>
 
 <div class="lg:sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-960">
     <!-- HEADER -->
     <app-breadcrub></app-breadcrub>
 
     <!-- TÍTULO DE PÁGINA -->
-    <div class="mt-2 mb-4 px-2">
+    <div class="mb-4">
         <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
             Requerimientos
         </h1>
@@ -24,7 +24,7 @@
                     <label for="idEstatus" class="block mb-2 text-sm font-medium">Estatus</label>
 
                     <p-select inputId="idEstatus" name="idEstatus" class="w-full" [options]="estadoOptions"
-                        [(ngModel)]="filtro.estado" optionLabel="label" optionValue="value"  appendTo="body" fluid>
+                        [(ngModel)]="filtro.estado" optionLabel="label" optionValue="value" appendTo="body" fluid>
                     </p-select>
                 </div>
 
@@ -56,8 +56,8 @@
 
 <!-- SECCIÓN DE LA TABLA -->
 <div class="border border-surface rounded-b-2xl bg-surface-0 dark:bg-surface-950 shadow-sm overflow-hidden mb-4 p-0">
-    <p-table #dt1 [rows]="10" stripedRows [value]="listaRequerimientos()" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
-        [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
+    <p-table #dt1 [rows]="10" stripedRows [value]="listaRequerimientos()" [rowsPerPageOptions]="[10, 25, 50]"
+        [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
         [globalFilterFields]="['NumExpediente','fechaLimite','Descripcion','tiempoRestante']">
         <ng-template #caption>
             <div class="flex items-center justify-end">
@@ -110,8 +110,8 @@
                 </td>
                 <td>
                     <p-button (click)="detalleRequerimiento(requerimiento.idRequerimiento)" [rounded]="true"
-                         [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
-                        pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                        [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
+                        tooltipPosition="top" title="Detalle">
                     </p-button>
 
                 </td>

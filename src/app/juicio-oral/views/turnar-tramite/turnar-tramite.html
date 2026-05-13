@@ -5,7 +5,7 @@
     <app-breadcrub></app-breadcrub>
 
     <!-- TÍTULO DE PÁGINA -->
-    <div class="mt-2 mb-4 px-2">
+    <div class="mb-4">
         <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
             Turnar Trámites
         </h1>
@@ -61,81 +61,81 @@
 
 <!-- SECCIÓN DE LA TABLA -->
 <div class="border border-surface rounded-b-2xl bg-surface-0 dark:bg-surface-950 shadow-sm overflow-hidden mb-4 p-0">
-        <p-table #dtInicio stripedRows [value]="tramites()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
-            [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
-            [(selection)]="tramitesSeleccionados" [globalFilterFields]="[
+    <p-table #dtInicio stripedRows [value]="tramites()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+        [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
+        [(selection)]="tramitesSeleccionados" [globalFilterFields]="[
           'folio',
           'cat_via_materia.cat_materia.Descripcion',
           'cat_via_materia.cat_via.descripcion',
           'historial_estado.0.estado.descripcion'
         ]">
 
-            <ng-template #caption>
-                <div class="flex items-center justify-between">
-                    <!-- Botón de acciones masivas -->
-                    <div>
-                        <p-button icon="pi pi-ellipsis-v" label="Acciones" [outlined]="true"
-                            [disabled]="!tramitesSeleccionados.length" (click)="menuAcciones.toggle($event)"
-                            [badge]="tramitesSeleccionados.length ? '' + tramitesSeleccionados.length : undefined"
-                            badgeSeverity="contrast">
-                        </p-button>
-                        <p-menu #menuAcciones [model]="accionesItems" [popup]="true" appendTo="body" />
-                    </div>
-
-                    <p-iconfield iconPosition="left">
-                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-                        <input pInputText type="text" (input)="dtInicio.filterGlobal($event.target.value, 'contains')"
-                            placeholder="Buscar en la tabla..." aria-label="Buscar" class="w-full md:w-64" />
-                    </p-iconfield>
+        <ng-template #caption>
+            <div class="flex items-center justify-between">
+                <!-- Botón de acciones masivas -->
+                <div>
+                    <p-button icon="pi pi-ellipsis-v" label="Acciones" [outlined]="true"
+                        [disabled]="!tramitesSeleccionados.length" (click)="menuAcciones.toggle($event)"
+                        [badge]="tramitesSeleccionados.length ? '' + tramitesSeleccionados.length : undefined"
+                        badgeSeverity="contrast">
+                    </p-button>
+                    <p-menu #menuAcciones [model]="accionesItems" [popup]="true" appendTo="body" />
                 </div>
-            </ng-template>
 
-            <ng-template #header>
-                <tr>
-                    <th>
-                        <p-tableHeaderCheckbox />
-                    </th>
-                    <th scope="col">Folio</th>
-                    <th scope="col">No. Expediente</th>
-                    <th scope="col">Juzgado</th>
-                    <th scope="col">Tipo trámite</th>
-                    <th scope="col">Fecha Recepción</th>
-                    <th scope="col">Estatus</th>
-                    <th pFrozenColumn alignFrozen="right" scope="col"></th>
-                </tr>
-            </ng-template>
+                <p-iconfield iconPosition="left">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="dtInicio.filterGlobal($event.target.value, 'contains')"
+                        placeholder="Buscar en la tabla..." aria-label="Buscar" class="w-full md:w-64" />
+                </p-iconfield>
+            </div>
+        </ng-template>
 
-            <ng-template #body let-tramite>
-                <tr>
-                    <td>
-                        <p-tableCheckbox [value]="tramite" />
-                    </td>
-                    <td>{{ tramite.folio }}</td>
-                    <td>{{ tramite.expediente.NumExpediente }}</td>
-                    <td>{{ tramite.expediente.juzgado.Descripcion }}</td>
-                    <td>
-                        <p-tag [value]="(getDescripcionTramite(tramite) | uppercase) ?? ''"
-                            [severity]="getTagTramite(tramite).severity" [icon]="getTagTramite(tramite).icon" />
-                    </td>
-                    <td>{{ tramite.ultimo_estado.fechaEstado | date: 'dd/MM/yyyy HH:mm' }} h</td>
-                    <td>
-                        <p-tag [value]="(getEstadoDescripcion(tramite) | uppercase) ?? ''"
-                            [severity]="getEstadoTag(tramite).severity" [icon]="getEstadoTag(tramite).icon" />
-                    </td>
-                    <td pFrozenColumn alignFrozen="right">
-                        <p-button (click)="detalle(tramite.idTramite)" [rounded]="true" [raised]="true" icon="pi pi-eye"
-                            pTooltip="Ver detalle" tooltipPosition="top">
-                        </p-button>
+        <ng-template #header>
+            <tr>
+                <th>
+                    <p-tableHeaderCheckbox />
+                </th>
+                <th scope="col">Folio</th>
+                <th scope="col">No. Expediente</th>
+                <th scope="col">Juzgado</th>
+                <th scope="col">Tipo trámite</th>
+                <th scope="col">Fecha Recepción</th>
+                <th scope="col">Estatus</th>
+                <th pFrozenColumn alignFrozen="right" scope="col"></th>
+            </tr>
+        </ng-template>
 
-                    </td>
-                </tr>
-            </ng-template>
+        <ng-template #body let-tramite>
+            <tr>
+                <td>
+                    <p-tableCheckbox [value]="tramite" />
+                </td>
+                <td>{{ tramite.folio }}</td>
+                <td>{{ tramite.expediente.NumExpediente }}</td>
+                <td>{{ tramite.expediente.juzgado.Descripcion }}</td>
+                <td>
+                    <p-tag [value]="(getDescripcionTramite(tramite) | uppercase) ?? ''"
+                        [severity]="getTagTramite(tramite).severity" [icon]="getTagTramite(tramite).icon" />
+                </td>
+                <td>{{ tramite.ultimo_estado.fechaEstado | date: 'dd/MM/yyyy HH:mm' }} h</td>
+                <td>
+                    <p-tag [value]="(getEstadoDescripcion(tramite) | uppercase) ?? ''"
+                        [severity]="getEstadoTag(tramite).severity" [icon]="getEstadoTag(tramite).icon" />
+                </td>
+                <td pFrozenColumn alignFrozen="right">
+                    <p-button (click)="detalle(tramite.idTramite)" [rounded]="true" [raised]="true" icon="pi pi-eye"
+                        pTooltip="Ver detalle" tooltipPosition="top">
+                    </p-button>
 
-            <ng-template #emptymessage>
-                <tr>
-                    <td colspan="8">Sin registros</td>
-                </tr>
-            </ng-template>
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="8">Sin registros</td>
+            </tr>
+        </ng-template>
     </p-table>
 </div>
 

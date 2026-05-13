@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { JuicioService } from '../../services/juicioenlinea.service';
-import { ListarExpedientesResponse, RegistroExpediente } from '../../interfaces/juicioenlinea.model';
+import { ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule, formatDate } from '@angular/common';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -32,7 +32,7 @@ import { MenuItem } from 'primeng/api';
 })
 export class DetalleExpediente {
   idExpediente: number | undefined;
-  detalleExpediente: RegistroExpediente[] | null = null;
+  detalleExpediente: ListarExpedientesResponse[] | null = null;
   expediente = signal<ListarExpedientesResponse | null>(null);
   tablaDatos = signal<any[]>([]);
   isLoading: boolean = true;
@@ -115,15 +115,25 @@ export class DetalleExpediente {
 
     this.juicioService.getDetalleExpediente(this.idExpediente, requestParams).subscribe({
       next: (response) => {
-        const data = response?.data ?? {};
-        this.expediente.set(data.expediente || null);
+        const data: any = response?.data ?? {};
+        this.expediente.set(data || null);
         this.pagination = data.pagination || {
           current_page: 1,
           per_page: 5,
           total: 0,
           last_page: 1
         };
-        const registros = Array.isArray(data.registros) ? data.registros.filter(Boolean) : [];
+        let registros: any[] = [];
+        if (Array.isArray(data.registros)) {
+          registros = data.registros.filter(Boolean);
+        } else {
+          // Ya no incluimos data.demanda por separado, ahora viene dentro de tramites
+          if (Array.isArray(data.tramites)) registros.push(...data.tramites.map((t: any) => ({ ...t, tipo: 'tramite' })));
+          if (Array.isArray(data.requerimientos)) registros.push(...data.requerimientos.map((r: any) => ({ ...r, tipo: 'requerimiento' })));
+          if (Array.isArray(data.audiencias)) registros.push(...data.audiencias.map((a: any) => ({ ...a, tipo: 'audiencia' })));
+          if (Array.isArray(data.acuerdos)) registros.push(...data.acuerdos.map((a: any) => ({ ...a, tipo: 'acuerdo' })));
+        }
+
         this.detalleExpediente = registros;
         this.tablaDatos.set(this.buildTablaDatos(registros));
         this.isLoading = false;
@@ -197,16 +207,21 @@ export class DetalleExpediente {
   }
 
   verDetalle(item: any): void {
-    if (item.tipo === 'Demanda') {
-      this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idInicio: item.id } });
-    } else if (item.tipo === 'Requerimiento') {
+    const data = item.datosOriginales;
+
+    if (item.tipo === 'Requerimiento') {
       this.router.navigate(['/juicioenlinea/requerimientos/detalle'], { state: { idRequerimiento: item.id } });
     } else if (item.tipo === 'tramite') {
-      const idTramite = item.datosOriginales.idTramite;
-      this.router.navigate(['/juicioenlinea/tramites/detalle'], { state: { idTramite } });
+      // Manejo polimórfico: si es tipo Entidad 'Demanda', ir a su detalle
+      if (data.tipoEntidad === 'Demanda') {
+        this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idDemanda: data.entidad.idDemanda } });
+      } else {
+        this.router.navigate(['/juicioenlinea/tramites/detalle'], { state: { idTramite: data.idTramite } });
+      }
     } else if (item.tipo === 'Audiencia') {
-      const idAudiencia = item.datosOriginales.idAudiencia;
-      this.router.navigate(['/juicioenlinea/audiencias/detalle'], { state: { idAudiencia } });
+      this.router.navigate(['/juicioenlinea/audiencias/detalle'], { state: { idAudiencia: data.idAudiencia } });
+    } else if (item.tipo === 'acuerdo') {
+      this.router.navigate(['/juicioenlinea/acuerdos/detalle'], { state: { idAcuerdo: item.id } });
     }
   }
 
@@ -255,19 +270,6 @@ export class DetalleExpediente {
       if (!item || !item.tipo) continue;
 
       switch (item.tipo) {
-        case 'demanda': {
-          tabla.push({
-            id: item.idDemanda,
-            folio: item.folio || item.folioPreregistro || 'Sin folio',
-            tipo: 'Demanda',
-            nombre: 'Demanda',
-            fecha: item.fechaHoraRecepcion || item.fechaCreada || item.created_at,
-            estado: item.ultimo_estado?.cat_estado_demanda?.descripcion || 'Sin estado',
-            datosOriginales: item
-          });
-          break;
-        }
-
         case 'requerimiento': {
           const historialReq = item.historial || [];
           const ultimoEstadoReq = historialReq.length
@@ -288,18 +290,16 @@ export class DetalleExpediente {
         }
 
         case 'tramite': {
-          const historialTram = item.historial || [];
-          const ultimoEstadoTram = historialTram.length
-            ? historialTram[historialTram.length - 1].cat_estado_tramite?.nombre || 'Sin estado'
-            : 'Sin estado';
+          const ultimo = item.ultimo_estado;
+          const estadoNombre = ultimo?.cat_estado_tramite?.nombre || 'Sin estado';
 
           tabla.push({
             id: item.idTramite,
-            folio: item.folioOficio || 'Sin folio',
+            folio: item.folio || 'Sin folio',
             tipo: 'tramite',
             nombre: item.cat_tramite?.nombre || 'Sin nombre',
-            fecha: item.created_at,
-            estado: ultimoEstadoTram,
+            fecha: item.fechaRecepcion || item.created_at,
+            estado: estadoNombre,
             datosOriginales: item
           });
           break;
@@ -311,11 +311,24 @@ export class DetalleExpediente {
             folio: item.folio || 'Sin folio',
             tipo: 'Audiencia',
             nombre: item.title,
-            fecha: item.created_at,
+            fecha: item.fechaAudiencia || item.created_at,
             estado:
               item.ultimo_estado?.catalogo_estado_audiencia?.descripcion ||
               item.ultimo_estado?.descripcion ||
               'Sin estado',
+            datosOriginales: item
+          });
+          break;
+        }
+
+        case 'acuerdo': {
+          tabla.push({
+            id: item.idAcuerdo,
+            folio: item.folio || 'Sin folio',
+            tipo: 'acuerdo',
+            nombre: 'Acuerdo',
+            fecha: item.fechaAcuerdo || item.created_at,
+            estado: item.ultimo_estado?.cat_estado_acuerdo?.nombre || 'Sin estado',
             datosOriginales: item
           });
           break;
@@ -329,52 +342,58 @@ export class DetalleExpediente {
     return tabla;
   }
 
-  getEstadoDescripcion(inicio: any): string | null {
-    if (inicio && typeof inicio.estado === 'string') {
-      return inicio.estado;
-    }
-    if (inicio && inicio.ultimo_estado && inicio.ultimo_estado.estado && inicio.ultimo_estado.estado.descripcion) {
-      return inicio.ultimo_estado.estado.descripcion;
-    }
-    return null;
+  getEstadoDescripcion(tramite: unknown): string | null {
+    const i = tramite as { ultimo_estado?: { cat_estado_tramite?: { nombre?: string } } };
+    return i.ultimo_estado?.cat_estado_tramite?.nombre ?? null;
   }
 
-  getEstadoId(inicio: unknown): number | null {
-    const i = inicio as { ultimo_estado?: { estado?: { idCatEstadoInicio?: number } } };
-    return i.ultimo_estado?.estado?.idCatEstadoInicio ?? null;
+  getEstadoId(tramite: unknown): number | null {
+    const i = tramite as { ultimo_estado?: { idCatEstadoTramite?: number, cat_estado_tramite?: { idCatEstadoTramite?: number } } };
+    return i.ultimo_estado?.idCatEstadoTramite ?? i.ultimo_estado?.cat_estado_tramite?.idCatEstadoTramite ?? null;
   }
 
-  getEstadoTag(inicio: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
-    const descripcion = this.getEstadoDescripcion(inicio);
-
-    if (
-      descripcion === 'Finalizado' ||
-      descripcion === 'Aceptado' ||
-      descripcion === 'Aceptada' ||
-      descripcion === 'Finalizada' ||
-      descripcion === 'Notificada' ||
-      descripcion === 'Notificado' ||
-      descripcion === 'Enviado' ||
-      descripcion === 'En trámite' ||
-
-      descripcion === 'Asignado'
-    ) {
-      return { severity: 'success', icon: 'pi pi-check' };
+  getEstadoTag(tramite: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+    const id = this.getEstadoId(tramite);
+    switch (id) {
+      case 0:
+        return { severity: 'success', icon: 'pi pi-file-send' };
+      case 1:
+        return { severity: 'secondary', icon: 'pi pi-send' };
+      case 2:
+        return { severity: 'info', icon: 'pi pi-clock' };
+      case 3:
+        return { severity: 'success', icon: 'pi pi-check' };
+      default:
+        return { severity: 'secondary', icon: 'pi pi-question' };
     }
-    if (descripcion === 'Expirado') {
-      return { severity: 'info', icon: 'pi pi-clock' };
-    }
-    if (
-      descripcion === 'Cancelado' ||
-      descripcion === 'Rechazado' ||
-      descripcion === 'Rechazada' ||
-      descripcion === 'Cancelada'
-    ) {
-      return { severity: 'warn', icon: 'pi pi-exclamation-triangle' };
-    }
-    return { severity: 'secondary' };
   }
 
-      items: MenuItem[] | undefined;
+      getDescripcionTramite(tramite: unknown): string | null {
+    const i = tramite as { cat_tramite?: { nombre?: string } };
+    return i.cat_tramite?.nombre ?? null;
+  }
+
+  getIdTramite(tramite: unknown): number | null {
+    const i = tramite as { cat_tramite?: { idCatTramite?: number } };
+    return i.cat_tramite?.idCatTramite ?? null;
+  }
+
+  getTagTramite(tramite: unknown): { severity: 'success' | 'info' | 'warn' | 'secondary'; icon?: string } {
+    const id = this.getIdTramite(tramite);
+    switch (id) {
+      case 0:
+        return { severity: 'secondary', icon: 'pi pi-file-pdf' };
+      case 1:
+        return { severity: 'warn', icon: 'pi pi-file-pdf' };
+      case 2:
+        return { severity: 'info', icon: 'pi pi-flag' };
+      case 3:
+        return { severity: 'success', icon: 'pi pi-file-pdf' };
+      default:
+        return { severity: 'warn', icon: 'pi pi-question' };
+    }
+  }
+
+  items: MenuItem[] | undefined;
 
 }

@@ -8,7 +8,7 @@
     <app-breadcrub></app-breadcrub>
 
     <!-- DETALLE -->
-    <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl">
+    <div class="mt-2 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl">
 
         <div class="flex items-center flex-col md:flex-row justify-between p-4">
             <label class="font-medium text-2xl text-surface-900 dark:text-surface-0">
@@ -62,49 +62,49 @@
                         {{detalleDemanda.expediente.juzgado.Descripcion}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Fecha recepción:</b>
-                        {{ detalleDemanda.fechaHoraRecepcion| date:'yyyy-MM-dd' }}
+                        {{ detalleDemanda.entidad.fechaHoraRecepcion| date:'yyyy-MM-dd' }}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Hora recepción:</b>
-                        {{ detalleDemanda.fechaHoraRecepcion | date:'HH:mm' }} h
+                        {{ detalleDemanda.entidad.fechaHoraRecepcion | date:'HH:mm' }} h
                     </p>
                 </div>
                 <!-- Columna Derecha -->
                 <div class="flex flex-col space-y-2">
                     <p class="text-surface-600 dark:text-surface-200"><b>Materia: </b>
-                        {{detalleDemanda.cat_via_materia.cat_materia.Descripcion}}
+                        {{detalleDemanda.entidad.cat_via_materia.cat_materia.Descripcion}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Via:</b>
-                        {{detalleDemanda.cat_via_materia.cat_via.descripcion}}
+                        {{detalleDemanda.entidad.cat_via_materia.cat_via.descripcion}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Estado:</b>
-                        @switch (detalleDemanda.ultimo_estado.cat_estado_demanda.idCatEstadoInicio) {
+                        @switch (detalleDemanda.ultimo_estado.cat_estado_tramite.idCatEstadoTramite) {
                         @case (1) {
                         <span
                             class="ml-2 bg-green-100 text-green-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-green-400 border border-green-500">
-                            {{detalleDemanda.ultimo_estado.cat_estado_demanda.descripcion }}
+                            {{detalleDemanda.ultimo_estado.cat_estado_tramite.nombre }}
                         </span>
                         }
                         @case (2) {
                         <span
                             class="ml-2 bg-purple-100 text-purple-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-purple-400 border border-purple-500">
-                            {{ detalleDemanda.ultimo_estado.cat_estado_demanda.descripcion }}
+                            {{ detalleDemanda.ultimo_estado.cat_estado_tramite.nombre }}
                         </span>
                         }
                         @case (3) {
                         <span
                             class="ml-2 bg-orange-100 text-orange-800 text-xs font-medium uppercase px-2.5 py-0.5 rounded-md dark:bg-surface-800 dark:text-orange-300 border border-orange-300">
-                            {{ detalleDemanda.ultimo_estado.cat_estado_demanda.descripcion }}
+                            {{ detalleDemanda.ultimo_estado.cat_estado_tramite.nombre}}
                         </span>
                         }
                         @default {
                         <span>
-                            {{ detalleDemanda.ultimo_estado.cat_estado_demanda.descripcion }}
+                            {{ detalleDemanda.ultimo_estado.cat_estado_tramite.nombre }}
                         </span>
                         }
                         }
                     </p>
                     <p class="text-surface-600 dark:text-surface-200 wrap-break-word"><b>Descripción: </b>
-                        {{detalleDemanda.descripcionDemanda}}
+                        {{detalleDemanda.entidad.descripcionDemanda}}
                     </p>
                 </div>
                 <!-- <div class="flex flex-col space-y-2 md:col-span-2">
@@ -131,7 +131,7 @@
         </div>
 
         <div class="p-3">
-            <p-table [value]="detalleDemanda?.partes ?? []"
+            <p-table [value]="detalleDemanda?.entidad?.partes ?? []"
                 [tableStyle]="{ 'min-width': '100%', width: 'max-content' }">
                 <ng-template #header>
                     <tr>
@@ -186,7 +186,7 @@
             </span>
         </div>
         <div class="p-3">
-            <p-table [value]="detalleDemanda?.anexos_declarados ?? []" [tableStyle]="{ 'min-width': '50rem' }">
+            <p-table [value]="detalleDemanda?.entidad?.anexos_declarados ?? []" [tableStyle]="{ 'min-width': '50rem' }">
                 <ng-template #header>
                     <tr>
                         <th>Descripción</th>
@@ -266,7 +266,6 @@
         </div>
 
     </div>
-
 </div>
 <app-confirm-dialog key="confirmar-recepcion" title="Confirmación" message="¿Deseas recibir la demanda?"
     icon="pi pi-check" circleClass="bg-primary" acceptLabel="Recibir" rejectLabel="Cerrar"

@@ -7,7 +7,7 @@
     <app-breadcrub></app-breadcrub>
 
     <!-- TÍTULO DE PÁGINA -->
-    <div class="mt-2 mb-4 px-2">
+    <div class="mb-4">
         <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
             Acuerdos recibidos
         </h1>
@@ -25,34 +25,30 @@
                 <div class="col-span-12 md:col-span-6 lg:col-span-3">
                     <label class="block mb-2 text-sm font-medium">Folio</label>
                     <input pInputText fluid [(ngModel)]="filtro.folio" name="folio" class="w-full uppercase text-sm"
-                        maxlength="9" placeholder="0001/2026"
-                        (ngModelChange)="limpiarEspaciosFolio($event)"
+                        maxlength="9" placeholder="0001/2026" (ngModelChange)="limpiarEspaciosFolio($event)"
                         (keypress)="validarCaracteres($event)" />
                 </div>
 
                 <!-- Tipo -->
                 <div class="col-span-12 md:col-span-6 lg:col-span-2">
                     <label class="block mb-2 text-sm font-medium">Tipo</label>
-                    <p-select name="tipo" class="w-full" fluid
-                        [options]="tipoOptions"
-                        [(ngModel)]="filtro.tipo"
-                        optionLabel="label" optionValue="value"
-                        appendTo="body">
+                    <p-select name="tipo" class="w-full" fluid [options]="tipoOptions" [(ngModel)]="filtro.tipo"
+                        optionLabel="label" optionValue="value" appendTo="body">
                     </p-select>
                 </div>
 
                 <!-- Fecha -->
                 <div class="col-span-12 md:col-span-8 lg:col-span-4">
                     <label class="block mb-2 text-sm font-medium">Fecha</label>
-                    <p-datepicker name="rangeDates" fluid placeholder="Selecciona rango"
-                        [(ngModel)]="filtro.rangeDates" selectionMode="range" [readonlyInput]="true">
+                    <p-datepicker name="rangeDates" fluid placeholder="Selecciona rango" [(ngModel)]="filtro.rangeDates"
+                        selectionMode="range" [readonlyInput]="true">
                     </p-datepicker>
                 </div>
 
                 <!-- Botones -->
                 <div class="col-span-12 md:col-span-4 lg:col-span-3 flex gap-4">
-                    <p-button type="button" icon="pi pi-filter-slash" [outlined]="true"
-                        (click)="limpiarFiltros()" aria-label="Limpiar filtros"></p-button>
+                    <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarFiltros()"
+                        aria-label="Limpiar filtros"></p-button>
 
                     <p-button type="submit" aria-label="Buscar">
                         <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
@@ -67,10 +63,10 @@
 
 <!-- TABLA -->
 <div class="border border-surface rounded-b-2xl bg-surface-0 dark:bg-surface-950 shadow-sm overflow-hidden mb-4 p-0">
-        <p-table #dtAcuerdos stripedRows [value]="acuerdos" [rows]="5" [rowsPerPageOptions]="[5, 10, 25, 50]" [paginator]="true"
-            [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
-            [globalFilterFields]="['folio', 'expediente.NumExpediente', 'ultimo_estado.estado.descripcion']">
-<!-- 
+    <p-table #dtAcuerdos stripedRows [value]="acuerdos" [rows]="5" [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
+        [globalFilterFields]="['folio', 'expediente.NumExpediente', 'ultimo_estado.estado.descripcion']">
+        <!-- 
             <ng-template #caption>
                 <div class="flex items-center justify-end">
                     <p-iconfield iconPosition="left">
@@ -82,47 +78,44 @@
                 </div>
             </ng-template> -->
 
-            <ng-template #header>
-                <tr>
-                    <th scope="col">Folio</th>
-                    <th scope="col">Expediente</th>
-                    <th scope="col">Fecha Acuerdo</th>
-                    <th scope="col">Estatus</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-            </ng-template>
+        <ng-template #header>
+            <tr>
+                <th scope="col">Folio</th>
+                <th scope="col">Expediente</th>
+                <th scope="col">Fecha Acuerdo</th>
+                <th scope="col">Estatus</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </ng-template>
 
-            <ng-template #body let-acuerdo>
-                <tr>
-                    <td>
-                        # <span>{{ acuerdo.folio }}</span>
-                    </td>
-                    <td>
-                        {{ acuerdo.expediente?.NumExpediente }}
-                    </td>
-                    <td>
-                        {{ acuerdo.fechaAcuerdo | date: 'dd/MM/yyyy HH:mm' }} h
-                    </td>
-                    <td>
-                        <p-tag
-                            [value]="(getEstadoDescripcion(acuerdo) | uppercase) ?? ''"
-                            [severity]="getEstadoTag(acuerdo).severity"
-                            [icon]="getEstadoTag(acuerdo).icon" />
-                    </td>
-                    <td>
-                        <p-button (click)="detalle(acuerdo.idAcuerdo)" [rounded]="true" [text]="true"
-                            [raised]="true" severity="info" icon="pi pi-eye"
-                            pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
-                        </p-button>
-                    </td>
-                </tr>
-            </ng-template>
+        <ng-template #body let-acuerdo>
+            <tr>
+                <td>
+                    # <span>{{ acuerdo.folio }}</span>
+                </td>
+                <td>
+                    {{ acuerdo.expediente?.NumExpediente }}
+                </td>
+                <td>
+                    {{ acuerdo.fechaAcuerdo | date: 'dd/MM/yyyy HH:mm' }} h
+                </td>
+                <td>
+                    <p-tag [value]="(getEstadoDescripcion(acuerdo) | uppercase) ?? ''"
+                        [severity]="getEstadoTag(acuerdo).severity" [icon]="getEstadoTag(acuerdo).icon" />
+                </td>
+                <td>
+                    <p-button (click)="detalle(acuerdo.idAcuerdo)" [rounded]="true" [text]="true" [raised]="true"
+                        severity="info" icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                    </p-button>
+                </td>
+            </tr>
+        </ng-template>
 
-            <ng-template #emptymessage>
-                <tr>
-                    <td colspan="5">Sin registros</td>
-                </tr>
-            </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="5">Sin registros</td>
+            </tr>
+        </ng-template>
 
-        </p-table>
+    </p-table>
 </div>

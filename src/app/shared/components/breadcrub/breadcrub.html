@@ -1,21 +1,27 @@
-<div class="lg:sticky top-0 z-50 flex flex-col">
+<div class="flex flex-col w-full">
+    <!-- TOPBAR -->
+    <header class="flex items-center justify-between pb-2 mb-2 border-b border-surface">
 
-    <header class="border border-surface rounded-2xl flex items-center justify-between overflow-hidden">
-        <div class="flex items-center gap-2 ml-4">
-            <p-button
-                class="sm:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-emphasis transition-all"
+        <!-- IZQUIERDA: Botón Móvil + Logo -->
+        <div class="flex items-center gap-2">
+            <!-- Botón Menú Móvil -->
+            <button type="button"
+                class="sm:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-color"
                 (click)="drawerService.open()" aria-label="Abrir menú">
-                <i class="pi pi-bars"></i>
-            </p-button>
-            <img src="logo.png" alt="Logo" class="h-10 w-auto" />
+                <i class="pi pi-bars text-lg"></i>
+            </button>
+
+            <!-- Logo SIJUDI (Oculto en móvil) -->
+            <img src="logo.png" alt="Logo" class="hidden sm:block h-12 sm:h-12 w-auto shrink-0" />
         </div>
 
-        <div class="ml-auto flex items-center gap-3 pr-4 py-2">
-            <div class="hidden sm:flex flex-col leading-tight text-right">
-                <span class="text-base font-semibold text-surface-700 dark:text-surface-200">
+        <!-- DERECHA: Perfil de Usuario -->
+        <div class="flex items-center gap-3">
+            <div class="hidden md:flex flex-col text-right">
+                <span class="text-sm font-semibold text-surface-900 dark:text-surface-0 leading-tight">
                     {{ abogadoNombre }}
                 </span>
-                <span class="text-xs text-surface-500 dark:text-surface-400">
+                <span class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
                     {{ areaNombre ? (areaNombre) : '' }}
                     {{ areaNombre && perfilNombre ? ' · ' : '' }}
                     {{ perfilNombre ? (perfilNombre) : '' }}
@@ -24,41 +30,43 @@
                 </span>
             </div>
             <p-avatar [image]="abogadoFotoUrl" (click)="visibleDrawer = true" size="large" shape="circle"
-                class="cursor-pointer">
+                class="cursor-pointer border-2 border-transparent hover:border-primary transition-all">
             </p-avatar>
         </div>
     </header>
 
-    <!-- Breadcrumb automático -->
-    <nav aria-label="Breadcrumb" class="flex items-center gap-1 px-1 py-1 text-xs">
-
-        <a routerLink="/" aria-label="Inicio" class="inline-flex items-center justify-center rounded-md px-1.5 py-0.5
-               text-surface-400 transition-all duration-150
-               hover:bg-surface-100 hover:text-surface-600
-               dark:text-surface-500 dark:hover:bg-surface-800 dark:hover:text-surface-300">
-            <i class="pi pi-home text-[0.65rem] leading-none"></i>
+    <!-- BREADCRUMB (Debajo de la cabecera) -->
+    <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-sm font-medium overflow-x-auto">
+        <a routerLink="/" aria-label="Inicio" class="inline-flex items-center justify-center rounded-md p-1.5 shrink-0
+            text-surface-500 transition-colors duration-200
+            hover:bg-surface-200 hover:text-surface-900
+            dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-100">
+            <i class="pi pi-home text-sm"></i>
         </a>
 
         <ng-container *ngFor="let item of breadcrumbs; let last = last">
-
-            <span class="inline-flex items-center justify-center text-surface-300 dark:text-surface-600">
-                <i class="pi pi-chevron-right text-[0.45rem] leading-none"></i>
+            <span class="text-surface-300 dark:text-surface-600 flex items-center shrink-0">
+                <i class="pi pi-chevron-right text-[0.65rem]"></i>
             </span>
 
-            <span *ngIf="last" class="inline-flex items-center leading-none rounded-md bg-surface-100 px-1.5 py-0.5 text-sm font-semibold
-           text-surface-700 dark:bg-surface-800 dark:text-surface-200">
+            <!-- Elemento Activo (Último) -->
+            <span *ngIf="last"
+                class="inline-flex items-center rounded-md px-2.5 py-1 text-sm font-semibold whitespace-nowrap shrink-0
+                bg-surface-100 text-surface-900 dark:bg-surface-800 dark:text-surface-0 shadow-sm border border-surface">
                 {{ item.label }}
             </span>
 
-            <a *ngIf="!last" [routerLink]="item.routerLink" class="inline-flex items-center leading-none rounded-md px-1.5 py-0.5 text-sm
-           text-surface-400 transition-all duration-150
-           hover:bg-surface-100 hover:text-surface-600
-           dark:text-surface-500 dark:hover:bg-surface-800 dark:hover:text-surface-300">
+            <!-- Elementos Previos (Links) -->
+            <a *ngIf="!last" [routerLink]="item.routerLink" class="inline-flex items-center rounded-md px-2 py-1 text-sm whitespace-nowrap shrink-0
+                text-surface-500 transition-colors duration-200
+                hover:bg-surface-200 hover:text-surface-900
+                dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-100">
                 {{ item.label }}
             </a>
         </ng-container>
     </nav>
 </div>
+
 
 <p-drawer [(visible)]="visibleDrawer" position="right" appendTo="body" styleClass="!w-4/5 sm:!w-[30rem]"> <ng-template
         #headless>

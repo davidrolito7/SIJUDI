@@ -1,73 +1,186 @@
 <p-toast></p-toast>
 <div class="lg:sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-960">
-<app-breadcrub></app-breadcrub>
+    <app-breadcrub></app-breadcrub>
 </div>
-<div class="bg-surface-0 dark:bg-surface-960 px-6 md:px-12 lg:px-20 py-5 text-center">
-    <div class="flex flex-col gap-6">
-        <div class="flex flex-col items-center gap-4">
-            <div class="font-bold text-3xl leading-tight">
-                <span class="text-surface-900 dark:text-surface-0">SIJUDI, </span>
-                <span class="text-primary-500 dark:text-primary-400">Sistema Integral de Justicia Digital</span>
+<div class="">
+    <!-- CABECERA DEL DASHBOARD -->
+    <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
+                Panel de Control
+            </h1>
+            <p class="text-surface-500 dark:text-surface-400 mt-1">
+                Resumen de la carga de trabajo y estado de los trámites de su adscripción.
+            </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-surface-500">Última actualización: <b>{{ horaActual | date:'HH:mm'  }} h</b></span>
+            <button pButton icon="pi pi-refresh" class="p-button-rounded p-button-text p-button-sm"></button>
+        </div>
+    </div>
+
+    <!-- GRID DE MÉTRICAS PRINCIPALES (URGENTES / PENDIENTES) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6 mb-6">
+
+        <!-- CARD 1: Entrega Recepción -->
+        <div routerLink="/juicioenlinea/tramites/recibir" 
+            class="bg-surface-0 dark:bg-surface-900 border border-surface rounded-2xl p-5 shadow-sm flex flex-col hover:border-primary-500/50 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+            <div class="flex justify-between items-start">
+                <span class="text-surface-500 dark:text-surface-400 font-medium text-sm tracking-wide uppercase">Entrega
+                    Recepción</span>
+                <div
+                    class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
+                    <i class="pi pi-inbox text-xl"></i>
+                </div>
             </div>
-            <div class="text-surface-500 dark:text-surface-400 leading-tight">
-                Plataforma digital del Tribunal de Oaxaca para la gestión eficiente de trámites judiciales en línea.
+            <div class="mt-2 flex items-baseline gap-2">
+                <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ (contadores$ | async)?.pendientes_recibir || 0 }}</span>
+            </div>
+            <div class="mt-3 flex items-center gap-2 text-sm">
+                <span
+                    class="px-2 py-0.5 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300 font-medium">Pendientes</span>
+                <span class="text-surface-500 text-xs">por recibir en área</span>
             </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="w-full rounded-md p-4">
-                <span class="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-surface-0 dark:bg-surface-800 shadow mx-auto">
-                    <i class="pi pi-desktop text-2xl! lg:text-3xl! text-primary-500 dark:text-primary-400"></i>
-                </span>
-                <div class="flex flex-col gap-1">
-                    <div class="text-surface-900 dark:text-surface-0 text-xl font-medium leading-tight">Amparos</div>
-                    <p class="text-surface-500 dark:text-surface-400 leading-normal">Gestión y seguimiento de juicios de amparo de manera digital, con acceso a expedientes y resoluciones en tiempo real.</p>
+
+        <!-- CARD 2: Inicios Pendientes -->
+        <div routerLink="/juicioenlinea/demandas/turnar" 
+            class="bg-surface-0 dark:bg-surface-900 border border-surface rounded-2xl p-5 shadow-sm flex flex-col hover:border-primary-500/50 transition-colors cursor-pointer">
+            <div class="flex justify-between items-start">
+                <span class="text-surface-500 dark:text-surface-400 font-medium text-sm tracking-wide uppercase">Inicios
+                    (Demandas)</span>
+                <div
+                    class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                    <i class="pi pi-file text-xl"></i>
                 </div>
             </div>
-            <div class="w-full rounded-md p-4">
-                <span class="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-surface-0 dark:bg-surface-800 shadow mx-auto">
-                    <i class="pi pi-send text-2xl! lg:text-3xl! text-primary-500 dark:text-primary-400"></i>
-                </span>
-                <div class="flex flex-col gap-1">
-                    <div class="text-surface-900 dark:text-surface-0 text-xl font-medium leading-tight">Exhortos</div>
-                    <p class="text-surface-500 dark:text-surface-400 leading-normal">Envío y recepción de exhortos entre juzgados de forma electrónica, agilizando la comunicación entre órganos jurisdiccionales.</p>
+            <div class="mt-2 flex items-baseline gap-2">
+                <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ (contadores$ | async)?.demandas_pendientes_turnar || 0 }}</span>
+            </div>
+            <div class="mt-3 flex items-center gap-2 text-sm">
+                <span
+                    class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 font-medium">Pendientes</span>
+                <span class="text-surface-500 text-xs">de radicación</span>
+            </div>
+        </div>
+
+        <!-- CARD 3: Trámites Pendientes -->
+        <div routerLink="/juicioenlinea/tramites/turnar"
+            class="bg-surface-0 dark:bg-surface-900 border border-surface rounded-2xl p-5 shadow-sm flex flex-col hover:border-primary-500/50 transition-colors cursor-pointer">
+            <div class="flex justify-between items-start">
+                <span
+                    class="text-surface-500 dark:text-surface-400 font-medium text-sm tracking-wide uppercase">Trámites
+                    (Promociones)</span>
+                <div
+                    class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <i class="pi pi-folder-open text-xl"></i>
                 </div>
             </div>
-            <div class="w-full rounded-md p-4">
-                <span class="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-surface-0 dark:bg-surface-800 shadow mx-auto">
-                    <i class="pi pi-video text-2xl! lg:text-3xl! text-primary-500 dark:text-primary-400"></i>
-                </span>
-                <div class="flex flex-col gap-1">
-                    <div class="text-surface-900 dark:text-surface-0 text-xl font-medium leading-tight">Juicio en Línea</div>
-                    <p class="text-surface-500 dark:text-surface-400 leading-normal">Participación en audiencias y diligencias judiciales de forma remota, garantizando el acceso a la justicia desde cualquier lugar.</p>
+            <div class="mt-2 flex items-baseline gap-2">
+                <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ (contadores$ | async)?.tramites_pendientes_turnar || 0 }}</span>
+            </div>
+            <div class="mt-3 flex items-center gap-2 text-sm">
+                <span
+                    class="px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 font-medium">Pendientes</span>
+                <span class="text-surface-500 text-xs">de acordar</span>
+            </div>
+        </div>
+
+        <!-- CARD 4: Resoluciones sin Firma -->
+        <div
+            class="bg-surface-0 dark:bg-surface-900 border border-red-200 dark:border-red-900/50 rounded-2xl p-5 shadow-sm flex flex-col relative overflow-hidden cursor-pointer">
+            <div class="absolute top-0 right-0 w-16 h-16 bg-red-500/10 rounded-bl-full z-0"></div>
+            <div class="flex justify-between items-start z-10">
+                <span class="text-surface-500 dark:text-surface-400 font-medium text-sm tracking-wide uppercase">Firma
+                    de Juez</span>
+                <div
+                    class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                    <i class="pi pi-pencil text-xl"></i>
                 </div>
             </div>
-            <div class="w-full rounded-md p-4">
-                <span class="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-surface-0 dark:bg-surface-800 shadow mx-auto">
-                    <i class="pi pi-file-edit text-2xl! lg:text-3xl! text-primary-500 dark:text-primary-400"></i>
-                </span>
-                <div class="flex flex-col gap-1">
-                    <div class="text-surface-900 dark:text-surface-0 text-xl font-medium leading-tight">Promociones</div>
-                    <p class="text-surface-500 dark:text-surface-400 leading-normal">Presentación y seguimiento de promociones judiciales en línea, con acuse de recibo electrónico y notificaciones automáticas.</p>
-                </div>
+            <div class="mt-2 flex items-baseline gap-2 z-10">
+                <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ (contadores$ | async)?.acuerdos_sin_firmar || 0 }}</span>
             </div>
-            <div class="w-full rounded-md p-4">
-                <span class="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-surface-0 dark:bg-surface-800 shadow mx-auto">
-                    <i class="pi pi-building-columns text-2xl! lg:text-3xl! text-primary-500 dark:text-primary-400"></i>
-                </span>
-                <div class="flex flex-col gap-1">
-                    <div class="text-surface-900 dark:text-surface-0 text-xl font-medium leading-tight">Oficialía de Partes</div>
-                    <p class="text-surface-500 dark:text-surface-400 leading-normal">Recepción y registro digital de documentos judiciales, con control de folios y distribución automática a los juzgados correspondientes.</p>
-                </div>
+            <div class="mt-3 flex items-center gap-2 text-sm z-10">
+                <span
+                    class="px-2 py-0.5 rounded-md bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300 font-medium">Resoluciones</span>
+                <span class="text-surface-500 text-xs">sin firmar</span>
             </div>
-            <div class="w-full rounded-md p-4">
-                <span class="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-surface-0 dark:bg-surface-800 shadow mx-auto">
-                    <i class="pi pi-shield text-2xl! lg:text-3xl! text-primary-500 dark:text-primary-400"></i>
-                </span>
-                <div class="flex flex-col gap-1">
-                    <div class="text-surface-900 dark:text-surface-0 text-xl font-medium leading-tight">Seguridad y Privacidad</div>
-                    <p class="text-surface-500 dark:text-surface-400 leading-normal">Plataforma protegida con autenticación segura y cifrado de datos, garantizando la confidencialidad de la información judicial.</p>
+        </div>
+
+    </div>
+
+    <hr class="border-surface mb-6">
+
+    <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Métricas Generales</h2>
+
+    <!-- GRID SECUNDARIO (VOLÚMENES GLOBALES) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6">
+
+        <!-- CARD 5: Expedientes -->
+        <div routerLink="/juicioenlinea/expedientes/listar" 
+            class="bg-surface-0 dark:bg-surface-900 border border-surface rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+            <div
+                class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <i class="pi pi-book text-xl"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">Expedientes Activos</span>
+                <div class="flex items-end gap-2">
+                    <span class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ (contadores$ | async)?.expedientes_activos || 0 }}</span>
                 </div>
             </div>
         </div>
+
+        <!-- CARD 6: Inicios Creados -->
+        <div
+            class="bg-surface-0 dark:bg-surface-900 border border-surface rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+            <div
+                class="w-12 h-12 rounded-full bg-cyan-100 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
+                <i class="pi pi-file-check text-xl"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">Inicios Creados (Mes)</span>
+                <div class="flex items-end gap-2">
+                    <span class="text-2xl font-bold text-surface-900 dark:text-surface-0">0</span>
+                    <span class="text-emerald-500 text-xs font-medium"><i class="pi pi-arrow-up text-[0.6rem]"></i>
+                        12%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 7 (Propuesta): Audiencias Programadas -->
+        <div
+            class="bg-surface-0 dark:bg-surface-900 border border-surface rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+            <div
+                class="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                <i class="pi pi-calendar-clock text-xl"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">Audiencias (Próx. 7
+                    días)</span>
+                <div class="flex items-end gap-2">
+                    <span class="text-2xl font-bold text-surface-900 dark:text-surface-0">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 8 (Propuesta): Acuerdos Emitidos -->
+        <div
+            class="bg-surface-0 dark:bg-surface-900 border border-surface rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+            <div
+                class="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+                <i class="pi pi-check-circle text-xl"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">Acuerdos Emitidos</span>
+                <div class="flex items-end gap-2">
+                    <span class="text-2xl font-bold text-surface-900 dark:text-surface-0">0</span>
+                    <span class="text-surface-400 text-xs">este mes</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>

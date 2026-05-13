@@ -111,7 +111,7 @@ export class CrearAcuerdo implements OnInit {
   }
 
   // ============================
-  // Data
+  // Tramites pendientes a acordar
   // ============================
   getTramitesExpediente(idExpediente: number): void {
     this.isLoading.set(true);
@@ -119,6 +119,12 @@ export class CrearAcuerdo implements OnInit {
       next: (response) => {
         this.isLoading.set(false);
         this.expediente = response.data;
+
+        // Autoseleccionar demandas (idCatTramite === 3)
+        if (this.expediente?.tramites) {
+          this.selectedTramites = this.expediente.tramites.filter(t => t.cat_tramite?.idCatTramite === 3);
+          this.isAllSelected = this.selectedTramites.length === this.expediente.tramites.length;
+        }
       },
       error: () => {
         this.isLoading.set(false);
@@ -131,12 +137,18 @@ export class CrearAcuerdo implements OnInit {
   // ============================
   toggleSelectAll(): void {
     this.isAllSelected = !this.isAllSelected;
-    this.selectedTramites = this.isAllSelected
-      ? [...(this.expediente?.tramites ?? [])]
-      : [];
+    if (this.isAllSelected) {
+      this.selectedTramites = [...(this.expediente?.tramites ?? [])];
+    } else {
+      // Mantener seleccionados solo los obligatorios (idCatTramite === 3)
+      this.selectedTramites = (this.expediente?.tramites ?? []).filter(t => t.cat_tramite?.idCatTramite === 3);
+    }
   }
 
   toggleSelection(tramite: any): void {
+    // Si es el trámite obligatorio (idCatTramite === 3), no permitir deseleccionar
+    if (tramite.cat_tramite?.idCatTramite === 3) return;
+
     const index = this.selectedTramites.findIndex(t => t === tramite);
     if (index > -1) {
       this.selectedTramites.splice(index, 1);
@@ -242,14 +254,9 @@ export class CrearAcuerdo implements OnInit {
     formData.append('sintesis', values.sintesis.toUpperCase());
     formData.append('documento', values.documento);
     
-    let idDemandaAgregada = false;
     this.selectedTramites.forEach(t => {
       if (t.idTramite) {
         formData.append('idTramite[]', t.idTramite.toString());
-      }
-      if (t.idDemanda && !idDemandaAgregada) {
-        formData.append('idDemanda', t.idDemanda.toString());
-        idDemandaAgregada = true;
       }
     });
 
@@ -283,6 +290,14 @@ export class CrearAcuerdo implements OnInit {
   // ============================
   detalle(idAcuerdo: number): void {
     this.router.navigate(['/juicioenlinea/acuerdos/detalle'], { state: { idAcuerdo } });
+  }
+
+  detalleTramite(idTramite: number): void {
+    this.router.navigate(['/juicioenlinea/tramites/detalle'], { state: { idTramite } });
+  }
+
+  detalleDemanda(idDemanda: number): void {
+    this.router.navigate(['/juicioenlinea/demandas/detalle'], { state: { idDemanda } });
   }
 
   // ============================
@@ -345,13 +360,13 @@ export class CrearAcuerdo implements OnInit {
     const id = this.getIdTramite(tramite);
     switch (id) {
       case 0:
-        return { severity: 'success', icon: 'pi pi-file-pdf' };
+        return { severity: 'secondary', icon: 'pi pi-file-pdf' };
       case 1:
-        return { severity: 'info', icon: 'pi pi-file-pdf' };
+        return { severity: 'warn', icon: 'pi pi-file-pdf' };
       case 2:
-        return { severity: 'warn', icon: 'pi pi-flag' };
+        return { severity: 'info', icon: 'pi pi-flag' };``
       case 3:
-        return { severity: 'secondary', icon: 'pi pi-check' };
+        return { severity: 'success', icon: 'pi pi-file-pdf' };
       default:
         return { severity: 'secondary', icon: 'pi pi-question' };
     }
