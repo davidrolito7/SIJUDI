@@ -338,6 +338,7 @@ export interface DetalleTramiteResponse {
     partes_tramite?: Partes[];
     documento?: Documentos;
     remitente?: Remitente;
+
 }
 
 // --- TRÁMITES: NESTED ---

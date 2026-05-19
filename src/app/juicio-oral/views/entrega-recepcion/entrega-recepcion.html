@@ -121,7 +121,7 @@
                 </td>
                 <td pFrozenColumn alignFrozen="right">
                     @if (tramite.cat_tramite?.idCatTramite === 3) {
-                    <p-button (click)="detalleDemanda(tramite.idTramite)" [rounded]="true" [raised]="true"
+                    <p-button (click)="detalleDemanda(+tramite.idEntidad)" [rounded]="true" [raised]="true"
                         icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top">
                     </p-button>
                     } @else {
