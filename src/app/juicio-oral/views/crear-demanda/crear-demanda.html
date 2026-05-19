@@ -4,14 +4,14 @@
     <app-breadcrub></app-breadcrub>
 
     <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 pl-2 mb-2 tracking-tight">
-        Captura registro 1° instancia
+        Captura demanda 1° instancia
     </h2>
 </div>
 
 <div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
-        <div class="font-medium text-xl text-surface-800 dark:text-surface-200  mb-4">Generales</div>
-
+        <div class="font-medium text-xl text-surface-800 dark:text-surface-200  mb-4">Datos generales de la demanda
+        </div>
     </div>
 
     <div class="w-full">
@@ -21,15 +21,15 @@
                 <div class="col-span-6 sm:col-span-3 grid gap-3 ">
                     <!-- Catálogo de Municipio -->
                     <div id="cveMunicipio" class="col-span-6 sm:col-span-3 relative">
-                        <label for="cveMunicipio" class="block mb-2 text-sm font-medium">Municipio</label>
+                        <label for="cveMunicipio" class="block mb-2 text-sm font-medium">Juzgado</label>
                         <p-select formControlName="cveMunicipio" fluid [options]="catMunicipios" optionValue="Clave"
-                            placeholder="Selecciona un municipio" [filter]="true" appendTo="body"
+                            placeholder="Selecciona un juzgado" [filter]="true" appendTo="body"
                             optionLabel="Descripcion" />
                     </div>
                     <!-- Catálogo de Materias -->
                     <div id="idCatMateria" class="col-span-6 sm:col-span-3">
                         <label for="idCatMateria" class="block mb-2 text-sm font-medium  ">Materia</label>
-                        <p-select formControlName="idCatMateria" fluid appendTo="body" [options]="catMaterias"
+                        <p-multiselect formControlName="idCatMateria" fluid appendTo="body" [options]="catMaterias"
                             optionValue="IdCatMateria" (onChange)="cargarCatalogoVias($event.value)"
                             placeholder="Selecciona una materia" optionLabel="Descripcion" />
 
@@ -46,11 +46,11 @@
                 </div>
                 <div class="col-span-6 sm:col-span-3">
                     <div id="descripcionDemanda" class="col-span-6 sm:col-span-6">
-                        <label for="descripcionDemanda" class="block mb-2 text-sm font-medium  ">Descripción</label>
-
+                        <label for="descripcionDemanda" class="block mb-2 text-sm font-medium  ">Descripción (Acción
+                            principal a
+                            ejecutar)</label>
                         <textarea formControlName="descripcionDemanda" rows="8" fluid appendTo="body"
-                            placeholder="Resume tu demanda..." pTextarea></textarea>
-
+                            placeholder="Acción a ejecutar..." pTextarea></textarea>
                     </div>
                 </div>
 
@@ -115,9 +115,9 @@
                     </td>
                     <td>
                         @if (parte.esMenorEdad) {
-                        <p-tag severity="success" value="SI" />
+                        <p-tag severity="success" icon="pi pi-check-circle" value="SÍ" [rounded]="true" />
                         } @else {
-                        <p-tag severity="warn" value="NO" />
+                        <p-tag severity="secondary" icon="pi pi-times-circle" value="NO" [rounded]="true" />
                         }
                     </td>
                     <td>{{ parte.direccion }}</td>
@@ -141,115 +141,297 @@
     </div>
 </div>
 
+<!--* TABLA DE DOCUMENTOS DECLARADOS -->
+<div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
+    <div class="w-full">
+        <p-table [value]="anexosDeclarados" stripedRows [scrollable]="true" scrollDirection="horizontal"
+            [tableStyle]="{ 'min-width': '60rem' }">
+            <ng-template #caption>
+                <div class="flex">
+                    <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Anexos declarados</div>
+                    <p-button id="declaraAnexos" icon="pi pi-file-plus" class="ml-auto"
+                        [label]="editandoAnexo ? 'Actualizar' : 'Agregar'" (click)="showModalListAnexo()" />
+                </div>
+            </ng-template>
+            <ng-template #header>
+                <tr>
+                    <th style="width: 5%">ID</th>
+                    <th style="width: 45%">Descripción</th>
+                    <th style="width: 10%">Cantidad</th>
+                    <th style="width: 15%">Valor</th>
+                    <th style="width: 10%">Documento</th>
+                    <th style="width: 10%">Firma electrónica</th>
+                    <th style="width: 5%">Acciones</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-a let-i="rowIndex">
+                <tr>
+                    <td>{{ a.idCatTipoDocumento }}</td>
+                    <td>
+                        <div class="flex flex-wrap gap-1">
+                            @for (desc of a.descripcion.split(', '); track $index) {
+                            <p-tag [value]="desc" [rounded]="true" severity="info"
+                                class="text-[10px] uppercase font-semibold" />
+                            }
+                        </div>
+                    </td>
+                    <td>{{ a.cantidad }}</td>
+                    <td>{{ a.valor ? "$" + (a.valor | number : "1.2-2" : "en-US") : "N/A" }}</td>
+                    <td>
+                        <p-button icon="pi pi-file-pdf" [rounded]="true" severity="success" [raised]="true"
+                            (click)="verDocumento(a.archivo)" pTooltip="Ver PDF" tooltipPosition="top" />
+                    </td>
+                    <td>
+                        <div class="flex justify-center">
+                            @if (a.firmaDigital) {
+                            <p-tag severity="success" icon="pi pi-verified" value="SI" [rounded]="true"
+                                class="shadow-sm" pTooltip="Este documento requiere firma electrónica FIREL" />
+                            } @else {
+                            <p-tag severity="secondary" icon="pi pi-file" value="NO" [rounded]="true"
+                                pTooltip="Este documento no requiere firma electrónica" />
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex gap-2">
+                            <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info"
+                                (click)="editarAnexo(i)" pTooltip="Editar" tooltipPosition="top" />
+                            <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                                (click)="confirm3($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="7" class="text-center p-4">No hay anexos declarados.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<!--* MODAL PARA AGREGAR PARTES -->
+<p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }" [closable]="false">
+    <ng-template pTemplate="header">
+        <div class="flex justify-between items-center w-full">
+            <h2 class="text-lg font-semibold ">Nueva Parte</h2>
+        </div>
+    </ng-template>
+
+    <!-- FORMULARIO DATOS DE LA PARTE -->
+    <form [formGroup]="parteForm" (ngSubmit)="agregarParte()">
+        <div class="grid grid-cols-6 gap-4">
+
+            <!-- Nombre -->
+            <div class="col-span-6 sm:col-span-3">
+                <label for="nombre" class="block mb-2 text-sm font-medium">Nombre *</label>
+                <input id="nombre" pInputText type="text" formControlName="nombre" maxlength="100" placeholder="Nombre"
+                    class="w-full uppercase" />
+                <div *ngIf="shouldShowError('nombre')" class="text-red-500 text-sm mt-1">
+                    {{ getError("nombre") }}
+                </div>
+            </div>
+
+            <div class="col-span-2 flex items-end mb-2.5">
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-medium">¿Es persona moral?</span>
+                    <p-checkbox formControlName="moral" [binary]="true" />
+                </div>
+            </div>
+            <!-- Apellido Paterno -->
+            <div class="col-span-6 sm:col-span-3">
+                <label for="apellidoPaterno" class="block mb-2 text-sm font-medium">Apellido Paterno</label>
+                <input id="apellidoPaterno" pInputText type="text" formControlName="apellidoPaterno" maxlength="100"
+                    placeholder="Apellido Paterno" class="w-full uppercase" />
+                <div *ngIf="shouldShowError('apellidoPaterno')" class="text-red-500 text-sm mt-1">
+                    {{ getError("apellidoPaterno") }}
+                </div>
+            </div>
+
+            <!-- Apellido Materno -->
+            <div class="col-span-6 sm:col-span-3">
+                <label for="apellidoMaterno" class="block mb-2 text-sm font-medium">Apellido Materno</label>
+                <input id="apellidoMaterno" pInputText type="text" formControlName="apellidoMaterno" maxlength="100"
+                    placeholder="Apellido Materno" class="w-full uppercase" />
+                <div *ngIf="shouldShowError('apellidoMaterno')" class="text-red-500 text-sm mt-1">
+                    {{ getError("apellidoMaterno") }}
+                </div>
+            </div>
+
+            <!-- Género -->
+            <div class="col-span-6 sm:col-span-3">
+                <label for="idCatSexo" class="block mb-2 text-sm font-medium">Género *</label>
+                <p-select inputId="idCatSexo" formControlName="idCatSexo" [options]="catSexos" optionValue="idCatSexo"
+                    optionLabel="descripcion" placeholder="Selecciona un género" appendTo="body" fluid />
+                <div *ngIf="shouldShowError('idCatSexo')" class="text-red-500 text-sm mt-1">
+                    {{ getError("idCatSexo") }}
+                </div>
+            </div>
+
+            <!-- Tipo parte -->
+            <div class="col-span-6 sm:col-span-3">
+                <label for="idCatTipoParte" class="block mb-2 text-sm font-medium">Tipo parte *</label>
+                <p-select inputId="idCatTipoParte" formControlName="idCatTipoParte" [options]="catTipoPartes"
+                    optionValue="idCatTipoParte" optionLabel="descripcion" placeholder="Selecciona un tipo"
+                    appendTo="body" fluid />
+                <div *ngIf="shouldShowError('idCatTipoParte')" class="text-red-500 text-sm mt-1">
+                    {{ getError("idCatTipoParte") }}
+                </div>
+            </div>
+            <!-- GRUPO VULNERABLE -->
+            <div class="col-span-6 sm:col-span-3">
+                <label for="curp" class="block mb-2 text-sm font-medium">Grupo Vulnerable (Discapacidad/Lenguaje)</label>
+                <p-treeselect formControlName="grupoVulnerableSelecionados" [options]="nodes"
+                    placeholder="Seleccionar grupo vulnerable" class="w-full uppercase" />
+
+            </div>
+
+            <!-- CURP -->
+            <div class="col-span-6 sm:col-span-3">
+                <label for="curp" class="block mb-2 text-sm font-medium">CURP</label>
+                <input id="curp" pInputText type="text" formControlName="curp" maxlength="18" placeholder="CURP"
+                    class="w-full uppercase" />
+                <div *ngIf="shouldShowError('curp')" class="text-red-500 text-sm mt-1">
+                    {{ getError("curp") }}
+                </div>
+            </div>
+
+            <!-- Menor de edad -->
+            <div class="col-span-2 flex items-end mb-2.5">
+                <div class="flex items-center gap-3">
+                    <label for="esMenorEdad" class="block mb-2 text-sm font-medium">Niño, Niña o Adolescente</label>
+                    <p-checkbox id="esMenorEdad" formControlName="esMenorEdad" [binary]="true" />
+                </div>
+            </div>
+
+            <!-- Correo electrónico -->
+            <div class="col-span-6">
+                <label for="correo" class="block mb-2 text-sm font-medium">Correo electrónico</label>
+                <input id="correo" pInputText type="email" formControlName="correo" maxlength="250"
+                    placeholder="ejemplo@gmail.com" class="w-full uppercase" />
+                <div *ngIf="shouldShowError('correo')" class="text-red-500 text-sm mt-1">
+                    {{ getError("correo") }}
+                </div>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="col-span-4">
+                <label for="telefono" class="block mb-2 text-sm font-medium">Teléfono</label>
+                <p-inputMask id="telefono" mask="(999) 999-9999" [unmask]="true" placeholder="(999) 999-9999"
+                    formControlName="telefono" fluid />
+                <div *ngIf="shouldShowError('telefono')" class="text-red-500 text-sm mt-1">
+                    {{ getError("telefono") }}
+                </div>
+                <div *ngIf="parteForm.errors?.['correosIguales']" class="text-red-500 text-sm mt-1">
+                    El correo alterno debe ser diferente al correo principal.
+                </div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="col-span-6">
+                <label for="direccion" class="block mb-2 text-sm font-medium">Dirección</label>
+                <textarea id="direccion" pTextarea formControlName="direccion" maxlength="250" rows="4"
+                    placeholder="Escribe tu dirección aquí" class="w-full uppercase"></textarea>
+                <div *ngIf="shouldShowError('direccion')" class="text-red-500 text-sm mt-1">
+                    {{ getError("direccion") }}
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-2 mt-4">
+            <p-button label="Cancelar" severity="secondary" (click)="resetParteForm()" />
+            <p-button type="submit" label="Guardar" [disabled]="parteForm.invalid" />
+        </div>
+    </form>
+</p-dialog>
+
+<!--* MODAL PARA AGREGAR LISTA DE ANEXOS A ENTREGAR -->
+<p-dialog [header]="editandoAnexo ? 'Editar documento' : 'Declaración de documentos'" [modal]="true"
+    [(visible)]="visibleListAnexo" [style]="{ width: '35rem' }" [closable]="false">
+    <form [formGroup]="declaracionAnexoForm" (ngSubmit)="agregarListAnexo()" class="relative rounded-lg">
+        <!-- Modal body -->
+        <div class="space-y-6">
+            <div class="grid grid-cols-6 gap-6">
+                <div class="col-span-6 sm:col-span-6">
+                    <label for="idCatTipoDocumento" class="block mb-2 text-sm font-medium  ">Tipo de documento</label>
+                    <p-multiselect formControlName="idCatTipoDocumento" class=" w-full" [filter]="true"
+                        [options]="catTipoDocumentos" optionValue="idCatTipoDocumento" appendTo="body"
+                        placeholder="Selecciona uno o más anexos" optionLabel="descripcion" />
+                </div>
+
+                <div class="col-span-6">
+
+                    <label for="documento" class="block mb-2 text-sm font-medium  ">Archivo</label>
+                    <p-fileupload id="documento" mode="basic" styleClass="btn-morado" class=" ml-auto" accept=".pdf"
+                        (onSelect)="onAnexoSelect($event)" name="documento" [customUpload]="true" maxFileSize="1000000"
+                        chooseIcon="pi pi-upload" chooseLabel="Agregar" />
+                </div>
+                <div class="col-span-3 flex flex-col">
+                    <label for="firmaDigital" class="block mb-2 text-sm font-medium flex items-center gap-2">
+                        ¿Requiere firma digital?
+                    </label>
+                    <div class="flex items-center gap-3">
+                        <p-toggleSwitch id="firmaDigital" formControlName="firmaDigital" class="mt-1.5" />
+                        <span class="text-xs font-semibold" [ngClass]="declaracionAnexoForm.get('firmaDigital')?.value ? 'text-green-600' : 'text-surface-400'">
+                            {{ declaracionAnexoForm.get('firmaDigital')?.value ? 'SÍ (FIREL)' : 'NO' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="col-span-3">
+                    <label for="cantidad" class="block mb-2 text-sm font-medium  ">
+                        Cantidad
+                    </label>
+                    <input id="valor" pInputText type="number" formControlName="cantidad" maxlength="12"
+                        class="block w-full" placeholder="Escribe el nombre personalizado" />
+                    <div *ngIf="shouldShowError('cantidad', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
+                        {{ getError("cantidad", declaracionAnexoForm) }}
+                    </div>
+                </div>
+                <div class="col-span-6" *ngIf="mostrarInputNombre">
+                    <label for="descripcion" class="block mb-2 text-sm font-medium  ">
+                        Nombre del documento
+                    </label>
+                    <input id="descripcion" pInputText type="text" formControlName="descripcion" maxlength="200"
+                        class="block w-full" placeholder="Escribe el nombre personalizado" />
+                    <div *ngIf="shouldShowError('descripcion', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
+                        {{ getError("descripcion", declaracionAnexoForm) }}
+                    </div>
+                </div>
+                <div class="col-span-6">
+                    <label for="valor" class="block mb-2 text-sm font-medium  ">
+                        Es valor
+                    </label>
+                    <div class="flex items-center gap-10" style="height: 37.6px;">
+                        <p-toggleswitch id="esValor" formControlName="esValor" class="shrink-0 mt-1.5" />
+                        <p-inputnumber *ngIf="declaracionAnexoForm.get('esValor')?.value" inputId="valor"
+                            formControlName="valor" mode="currency" currency="MXN" locale="es-MX"
+                            placeholder="Ingrese una cantidad" class=" w-full" />
+                    </div>
+                    <div *ngIf="shouldShowError('valor', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
+                        {{ getError("valor", declaracionAnexoForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+            <p-button label="Cancelar" severity="secondary" (click)="resetDeclaracionAnexoForm()" />
+            <p-button type="submit" label="Guardar" [disabled]="declaracionAnexoForm.invalid" />
+        </div>
+    </form>
+</p-dialog>
+
 <!--* MODAL DE CONFIRMACION ELIMINAR PARTE -->
 <app-confirm-dialog key="parte" title="Confirmación" message="¿Está seguro de eliminar esta parte?"
     icon="pi pi-question-circle" circleClass="bg-surface-950 dark:bg-surface-0" acceptLabel="Eliminar"
     acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
 </app-confirm-dialog>
 
-<!--* TABLA DE DOCUMENTOS DECLARADOS -->
-<div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
-    <div class="w-full">
-        <p-table [value]="anexosDeclarados" [tableStyle]="{ 'min-width': '50rem' }" stripedRows>
-            <ng-template #caption>
-                <div class="flex">
-                    <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Anexos declarados</div>
-                    <p-button id="declaraAnexos" icon="pi pi-file-plus" class="ml-auto" label="Agregar"
-                        (click)="showModalListAnexo()" />
-                </div>
-            </ng-template>
-            <ng-template #header>
-                <tr>
-                    <th>ID</th>
-                    <th>Descripción</th>
-                    <th>Cantidad</th>
-                    <th>Valor</th>
-                    <th>Acciones</th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-a let-i="rowIndex">
-                <tr>
-                    <td>{{ a.idCatTipoDocumento }}</td>
-                    <td>{{ a.descripcion }}</td>
-                    <td>{{ a.cantidad }}</td>
-                    <td>{{ a.valor ? "$" + (a.valor | number : "1.2-2" : "en-US") : "N/A" }}</td>
-                    <td>
-                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
-                            (click)="confirm3($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-                <tr>
-                    <td colspan="5" class="text-center p-4">No hay anexos declarados.</td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
-
-    <!--* MODAL DE CONFIRMACION ELIMINAR ANEXO DECLARADO -->
-    <app-confirm-dialog key="declarado" title="Confirmación" message="¿Está seguro de eliminar el anexo declarado?"
-        icon="pi pi-question-circle" circleClass="bg-red-500" acceptLabel="Eliminar"
-        acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
-    </app-confirm-dialog>
-</div>
-
-<!--* TABLA DE ANEXOS -->
-<div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
-    <div class="w-full">
-        <p-table [value]="listaAnexos" [tableStyle]="{ 'min-width': '50rem' }" stripedRows>
-            <ng-template #caption>
-                <div class="flex">
-                    <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Archivos adjuntos</div>
-                    <p-fileupload id="agregarArchivos" mode="basic" styleClass="btn-morado" class=" ml-auto"
-                        name="demo[]" accept=".pdf" (onSelect)="onAnexosSelect($event)" [multiple]="true" [auto]="true"
-                        [customUpload]="true" maxFileSize="1000000" chooseIcon="pi pi-upload" chooseLabel="Agregar" />
-                </div>
-            </ng-template>
-            <ng-template #header>
-                <tr>
-                    <th>Nombre</th>
-                    <th>MB</th>
-                    <th>Documento</th>
-                    <th>Firma electrónica</th>
-                    <th>Acciones</th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-anexo let-i="rowIndex">
-                <tr>
-                    <td class="font-semibold">{{ anexo.nombre }}</td>
-                    <td>
-                        {{ anexo.documento.size ? (anexo.documento.size / (1024 * 1024) | number : "1.3-3") : "0.000" }}
-                        MB
-                    </td>
-                    <td>
-                        <p-button icon="pi pi-file-pdf" [rounded]="true" severity="success" [raised]="true"
-                            (click)="verDocumento(anexo)" pTooltip="Ver PDF" tooltipPosition="top" />
-                    </td>
-                    <td>
-                        <p-toggleswitch [ngModel]="anexo.firmaDigital === 1"
-                            (ngModelChange)="onFirmaDigitalChange(i, $event)" />
-                    </td>
-                    <td>
-                        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" [raised]="true" severity="danger"
-                            (click)="confirm2($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-                <tr>
-                    <td colspan="5" class="text-center p-4">No hay archivos adjuntos.</td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
-
-    <!--* MODAL DE CONFIRMACION ELIMINAR ANEXO -->
-    <app-confirm-dialog key="anexo" title="Confirmación" message="¿Está seguro de eliminar el documento?"
-        icon="pi pi-question-circle" circleClass="bg-red-500" acceptLabel="Eliminar"
-        acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
-    </app-confirm-dialog>
-</div>
+<!--* MODAL DE CONFIRMACION ELIMINAR ANEXO DECLARADO -->
+<app-confirm-dialog key="declarado" title="Confirmación" message="¿Está seguro de eliminar el anexo declarado?"
+    icon="pi pi-question-circle" circleClass="bg-red-500" acceptLabel="Eliminar"
+    acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
+</app-confirm-dialog>
 
 <!--* BOTÓN AUTORIZAR FIREL — solo si algún documento requiere firma y aún no se ha verificado -->
 <section *ngIf="requiereFirma && !firmaVerificada"
@@ -265,7 +447,7 @@
         styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:enabled:bg-[#ff830a]/80 hover:enabled:border-[#ff830a]/80 disabled:opacity-50 disabled:cursor-not-allowed" />
 </section>
 
-<!--* DIALOGO DE CONFIRMACION VALIDAR FIREL -->
+<!--* DIALOGO FORMULARIO PARA VALIDAR FIREL -->
 <p-confirmdialog key="firma">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         <div [formGroup]="firmaForm" class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded">
@@ -304,17 +486,6 @@
 </p-confirmdialog>
 
 <!--* DIALOGO DE CONFIRMACION ENVIAR DEMANDA -->
-<app-confirm-dialog key="demanda" title="Confirmación" message="Confirme la acción para enviar demanda"
-    icon="pi pi pi-send" circleClass="bg-primary" acceptLabel="Confirmar" acceptStyleClass="bg-primary"
-    rejectLabel="Cancelar">
-</app-confirm-dialog>
-
-<!--* DIALOGO DE CONFIRMACION VER DEMANDA -->
-<!-- <app-confirm-dialog key="success" title="Folio demanda: {{ folio }}" message="Demanda enviada exitosamente!"
-    icon="pi pi-check" circleClass="bg-primary" acceptLabel="Ver demanda" acceptStyleClass="bg-primary"
-    rejectLabel="Cerrar">
-</app-confirm-dialog> -->
-
 <p-confirmdialog key="success">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         @if (message) {
@@ -373,199 +544,16 @@
         }
     </ng-template>
 </p-confirmdialog>
-<!--* MODAL PARA AGREGAR PARTES -->
-<p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }" [closable]="false">
-    <ng-template pTemplate="header">
-        <div class="flex justify-between items-center w-full">
-            <h2 class="text-lg font-semibold text-gray-800">Parte</h2>
-        </div>
-    </ng-template>
 
-    <!-- FORMULARIO DATOS DE LA PARTE -->
-    <form [formGroup]="parteForm" (ngSubmit)="agregarParte()">
-        <div class="grid grid-cols-6 gap-4">
 
-            <!-- Nombre -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="nombre" class="block mb-2 text-sm font-medium">Nombre</label>
-                <input id="nombre" pInputText type="text" formControlName="nombre" maxlength="100" placeholder="Bonnie"
-                    class="w-full uppercase" />
-                <div *ngIf="shouldShowError('nombre')" class="text-red-500 text-sm mt-1">
-                    {{ getError("nombre") }}
-                </div>
-            </div>
-
-            <!-- Apellido Paterno -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="apellidoPaterno" class="block mb-2 text-sm font-medium">Apellido Paterno</label>
-                <input id="apellidoPaterno" pInputText type="text" formControlName="apellidoPaterno" maxlength="100"
-                    placeholder="Green" class="w-full uppercase" />
-                <div *ngIf="shouldShowError('apellidoPaterno')" class="text-red-500 text-sm mt-1">
-                    {{ getError("apellidoPaterno") }}
-                </div>
-            </div>
-
-            <!-- Apellido Materno -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="apellidoMaterno" class="block mb-2 text-sm font-medium">Apellido Materno</label>
-                <input id="apellidoMaterno" pInputText type="text" formControlName="apellidoMaterno" maxlength="100"
-                    placeholder="Green" class="w-full uppercase" />
-                <div *ngIf="shouldShowError('apellidoMaterno')" class="text-red-500 text-sm mt-1">
-                    {{ getError("apellidoMaterno") }}
-                </div>
-            </div>
-
-            <!-- Género -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="idCatSexo" class="block mb-2 text-sm font-medium">Género</label>
-                <p-select inputId="idCatSexo" formControlName="idCatSexo" [options]="catSexos" optionValue="idCatSexo"
-                    optionLabel="descripcion" placeholder="Selecciona un género" appendTo="body" fluid />
-                <div *ngIf="shouldShowError('idCatSexo')" class="text-red-500 text-sm mt-1">
-                    {{ getError("idCatSexo") }}
-                </div>
-            </div>
-
-            <!-- Tipo parte -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="idCatTipoParte" class="block mb-2 text-sm font-medium">Tipo parte</label>
-                <p-select inputId="idCatTipoParte" formControlName="idCatTipoParte" [options]="catTipoPartes"
-                    optionValue="idCatTipoParte" optionLabel="descripcion" placeholder="Selecciona un tipo"
-                    appendTo="body" fluid />
-                <div *ngIf="shouldShowError('idCatTipoParte')" class="text-red-500 text-sm mt-1">
-                    {{ getError("idCatTipoParte") }}
-                </div>
-            </div>
-            <div class="col-span-6 sm:col-span-3">
-                <label for="curp" class="block mb-2 text-sm font-medium">CURP</label>
-                <input id="curp" pInputText type="text" formControlName="curp" maxlength="18" placeholder="CURP"
-                    class="w-full uppercase" />
-                <div *ngIf="shouldShowError('curp')" class="text-red-500 text-sm mt-1">
-                    {{ getError("curp") }}
-                </div>
-            </div>
-
-            <!-- Correo electrónico -->
-            <div class="col-span-6">
-                <label for="correo" class="block mb-2 text-sm font-medium">Correo electrónico</label>
-                <input id="correo" pInputText type="email" formControlName="correo" maxlength="250"
-                    placeholder="ejemplo@gmail.com" class="w-full uppercase" />
-                <div *ngIf="shouldShowError('correo')" class="text-red-500 text-sm mt-1">
-                    {{ getError("correo") }}
-                </div>
-            </div>
-
-            <!-- Correo alterno -->
-            <div class="col-span-4">
-                <label for="correoAlterno" class="block mb-2 text-sm font-medium">Correo alterno</label>
-                <input id="correoAlterno" pInputText type="email" formControlName="correoAlterno" maxlength="250"
-                    placeholder="ejemplo@gmail.com" class="w-full uppercase" />
-                <div *ngIf="shouldShowError('correoAlterno')" class="text-red-500 text-sm mt-1">
-                    {{ getError("correoAlterno") }}
-                </div>
-                <div *ngIf="parteForm.errors?.['correosIguales']" class="text-red-500 text-sm mt-1">
-                    El correo alterno debe ser diferente al correo principal.
-                </div>
-            </div>
-
-            <!-- Menor de edad -->
-            <div class="col-span-2 flex items-end mb-2.5">
-                <div class="flex items-center gap-3">
-                    <p-toggleswitch formControlName="esMenorEdad" />
-                    <span class="text-sm font-medium">Menor de edad</span>
-                </div>
-            </div>
-
-            <!-- Dirección -->
-            <div class="col-span-6">
-                <label for="direccion" class="block mb-2 text-sm font-medium">Dirección</label>
-                <textarea id="direccion" pTextarea formControlName="direccion" maxlength="250" rows="4"
-                    placeholder="Escribe tu dirección aquí" class="w-full uppercase"></textarea>
-                <div *ngIf="shouldShowError('direccion')" class="text-red-500 text-sm mt-1">
-                    {{ getError("direccion") }}
-                </div>
-            </div>
-        </div>
-
-        <div class="flex justify-end gap-2 mt-4">
-            <p-button label="Cancelar" severity="secondary" (click)="resetParteForm()" />
-            <p-button type="submit" label="Guardar" [disabled]="parteForm.invalid" />
-        </div>
-    </form>
-</p-dialog>
-
-<!--* MODAL PARA AGREGAR LISTA DE ANEXOS A ENTREGAR -->
-<p-dialog header="Declaración de documentos" [modal]="true" [(visible)]="visibleListAnexo" [style]="{ width: '35rem' }"
-    [closable]="false">
-    <form [formGroup]="declaracionAnexoForm" (ngSubmit)="agregarListAnexo()" class="relative rounded-lg">
-        <!-- Modal body -->
-        <div class="space-y-6">
-            <div class="grid grid-cols-6 gap-6">
-                <div class="col-span-6 sm:col-span-6">
-                    <label for="idCatTipoDocumento" class="block mb-2 text-sm font-medium  ">Tipo de documento</label>
-                    <p-select formControlName="idCatTipoDocumento" class=" w-full" [filter]="true"
-                        [options]="catTipoDocumentos" optionValue="idCatTipoDocumento" appendTo="body"
-                        placeholder="Selecciona uno o más anexos" optionLabel="descripcion" />
-                </div>
-            </div>
-            <div class="col-span-6">
-                <label for="cantidad" class="block mb-2 text-sm font-medium  ">
-                    Cantidad
-                </label>
-
-                <input id="valor" pInputText type="number" formControlName="cantidad" maxlength="12"
-                    class="block w-full" placeholder="Escribe el nombre personalizado" />
-                <div *ngIf="shouldShowError('cantidad', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
-                    {{ getError("cantidad", declaracionAnexoForm) }}
-                </div>
-            </div>
-            <div class="col-span-6" *ngIf="mostrarInputNombre">
-                <label for="descripcion" class="block mb-2 text-sm font-medium  ">
-                    Nombre del documento
-                </label>
-                <input id="descripcion" pInputText type="text" formControlName="descripcion" maxlength="200"
-                    class="block w-full" placeholder="Escribe el nombre personalizado" />
-                <div *ngIf="shouldShowError('descripcion', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
-                    {{ getError("descripcion", declaracionAnexoForm) }}
-                </div>
-            </div>
-            <div class="col-span-6">
-                <label for="valor" class="block mb-2 text-sm font-medium  ">
-                    Es valor
-                </label>
-                <div class="flex items-center gap-10" style="height: 37.6px;">
-                    <p-toggleswitch id="esValor" formControlName="esValor" class="shrink-0 mt-1.5" />
-                    <p-inputnumber *ngIf="declaracionAnexoForm.get('esValor')?.value" inputId="valor"
-                        formControlName="valor" mode="currency" currency="MXN" locale="es-MX"
-                        placeholder="Ingrese una cantidad" class=" w-full" />
-                </div>
-                <div *ngIf="shouldShowError('valor', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
-                    {{ getError("valor", declaracionAnexoForm) }}
-                </div>
-            </div>
-            <!-- <div class="col-span-6" *ngIf="mostrarCampoValor">
-                <label for="valor" class="block mb-2 text-sm font-medium  ">
-                    Valor
-                </label>
-                <input id="valor" pInputText type="number" formControlName="valor" maxlength="12" class="block w-full"
-                    placeholder="Escribe el nombre personalizado" />
-                <div *ngIf="shouldShowError('valor', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
-                    {{ getError("valor", declaracionAnexoForm) }}
-                </div>
-            </div> -->
-
-        </div>
-        <div class="flex justify-end gap-2 mt-4">
-            <p-button label="Cancelar" severity="secondary" (click)="resetDeclaracionAnexoForm()" />
-            <p-button type="submit" label="Guardar" [disabled]="declaracionAnexoForm.invalid" />
-        </div>
-    </form>
-</p-dialog>
-
-<p-dialog header="{{ nombre }}" [modal]="true" [(visible)]="visibleDocumento" [style]="{ width: '40rem' }">
+<!-- <p-dialog header="{{ nombre }}" [modal]="true" [(visible)]="visibleDocumento" [style]="{ width: '40rem' }">
     <iframe *ngIf="documentoUrl" [src]="documentoUrl" type="application/pdf" width="100%" height="500px">
         <p>
             No se pudo mostrar el PDF.
             <a [href]="documentoUrl" download>Descargar</a> en su lugar.
         </p>
     </iframe>
-</p-dialog>
+</p-dialog> -->
+
+<app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="visibleDocumento">
+</app-pdf-dialog>
