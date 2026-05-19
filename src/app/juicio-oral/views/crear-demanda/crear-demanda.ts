@@ -28,12 +28,16 @@ import { Spinner } from "../../../shared/components/spinner/spinner";
 import { PasswordModule } from 'primeng/password';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { driver } from 'driver.js';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputMaskModule } from 'primeng/inputmask';
+import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
+import { TreeSelectModule } from 'primeng/treeselect';
 @Component({
   selector: 'app-crear-demanda',
   imports: [CommonModule, FormsModule, ToastModule, SelectModule, DialogModule, ButtonModule,
-    InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule,
+    InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule, TreeSelectModule,
     InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule, TableModule,
-    TagModule, Breadcrub, InputGroupModule, InputGroupAddonModule, Spinner, PasswordModule, ConfirmDialog],
+    TagModule, Breadcrub, InputGroupModule, InputGroupAddonModule, Spinner, PasswordModule, ConfirmDialog, CheckboxModule, InputMaskModule, PdfDialog],
   templateUrl: './crear-demanda.html',
   styleUrl: './crear-demanda.css',
   providers: [ConfirmationService, MessageService]
@@ -52,18 +56,16 @@ export class CrearDemanda implements OnInit {
   formulario!: FormGroup;
   parteForm!: FormGroup;
   declaracionAnexoForm!: FormGroup;
-  anexoForm!: FormGroup;
   firmaForm!: FormGroup;
 
   //* === LISTAS Y DATOS TEMPORALES ===
   listaPartes: PartesRequest[] = [];
-  listaAnexos: DocumentosRequest[] = [];
+  archivoAnexo: File | undefined;
   anexosDeclarados: AnexosDelcaradosRequest[] = [];
   demandaResponse: CrearDemandaResponse | null = null;
   //* === ESTADOS DE UI Y MODALES ===
   visible: boolean = false;
   visibleListAnexo: boolean = false;
-  visibleAnexo: boolean = false;
   visibleDocumento: boolean = false;
   isLoading: boolean = false;
   documentoUrl: SafeResourceUrl | null = null;
@@ -75,12 +77,16 @@ export class CrearDemanda implements OnInit {
   editandoParte: boolean = false;
   indiceParteEditando: number = -1;
 
+  editandoAnexo: boolean = false;
+  indiceAnexoEditando: number = -1;
+
   mostrarCampoValor: boolean = false;
   mostrarInputNombre: boolean = false;
 
   folio: string | null = null;
   firmaVerificada: boolean = false;
   showPassword = false;
+  nodes!: any[];
 
   constructor(
     private readonly fb: FormBuilder,
@@ -92,7 +98,7 @@ export class CrearDemanda implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.startTutorial();
+    //this.startTutorial();
     this.cargarCatalogoMunicipios();
     this.cargarCatalogoMaterias();
     this.cargarCatTipoDocumento();
@@ -108,29 +114,27 @@ export class CrearDemanda implements OnInit {
 
     this.parteForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(100)]],
+      moral: [false],
       apellidoPaterno: ['', [Validators.required, Validators.maxLength(100)]],
       apellidoMaterno: ['', [Validators.required, Validators.maxLength(100)]],
       direccion: ['', [Validators.required, Validators.maxLength(250)]],
-      correo: ['', [Validators.required, Validators.email, Validators.maxLength(250)]],
-      correoAlterno: ['', [Validators.email, Validators.maxLength(250)]],
+      correo: ['', [Validators.email, Validators.maxLength(250)]],
+      telefono: [''],
       esMenorEdad: [false],
       idCatSexo: [null, Validators.required],
       idCatTipoParte: [null, Validators.required],
-      curp: ['', [Validators.required, Validators.maxLength(18), Validators.pattern(/^[A-Z0-9]{18}$/)]],
-    }, { validators: this.correosDiferentesValidator.bind(this) });
+      curp: ['', [Validators.maxLength(18), Validators.pattern(/^[A-Z0-9]{18}$/)]],
+      grupoVulnerableSelecionados: ['', Validators.required]
+    });
 
     this.declaracionAnexoForm = this.fb.group({
-      idCatTipoDocumento: [null, Validators.required],
-      //descripcion: [''],
+      idCatTipoDocumento: [[], Validators.required],
+      //documento: ['', Validators.required],
+      firmaDigital: [false],
+      descripcion: [''],
       cantidad: [1, [Validators.required, Validators.min(1)]],
       esValor: [false],
       valor: [null]
-    });
-
-    this.anexoForm = this.fb.group({
-      nombre: [''],
-      documento: ['', Validators.required],
-      firmaDigital: [0]
     });
 
     this.firmaForm = this.fb.group({
@@ -189,6 +193,40 @@ export class CrearDemanda implements OnInit {
       }
       valorCtrl.updateValueAndValidity({ emitEvent: false });
     });
+
+    this.parteForm.get('moral')?.valueChanges.subscribe((isMoral: boolean) => {
+      const paternoCtrl = this.parteForm.get('apellidoPaterno');
+      const maternoCtrl = this.parteForm.get('apellidoMaterno');
+      const generoCtrl = this.parteForm.get('idCatSexo');
+
+      if (isMoral) {
+        paternoCtrl?.clearValidators();
+        paternoCtrl?.setValue('', { emitEvent: false });
+        paternoCtrl?.disable({ emitEvent: false });
+
+        maternoCtrl?.clearValidators();
+        maternoCtrl?.setValue('', { emitEvent: false });
+        maternoCtrl?.disable({ emitEvent: false });
+
+        generoCtrl?.clearValidators();
+        generoCtrl?.setValue(3);
+        generoCtrl?.disable({ emitEvent: false });
+      } else {
+        paternoCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
+        paternoCtrl?.enable({ emitEvent: false });
+
+        maternoCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
+        maternoCtrl?.enable({ emitEvent: false });
+
+        generoCtrl?.setValidators([Validators.required]);
+        generoCtrl?.setValue(null, { emitEvent: false });
+        generoCtrl?.enable({ emitEvent: false });
+      }
+
+      paternoCtrl?.updateValueAndValidity();
+      maternoCtrl?.updateValueAndValidity();
+      generoCtrl?.updateValueAndValidity();
+    });
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -207,8 +245,8 @@ export class CrearDemanda implements OnInit {
     this.editandoParte = false;
     this.indiceParteEditando = -1;
     this.parteForm.reset({
-      esMenorEdad: false
-      //// idUsr: ''
+      esMenorEdad: false,
+      moral: false
     });
     this.formEnviado = false;
     this.visible = true;
@@ -221,12 +259,12 @@ export class CrearDemanda implements OnInit {
       this.parteForm.markAllAsTouched();
       return;
     }
+    console.log(this.parteForm.value);
 
     const valores = this.parteForm.getRawValue();
 
     const nuevaParte: PartesRequest = {
       ...valores,
-      //// idUsr: valores.idUsr?.toString().trim() || null,
       nombre: (valores.nombre ?? '').toUpperCase(),
       apellidoPaterno: (valores.apellidoPaterno ?? '').toUpperCase(),
       apellidoMaterno: (valores.apellidoMaterno ?? '').toUpperCase(),
@@ -293,7 +331,7 @@ export class CrearDemanda implements OnInit {
     }
 
     this.visible = false;
-    this.parteForm.reset({ esMenorEdad: false });
+    this.parteForm.reset({ esMenorEdad: false, moral: false });
     this.formEnviado = false;
   }
 
@@ -302,7 +340,7 @@ export class CrearDemanda implements OnInit {
     this.indiceParteEditando = index;
 
     const parte = this.listaPartes[index];
-    this.parteForm.reset({ esMenorEdad: false });
+    this.parteForm.reset({ esMenorEdad: false, moral: false });
     this.parteForm.patchValue(parte);
     this.formEnviado = false;
     this.visible = true;
@@ -313,7 +351,7 @@ export class CrearDemanda implements OnInit {
   }
 
   resetParteForm() {
-    this.parteForm.reset({ esMenorEdad: false });
+    this.parteForm.reset({ esMenorEdad: false, moral: false });
     this.editandoParte = false;
     this.indiceParteEditando = -1;
     this.formEnviado = false;
@@ -333,11 +371,10 @@ export class CrearDemanda implements OnInit {
   // ANEXOS / DOCUMENTOS
   // =============================================
 
-  showModalAnexo() {
-    this.visibleAnexo = true;
-  }
-
   showModalListAnexo() {
+    this.editandoAnexo = false;
+    this.indiceAnexoEditando = -1;
+    this.resetDeclaracionAnexoForm();
     this.visibleListAnexo = true;
   }
 
@@ -347,87 +384,67 @@ export class CrearDemanda implements OnInit {
       return;
     }
 
+    if (!this.archivoAnexo) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Advertencia',
+        detail: 'No se han cargado anexos.'
+      });
+      return;
+    }
     const raw = this.declaracionAnexoForm.getRawValue();
-    const id = Number(raw.idCatTipoDocumento);
+
+    const ids: number[] = raw.idCatTipoDocumento ?? [];
     const cantidadNueva = Number(raw.cantidad ?? 0);
     const valorNuevo = raw.valor != null && raw.valor !== '' ? Number(raw.valor) : undefined;
-    const descripcionNueva = (raw.descripcion ?? '').toString().trim();
 
-    if (valorNuevo === undefined) {
-      const idxExistente = this.anexosDeclarados.findIndex(a =>
-        Number(a.idCatTipoDocumento) === id && (a.valor == null)
-      );
-      if (idxExistente !== -1) {
-        this.anexosDeclarados[idxExistente] = {
-          ...this.anexosDeclarados[idxExistente],
-          cantidad: Number(this.anexosDeclarados[idxExistente].cantidad ?? 0) + cantidadNueva,
-          descripcion: (this.anexosDeclarados[idxExistente].descripcion ?? '').toString().trim() || descripcionNueva
-        };
-        this.resetDeclaracionAnexoForm();
-        return;
-      }
-    }
+    const descripciones = this.catTipoDocumentos
+      .filter(tipo => ids.includes(Number(tipo.idCatTipoDocumento)))
+      .map(tipo => tipo.descripcion)
+      .join(', ');
 
-    this.anexosDeclarados.push({
-      idCatTipoDocumento: id,
-      descripcion: descripcionNueva,
+    const nuevoAnexo: AnexosDelcaradosRequest = {
+      idCatTipoDocumento: ids,
+      descripcion: descripciones,
       cantidad: cantidadNueva,
-      valor: valorNuevo
-    });
+      valor: valorNuevo,
+      archivo: this.archivoAnexo,
+      firmaDigital: raw.firmaDigital,
+      esValor: raw.esValor,
+    };
+
+    if (this.editandoAnexo) {
+      this.anexosDeclarados[this.indiceAnexoEditando] = nuevoAnexo;
+      this.editandoAnexo = false;
+      this.indiceAnexoEditando = -1;
+    } else {
+      this.anexosDeclarados.push(nuevoAnexo);
+    }
+    console.log(this.anexosDeclarados);
 
     this.resetDeclaracionAnexoForm();
   }
 
-  onAnexosSelect(event: any): void {
-    const files: File[] = event?.files ?? event?.currentFiles ?? [];
-    if (!files.length) return;
+  editarAnexo(index: number) {
+    this.editandoAnexo = true;
+    this.indiceAnexoEditando = index;
+    const anexo = this.anexosDeclarados[index];
 
-    for (const file of files) {
-      if (!(file instanceof File)) continue;
-      const nuevoAnexo: DocumentosRequest = {
-        nombre: file.name,
-        documento: file,
-        firmaDigital: 0,
-        peso: file.size
-      };
-      this.listaAnexos.push(nuevoAnexo);
-    }
-    this.visibleAnexo = false;
-  }
-
-  onFirmaDigitalChange(index: number, checked: boolean): void {
-    if (index < 0 || index >= this.listaAnexos.length) return;
-    this.listaAnexos[index].firmaDigital = checked ? 1 : 0;
-  }
-
-  verDocumento(anexo: DocumentosRequest): void {
-    if (anexo?.documento instanceof File) {
-      const url = URL.createObjectURL(anexo.documento);
-      this.nombre = anexo.nombre;
-      this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-      this.visibleDocumento = true;
-    } else {
-      console.error('Documento inválido');
-    }
-  }
-
-  resetAnexoForm() {
-    this.anexoForm.reset();
-    this.mostrarInputNombre = false;
-    this.mostrarCampoValor = false;
-
-    const valorCtrl = this.anexoForm.get('valor');
-    valorCtrl?.clearValidators();
-    valorCtrl?.updateValueAndValidity();
-
-    this.visibleAnexo = false;
-
-    const fileInput = document.getElementById('documento') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+    this.declaracionAnexoForm.patchValue({
+      idCatTipoDocumento: anexo.idCatTipoDocumento,
+      descripcion: anexo.descripcion,
+      firmaDigital: anexo.firmaDigital,
+      cantidad: anexo.cantidad,
+      valor: anexo.valor,
+      esValor: anexo.esValor
+    });
+    this.archivoAnexo = anexo.archivo;
+    this.visibleListAnexo = true;
   }
 
   resetDeclaracionAnexoForm() {
     this.declaracionAnexoForm.reset({ cantidad: 1 });
+    this.archivoAnexo = undefined;
     this.visibleListAnexo = false;
   }
 
@@ -435,24 +452,25 @@ export class CrearDemanda implements OnInit {
     this.anexosDeclarados.splice(index, 1);
   }
 
-  eliminarAnexo(index: number) {
-    this.listaAnexos.splice(index, 1);
+  onAnexoSelect(event: any) {
+    this.archivoAnexo = event.files?.[0];
   }
 
-  onToggleFirmaDigital(event: Event) {
-    const checked = (event.target as HTMLInputElement).checked;
-    this.anexoForm.patchValue({ firmaDigital: checked ? 1 : 0 });
-  }
+  // onFirmaDigitalChange(index: number, checked: boolean): void {
+  //   if (index < 0 || index >= this.anexosDeclarados.length) return;
 
-  confirm2(event: Event, index: number) {
-    this.confirmationService.confirm({
-      key: 'anexo',
-      target: event.target as EventTarget,
-      message: '¿Está seguro de eliminar este documento?',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => this.eliminarAnexo(index),
-      reject: () => { }
-    });
+  //   this.anexosDeclarados[index].firmaDigital = checked ? 1 : 0;
+  // }
+
+  verDocumento(archivo: File): void {
+    if (archivo instanceof File) {
+      const url = URL.createObjectURL(archivo);
+      this.nombre = archivo.name;
+      this.documentoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      this.visibleDocumento = true;
+    } else {
+      console.error('Documento inválido');
+    }
   }
 
   confirm3(event: Event, index: number) {
@@ -468,9 +486,8 @@ export class CrearDemanda implements OnInit {
   // FIRMA FIEL
   // =============================================
 
-  /** Devuelve true si al menos un documento requiere firma digital */
   get requiereFirma(): boolean {
-    return this.listaAnexos.some(a => a.firmaDigital === 1);
+    return this.anexosDeclarados.some(a => a.firmaDigital === 1);
   }
 
   autorizarFirel(event: Event) {
@@ -563,13 +580,6 @@ export class CrearDemanda implements OnInit {
       });
     });
 
-    // 3. Mapear y agregar Documentos / Anexos
-    this.listaAnexos.forEach((documento, index) => {
-      Object.entries(documento).forEach(([key, value]) => {
-        formData.append(`documentos[${index}][${key}]`, value as string | Blob);
-      });
-    });
-
     // 4. Mapear y agregar Anexos Declarados
     this.anexosDeclarados.forEach((anexo, index) => {
       Object.entries(anexo).forEach(([key, value]) => {
@@ -604,12 +614,10 @@ export class CrearDemanda implements OnInit {
   /** Limpia todos los formularios y listas */
   limpiarTodo() {
     this.formulario.reset();
-    this.parteForm.reset({ esMenorEdad: false });
+    this.parteForm.reset({ esMenorEdad: false, moral: false });
     this.firmaForm.reset();
     this.declaracionAnexoForm.reset({ cantidad: 1 });
-    this.anexoForm.reset();
     this.listaPartes = [];
-    this.listaAnexos = [];
     this.anexosDeclarados = [];
     this.firmaVerificada = false;
     this.editandoParte = false;
@@ -628,9 +636,9 @@ export class CrearDemanda implements OnInit {
 
   private validarPartesYDocumentosListas(): boolean {
     const partes = this.listaPartes ?? [];
-    const documentos = this.listaAnexos ?? [];
+    const anexos = this.anexosDeclarados ?? [];
 
-    if (partes.length < 1 || documentos.length < 1) return false;
+    if (partes.length < 1 || anexos.length < 1) return false;
 
     const actores = [1, 2, 3, 4, 5, 21, 22, 24, 25];
     const demandados = [7, 9, 10, 11, 14];
@@ -646,20 +654,6 @@ export class CrearDemanda implements OnInit {
     return this.formulario.valid && this.validarPartesYDocumentosListas();
   }
 
-  /**
-   * Texto e ícono del botón principal según estado:
-   *  - requiere firma y no verificada → "Autorizar Firma"
-   *  - no requiere firma o ya verificada → "Enviar Demanda"
-   */
-  correosDiferentesValidator(form: FormGroup) {
-    const correo = form.get('correo')?.value?.toLowerCase().trim();
-    const correoAlterno = form.get('correoAlterno')?.value?.toLowerCase().trim();
-    if (correo && correoAlterno && correo === correoAlterno) {
-      return { correosIguales: true };
-    }
-    return null;
-  }
-
   getError(controlName: string, form: FormGroup = this.parteForm): string {
     const control = form.get(controlName);
     if (control?.hasError('required')) return 'Este campo es obligatorio';
@@ -670,7 +664,7 @@ export class CrearDemanda implements OnInit {
 
   shouldShowError(controlName: string, form: FormGroup = this.parteForm): boolean {
     const control = form.get(controlName);
-    return control ? control.invalid && (control.dirty || control.touched || this.formEnviado) : false;
+    return control ? control.invalid && (control.dirty || this.formEnviado) : false;
   }
 
   // =============================================

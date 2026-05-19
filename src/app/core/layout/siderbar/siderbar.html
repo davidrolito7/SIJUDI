@@ -1,6 +1,6 @@
 <!-- ===== DRAWER MÓVIL ===== -->
 <p-drawer [(visible)]="drawerService.visible" (visibleChange)="drawerService.visible.set($event)"
-    styleClass="sm:hidden w-72 z-999">
+    styleClass="lg:hidden w-72 z-999">
     <ng-template #headless>
         <div class="flex flex-col h-full">
 
@@ -33,7 +33,6 @@
                                 }
                             </style>
                         </defs>
-                        <!-- paths ... (copia el mismo SVG del aside) -->
                     </svg>
                     <span class="font-semibold text-lg text-primary">SIJUDI</span>
                 </div>
@@ -98,7 +97,7 @@
 <div class="h-screen overflow-hidden flex bg-surface-0 dark:bg-surface-960 p-4 gap-4">
     <!-- CONTENEDOR UNIFICADO BARRAS LATERALES -->
     <div
-        class="hidden sm:flex h-[calc(100vh-2rem)] sticky top-4 z-50 rounded-2xl shadow-sm border border-surface bg-surface-0 dark:bg-surface-950 transition-all duration-300 overflow-hidden">
+        class="hidden lg:flex h-[calc(100vh-2rem)] sticky top-4 z-50 rounded-2xl shadow-sm border border-surface bg-surface-0 dark:bg-surface-950 transition-all duration-300 overflow-hidden">
         <!-- ASIDE PRIMARIO 0.o -->
         <aside
             class="flex flex-col justify-between w-[5rem] py-4 overflow-y-auto overflow-x-hidden items-center relative z-10 bg-primary-50 dark:bg-surface-950">
@@ -108,7 +107,6 @@
                         class="group relative w-12 h-12   flex items-center cursor-pointer text-base rounded-lg transition-all select-none  justify-center text-muted-color hover:bg-emphasis bg-transparent"
                         (click)="showMenu.set(!showMenu())" aria-label="Abrir o cerrar menú">
                         <span class="relative w-10 h-10 inline-block ">
-                            <!-- SVG por defecto -->
                             <span
                                 class="absolute inset-0 flex mt-4 items-center justify-center transition-opacity duration-150 opacity-100 group-hover:opacity-0"
                                 aria-hidden="true">
@@ -228,7 +226,6 @@
                                 </svg>
                             </span>
 
-                            <!-- pi-bars en hover -->
                             <span
                                 class="absolute inset-0 flex items-center justify-center transition-opacity duration-150 opacity-0 group-hover:opacity-100"
                                 aria-hidden="true">
@@ -318,10 +315,8 @@
             <footer
                 class="border-t border-surface px-6 py-3 mt-4 flex items-center justify-between flex-wrap gap-2 text-xs text-surface-600 dark:text-surface-500">
 
-                <!-- Izquierda -->
                 <span>© 2026 Poder Judicial del Estado de Oaxaca · Todos los derechos reservados</span>
 
-                <!-- Derecha -->
                 <div class="flex items-center gap-4">
                     <a href="#" class="hover:text-primary transition-colors">
                         Términos y condiciones

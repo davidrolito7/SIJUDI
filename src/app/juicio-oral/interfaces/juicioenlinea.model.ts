@@ -188,6 +188,7 @@ export interface Documentos {
     idTramite?: number | string;
     nombre: string;
     documento: string;
+    folio?: string;
     activo?: string;
     created_at: string;
     updated_at: string;
@@ -770,12 +771,13 @@ export interface PartesRequest {
 }
 
 export interface AnexosDelcaradosRequest {
-    idCatTipoDocumento: number;
+    idCatTipoDocumento: number[];
     descripcion?: string;
     cantidad: number;
     valor?: number;
     archivo: File;
     firmaDigital: number;
+    esValor: boolean;
 }
 
 export interface DocumentosRequest {

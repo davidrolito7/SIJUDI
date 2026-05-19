@@ -77,7 +77,7 @@
             "development": {
               "buildTarget": "SIJUDI:build:development",
               "liveReload": true,
-              "poll": 2000
+              "hmr": true
             }
           },
           "defaultConfiguration": "development"

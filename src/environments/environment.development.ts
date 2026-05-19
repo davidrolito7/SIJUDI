@@ -12,7 +12,7 @@ export const environment = {
         //ruta : 'https://localhost:7260'
     },
 
-    urlApiEfirma: 'https://api.tribunaloaxaca.gob.mx/efirma/api/efirma',
+    urlApiEfirma: 'https://pruebas.tribunaloaxaca.gob.mx/efirma/api/efirma',
     urlApiExhortosElectronicos: "https://pruebas.tribunaloaxaca.gob.mx/exhortoselectronicos/api",
     //urlApiAmparosPJF:'https://localhost:44397/Api',
     urlApiAmparosPJF: 'https://pruebas.tribunaloaxaca.gob.mx/amparosApi/api',
@@ -25,9 +25,11 @@ export const environment = {
     //urlApiJuicioOral: 'http://127.0.0.1:8000',
     
     //* api juicio oral penal 0.o
-    urlApiJuicioOralPenal: 'https://pruebas.tribunaloaxaca.gob.mx/ApiJuicioOral/api/PromocionesJuicioOral'
+    urlApiJuicioOralPenal: 'https://pruebas.tribunaloaxaca.gob.mx/ApiJuicioOral/api/PromocionesJuicioOral',
     //urlApiJuicioOralPenal:'https://localhost:7057/api/PromocionesJuicioOral'
 
+    //* api notificaciones en tiempo real (Node + Socket.IO)
+    urlApiNotificaciones: 'http://localhost:3000'
 };
 
 
