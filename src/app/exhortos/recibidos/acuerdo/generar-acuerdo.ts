@@ -332,7 +332,7 @@ export class GenerarAcuerdo {
         //response  => {
           if(response.success){
             //console.log("Guardao");
-            //this.idRespuesta=Number(response.data.idRespuesta);
+            this.idRespuesta=Number(response.data.idRespuesta);
             //this.acuerdo=response.data;
             this.detallesAcuerdo().generales = response.data;
             //asignamos los valores devueltos al formulario
@@ -341,6 +341,7 @@ export class GenerarAcuerdo {
               observaciones: this.detallesAcuerdo().generales.observaciones || ''
             });
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Respuesta guardada.' });
+            this.cd.detectChanges();
           }else{
             //console.log("No se pudo guardar la respuesta.", response.message);
             this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors[0] , sticky: true});

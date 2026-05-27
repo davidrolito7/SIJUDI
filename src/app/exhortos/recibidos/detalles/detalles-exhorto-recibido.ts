@@ -65,6 +65,7 @@ export class DetallesExhortoRecibido {
   secciones : secciones[] = [] ;
   perfilSeleccionado! : Signal<string>;
   perfilSeleccionadoService = inject(AuthService);
+  ultimoMovimiento = signal<number | null>(null);
   
   constructor(
     private router: Router,
@@ -196,6 +197,7 @@ export class DetallesExhortoRecibido {
             //console.log('Datos recibidos:', response);
             this.movimientos.set(response.data); // Almacena los datos recibidos en la variable
             this.setBanderasUltimoMovimiento();
+            
           }),
         error:(error) => {
             //console.error('Error al cargar los movimientos del exhorto', error);
@@ -203,9 +205,10 @@ export class DetallesExhortoRecibido {
         }
     });
   }
+  /*
   setBanderasUltimoMovimiento(){
     const perfil = this.authService.getRoleNameUsuario(); 
-
+    
     if(this.movimientos().length > 0)
     {
       this.puedeRecibir.set((this.movimientos()[this.movimientos().length-1].cargoDestino == perfil) && (this.movimientos()[this.movimientos().length-1].fechaRecepcion == null ));
@@ -247,6 +250,60 @@ export class DetallesExhortoRecibido {
         this.puedeRevocar.set(this.puedeRecibir());
     }  
   }
+  */
+
+  setBanderasUltimoMovimiento() {
+  const perfil = this.authService.getRoleNameUsuario(); 
+  const movimientos = this.movimientos();
+
+  if (movimientos.length > 0) {
+    // 1. Guardamos el último movimiento en una constante para limpiar el código
+    const ultimoMovimiento = movimientos[movimientos.length - 1];
+    
+    // 2. Evaluamos las condiciones base
+    const esDestinatario = ultimoMovimiento.cargoDestino === perfil;
+    const estaRecibido = ultimoMovimiento.fechaRecepcion !== null;
+    this.ultimoMovimiento.set(ultimoMovimiento.idMovimiento);
+    // Asignación inicial estándar
+    this.puedeRecibir.set(esDestinatario && !estaRecibido);
+    this.puedeTurnar.set(esDestinatario && estaRecibido);
+
+    // 3. Casos especiales por Perfil / idMovimiento
+    if (ultimoMovimiento.idMovimiento === 8 && perfil === 'Secretario') {
+      this.habilitarparaacordar.set(estaRecibido && !this.existeacuerdo());
+      this.puedeTurnar.set(this.existeacuerdo());
+    } 
+    else if (ultimoMovimiento.idMovimiento === 9 && perfil === 'Juez') {
+      const userData = this.tokenService.getUserFromToken();
+      let idUsuario = 0;
+      
+      if (userData !== null) {
+        idUsuario = userData.idGeneral;
+      }
+
+      // Validar si ya firmó en un archivo tipo 2
+      const yaFirmoEnTipo2 = this.respuesta.some(r =>
+        r.archivos.some(a =>
+          a.idTipoDocumento === 2 &&
+          a.firmantes.some(f => f.idUsuario === idUsuario)
+        )
+      );
+       
+      // CORRECCIÓN: Para poder turnar, debe ser el destinatario, estar recibido Y haber firmado
+      this.puedeTurnar.set(esDestinatario && estaRecibido && yaFirmoEnTipo2);
+      this.cd.detectChanges();
+    } 
+    else {
+      this.habilitarparaacordar.set((ultimoMovimiento.idMovimiento > 8) && (!this.existeacuerdo()));
+    } 
+  }
+
+  // Validación para revocar
+  if (movimientos.length > 1) {
+    this.puedeRevocar.set(this.puedeRecibir());
+  }  
+}
+  
   enviarActualizacion(idActualizacion: number) {
     this.confirmationService.confirm({
       key: 'enviarActualizacion',

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, signal, Signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal, Signal, computed } from '@angular/core';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { TableModule } from "primeng/table";
 import { Button } from "primeng/button";
@@ -216,6 +216,7 @@ export class RespuestaExhortoRecibido {
             // el documento de tipo 2 debe tener al menos dos firmas: del secretario y del juez
             this.puedeEnviarGenerales.set(tieneDosFirmas);
           }
+          this.cd.detectChanges();
           //console.log(this.detallesAcuerdo);
           //this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
         }
@@ -370,4 +371,35 @@ export class RespuestaExhortoRecibido {
         }
     });
   }
+
+puedeEditarSegunFlujo = computed(() => {
+    const lista = this.movimientos();
+
+    // Validación por si el arreglo viene vacío o no se ha cargado
+    if (!lista || lista.length === 0) {
+      return false;
+    }
+
+    // Obtenemos el último movimiento del flujo
+    const ultimoMovimiento = lista[lista.length - 1];
+    
+    // Obtenemos el perfil del LocalStorage
+    const perfilActual = localStorage.getItem('perfilSeleccionadoDesc');
+
+    // Regla 1: El documento debe "radicar" en mi perfil actual
+    const radicaConmigo = ultimoMovimiento.radica === perfilActual;
+
+    // Regla 2: Yo NO debo ser quien lo acaba de turnar/enviar
+    const yaLoEnvie = ultimoMovimiento.cargoTurna === perfilActual;
+
+    // Regla 3: El perfil destino DEBE haber aceptado/recibido el documento
+  // Si fechaRecepcion es null, significa que está "en tránsito" o pendiente de recibir
+  const yaFueRecibido = ultimoMovimiento.fechaRecepcion !== null;
+
+    // El botón de editar se muestra SI:
+  // Radica conmigo Y NO lo he enviado Y ADEMÁS ya lo recibí formalmente
+  return radicaConmigo && !yaLoEnvie && yaFueRecibido;
+  });
+
+
 }
