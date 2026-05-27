@@ -63,7 +63,7 @@
                                     <td class="text-center">
                                         <div class="flex justify-center gap-3">
 
-                                            @if(tienePermisoEditar()){
+                                            @if(tienePermisoEditar() && puedeEditarSegunFlujo()){
                                                 @if(!generalesEnviado){
                                                     <div class="relative">
                                                         <p-button (click)="generarAcuerdo(idNotificacion, Acuerdo.generales.idRespuesta)" severity="warn"

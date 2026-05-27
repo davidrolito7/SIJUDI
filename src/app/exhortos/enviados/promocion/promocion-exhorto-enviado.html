@@ -1,46 +1,181 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 <p-toast></p-toast>
   <!-- BREADCRUMB -->
+ <div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-950 flex flex-col gap-4">
+  <!-- BREADCRUMB -->
   <app-breadcrub></app-breadcrub>
-<div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4 sticky-header">
-  
-    <!-- Start coding here -->
-        <div class="flex items-start flex-col md:justify-between md:flex-row">
-            <div>
-                <p class="mr-3 text-3xl font-semibold dark:text-white">Crear promoción</p>
-                <p class="text-gray-500 dark:text-gray-400">Crear promoción para el exhorto: <span class="text-red-500 font-bold">{{numExhorto}}</span> </p>
-            </div>
-            <div class="flex items-center gap-3">
-                @if(fechaHora == null){
-                    @if(tienePermisoGuardar()){
-                      <div class="relative">
-                        <p-button (onClick)="guardarPromocion(myForm)" icon="" styleClass="w-full">
-                            Guardar
-                        </p-button>
-                      </div>
-                  }
-                }
-                @if(!hayCambiosSinGuardar && listaDocumentos().length >=1){
-                    @if(fechaHora == null){
-                        @if(tienePermisoEnviarGenerales()){
-                            <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                              <p-button (onClick)="enviarPromocionGenerales(idExhortoEnviado)" icon="" styleClass="w-full">
-                                  Enviar generales
-                              </p-button>
-                        }
-                        
-                    }   
-                    @if(tienePermisoEnviarArchvios()){
-                        @if(fechaRecepcion == null && fechaHora != null){
-                            <p-button  (onClick)="enviarPromocionArchivos(idPromocionEnviado,idExhortoEnviado)"
-                                icon="pi pi-send" styleClass="w-full"> Enviar archivos
-                            </p-button>
-                        }
-                    }
-                }
-            
-            </div>
+
+  <!-- ENCABEZADO -->
+  <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
+    <div class="flex items-start flex-col md:flex-row justify-between">
+      <div>
+        <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+          Crear Promoción
+        </label>
+
+        <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-users text-base! leading-normal!"></i>
+            <span>Iniciar una promoción</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex flex-wrap items-center gap-3">
+
+        @if(fechaHora == null){
+          @if(tienePermisoGuardar()){
+            <p-button
+              (onClick)="guardarPromocion(myForm)"
+              styleClass="w-full">
+              Guardar
+            </p-button>
+          }
+        }
+
+        @if(!hayCambiosSinGuardar && listaDocumentos().length >= 1){
+          @if(fechaHora == null){
+            @if(tienePermisoEnviarGenerales()){
+              <p-button
+                (onClick)="enviarPromocionGenerales(idExhortoEnviado)"
+                styleClass="w-full">
+                Enviar generales
+              </p-button>
+            }
+          }
+
+          @if(tienePermisoEnviarArchvios()){
+            @if(fechaRecepcion == null && fechaHora != null){
+              <p-button
+                (onClick)="enviarPromocionArchivos(idPromocionEnviado,idExhortoEnviado)"
+                icon="pi pi-send"
+                styleClass="w-full">
+                Enviar archivos
+              </p-button>
+            }
+          }
+        }
+
+      </div>
     </div>
+  </div>
+</div>
+
+<div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4 mt-4">
+    <!-- Información de exhorto -->
+    <div class="border-b border-surface mb-4 pb-2">
+        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0">Información del Exhorto</h3>
+    </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+        <!-- Columna 1 -->
+        <div class="flex flex-col">
+          <div>
+            <p class=" text-gray-500">ExhortoOrigenId</p>
+            <p>{{ detallesExhortos()?.generales?.idExhortoEnviado }}</p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Estado</p>
+            <p>{{ detallesExhortos()?.generales?.estadoDestino }}</p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Juez Exhortante</p>
+            <p class="font-semibold">
+              {{ detallesExhortos()?.generales?.juezExhortante }}
+            </p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Fecha de Envío</p>
+            <p>{{ detallesExhortos()?.generales?.fechaHora }}</p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Término (Días)</p>
+            <p>{{ detallesExhortos()?.generales?.diasResponder }}</p>
+          </div>
+
+        </div>
+
+        <!-- Columna 2 -->
+        <div class="flex flex-col">
+
+          <div>
+            <p class=" text-gray-500">Num Exhorto</p>
+            <p class="text-red-500 font-bold">
+              {{ detallesExhortos()?.generales?.numeroExhorto }}
+            </p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Municipio</p>
+            <p>{{ detallesExhortos()?.generales?.municipioOrigen }}</p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Tipo de Juicio</p>
+            <p>{{ detallesExhortos()?.generales?.tipoJuicioAsuntoDelitos }}</p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Expediente</p>
+            <p class="font-semibold">
+              {{ detallesExhortos()?.generales?.numeroExpedienteOrigen }}
+            </p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Fojas</p>
+            <p>{{ detallesExhortos()?.generales?.fojas }}</p>
+          </div>
+
+        </div>
+
+        <!-- Columna 3 -->
+        <div class="flex flex-col">
+
+          <div>
+            <p class=" text-gray-500">Juzgado</p>
+            <p>{{ detallesExhortos()?.generales?.juzgadoOrigenNombre }}</p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Diligencia</p>
+            <p>{{ detallesExhortos()?.generales?.tipoDiligenciacionNombre }}</p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Oficio</p>
+            <p>{{ detallesExhortos()?.generales?.numeroOficioOrigen }}</p>
+          </div>
+
+          <div>
+            <p class=" text-gray-500">Estatus</p>
+            <span class="inline-flex items-center px-3 py-1 rounded-md bg-green-400 text-black font-bold text-xs">
+              <i class="pi pi-send mr-1"></i>
+              {{ detallesExhortos()?.generales?.estatus }}
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Observaciones -->
+      <div class="mt-4 text-sm">
+        <p class=" text-gray-500">Observaciones</p>
+        <p class="italic font-semibold">
+          {{ detallesExhortos()?.generales?.observaciones }}
+        </p>
+      </div>
+
+    
+
+  
+
 </div>
 
 <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4 mt-4">       

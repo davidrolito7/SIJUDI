@@ -60,14 +60,17 @@ responseRespuestaExhortos= signal<respuestExhortoEnviado | null>(null);
         if(responseRespuestaExhortos.success){
           //console.log(responseRespuestaExhortos);
           this.responseRespuestaExhortos.set(responseRespuestaExhortos.data);
+          this.cd.detectChanges();
         }
         else{
           this.messageService.add({severity:'error',summary: responseRespuestaExhortos.message, detail:responseRespuestaExhortos.errors[0] });
+          this.cd.detectChanges();
         }
       },  
       error: (error) => {
         //console.error('Error al cargar las respuestas del exhorto enviado', error);
         this.messageService.add({severity:'error',summary: 'Error', detail:error.message});
+        this.cd.detectChanges();
       }
     });
   }

@@ -9,7 +9,7 @@ import {ButtonModule} from 'primeng/button';
 import { TokenService } from '../../../core/auth/service/token.service';
 import {ExhortosService} from '../../services/exhorto.service';
 import { AuthService } from '../../../core/auth/service/auth.service';
-import { archivoPromocionExhortoEnviado, ArchivoRecibidoPromocionConAcuse, CatalogoGenero, CatalogoTipoParte, ListadoCatalogoTipoDocumento, PromocionExhortoEnviado, ProvomenteExhortoEnviado } from '../../interfaces/exhortos.model';
+import { archivoPromocionExhortoEnviado, ArchivoRecibidoPromocionConAcuse, CatalogoGenero, CatalogoTipoParte, detalleExhortosEnviados, ListadoCatalogoTipoDocumento, PromocionExhortoEnviado, ProvomenteExhortoEnviado } from '../../interfaces/exhortos.model';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
 import { base64ToFile, downloadBase64, downloadFile, validaPdf } from '../../../shared/functions/utils';
@@ -33,6 +33,7 @@ import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { validarFirmasUsuarioPromEnviado } from '../../functions/firmas';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { Spinner } from "../../../shared/components/spinner/spinner";
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 
@@ -171,6 +172,7 @@ export class PromocionExhortoEnviadoComponent {
   loading = false;
   seleccionadosParaFirma= signal(false);
   showPassword: boolean = false;
+  detallesExhortos = signal<detalleExhortosEnviados | null>(null);
 /*formatEmail() {
     let value = this.emailControl.value || '';
 
@@ -219,6 +221,9 @@ export class PromocionExhortoEnviadoComponent {
       if(this.idPromocionEnviado!=0){
         this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado,this.idPromocionEnviado);
       }
+
+      this.loadDetalles(this.idExhortoEnviado);
+
 
     } else {
       // Si no hay state, redirigir a la lista de amparos
@@ -285,6 +290,38 @@ this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccio
   /*marcarCambiosPromovente(){
     this.promoventeSinGuardar = true;
   }*/
+
+    async loadDetalles(idExhortoEnviado: number){
+        await this.cargarDetallesExhortoEnviado(idExhortoEnviado);
+      }
+
+cargarDetallesExhortoEnviado(idExhortoEnviado: number): Promise<void> {
+    return new Promise((resolve, reject)=>{
+      //console.log(idExhortoEnviado)
+      this.isLoading=true;
+      this.cd.detectChanges();
+      this.ExhortosService.getExhortosEnviadosDetalle(idExhortoEnviado).subscribe({
+        next:(response) => {
+          //console.log('Datos recibidos:', response);
+          setTimeout(() => {
+            this.detallesExhortos.set(response.data); // Almacena los datos recibidos en la variable
+            //this.detallesExhortosPromocion.set(response.data.promociones);
+          });
+        },
+        error:(error) => {
+          //console.error('Error al cargar detalle de notificación', error);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+          this.isLoading=false;
+          this.cd.detectChanges();
+        },
+        complete:()=>{
+          this.isLoading=false;
+          this.cd.detectChanges();
+        }
+      });
+    });
+  }
+
 
   guardarPromocion(form: NgForm) {
     if(this.promoventeSinGuardar){
