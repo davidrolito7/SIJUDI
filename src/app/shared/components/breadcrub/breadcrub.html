@@ -1,4 +1,10 @@
 <div class="flex flex-col w-full">
+    <!-- Toast de notificación push -->
+    <app-notificacion-toast 
+        [notificacion]="notificacionToast()"
+        (cerrada)="onToastCerrada()">
+    </app-notificacion-toast>
+
     <header class="flex items-center justify-between pt-1 pb-2 mb-2 border-b border-surface">
         <!-- IZQUIERDA -->
         <div class="flex items-center gap-2">
@@ -34,13 +40,13 @@
 
             <!-- Botón de Notificaciones -->
             <button type="button"
-                class="relative w-[48px] h-[48px] flex items-center justify-center rounded-full bg-transparent hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer transition-all "
-                (click)="visibleNotificaciones = true">
-                <i class="pi pi-bell text-xl text-surface-700 dark:text-surface-100"></i>
-                @if (pendientes > 0) {
+                class="relative w-[48px] h-[48px] flex items-center justify-center rounded-full border border-surface-200 bg-surface-100 text-primary shadow-sm hover:bg-surface-200 dark:border-surface-700 dark:bg-surface-800 dark:text-primary-300 dark:hover:bg-surface-700 cursor-pointer transition-all"
+                (click)="visibleNotificaciones = true" aria-label="Abrir notificaciones">
+                <i class="pi pi-bell text-xl"></i>
+                @if (pendientes() > 0) {
                 <span
                     class="absolute top-0 right-0 z-50 w-5 h-5 text-[11px] font-bold text-white bg-red-500 rounded-full flex items-center justify-center shadow-sm border-2 border-surface-0 dark:border-surface-900">
-                    {{ pendientes }}
+                    {{ pendientes() }}
                 </span>
                 }
             </button>
@@ -131,14 +137,14 @@
             <span class="font-semibold">Notificaciones</span>
             <span
                 class="ml-auto text-xs bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 px-2 py-1 rounded-full">
-                {{ notificaciones.length }}
+                {{ notificaciones().length }}
             </span>
         </div>
     </ng-template>
 
     <div class="flex flex-col gap-2">
         <!-- Estado de carga -->
-        @if (cargandoNotificaciones) {
+        @if (cargandoNotificaciones()) {
         <div class="text-center text-surface-500 p-8 flex flex-col items-center justify-center min-h-[200px]">
             <i class="pi pi-spin pi-spinner text-3xl mb-3 text-primary"></i>
             <p class="text-sm">Cargando notificaciones...</p>
@@ -146,7 +152,7 @@
         }
 
         <!-- Estado vacío -->
-        @if (!cargandoNotificaciones && notificaciones.length === 0) {
+        @if (!cargandoNotificaciones() && notificaciones().length === 0) {
         <div class="text-center text-surface-500 p-8 flex flex-col items-center justify-center min-h-[200px]">
             <i class="pi pi-inbox text-4xl mb-3 opacity-40"></i>
             <p class="text-sm">No hay notificaciones</p>
@@ -154,7 +160,7 @@
         }
 
         <!-- Listado de notificaciones -->
-        @for (notif of notificaciones; track notif.id) {
+        @for (notif of notificaciones(); track notif.id) {
         <div @slideOutRight
             class="grid grid-cols-[3rem_1fr] gap-3 p-3 rounded-lg border border-surface-200 dark:border-surface-700 transition-colors cursor-pointer"
             [ngClass]="{
@@ -215,19 +221,19 @@
                 <div class="flex gap-1 text-xs font-bold">
                     <span>
                         <p class="text-surface-900 dark:text-surface-500">
-                            {{ notif.idAreaDestino }}
+                            {{ notif.origen.area.descripcion }}
                         </p>
                     </span>
                     <span class="text-surface-300 dark:text-surface-600">•</span>
                     <span>
                         <p class="text-surface-900 dark:text-surface-500">
-                            {{ notif.idSistemaPerfilDestino }}
+                            {{ notif.origen.sistemaPerfil.descripcion }}
                         </p>
                     </span>
                     <span class="text-surface-300 dark:text-surface-600">•</span>
                     <span>
                         <p class="text-surface-900 dark:text-surface-500">
-                            {{ notif.idSubAreaDestino }}
+                            {{ notif.origen.subArea.descripcion }}
                         </p>
                     </span>
                 </div>

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router, NavigationEnd, ActivatedRoute, RouterModule, UrlSegment } from '@angular/router';
 import { filter, finalize, Subscription } from 'rxjs';
@@ -11,7 +11,10 @@ import { DrawerService } from '../../service/drawer.service';
 import { CommonModule } from '@angular/common';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
-import { NotificacionesService, Notificacion } from '../../services/notificaciones.service';
+import { NotificacionesService } from '../../services/notificaciones.service';
+import { NotificacionResponse } from '../../interface/shared.interface';
+import { NotificacionToastComponent } from '../notificacion-toast/notificacion-toast';
+
 export interface BreadcrumbItem {
   label: string;
   routerLink?: string;
@@ -19,9 +22,10 @@ export interface BreadcrumbItem {
 
 @Component({
   selector: 'app-breadcrub',
-  imports: [AvatarModule, DrawerModule, Button, CommonModule, RouterModule, BadgeModule, OverlayBadgeModule],
+  imports: [AvatarModule, DrawerModule, Button, CommonModule, RouterModule, BadgeModule, OverlayBadgeModule, NotificacionToastComponent],
   templateUrl: './breadcrub.html',
   styleUrl: './breadcrub.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('slideOutRight', [
       transition(':leave', [
@@ -35,9 +39,11 @@ export class Breadcrub implements OnInit, OnDestroy {
   breadcrumbs: BreadcrumbItem[] = [];
   visibleDrawer: boolean = false;
   visibleNotificaciones: boolean = false;
-  notificaciones: Notificacion[] = [];
-  pendientes = 0;
-  cargandoNotificaciones = false;
+  
+  notificaciones = signal<NotificacionResponse[]>([]);
+  notificacionToast = signal<NotificacionResponse | null>(null);
+  pendientes = signal(0);
+  cargandoNotificaciones = signal(false);
 
   private sub!: Subscription;
   private socketSub?: Subscription;
@@ -47,7 +53,6 @@ export class Breadcrub implements OnInit, OnDestroy {
   readonly drawerService = inject(DrawerService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
-  private readonly cdr = inject(ChangeDetectorRef);
   private readonly marcandoLeida = new Set<number>();
 
   ngOnInit(): void {
@@ -58,35 +63,37 @@ export class Breadcrub implements OnInit, OnDestroy {
     ).subscribe(() => this.buildBreadcrumbs());
 
     this.socketSub = this.notificacionesService.escucharNotificaciones().subscribe({
-      next: (notif) => {
-        this.agregarNotificacionSocket(notif);
+      next: (resp) => {
+        this.agregarNotificacionSocket(resp.data);
       }
     });
 
     this.notificacionesService.conectarSocket();
     this.cargarNotificaciones();
   }
-  private agregarNotificacionSocket(notif: Notificacion): void {
-    const nueva: Notificacion = {
+  private agregarNotificacionSocket(notif: NotificacionResponse): void {
+    const nueva: NotificacionResponse = {
       ...notif,
       leida: notif.leida ?? false
     };
 
     if (nueva.leida) {
-      this.notificaciones = this.notificaciones.filter(n => n.id !== nueva.id);
+      this.notificaciones.update(n => n.filter(notif => notif.id !== nueva.id));
     } else {
-      const yaExiste = this.notificaciones.some(n => n.id === nueva.id);
+      const yaExiste = this.notificaciones().some(n => n.id === nueva.id);
       if (yaExiste) {
-        this.notificaciones = this.notificaciones.map(n =>
-          n.id === nueva.id ? { ...n, ...nueva } : n
+        this.notificaciones.update(n => 
+          n.map(notif =>
+            notif.id === nueva.id ? { ...notif, ...nueva } : notif
+          )
         );
       } else {
-        this.notificaciones = [nueva, ...this.notificaciones];
-        this.pendientes += 1;
+        this.notificaciones.update(n => [nueva, ...n]);
+        this.pendientes.update(p => p + 1);
+        // Mostrar en el toast
+        this.notificacionToast.set({ ...nueva });
       }
     }
-
-    this.cdr.markForCheck();
   }
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
@@ -95,36 +102,32 @@ export class Breadcrub implements OnInit, OnDestroy {
   }
 
   cargarNotificaciones(): void {
-    this.cargandoNotificaciones = true;
+    this.cargandoNotificaciones.set(true);
 
     this.notificacionesService.obtenerMisNotificaciones().subscribe({
       next: (resp) => {
-        this.notificaciones = (resp.notificaciones ?? []).filter(n => !n.leida);
-        this.pendientes = resp.pendientes ?? 0;
-        this.cargandoNotificaciones = false;
-        this.cdr.markForCheck();
+        this.notificaciones.set((resp.data?.notificaciones ?? []).filter(n => !n.leida));
+        this.pendientes.set(resp.data?.pendientes ?? 0);
+        this.cargandoNotificaciones.set(false);
       },
       error: () => {
-        this.cargandoNotificaciones = false;
-        this.cdr.markForCheck();
+        this.cargandoNotificaciones.set(false);
       }
     });
   }
 
-  marcarNotificacionLeida(notif: Notificacion): void {
+  marcarNotificacionLeida(notif: NotificacionResponse): void {
     if (!notif?.id || notif.leida || this.marcandoLeida.has(notif.id)) {
       return;
     }
 
-    const notificacionesPrevias = this.notificaciones;
-    const pendientesPrevios = this.pendientes;
+    const notificacionesPrevias = this.notificaciones();
+    const pendientesPrevios = this.pendientes();
 
     this.marcandoLeida.add(notif.id);
 
-    this.notificaciones = this.notificaciones.filter(n => n.id !== notif.id);
-
-    this.pendientes = Math.max(0, this.pendientes - 1);
-    this.cdr.markForCheck();
+    this.notificaciones.update(n => n.filter(notif2 => notif2.id !== notif.id));
+    this.pendientes.update(p => Math.max(0, p - 1));
 
     this.notificacionesService.marcarLeida(notif.id)
       .pipe(
@@ -134,11 +137,14 @@ export class Breadcrub implements OnInit, OnDestroy {
       )
       .subscribe({
         error: () => {
-          this.notificaciones = notificacionesPrevias;
-          this.pendientes = pendientesPrevios;
-          this.cdr.markForCheck();
+          this.notificaciones.set(notificacionesPrevias);
+          this.pendientes.set(pendientesPrevios);
         }
       });
+  }
+
+  onToastCerrada(): void {
+    this.notificacionToast.set(null);
   }
   
   private buildBreadcrumbs(): void {

@@ -4,33 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 import { TokenService } from '../../core/auth/service/token.service';
-
-export interface Notificacion {
-  id: number;
-  folio: string;
-  mensaje: string;
-  accion: string;
-  fecha_creacion?: string;
-  fecha?: string;
-  leida?: boolean;
-  idAreaDestino?: number;
-  idSistemaPerfilDestino?: number;
-  idSubAreaDestino?: number;
-}
-
-export interface CrearNotificacionRequest {
-  folio: string;
-  accion: string;
-  mensaje: string;
-  idAreaDestino: number;
-  idSistemaPerfilDestino: number;
-  idSubAreaDestino: number;
-}
-
-export interface BandejaNotificacionesResponse {
-  pendientes: number;
-  notificaciones: Notificacion[];
-}
+import { BandejaNotificacionesResponse, CrearNotificacionRequest, GenericResponse, NotificacionResponse } from '../interface/shared.interface';
 
 @Injectable({ providedIn: 'root' })
 export class NotificacionesService {
@@ -38,7 +12,7 @@ export class NotificacionesService {
   private readonly apiUrl = environment.urlApiNotificaciones;
   private socket?: Socket;
 
-  private readonly notificacion$ = new Subject<Notificacion>();
+  private readonly notificacion$ = new Subject<GenericResponse<NotificacionResponse>>();
 
   private readonly http = inject(HttpClient);
   private readonly tokenService = inject(TokenService);
@@ -54,24 +28,24 @@ export class NotificacionesService {
     });
   }
 
-  obtenerMisNotificaciones(): Observable<BandejaNotificacionesResponse> {
-    return this.http.get<BandejaNotificacionesResponse>(
-      `${this.apiUrl}/api/notificaciones/me`,
+  obtenerMisNotificaciones(): Observable<GenericResponse<BandejaNotificacionesResponse>> {
+    return this.http.get<GenericResponse<BandejaNotificacionesResponse>>(
+      `${this.apiUrl}/api/notificaciones`,
       { headers: this.getHeaders() }
     );
   }
 
-  crearNotificacion(payload: CrearNotificacionRequest): Observable<any> {
-    return this.http.post(
+  crearNotificacion(payload: CrearNotificacionRequest): Observable<GenericResponse<any>> {
+    return this.http.post<GenericResponse<any>>(
       `${this.apiUrl}/api/notificaciones`,
       payload,
       { headers: this.getHeaders() }
     );
   }
 
-  marcarLeida(id: number): Observable<any> {
-    return this.http.put(
-      `${this.apiUrl}/api/notificaciones/${id}/leer`,
+  marcarLeida(id: number): Observable<GenericResponse<any>> {
+    return this.http.put<GenericResponse<any>>(
+      `${this.apiUrl}/api/notificaciones/${id}`,
       {},
       { headers: this.getHeaders() }
     );
@@ -106,11 +80,15 @@ export class NotificacionesService {
       console.error('[NotificacionesService] Error de conexión Socket.IO:', error.message);
     });
 
-    this.socket.on('notificacion', (data: Notificacion) => {
+    this.socket.on('notificacion', (data: NotificacionResponse) => {
+        console.log('[Socket notificacion raw]', data);
+
       this.ngZone.run(() => {
         this.notificacion$.next({
-          ...data,
-          leida: data.leida ?? false
+          success: true,
+          message: 'Notificación recibida',
+          errors: [],
+          data
         });
       });
     });
@@ -128,7 +106,7 @@ export class NotificacionesService {
     console.log('[NotificacionesService] Socket.IO desconectado');
   }
 
-  escucharNotificaciones(): Observable<Notificacion> {
+  escucharNotificaciones(): Observable<GenericResponse<NotificacionResponse>> {
     return this.notificacion$.asObservable();
   }
 }

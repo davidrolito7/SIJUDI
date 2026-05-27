@@ -761,24 +761,35 @@ export interface PartesRequest {
     nombre: string;
     apellidoMaterno?: string;
     apellidoPaterno: string;
+    apoderadoNombre?: string;
+    apoderadoApellidoPaterno?: string;
+    apoderadoApellidoMaterno?: string;
+    apoderadoIdCatSexo?: number | null;
+    moral?: boolean;
     correo: string;
-    correoAlterno?: string;
+    telefono?: string;
     direccion: string;
     esMenorEdad: boolean;
     idCatSexo: number | null;
     idCatTipoParte: number | null;
+    fechaNacimiento?: Date | string | null;
+    grupoVulnerable?: string[];
+    idDiscapacidad?: number | null;
+    idLenguaje?: number | null;
     descripcionTipoParte?: string;
     filtroParte?: 'busqueda' | 'manual';
 }
 
 export interface AnexosDelcaradosRequest {
-    idCatTipoDocumento: number[];
+    idCatTipoDocumento: number;
     descripcion?: string;
     cantidad: number;
+    fojas: number;
     valor?: number;
     archivo: File;
-    firmaDigital: number;
+//firmaDigital: number;
     esValor: boolean;
+    observaciones?: string;
 }
 
 export interface DocumentosRequest {

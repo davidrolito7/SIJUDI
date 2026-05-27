@@ -7,7 +7,6 @@ import { MessageService } from 'primeng/api';
 import { datosFirma } from '../../interface/shared.interface';
 import { finalize, Observable } from 'rxjs';
 import { ContadoresService } from '../../../juicio-oral/services/contadores.service';
-import { ReverbService } from '../../../juicio-oral/services/reverb.service';
 
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -39,7 +38,6 @@ export class Dashboard implements OnInit, OnDestroy {
     private messageService: MessageService,
     private perfilUsuarioService: PerfilUsuarioService,
     private contadoresService: ContadoresService,
-    private reverbService: ReverbService
   ) {
     this.contadores$ = this.contadoresService.contadores;
   }
@@ -48,34 +46,11 @@ export class Dashboard implements OnInit, OnDestroy {
    // this.getDatosInformacionPFX();
     this.contadoresService.cargarContadores();
 
-    const areaSeleccionada = sessionStorage.getItem('areaSeleccionada');
-
-    if (!areaSeleccionada) {
-      console.error('No existe idArea en areaSeleccionada');
-      return;
-    }
-
-    this.idAreaConectada = Number(areaSeleccionada);
-
-    this.reverbService.escucharTramitesPorArea(this.idAreaConectada, (tramite: any) => {
-      console.log('Nuevo trámite recibido:', tramite);
-
-      this.messageService.add({
-        severity: 'info',
-        summary: 'Nueva demanda recibida',
-        detail: `Folio: ${tramite?.folio ?? 'Sin folio'}`,
-        sticky: true
-      });
-
-      this.contadoresService.cargarContadores();
-    });
   }
 
   ngOnDestroy(): void {
     this.contadoresService.detenerPolling();
-    if (this.idAreaConectada) {
-      this.reverbService.salirDeArea(this.idAreaConectada);
-    }
+    
   }
 
   getContador(IdPantalla: number): Observable<number | null> {

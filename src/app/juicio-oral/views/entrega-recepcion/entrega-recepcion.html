@@ -4,7 +4,7 @@
     <app-breadcrub></app-breadcrub>
 
     <!-- TÍTULO DE PÁGINA -->
-    <div class="mb-4">
+    <div class="mb-2">
         <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
             Entrega Recepción
         </h1>
@@ -122,7 +122,7 @@
                 <td pFrozenColumn alignFrozen="right">
                     @if (tramite.cat_tramite?.idCatTramite === 3) {
                     <p-button (click)="detalleDemanda(+tramite.idEntidad)" [rounded]="true" [raised]="true"
-                        icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top">
+                        icon="pi pi-eye" pTooltip="Ver detallee" tooltipPosition="top">
                     </p-button>
                     } @else {
                     <p-button (click)="detalleTramite(tramite.idTramite)" [rounded]="true" [raised]="true"

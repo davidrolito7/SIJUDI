@@ -300,7 +300,7 @@
 
 <!--* MODAL BUSCAR REMITENTE -->
 <p-dialog header="Remitentes del juzgado" [modal]="true" [(visible)]="visibleM" [style]="{ width: '50rem' }">
-    <div class="mb-4">
+    <div class="mb-2">
         <p-iconfield iconPosition="left">
             <p-inputicon><i class="pi pi-search"></i></p-inputicon>
             <input pInputText type="text" [(ngModel)]="busqueda" (ngModelChange)="getRemitentes()"

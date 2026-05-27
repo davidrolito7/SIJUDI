@@ -4,11 +4,12 @@
     <app-breadcrub></app-breadcrub>
 
     <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 pl-2 mb-2 tracking-tight">
-        Captura demanda 1° instancia
+        Crear Demanda 1° Instancia
     </h2>
 </div>
 
-<div class="relative z-0 border border-surface rounded-2xl mb-4 p-4">
+<div
+    class="relative z-0 border border-blue-300 border-dashed rounded-2xl mb-4 p-4 bg-gradient-to-b from-blue-50 to-white dark:from-surface-900 dark:to-surface-950 dark:border-surface-700">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
         <div class="font-medium text-xl text-surface-800 dark:text-surface-200  mb-4">Datos generales de la demanda
         </div>
@@ -22,35 +23,35 @@
                     <!-- Catálogo de Municipio -->
                     <div id="cveMunicipio" class="col-span-6 sm:col-span-3 relative">
                         <label for="cveMunicipio" class="block mb-2 text-sm font-medium">Juzgado</label>
-                        <p-select formControlName="cveMunicipio" fluid [options]="catMunicipios" optionValue="Clave"
-                            placeholder="Selecciona un juzgado" [filter]="true" appendTo="body"
-                            optionLabel="Descripcion" />
+                        <p-select formControlName="cveMunicipio" fluid [options]="catJuzgado" optionValue="id"
+                            placeholder="Selecciona un juzgado" [filter]="true" appendTo="body" optionLabel="desc" />
                     </div>
-                    <!-- Catálogo de Materias -->
+                    <!-- Catálogo de Materias (select único) -->
                     <div id="idCatMateria" class="col-span-6 sm:col-span-3">
-                        <label for="idCatMateria" class="block mb-2 text-sm font-medium  ">Materia</label>
-                        <p-multiselect formControlName="idCatMateria" fluid appendTo="body" [options]="catMaterias"
-                            optionValue="IdCatMateria" (onChange)="cargarCatalogoVias($event.value)"
-                            placeholder="Selecciona una materia" optionLabel="Descripcion" />
-
+                        <label for="idCatMateria" class="block mb-2 text-sm font-medium">Materia</label>
+                        <p-select formControlName="idCatMateria" fluid appendTo="body" [options]="catMaterias"
+                            optionValue="IdCatMateria" placeholder="Selecciona una materia" optionLabel="Descripcion" />
                     </div>
 
                     <!-- Catálogo de Vías -->
                     <div id="idCatTipoVia" class="col-span-6 sm:col-span-3">
                         <label for="idCatVia" class="block mb-2 text-sm font-medium  ">Vía</label>
 
-                        <p-select formControlName="idCatTipoVia" fluid appendTo="body"
+                        <p-select formControlName="idCatTipoVia" fluid appendTo="body" [filter]="true"
                             [disabled]="catTipoVias.length === 0" [options]="catTipoVias" optionValue="idCatTipoVia"
                             placeholder="Selecciona una vía" optionLabel="descripcion" />
                     </div>
                 </div>
                 <div class="col-span-6 sm:col-span-3">
                     <div id="descripcionDemanda" class="col-span-6 sm:col-span-6">
-                        <label for="descripcionDemanda" class="block mb-2 text-sm font-medium  ">Descripción (Acción
-                            principal a
-                            ejecutar)</label>
-                        <textarea formControlName="descripcionDemanda" rows="8" fluid appendTo="body"
-                            placeholder="Acción a ejecutar..." pTextarea></textarea>
+                        <label for="accionAEjecutar" class="block mb-2 text-sm font-medium">Acción a ejecutar</label>
+                        <p-select formControlName="accionAEjecutar" fluid appendTo="body" [options]="catAcciones"
+                            optionValue="id" placeholder="Selecciona una acción" optionLabel="desc" />
+
+                        <label for="descripcionDemanda"
+                            class="block mt-3 mb-2 text-sm font-medium">Observaciones</label>
+                        <textarea formControlName="descripcionDemanda" rows="5" fluid appendTo="body"
+                            placeholder="Observaciones..." pTextarea></textarea>
                     </div>
                 </div>
 
@@ -65,14 +66,17 @@
 <p-confirmdialog />
 
 <!--* LISTA PARTES-->
-<div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
+<div
+    class="relative z-0 mt-4 border border-blue-300 border-dashed rounded-2xl mb-4 p-4 bg-gradient-to-b from-blue-50 to-white dark:from-surface-900 dark:to-surface-950 dark:border-surface-700">
 
     <div class="w-full">
-        <p-table [value]="listaPartes" stripedRows [scrollable]="true" scrollHeight="flex" scrollDirection="both"
+        <p-table class="personalizado" [value]="listaPartes" stripedRows [scrollable]="true" scrollHeight="flex" scrollDirection="both"
             [tableStyle]="{ 'min-width': '100%', width: 'max-content' }">
             <ng-template #caption>
-                <div class="flex">
-                    <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Partes</div>
+                <div class="flex mb-2 ">
+                    <div
+                        class="flex items-center justify-center font-medium text-xl text-surface-800 dark:text-surface-200">
+                        Partes</div>
                     <p-button id="agregarParte" icon="pi pi-users" class="ml-auto" label="Agregar"
                         (click)="showDialog()" />
                 </div>
@@ -80,13 +84,18 @@
             <ng-template #header>
                 <tr>
                     <th>Nombre</th>
+                    <th>Persona</th>
                     <!-- <th>Estatus</th> -->
                     <th>Género</th>
                     <th>Tipo parte</th>
                     <th>Correo</th>
-                    <th>Curp</th>
+                    <th>Teléfono</th>
                     <th>Menor de edad</th>
-                    <th>Dirección</th>
+                    <th>Fecha nacimiento</th>
+                    <th>Grupo vulnerable</th>
+                    <th>Discapacidad</th>
+                    <th>Lengua indígena</th>
+                    <!-- <th>Dirección</th> -->
                     <th pFrozenColumn alignFrozen="right">Acciones </th>
                 </tr>
             </ng-template>
@@ -94,6 +103,9 @@
                 <tr>
                     <td class="font-semibold">
                         {{ parte.nombre }} {{ parte.apellidoPaterno }} {{ parte.apellidoMaterno }}
+                    </td>
+                    <td>
+                        {{ parte.moral ? 'MORAL' : 'FÍSICA' }}
                     </td>
                     <!-- <td>
                         @if (parte.idUsr) {
@@ -107,11 +119,10 @@
                     </td>
                     <td>{{ parte.descripcionTipoParte }}</td>
                     <td>
-                        <div class="font-semibold">{{ parte.correo }}</div>
-                        <div class="text-xs text-surface-500">{{ parte.correoAlterno }}</div>
+                        {{ parte.correo }}
                     </td>
                     <td>
-                        {{ parte.curp }}
+                        {{ parte.telefono }}
                     </td>
                     <td>
                         @if (parte.esMenorEdad) {
@@ -120,7 +131,11 @@
                         <p-tag severity="secondary" icon="pi pi-times-circle" value="NO" [rounded]="true" />
                         }
                     </td>
-                    <td>{{ parte.direccion }}</td>
+                    <td>{{ getFechaNacimiento(parte.fechaNacimiento) }}</td>
+                    <td>{{ getGrupoVulnerableDescripcion(parte.grupoVulnerable) }}</td>
+                    <td>{{ getDiscapacidadDescripcion(parte.idDiscapacidad) || 'N/A' }}</td>
+                    <td>{{ getLenguajeDescripcion(parte.idLenguaje) || 'N/A' }}</td>
+                    <!-- <td>{{ parte.direccion }}</td> -->
                     <td pFrozenColumn alignFrozen="right">
                         <div class="flex gap-2">
                             <p-button icon="pi pi-pencil" [rounded]="true" [raised]="true" [text]="true" severity="info"
@@ -134,80 +149,137 @@
             </ng-template>
             <ng-template #emptymessage>
                 <tr>
-                    <td colspan="8" class="text-center p-4">No hay partes registradas.</td>
+                    <td colspan="13" class="text-center p-4">No hay partes registradas.</td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
 </div>
 
-<!--* TABLA DE DOCUMENTOS DECLARADOS -->
-<div class="relative z-0 mt-4 border border-surface rounded-2xl mb-4 p-4">
-    <div class="w-full">
-        <p-table [value]="anexosDeclarados" stripedRows [scrollable]="true" scrollDirection="horizontal"
-            [tableStyle]="{ 'min-width': '60rem' }">
-            <ng-template #caption>
-                <div class="flex">
-                    <div class="font-medium text-xl text-surface-800 dark:text-surface-200">Anexos declarados</div>
-                    <p-button id="declaraAnexos" icon="pi pi-file-plus" class="ml-auto"
-                        [label]="editandoAnexo ? 'Actualizar' : 'Agregar'" (click)="showModalListAnexo()" />
+<!--* CARGAR DEMENDA Y DE DOCUMENTOS ANEXOS -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-4 mt-4 mb-4">
+    <aside class="xl:col-span-3">
+        <div
+            class="relative z-0 rounded-2xl border border-dashed border-blue-300 bg-gradient-to-b from-green-200 to-white dark:from-surface-900 dark:to-surface-950 p-4 shadow-sm h-full">
+            <div class="flex items-start gap-3 mb-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
+                    <i class="pi pi-upload text-blue-500"></i>
                 </div>
-            </ng-template>
-            <ng-template #header>
-                <tr>
-                    <th style="width: 5%">ID</th>
-                    <th style="width: 45%">Descripción</th>
-                    <th style="width: 10%">Cantidad</th>
-                    <th style="width: 15%">Valor</th>
-                    <th style="width: 10%">Documento</th>
-                    <th style="width: 10%">Firma electrónica</th>
-                    <th style="width: 5%">Acciones</th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-a let-i="rowIndex">
-                <tr>
-                    <td>{{ a.idCatTipoDocumento }}</td>
-                    <td>
-                        <div class="flex flex-wrap gap-1">
-                            @for (desc of a.descripcion.split(', '); track $index) {
-                            <p-tag [value]="desc" [rounded]="true" severity="info"
-                                class="text-[10px] uppercase font-semibold" />
-                            }
+                <div>
+                    <h3 class="text-base font-semibold leading-tight">Documento de demanda</h3>
+                    <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                        Carga el PDF principal de tu demanda para habilitar el envío.
+                    </p>
+                </div>
+            </div>
+
+            <div [formGroup]="demandaForm" class="space-y-3">
+                <input #demandaInput id="documentoDemanda" type="file" accept=".pdf,application/pdf" class="hidden"
+                    (change)="onDemandaSelect($event)" />
+
+                <label for="documentoDemanda"
+                    class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-blue-500 bg-blue-500 px-4 py-2.5 text-sm font-semibold text-white cursor-pointer transition-colors hover:bg-blue-600 hover:border-blue-600">
+                    <i class="pi pi-upload"></i>
+                    Seleccionar demanda
+                </label>
+
+                <div
+                    class="rounded-lg border border-surface-200 dark:border-surface-700 px-3 py-2 bg-surface-0 dark:bg-surface-900">
+                    @if (archivoDemanda) {
+                    <div class="flex items-start gap-2">
+                        <i class="pi pi-file text-green-600 mt-0.5"></i>
+                        <div class="min-w-0">
+                            <p class="text-xs font-semibold text-green-700 dark:text-green-500 uppercase">Archivo
+                                cargado</p>
+                            <p class="text-sm truncate" [title]="archivoDemanda.name">{{ archivoDemanda.name }}</p>
                         </div>
-                    </td>
-                    <td>{{ a.cantidad }}</td>
-                    <td>{{ a.valor ? "$" + (a.valor | number : "1.2-2" : "en-US") : "N/A" }}</td>
-                    <td>
-                        <p-button icon="pi pi-file-pdf" [rounded]="true" severity="success" [raised]="true"
-                            (click)="verDocumento(a.archivo)" pTooltip="Ver PDF" tooltipPosition="top" />
-                    </td>
-                    <td>
-                        <div class="flex justify-center">
-                            @if (a.firmaDigital) {
-                            <p-tag severity="success" icon="pi pi-verified" value="SI" [rounded]="true"
-                                class="shadow-sm" pTooltip="Este documento requiere firma electrónica FIREL" />
-                            } @else {
-                            <p-tag severity="secondary" icon="pi pi-file" value="NO" [rounded]="true"
-                                pTooltip="Este documento no requiere firma electrónica" />
-                            }
-                        </div>
-                    </td>
-                    <td>
-                        <div class="flex gap-2">
-                            <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info"
-                                (click)="editarAnexo(i)" pTooltip="Editar" tooltipPosition="top" />
-                            <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
-                                (click)="confirm3($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-                <tr>
-                    <td colspan="7" class="text-center p-4">No hay anexos declarados.</td>
-                </tr>
-            </ng-template>
-        </p-table>
+                    </div>
+                    } @else {
+                    <div class="flex items-start gap-2">
+                        <i class="pi pi-info-circle text-surface-400 mt-0.5"></i>
+                        <p class="text-xs text-surface-500 dark:text-surface-400">
+                            Solo se acepta PDF. Tamaño máximo recomendado: 1 MB.
+                        </p>
+                    </div>
+                    }
+                </div>
+
+                <div class="grid grid-cols-6 gap-2 mt-2">
+                    <div class="col-span-6 sm:col-span-6">
+                        <label for="numeroHojas" class="block mb-2 text-sm font-medium">Número de fojas</label>
+                        <p-inputnumber inputId="numeroHojas" formControlName="numeroHojas" class="w-full" [min]="1"
+                            [max]="999" mode="decimal" placeholder="0" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-6 gap-2 mt-2">
+                    <div class="col-span-6 sm:col-span-6">
+                        <label for="demandaObservaciones" class="block mb-2 text-sm font-medium">Observaciones</label>
+                        <textarea pTextarea formControlName="demandaObservaciones" fluid appendTo="body"
+                            placeholder="Observaciones sobre el documento de demanda..." rows="3"
+                            maxLength="200"></textarea>
+                    </div>
+                </div>
+                <div *ngIf="demandaForm.get('documentoDemanda')?.invalid && demandaForm.get('documentoDemanda')?.touched"
+                    class="text-red-500 text-sm">
+                    Debe cargar el documento de demanda.
+                </div>
+            </div>
+        </div>
+    </aside>
+    <div class="xl:col-span-9 min-w-0 ">
+        <div
+            class="relative z-0 border border-blue-300 border-dashed rounded-2xl p-4 h-full  bg-gradient-to-b from-blue-50 to-white dark:from-surface-900 dark:to-surface-950 dark:border-surface-700">
+            <p-table class="personalizado" [value]="anexosDeclarados" stripedRows [scrollable]="true" scrollDirection="horizontal"
+                [tableStyle]="{ 'min-width': '60rem' }">
+                <ng-template #caption>
+                    <div class="flex mb-2">
+                        <div
+                            class="flex items-center justify-center font-medium text-xl text-surface-800 dark:text-surface-200">
+                            Anexos declarados</div>
+                        <p-button id="declaraAnexos" icon="pi pi-file-plus" class="ml-auto"
+                            [label]="editandoAnexo ? 'Actualizar' : 'Agregar'" (click)="showModalListAnexo()" />
+                    </div>
+                </ng-template>
+                <ng-template #header>
+                    <tr>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Valor</th>
+                        <th>Documento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-a let-i="rowIndex">
+                    <tr>
+                        <!-- <td>{{ a.idCatTipoDocumento }}</td> -->
+                        <td>
+                            {{ a.descripcion }}
+                        </td>
+                        <td>{{ a.cantidad }}</td>
+                        <td>{{ a.valor ? "$" + (a.valor | number : "1.2-2" : "en-US") : "N/A" }}</td>
+                        <td>
+                            <p-button icon="pi pi-file-pdf" [rounded]="true" severity="success" [raised]="true"
+                                (click)="verDocumento(a.archivo)" pTooltip="Ver PDF" tooltipPosition="top" />
+                        </td>
+
+                        <td>
+                            <div class="flex gap-2">
+                                <p-button icon="pi pi-pencil" [rounded]="true"  [raised]="true" [text]="true" severity="info"
+                                    (click)="editarAnexo(i)" pTooltip="Editar" tooltipPosition="top" />
+                                <p-button icon="pi pi-trash" [rounded]="true" [raised]="true" [text]="true" severity="danger"
+                                    (click)="confirm3($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="7" class="text-center p-4">No hay anexos declarados.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
     </div>
 </div>
 
@@ -221,132 +293,262 @@
 
     <!-- FORMULARIO DATOS DE LA PARTE -->
     <form [formGroup]="parteForm" (ngSubmit)="agregarParte()">
-        <div class="grid grid-cols-6 gap-4">
+        <div class="space-y-5">
 
-            <!-- Nombre -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="nombre" class="block mb-2 text-sm font-medium">Nombre *</label>
-                <input id="nombre" pInputText type="text" formControlName="nombre" maxlength="100" placeholder="Nombre"
-                    class="w-full uppercase" />
-                <div *ngIf="shouldShowError('nombre')" class="text-red-500 text-sm mt-1">
-                    {{ getError("nombre") }}
-                </div>
-            </div>
+            <!-- DATOS GENERALES -->
+            <section class="rounded-xl border border-surface border-dashed p-4 bg-surface-50 dark:bg-surface-950">
+                <h3 class="text-base font-semibold mb-1">Datos generales</h3>
+                <p class="text-sm text-gray-500 mb-4">
+                    Información principal para identificar a la parte.
+                </p>
 
-            <div class="col-span-2 flex items-end mb-2.5">
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-medium">¿Es persona moral?</span>
-                    <p-checkbox formControlName="moral" [binary]="true" />
-                </div>
-            </div>
-            <!-- Apellido Paterno -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="apellidoPaterno" class="block mb-2 text-sm font-medium">Apellido Paterno</label>
-                <input id="apellidoPaterno" pInputText type="text" formControlName="apellidoPaterno" maxlength="100"
-                    placeholder="Apellido Paterno" class="w-full uppercase" />
-                <div *ngIf="shouldShowError('apellidoPaterno')" class="text-red-500 text-sm mt-1">
-                    {{ getError("apellidoPaterno") }}
-                </div>
-            </div>
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="nombre" class="block mb-2 text-sm font-medium">Nombre *</label>
+                        <input id="nombre" pInputText type="text" formControlName="nombre" maxlength="100"
+                            placeholder="Nombre" class="w-full " />
+                        <div *ngIf="shouldShowError('nombre')" class="text-red-500 text-sm mt-1">
+                            {{ getError("nombre") }}
+                        </div>
+                    </div>
 
-            <!-- Apellido Materno -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="apellidoMaterno" class="block mb-2 text-sm font-medium">Apellido Materno</label>
-                <input id="apellidoMaterno" pInputText type="text" formControlName="apellidoMaterno" maxlength="100"
-                    placeholder="Apellido Materno" class="w-full uppercase" />
-                <div *ngIf="shouldShowError('apellidoMaterno')" class="text-red-500 text-sm mt-1">
-                    {{ getError("apellidoMaterno") }}
-                </div>
-            </div>
+                    <div class="col-span-6 sm:col-span-3 flex items-end">
+                        <div class="flex items-center gap-3 min-h-[42px]">
+                            <p-checkbox inputId="moral" formControlName="moral" [binary]="true" />
+                            <label for="moral" class="text-sm font-medium">
+                                Es persona moral
+                            </label>
+                        </div>
+                    </div>
 
-            <!-- Género -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="idCatSexo" class="block mb-2 text-sm font-medium">Género *</label>
-                <p-select inputId="idCatSexo" formControlName="idCatSexo" [options]="catSexos" optionValue="idCatSexo"
-                    optionLabel="descripcion" placeholder="Selecciona un género" appendTo="body" fluid />
-                <div *ngIf="shouldShowError('idCatSexo')" class="text-red-500 text-sm mt-1">
-                    {{ getError("idCatSexo") }}
-                </div>
-            </div>
+                    <div class="col-span-6 sm:col-span-3" *ngIf="!parteForm.get('moral')?.value">
+                       <label for="apellidoPaterno" class="block mb-2 text-sm font-medium">Apellido paterno</label>
+                        <input id="apellidoPaterno" pInputText type="text" formControlName="apellidoPaterno"
+                            maxlength="100" placeholder="Apellido paterno" class="w-full " />
+                        <div *ngIf="shouldShowError('apellidoPaterno')" class="text-red-500 text-sm mt-1">
+                            {{ getError("apellidoPaterno") }}
+                        </div>
+                    </div> 
 
-            <!-- Tipo parte -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="idCatTipoParte" class="block mb-2 text-sm font-medium">Tipo parte *</label>
-                <p-select inputId="idCatTipoParte" formControlName="idCatTipoParte" [options]="catTipoPartes"
-                    optionValue="idCatTipoParte" optionLabel="descripcion" placeholder="Selecciona un tipo"
-                    appendTo="body" fluid />
-                <div *ngIf="shouldShowError('idCatTipoParte')" class="text-red-500 text-sm mt-1">
-                    {{ getError("idCatTipoParte") }}
-                </div>
-            </div>
-            <!-- GRUPO VULNERABLE -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="curp" class="block mb-2 text-sm font-medium">Grupo Vulnerable (Discapacidad/Lenguaje)</label>
-                <p-treeselect formControlName="grupoVulnerableSelecionados" [options]="nodes"
-                    placeholder="Seleccionar grupo vulnerable" class="w-full uppercase" />
+                    <div class="col-span-6 sm:col-span-3" *ngIf="!parteForm.get('moral')?.value">
+                        <label for="apellidoMaterno" class="block mb-2 text-sm font-medium">Apellido materno</label>
+                        <input id="apellidoMaterno" pInputText type="text" formControlName="apellidoMaterno"
+                            maxlength="100" placeholder="Apellido materno" class="w-full " />
+                        <div *ngIf="shouldShowError('apellidoMaterno')" class="text-red-500 text-sm mt-1">
+                            {{ getError("apellidoMaterno") }}
+                        </div>
+                    </div>
 
-            </div>
+                    <div class="col-span-6 sm:col-span-3" *ngIf="!parteForm.get('moral')?.value">
+                        <label for="idCatSexo" class="block mb-2 text-sm font-medium">Género *</label>
+                        <p-select inputId="idCatSexo" formControlName="idCatSexo" [options]="catSexos"
+                            optionValue="idCatSexo" optionLabel="descripcion" placeholder="Selecciona un género"
+                            appendTo="body" fluid />
+                        <div *ngIf="shouldShowError('idCatSexo')" class="text-red-500 text-sm mt-1">
+                            {{ getError("idCatSexo") }}
+                        </div>
+                    </div>
 
-            <!-- CURP -->
-            <div class="col-span-6 sm:col-span-3">
-                <label for="curp" class="block mb-2 text-sm font-medium">CURP</label>
-                <input id="curp" pInputText type="text" formControlName="curp" maxlength="18" placeholder="CURP"
-                    class="w-full uppercase" />
-                <div *ngIf="shouldShowError('curp')" class="text-red-500 text-sm mt-1">
-                    {{ getError("curp") }}
+                    <div [ngClass]="parteForm.get('moral')?.value ? 'col-span-6' : 'col-span-6 sm:col-span-3'">
+                        <label for="idCatTipoParte" class="block mb-2 text-sm font-medium">Tipo de parte *</label>
+                        <p-select inputId="idCatTipoParte" formControlName="idCatTipoParte" [options]="catTipoPartes"
+                            [filter]="true" optionValue="idCatTipoParte" optionLabel="descripcion"
+                            placeholder="Selecciona un tipo" appendTo="body" fluid />
+                        <div *ngIf="shouldShowError('idCatTipoParte')" class="text-red-500 text-sm mt-1">
+                            {{ getError("idCatTipoParte") }}
+                        </div>
+                    </div>
+                    @if( parteForm.get('esMenorEdad')?.value) {
+                    <div class="col-span-6 ">
+                        <div
+                            class="relative z-0 rounded-2xl border border-dashed border-blue-300 bg-gradient-to-b from-green-200 to-white dark:from-surface-900 dark:to-surface-950 p-4 shadow-sm h-full">
+                            <div class="flex items-start gap-3">
+                                <div
+                                    class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
+                                    <i class="pi pi-info text-blue-500"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-semibold leading-tight">Datos del menor protegidos</h3>
+                                    <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                                        Proporciona los datos del niño, niña o adolescente, estos datos serán protegidos
+                                        y no se mostrarán en el acuse.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
                 </div>
-            </div>
+            </section>
 
-            <!-- Menor de edad -->
-            <div class="col-span-2 flex items-end mb-2.5">
-                <div class="flex items-center gap-3">
-                    <label for="esMenorEdad" class="block mb-2 text-sm font-medium">Niño, Niña o Adolescente</label>
-                    <p-checkbox id="esMenorEdad" formControlName="esMenorEdad" [binary]="true" />
-                </div>
-            </div>
+            <!-- APODERADO (SOLO PERSONA MORAL) -->
+            <section class="rounded-xl border border-surface border-dashed p-4 bg-surface-50 dark:bg-surface-950"
+                *ngIf="parteForm.get('moral')?.value">
+                <h3 class="text-base font-semibold mb-1">Apoderado</h3>
+                <p class="text-sm text-gray-500 mb-4">
+                    Datos de la persona apoderada que representa a la parte moral.
+                </p>
 
-            <!-- Correo electrónico -->
-            <div class="col-span-6">
-                <label for="correo" class="block mb-2 text-sm font-medium">Correo electrónico</label>
-                <input id="correo" pInputText type="email" formControlName="correo" maxlength="250"
-                    placeholder="ejemplo@gmail.com" class="w-full uppercase" />
-                <div *ngIf="shouldShowError('correo')" class="text-red-500 text-sm mt-1">
-                    {{ getError("correo") }}
-                </div>
-            </div>
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="apoderadoNombre" class="block mb-2 text-sm font-medium">Nombre *</label>
+                        <input id="apoderadoNombre" pInputText type="text" formControlName="apoderadoNombre"
+                            maxlength="100" placeholder="Nombre" class="w-full" />
+                        <div *ngIf="shouldShowError('apoderadoNombre')" class="text-red-500 text-sm mt-1">
+                            {{ getError("apoderadoNombre") }}
+                        </div>
+                    </div>
 
-            <!-- Teléfono -->
-            <div class="col-span-4">
-                <label for="telefono" class="block mb-2 text-sm font-medium">Teléfono</label>
-                <p-inputMask id="telefono" mask="(999) 999-9999" [unmask]="true" placeholder="(999) 999-9999"
-                    formControlName="telefono" fluid />
-                <div *ngIf="shouldShowError('telefono')" class="text-red-500 text-sm mt-1">
-                    {{ getError("telefono") }}
-                </div>
-                <div *ngIf="parteForm.errors?.['correosIguales']" class="text-red-500 text-sm mt-1">
-                    El correo alterno debe ser diferente al correo principal.
-                </div>
-            </div>
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="apoderadoApellidoPaterno" class="block mb-2 text-sm font-medium">Apellido paterno
+                            *</label>
+                        <input id="apoderadoApellidoPaterno" pInputText type="text"
+                            formControlName="apoderadoApellidoPaterno" maxlength="100" placeholder="Apellido paterno"
+                            class="w-full" />
+                        <div *ngIf="shouldShowError('apoderadoApellidoPaterno')" class="text-red-500 text-sm mt-1">
+                            {{ getError("apoderadoApellidoPaterno") }}
+                        </div>
+                    </div>
 
-            <!-- Dirección -->
-            <div class="col-span-6">
-                <label for="direccion" class="block mb-2 text-sm font-medium">Dirección</label>
-                <textarea id="direccion" pTextarea formControlName="direccion" maxlength="250" rows="4"
-                    placeholder="Escribe tu dirección aquí" class="w-full uppercase"></textarea>
-                <div *ngIf="shouldShowError('direccion')" class="text-red-500 text-sm mt-1">
-                    {{ getError("direccion") }}
-                </div>
-            </div>
-        </div>
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="apoderadoApellidoMaterno" class="block mb-2 text-sm font-medium">Apellido materno
+                            *</label>
+                        <input id="apoderadoApellidoMaterno" pInputText type="text"
+                            formControlName="apoderadoApellidoMaterno" maxlength="100" placeholder="Apellido materno"
+                            class="w-full" />
+                        <div *ngIf="shouldShowError('apoderadoApellidoMaterno')" class="text-red-500 text-sm mt-1">
+                            {{ getError("apoderadoApellidoMaterno") }}
+                        </div>
+                    </div>
 
-        <div class="flex justify-end gap-2 mt-4">
-            <p-button label="Cancelar" severity="secondary" (click)="resetParteForm()" />
-            <p-button type="submit" label="Guardar" [disabled]="parteForm.invalid" />
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="apoderadoIdCatSexo" class="block mb-2 text-sm font-medium">Género *</label>
+                        <p-select inputId="apoderadoIdCatSexo" formControlName="apoderadoIdCatSexo" [options]="catSexos"
+                            optionValue="idCatSexo" optionLabel="descripcion" placeholder="Selecciona un género"
+                            appendTo="body" fluid />
+                        <div *ngIf="shouldShowError('apoderadoIdCatSexo')" class="text-red-500 text-sm mt-1">
+                            {{ getError("apoderadoIdCatSexo") }}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONDICIONES PARTICULARES -->
+            <section class="rounded-xl border border-surface border-dashed p-4 bg-surface-50 dark:bg-surface-950"
+                *ngIf="!parteForm.get('moral')?.value">
+                <h3 class="text-base font-semibold mb-1">Condiciones particulares</h3>
+                <p class="text-sm text-gray-500 mb-4">
+                    Datos adicionales que pueden requerir atención especial.
+                </p>
+
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-6 sm:col-span-3">
+                        <label class="block mb-2 text-sm font-medium">Grupo vulnerable</label>
+                        <p-multiSelect formControlName="grupoVulnerable" [options]="catGruposVulnerables"
+                            optionValue="id" optionLabel="desc" placeholder="Selecciona una o más opciones"
+                            appendTo="body" fluid></p-multiSelect>
+                        <div *ngIf="shouldShowError('grupoVulnerable')" class="text-red-500 text-sm mt-1">
+                            {{ getError("grupoVulnerable") }}
+                        </div>
+                    </div>
+
+                    <div class="col-span-6 sm:col-span-3"
+                        *ngIf="parteForm.get('grupoVulnerable')?.value?.includes('DISCAPACIDAD')">
+                        <label class="block mb-2 text-sm font-medium">Tipo de discapacidad</label>
+                        <p-select formControlName="idDiscapacidad" [options]="catDiscapacidades" optionValue="id"
+                            optionLabel="desc" placeholder="Selecciona la discapacidad" appendTo="body" fluid />
+                        <div *ngIf="shouldShowError('idDiscapacidad')" class="text-red-500 text-sm mt-1">
+                            {{ getError("idDiscapacidad") }}
+                        </div>
+                    </div>
+
+                    <div class="col-span-6 sm:col-span-3"
+                        *ngIf="parteForm.get('grupoVulnerable')?.value?.includes('LENGUAJE')">
+                        <label class="block mb-2 text-sm font-medium">Lengua indígena</label>
+                        <p-select formControlName="idLenguaje" [options]="catLenguas" optionValue="id"
+                            optionLabel="desc" placeholder="Selecciona la lengua" appendTo="body" fluid />
+                        <div *ngIf="shouldShowError('idLenguaje')" class="text-red-500 text-sm mt-1">
+                            {{ getError("idLenguaje") }}
+                        </div>
+                    </div>
+
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="fechaNacimiento" class="block mb-2 text-sm font-medium">Fecha de nacimiento</label>
+                        <p-datepicker id="fechaNacimiento" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy"
+                            pInputMask="99/99/9999" formControlName="fechaNacimiento" fluid appendTo="body" />
+                        <div *ngIf="shouldShowError('fechaNacimiento')" class="text-red-500 text-sm mt-1">
+                            {{ getError("fechaNacimiento") }}
+                        </div>
+                    </div>
+
+                    <div class="col-span-6 sm:col-span-3 flex items-end">
+                        <div class="flex items-center gap-3 min-h-[42px]">
+                            <p-checkbox id="esMenorEdad" formControlName="esMenorEdad" [binary]="true" />
+                            <label for="esMenorEdad" class="text-sm font-medium">
+                                Niño, niña o adolescente
+                            </label>
+                        </div>
+                    </div>
+
+
+                </div>
+            </section>
+
+            <!-- CONTACTO -->
+            <section class="rounded-xl border border-surface border-dashed p-4 bg-surface-50 dark:bg-surface-950">
+                <h3 class="text-base font-semibold mb-1">Contacto</h3>
+                <p class="text-sm text-gray-500 mb-4">
+                    Medios para contactar a la parte.
+                </p>
+
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="correo" class="block mb-2 text-sm font-medium">Correo electrónico</label>
+                        <input id="correo" pInputText type="email" formControlName="correo" maxlength="250"
+                            placeholder="ejemplo@gmail.com" class="w-full" />
+                        <div *ngIf="shouldShowError('correo')" class="text-red-500 text-sm mt-1">
+                            {{ getError("correo") }}
+                        </div>
+                    </div>
+
+                    <div class="col-span-6 sm:col-span-3">
+                        <label for="telefono" class="block mb-2 text-sm font-medium">Teléfono</label>
+                        <p-inputMask id="telefono" mask="(999) 999-9999" [unmask]="true" placeholder="(123) 456-7890"
+                            formControlName="telefono" fluid />
+                        <div *ngIf="shouldShowError('telefono')" class="text-red-500 text-sm mt-1">
+                            {{ getError("telefono") }}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DOMICILIO -->
+            <section class="rounded-xl border border-surface border-dashed p-4 bg-surface-50 dark:bg-surface-950">
+                <h3 class="text-base font-semibold mb-1">Domicilio</h3>
+                <p class="text-sm text-gray-500 mb-4">
+                    Dirección o ubicación de la parte.
+                </p>
+
+                <div>
+                    <label for="direccion" class="block mb-2 text-sm font-medium">Dirección</label>
+                    <textarea id="direccion" pTextarea formControlName="direccion" maxlength="250" rows="3"
+                        placeholder="Escribe la dirección" class="w-full uppercase"></textarea>
+                    <div *ngIf="shouldShowError('direccion')" class="text-red-500 text-sm mt-1">
+                        {{ getError("direccion") }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- ACCIONES -->
+            <div class="flex justify-end gap-2 pt-2">
+                <p-button label="Cancelar" severity="secondary" (click)="resetParteForm()" />
+                <p-button type="submit" label="Guardar"  [raised]="true" [disabled]="parteForm.invalid" />
+            </div>
         </div>
     </form>
 </p-dialog>
 
-<!--* MODAL PARA AGREGAR LISTA DE ANEXOS A ENTREGAR -->
+<!--* MODAL PARA AGREGAR ANEXOS -->
 <p-dialog [header]="editandoAnexo ? 'Editar documento' : 'Declaración de documentos'" [modal]="true"
     [(visible)]="visibleListAnexo" [style]="{ width: '35rem' }" [closable]="false">
     <form [formGroup]="declaracionAnexoForm" (ngSubmit)="agregarListAnexo()" class="relative rounded-lg">
@@ -355,38 +557,9 @@
             <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6 sm:col-span-6">
                     <label for="idCatTipoDocumento" class="block mb-2 text-sm font-medium  ">Tipo de documento</label>
-                    <p-multiselect formControlName="idCatTipoDocumento" class=" w-full" [filter]="true"
+                    <p-select formControlName="idCatTipoDocumento" class="w-full" [filter]="true"
                         [options]="catTipoDocumentos" optionValue="idCatTipoDocumento" appendTo="body"
-                        placeholder="Selecciona uno o más anexos" optionLabel="descripcion" />
-                </div>
-
-                <div class="col-span-6">
-
-                    <label for="documento" class="block mb-2 text-sm font-medium  ">Archivo</label>
-                    <p-fileupload id="documento" mode="basic" styleClass="btn-morado" class=" ml-auto" accept=".pdf"
-                        (onSelect)="onAnexoSelect($event)" name="documento" [customUpload]="true" maxFileSize="1000000"
-                        chooseIcon="pi pi-upload" chooseLabel="Agregar" />
-                </div>
-                <div class="col-span-3 flex flex-col">
-                    <label for="firmaDigital" class="block mb-2 text-sm font-medium flex items-center gap-2">
-                        ¿Requiere firma digital?
-                    </label>
-                    <div class="flex items-center gap-3">
-                        <p-toggleSwitch id="firmaDigital" formControlName="firmaDigital" class="mt-1.5" />
-                        <span class="text-xs font-semibold" [ngClass]="declaracionAnexoForm.get('firmaDigital')?.value ? 'text-green-600' : 'text-surface-400'">
-                            {{ declaracionAnexoForm.get('firmaDigital')?.value ? 'SÍ (FIREL)' : 'NO' }}
-                        </span>
-                    </div>
-                </div>
-                <div class="col-span-3">
-                    <label for="cantidad" class="block mb-2 text-sm font-medium  ">
-                        Cantidad
-                    </label>
-                    <input id="valor" pInputText type="number" formControlName="cantidad" maxlength="12"
-                        class="block w-full" placeholder="Escribe el nombre personalizado" />
-                    <div *ngIf="shouldShowError('cantidad', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
-                        {{ getError("cantidad", declaracionAnexoForm) }}
-                    </div>
+                        placeholder="Selecciona un anexo" optionLabel="descripcion" fluid />
                 </div>
                 <div class="col-span-6" *ngIf="mostrarInputNombre">
                     <label for="descripcion" class="block mb-2 text-sm font-medium  ">
@@ -399,24 +572,63 @@
                     </div>
                 </div>
                 <div class="col-span-6">
+
+                    <label for="documento" class="block mb-2 text-sm font-medium  ">Archivo</label>
+                    <p-fileupload #documentoUpload id="documento" mode="basic" styleClass="btn-morado" class=" ml-auto"
+                        accept=".pdf" (onSelect)="onAnexoSelect($event)" name="documento" [customUpload]="true"
+                        maxFileSize="1000000" chooseIcon="pi pi-upload" chooseLabel="Agregar" />
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="cantidad" class="block mb-2 text-sm font-medium  ">
+                        Cantidad
+                    </label>
+                    <input id="valor" pInputText type="number" formControlName="cantidad" maxlength="12"
+                        class="block w-full" placeholder="Escribe el nombre personalizado" />
+                    <div *ngIf="shouldShowError('cantidad', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
+                        {{ getError("cantidad", declaracionAnexoForm) }}
+                    </div>
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="cantidad" class="block mb-2 text-sm font-medium  ">
+                        Número de Fojas
+                    </label>
+                    <input id="valor" pInputText type="number" formControlName="fojas" maxlength="12"
+                        class="block w-full" placeholder="Escribe el número de fojas" />
+                        <div *ngIf="shouldShowError('fojas', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
+                            {{ getError("fojas", declaracionAnexoForm) }}
+                    </div>
+                </div>
+                <div class="col-span-6 md:col-span-3">
                     <label for="valor" class="block mb-2 text-sm font-medium  ">
                         Es valor
                     </label>
                     <div class="flex items-center gap-10" style="height: 37.6px;">
                         <p-toggleswitch id="esValor" formControlName="esValor" class="shrink-0 mt-1.5" />
-                        <p-inputnumber *ngIf="declaracionAnexoForm.get('esValor')?.value" inputId="valor"
-                            formControlName="valor" mode="currency" currency="MXN" locale="es-MX"
-                            placeholder="Ingrese una cantidad" class=" w-full" />
                     </div>
                     <div *ngIf="shouldShowError('valor', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
                         {{ getError("valor", declaracionAnexoForm) }}
                     </div>
                 </div>
+
+                <div *ngIf="declaracionAnexoForm.get('esValor')?.value" class="col-span-6  md:col-span-3">
+                         <label for="valor" class="block mb-2 text-sm font-medium  ">
+                        Valor 
+                    </label>
+                    <p-inputnumber inputId="valor" formControlName="valor" mode="currency" currency="MXN" locale="es-MX"
+                        placeholder="Ingrese una cantidad" class=" w-full" />
+                </div>
+
+                <div class="col-span-6">
+                    <label for="observaciones" class="block mb-2 text-sm font-medium">Observaciones</label>
+                    <textarea id="observaciones" pTextarea formControlName="observaciones" maxlength="250" rows="3"
+                        placeholder="Escribe las observaciones" class="w-full "></textarea>
+
+                </div>
             </div>
         </div>
         <div class="flex justify-end gap-2 mt-4">
             <p-button label="Cancelar" severity="secondary" (click)="resetDeclaracionAnexoForm()" />
-            <p-button type="submit" label="Guardar" [disabled]="declaracionAnexoForm.invalid" />
+            <p-button type="submit" label="Guardar" [raised]="true" [disabled]="declaracionAnexoForm.invalid" />
         </div>
     </form>
 </p-dialog>
@@ -434,18 +646,84 @@
 </app-confirm-dialog>
 
 <!--* BOTÓN AUTORIZAR FIREL — solo si algún documento requiere firma y aún no se ha verificado -->
-<section *ngIf="requiereFirma && !firmaVerificada"
-    class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
+<section *ngIf="!firmaVerificada" class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
     <p-button (onClick)="autorizarFirel($event)" [disabled]="!canEnviar()" icon="pi pi-key" label="Firma FIREL"
         styleClass="btn-tertiary disabled:opacity-50 disabled:cursor-not-allowed" />
 </section>
 
 <!--* BOTÓN ENVIAR DEMANDA — si no requiere firma, o ya fue verificada -->
-<section *ngIf="!requiereFirma || firmaVerificada"
-    class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
+<section *ngIf="firmaVerificada" class="animate-fade-in-down rounded-lg flex justify-center mx-4 mb-4">
     <p-button (onClick)="enviarDemanda($event)" [disabled]="!canEnviar()" icon="pi pi-upload" label="Enviar demanda"
         styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:enabled:bg-[#ff830a]/80 hover:enabled:border-[#ff830a]/80 disabled:opacity-50 disabled:cursor-not-allowed" />
 </section>
+
+<!--* RESUMEN PREVIO AL ENVÍO -->
+<p-dialog header="Resumen de envío" [modal]="true" [(visible)]="visibleResumenEnvio" [style]="{ width: '55rem' }"
+    [closable]="false">
+    <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-1  dark:from-surface-900 dark:to-surface-950 rounded-lg p-2">
+        <section class="rounded-lg border border-surface-200 border-dashed dark:border-surface-700 p-3 bg-gradient-to-l from-blue-50 to-white dark:from-surface-900 dark:to-surface-950">
+            <h3 class="font-semibold mb-2">Datos generales</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                @for (item of resumenGenerales; track $index) {
+                <div class="rounded-md bg-surface-50 dark:bg-surface-900 p-2">
+                    <p class="text-xs text-surface-500">{{ item.label }}</p>
+                    <p class="text-sm font-medium break-words">{{ item.value }}</p>
+                </div>
+                }
+            </div>
+        </section>
+
+        <section class="rounded-lg border border-surface-200 border-dashed dark:border-surface-700 p-3 bg-gradient-to-l from-blue-50 to-white dark:from-surface-900 dark:to-surface-950">
+            <h3 class="font-semibold mb-2">Partes</h3>
+            @if (resumenPartes.length > 0) {
+            <div class="space-y-2">
+                @for (parte of resumenPartes; track $index) {
+                <div class="rounded-md bg-surface-50 dark:bg-surface-900 p-2">
+                    <p class="text-sm font-semibold">{{ parte.nombre }}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-1 text-sm">
+                        <p><span class="text-surface-500">Tipo persona:</span> {{ parte.tipoPersona }}</p>
+                        <p><span class="text-surface-500">Tipo parte:</span> {{ parte.tipoParte }}</p>
+                        <p><span class="text-surface-500">Grupo vulnerable:</span> {{ parte.grupoVulnerable }}</p>
+                        <p><span class="text-surface-500">Email:</span> {{ parte.email }}</p>
+                    </div>
+                </div>
+                }
+            </div>
+            } @else {
+            <p class="text-sm text-surface-500">No hay partes agregadas.</p>
+            }
+        </section>
+
+        <section class="rounded-lg border border-surface-200 border-dashed dark:border-surface-700 p-3 bg-gradient-to-l from-green-200 to-white dark:from-surface-900 dark:to-surface-950">
+            <h3 class="font-semibold mb-2">Demanda</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                <p><span class="text-surface-500">Archivo:</span> {{ resumenDemanda.archivo }}</p>
+                <p><span class="text-surface-500">Número de fojas:</span> {{ resumenDemanda.numeroHojas }}</p>
+            </div>
+        </section>
+
+        <section class="rounded-lg border border-surface-200 border-dashed dark:border-surface-700 p-3 bg-gradient-to-l from-blue-50 to-white dark:from-surface-900 dark:to-surface-950">
+            <h3 class="font-semibold mb-2">Anexos declarados</h3>
+            @if (resumenAnexos.length > 0) {
+            <div class="space-y-2">
+                @for (anexo of resumenAnexos; track $index) {
+                <div class="rounded-md bg-surface-50 dark:bg-surface-900 p-2 text-sm">
+                    <p><span class="text-surface-500">Descripción:</span> {{ anexo.descripcion }}</p>
+                    <p><span class="text-surface-500">Cantidad:</span> {{ anexo.cantidad }}</p>
+                </div>
+                }
+            </div>
+            } @else {
+            <p class="text-sm text-surface-500">No hay anexos declarados.</p>
+            }
+        </section>
+    </div>
+
+    <div class="flex justify-end gap-2 mt-4">
+        <p-button label="Cancelar" severity="secondary" (onClick)="cancelarResumenEnvio()" />
+        <p-button label="Confirmar y enviar" icon="pi pi-check" (onClick)="confirmarResumenEnvio()" />
+    </div>
+</p-dialog>
 
 <!--* DIALOGO FORMULARIO PARA VALIDAR FIREL -->
 <p-confirmdialog key="firma">
@@ -507,27 +785,28 @@
                     class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Folio</span>
                     <span class="font-medium text-right min-w-0">
-                        {{ demandaResponse?.folio || '—' }}
+                        {{ demandaResponse?.folio || 'FOLIO DEMO-001' }}
                     </span>
                 </div>
                 <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg ">
                     <span class="font-semibold text-color-secondary shrink-0">Expediente</span>
                     <span class="font-medium text-right min-w-0">
-                        {{ demandaResponse?.expediente?.NumExpediente }}
+                        {{ demandaResponse?.expediente?.NumExpediente || 'EXP-DEMO/2026/0001' }}
                     </span>
                 </div>
                 <div
                     class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Juzgado</span>
                     <span class="font-medium text-right min-w-0">
-                        {{ demandaResponse?.expediente?.juzgado?.Descripcion || '—' }}
+                        {{ demandaResponse?.expediente?.juzgado?.Descripcion || 'JUZGADO DEMO DE MUESTRA' }}
                     </span>
                 </div>
 
                 <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg ">
                     <span class="font-semibold text-color-secondary shrink-0">Fecha de envío</span>
                     <span class="font-medium text-right min-w-0">
-                        {{ demandaResponse?.fechaHoraRecepcion| date:'dd/MM/yyyy HH:mm' : '—' }} h
+                        {{ demandaResponse?.fechaHoraRecepcion ? (demandaResponse?.fechaHoraRecepcion | date:'dd/MM/yyyy
+                        HH:mm') : '26/05/2026 12:00' }} h
                     </span>
                 </div>
 

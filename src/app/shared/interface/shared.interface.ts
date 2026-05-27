@@ -1,7 +1,9 @@
 //toda respuesta de la API devolverá esta clase generica, donde T puede ser cualquier tipo de objeto
 export interface GenericResponse<T>{
     success:boolean;
-    message:string;
+    status?: number;
+    message?: string;
+    mensaje?: string;
     errors: string[];
     data:T;
 }
@@ -34,3 +36,52 @@ export interface GenericResponse<T>{
     pfxVigencia : Date, 
     fechaAlta: Date
   }
+
+  
+export interface OrigenArea {
+  idArea: number;
+  descripcion: string;
+}
+
+export interface OrigenSubArea {
+  idSubArea: number;
+  descripcion: string;
+}
+
+export interface OrigenSistemaPerfil {
+  idSistemaPerfil: number;
+  descripcion: string | null;
+}
+
+export interface OrigenNotificacion {
+  area: OrigenArea;
+  subArea: OrigenSubArea;
+  sistemaPerfil: OrigenSistemaPerfil;
+}
+
+export interface NotificacionResponse {
+  id: number;
+  idTramite: number;
+  idCatTipoTramite: number;
+  folio: string;
+  accion: string;
+  mensaje: string;
+  fecha_creacion: string;
+  leida: boolean;
+  origen: OrigenNotificacion;
+}
+
+export interface CrearNotificacionRequest {
+  folio: string;
+  accion: string;
+  mensaje: string;
+  idAreaDestino: number;
+  idSistemaPerfilDestino: number;
+  idSubAreaDestino: number;
+}
+
+export interface BandejaNotificacionesResponse {
+  soloConteo: boolean;
+  pendientes: number;
+  notificaciones: NotificacionResponse[];
+}

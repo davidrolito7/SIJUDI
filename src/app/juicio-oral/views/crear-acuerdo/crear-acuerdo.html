@@ -1,198 +1,284 @@
 <app-spinner [isLoading]="isLoading()"></app-spinner>
 <p-toast></p-toast>
 
-
-<!-- Confirmación Envío -->
-<app-confirm-dialog key="acuerdo" title="Confirmación" message="Confirme la acción para enviar el acuerdo"
+<app-confirm-dialog key="acuerdo" title="Confirmacion" message="Confirme la accion para enviar el auto"
     icon="pi pi-send" circleClass="bg-green-500" acceptLabel="Confirmar" acceptStyleClass="bg-green-600"
     rejectLabel="Cancelar">
 </app-confirm-dialog>
 
-<!-- BREADCRUMB -->
-
-<div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-960">
+<div class="lg:sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-960">
     <app-breadcrub></app-breadcrub>
-
-    <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 pl-2 mb-2 tracking-tight">
-        Crear acuerdo
-    </h2>
+    <div class="mb-2">
+        <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">Crear Auto</h1>
+        <p class="text-surface-500 dark:text-surface-400 mt-1">Registra un nuevo auto para el expediente seleccionado.
+        </p>
+    </div>
 </div>
-<!-- ===================== DETALLES DEL EXPEDIENTE ===================== -->
-<div *ngIf="expediente" class=" bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
 
-    <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-2 block">
-        Detalles del expediente
-    </label>
-
+<!-- Detalles del expediente -->
+<div *ngIf="expediente" class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
+    <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-2 block">Detalles del expediente</label>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Columna izquierda -->
         <div class="flex flex-col gap-2">
-            <p class="text-sm"><span class="font-semibold">Número de expediente:</span>
-                {{ expediente.NumExpediente }}</p>
-            <p class="text-sm"><span class="font-semibold">Fecha asignación:</span>
-                {{ expediente.fechaResponse | date: 'dd/MM/yyyy' }}</p>
-            <p class="text-sm wrap-break-word whitespace-pre-line"><span class="font-semibold">Síntesis:</span>
-                {{ expediente.demanda.descripcionDemanda }}</p>
+            <p class="text-sm"><span class="font-semibold">Numero de expediente:</span> {{ expediente.NumExpediente }}
+            </p>
+            <p class="text-sm"><span class="font-semibold">Fecha asignacion:</span> {{ expediente.fechaResponse | date:
+                'dd/MM/yyyy' }}</p>
+            <p class="text-sm wrap-break-word whitespace-pre-line"><span class="font-semibold">Sintesis:</span> {{
+                expediente.demanda.descripcionDemanda }}</p>
         </div>
-        <!-- Columna derecha -->
         <div class="flex flex-col gap-2">
-            <p class="text-sm"><span class="font-semibold">Juzgado asignado:</span>
-                {{ expediente.juzgado.Descripcion }}</p>
-            <p class="text-sm"><span class="font-semibold">Materia:</span>
-                {{ expediente.demanda.cat_via_materia.cat_materia.Descripcion }}</p>
-            <p class="text-sm"><span class="font-semibold">Vía:</span>
-                {{ expediente.demanda.cat_via_materia.cat_via.descripcion }}</p>
+            <p class="text-sm"><span class="font-semibold">Juzgado asignado:</span> {{ expediente.juzgado.Descripcion }}
+            </p>
+            <p class="text-sm"><span class="font-semibold">Materia:</span> {{
+                expediente.demanda.cat_via_materia.cat_materia.Descripcion }}</p>
+            <p class="text-sm"><span class="font-semibold">Via:</span> {{
+                expediente.demanda.cat_via_materia.cat_via.descripcion }}</p>
         </div>
     </div>
 </div>
 
-<!-- ===================== GENERALES DEL ACUERDO ===================== -->
-<div class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
-    <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-2 block">
-        Generales del acuerdo
-    </label>
+<form [formGroup]="acuerdo">
 
-    <form [formGroup]="acuerdo">
+    <!-- Datos generales -->
+    <div class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
+        <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 block">Datos generales del
+            auto</label>
         <div class="grid grid-cols-12 gap-4">
-
-            <!-- Síntesis -->
             <div class="col-span-12 sm:col-span-6">
-                <label class="block mb-2 text-sm font-medium">Síntesis</label>
+                <label class="block mb-2 text-sm font-medium">Sintesis</label>
                 <textarea pInputTextarea rows="3" formControlName="sintesis" class="w-full uppercase" maxlength="255"
-                    placeholder="ESCRIBE UN RESUMEN DEL TRÁMITE..."></textarea>
-                <small *ngIf="shouldShowError('sintesis')" class="text-red-500 text-xs mt-1 block">
-                    {{ getError('sintesis') }}
-                </small>
+                    placeholder="ESCRIBE UN RESUMEN DEL TRAMITE..."></textarea>
+                <small *ngIf="shouldShowError('sintesis')" class="text-red-500 text-xs mt-1 block">{{
+                    getError('sintesis') }}</small>
             </div>
-
-            <!-- Observaciones -->
             <div class="col-span-12 sm:col-span-6">
                 <label class="block mb-2 text-sm font-medium">Observaciones</label>
                 <textarea pInputTextarea rows="3" formControlName="observaciones" class="w-full uppercase"
                     maxlength="255" placeholder="ESCRIBE TUS OBSERVACIONES..."></textarea>
-                <small *ngIf="shouldShowError('observaciones')" class="text-red-500 text-xs mt-1 block">
-                    {{ getError('observaciones') }}
-                </small>
+                <small *ngIf="shouldShowError('observaciones')" class="text-red-500 text-xs mt-1 block">{{
+                    getError('observaciones') }}</small>
             </div>
-
-        </div>
-    </form>
-</div>
-
-<!-- ===================== TRAMITES ===================== -->
-<div class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
-
-    <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 block">
-        Tramites
-    </label>
-
-    <div class="card">
-        <p-table [value]="expediente?.tramites ?? []" stripedRows [scrollable]="true" scrollHeight="300px">
-
-            <ng-template #header>
-                <tr>
-                    <th style="width: 3rem">
-                        <p-checkbox [binary]="true" [(ngModel)]="isAllSelected"
-                            (onChange)="toggleSelectAll()"></p-checkbox>
-                    </th>
-                    <th>Folio</th>
-                    <th>Tipo tramite</th>
-                    <th>Fecha recepción</th>
-                    <th>Último estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </ng-template>
-
-            <ng-template #body let-tramite let-i="rowIndex">
-                <tr>
-                    <td>
-                        <p-checkbox [binary]="true" [ngModel]="selectedTramites.includes(tramite)"
-                            [ngModelOptions]="{ standalone: true }" (onChange)="toggleSelection(tramite)"
-                            [disabled]="tramite.cat_tramite?.idCatTramite === 3"></p-checkbox>
-                    </td>
-                    <td>{{ tramite.folio }}</td>
-                    <td>
-                        <p-tag [value]="(getDescripcionTramite(tramite) | uppercase) ?? ''"
-                            [severity]="getTagTramite(tramite).severity" [icon]="getTagTramite(tramite).icon" />
-                    </td>
-                    <td>{{ tramite.fechaRecepcion | date:'d \'de\' MMMM \'de\' y HH:mm' }} h</td>
-                    <td>
-                        <p-tag [value]="(getEstadoDescripcion(tramite) | uppercase) ?? ''"
-                            [severity]="getEstadoTag(tramite).severity" [icon]="getEstadoTag(tramite).icon ?? ''" />
-                    </td>
-
-                    <td>
-
-                        @if (tramite.cat_tramite?.idCatTramite === 3) {
-                        <p-button (click)="detalleDemanda(tramite.idTramite)" [rounded]="true" [raised]="true"
-                            icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top">
-                        </p-button>
-                        } @else {
-                        <p-button (click)="detalleTramite(tramite.idTramite)" [rounded]="true" [raised]="true"
-                            icon="pi pi-eye" pTooltip="Ver detalle" tooltipPosition="top">
-                        </p-button>
-                        }
-                    </td>
-                </tr>
-            </ng-template>
-
-            <ng-template #emptymessage>
-                <tr>
-                    <td colspan="7">Sin trámites registrados.</td>
-                </tr>
-            </ng-template>
-
-        </p-table>
-    </div>
-</div>
-
-<!-- ===================== SUBIR ACUERDO ===================== -->
-<div *ngIf="expediente" class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
-
-    <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 block">
-        Subir Acuerdo
-    </label>
-
-    <div class="w-full">
-        <ng-container *ngIf="!nombreArchivo">
-            <label class="block mb-2 text-sm font-medium">Seleccionar documento</label>
-            <input #fileInput type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                class="block w-full text-sm text-surface-700 border border-surface rounded-lg cursor-pointer bg-surface-100 dark:bg-surface-800 dark:text-surface-300 focus:outline-none p-2"
-                (change)="onFileChange($event)" />
-            <small class="text-xs text-surface-500 mt-1 block">Subir en formato PDF (solo 1 archivo)</small>
-            <small *ngIf="shouldShowError('documento')" class="text-red-500 text-xs mt-1 block">
-                {{ getError('documento') }}
-            </small>
-        </ng-container>
-
-        <div *ngIf="nombreArchivo" class="flex flex-col gap-2">
-            <span class="text-sm">Archivo seleccionado: <strong>{{ nombreArchivo }}</strong></span>
-            <div class="flex gap-3 mt-1">
-                <p-button [outlined]="true" severity="danger" icon="pi pi-times" label="Quitar archivo"
-                    (click)="quitarArchivo()">
-                </p-button>
-                <p-button [outlined]="true" severity="info" icon="pi pi-eye" label="Ver documento"
-                    (click)="verDocumento()">
-                </p-button>
+            <div class="col-span-12">
+                <div
+                    class="flex items-center gap-3 rounded-lg border border-surface bg-surface-0 dark:bg-surface-900 p-3">
+                    <p-checkbox inputId="tramiteOficioso" formControlName="tramiteOficioso" [binary]="true" />
+                    <label for="tramiteOficioso" class="text-sm font-medium cursor-pointer">Tramite oficioso</label>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- ===================== VISOR PDF ===================== -->
+    <!-- AUTO DE INICIO + AUTO DE TRAMITE (ocultos si es oficioso) -->
+    <ng-container *ngIf="!esTramiteOficioso">
+
+        <!-- AUTO DE INICIO -->
+        <div class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4"
+            formGroupName="autoInicio">
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 block">Auto de inicio</label>
+
+            <div class="overflow-x-auto rounded-xl border border-surface">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr
+                            class="bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 text-xs uppercase">
+                            <th class="px-4 py-3 text-left font-medium">Folio</th>
+                            <th class="px-4 py-3 text-left font-medium">Tipo</th>
+                            <th class="px-4 py-3 text-left font-medium">Sintesis</th>
+                            <th class="px-4 py-3 text-left font-medium">Fecha recepcion</th>
+                            <th class="px-4 py-3 text-left font-medium">Acciones</th>
+                            <th class="px-4 py-3 text-left font-medium w-52">Clasificacion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="tramiteDemanda" class="bg-surface-0 dark:bg-surface-900 border-t border-surface">
+                            <td class="px-4 py-3 font-semibold text-surface-900 dark:text-surface-0 whitespace-nowrap">
+                                {{ tramiteDemanda.folio }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <p-tag [value]="tramiteDemanda.tipoTramite" severity="success" icon="pi pi-file-pdf" />
+                            </td>
+                            <td class="px-4 py-3 text-surface-600 dark:text-surface-300 max-w-xs">
+                                <span class="line-clamp-2">{{ tramiteDemanda.sintesis }}</span>
+                            </td>
+                            <td class="px-4 py-3 text-surface-500 whitespace-nowrap">
+                                {{ tramiteDemanda.fechaRecepcion | date:'dd/MM/yyyy HH:mm' }} h
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-1">
+                                    <p-button type="button" icon="pi pi-eye" [rounded]="true" [text]="true"
+                                        severity="info" pTooltip="Ver detalle" tooltipPosition="top"
+                                        (click)="detalleDemanda(expediente!.demanda.idDemanda)" />
+                                    <!-- <p-button *ngIf="getDocumentoPrincipal(tramiteDemanda) as doc" type="button"
+                                        icon="pi pi-file-pdf" [rounded]="true" [text]="true" severity="secondary"
+                                        pTooltip="Ver documento" tooltipPosition="top"
+                                        (click)="verDocumentoPendiente(doc)" /> -->
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <p-select formControlName="clasificacion" [options]="clasificacionOptions"
+                                    optionLabel="label" optionValue="value" placeholder="Clasificacion" appendTo="body"
+                                    fluid />
+                                <small *ngIf="shouldShowError('clasificacion', autoInicioForm)"
+                                    class="text-red-500 text-xs mt-1 block">
+                                    {{ getError('clasificacion', autoInicioForm) }}
+                                </small>
+                            </td>
+                        </tr>
+                        <tr *ngIf="!tramiteDemanda">
+                            <td colspan="6" class="px-4 py-6 text-center text-surface-400 text-sm">Sin escrito de
+                                demanda</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- AUTO DE TRAMITE -->
+        <div class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4"
+            formGroupName="autoTramite">
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 block">Auto de tramite</label>
+
+            <div class="overflow-x-auto rounded-xl border border-surface">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr
+                            class="bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 text-xs uppercase">
+                            <th class="px-4 py-3 w-10">
+                                <p-checkbox [binary]="true" [ngModel]="allTramitesSelected"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    (onChange)="toggleSelectAllTramites($event)" />
+                            </th>
+                            <th class="px-4 py-3 text-left font-medium">Folio</th>
+                            <th class="px-4 py-3 text-left font-medium">Tipo</th>
+                            <th class="px-4 py-3 text-left font-medium">Sintesis</th>
+                            <th class="px-4 py-3 text-left font-medium">Fecha recepcion</th>
+                            <th class="px-4 py-3 text-left font-medium">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let promocion of promocionesPendientes"
+                            class="bg-surface-0 dark:bg-surface-900 border-t border-surface cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                            (click)="toggleTramiteRow(promocion)">
+                            <td class="px-4 py-3">
+                                <p-checkbox [binary]="true" [ngModel]="isPromocionSelected(promocion.idTramite)"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    (onChange)="togglePromocion(promocion); $event.originalEvent?.stopPropagation()" />
+                            </td>
+                            <td class="px-4 py-3 font-semibold text-surface-900 dark:text-surface-0 whitespace-nowrap">
+                                {{ promocion.folio }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <p-tag [value]="promocion.tipoTramite"
+                                    [severity]="getTipoTramiteTag(promocion.idCatTramite).severity"
+                                    [icon]="getTipoTramiteTag(promocion.idCatTramite).icon" />
+                            </td>
+                            <td class="px-4 py-3 text-surface-600 dark:text-surface-300 max-w-xs">
+                                <span class="line-clamp-2">{{ promocion.sintesis }}</span>
+                            </td>
+                            <td class="px-4 py-3 text-surface-500 whitespace-nowrap">
+                                {{ promocion.fechaRecepcion ? (promocion.fechaRecepcion | date:'dd/MM/yyyy HH:mm') + '
+                                h' : '—' }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-1"
+                                   >
+                                    <p-button type="button" icon="pi pi-eye" [rounded]="true" [text]="true"
+                                        severity="info" pTooltip="Ver detalle" tooltipPosition="top"
+                                        (click)="detalleTramite(promocion.idTramite); $event.stopPropagation()" />
+                                    <!-- <p-button *ngFor="let doc of promocion.documentos"
+                                type="button" icon="pi pi-file-pdf" [rounded]="true" [text]="true"
+                                severity="secondary" [pTooltip]="doc.nombre" tooltipPosition="top"
+                                (click)="verDocumentoPendiente(doc); $event.stopPropagation()" /> -->
+                                </div>
+                                <ng-template #sinAcciones>
+                                    <span class="text-surface-400 text-xs">—</span>
+                                </ng-template>
+                            </td>
+                        </tr>
+
+                        <tr *ngIf="promocionesPendientes.length === 0">
+                            <td colspan="6" class="px-4 py-6 text-center text-surface-400 text-sm">Sin tramites
+                                pendientes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- <small *ngIf="shouldShowError('tramitesSeleccionados', autoTramiteForm)"
+                class="text-red-500 text-xs mt-3 block">
+                Selecciona al menos una promocion u oficio.
+            </small> -->
+        </div>
+
+        <!-- SUBIR AUTO (tramite normal) -->
+        <div *ngIf="expediente" class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
+            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 block">Subir auto</label>
+            <div class="w-full">
+                <ng-container *ngIf="!nombreArchivo">
+                    <label class="block mb-2 text-sm font-medium">Seleccionar documento</label>
+                    <input #fileInput type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                        class="block w-full text-sm text-surface-700 border border-surface rounded-lg cursor-pointer bg-surface-100 dark:bg-surface-800 dark:text-surface-300 focus:outline-none p-2"
+                        (change)="onFileChange($event)" />
+                    <small class="text-xs text-surface-500 mt-1 block">Subir en formato PDF (solo 1 archivo)</small>
+                    <small *ngIf="shouldShowError('documento')" class="text-red-500 text-xs mt-1 block">{{
+                        getError('documento') }}</small>
+                </ng-container>
+                <div *ngIf="nombreArchivo" class="flex flex-col gap-2">
+                    <span class="text-sm">Archivo seleccionado: <strong>{{ nombreArchivo }}</strong></span>
+                    <div class="flex gap-3 mt-1">
+                        <p-button [outlined]="true" severity="danger" icon="pi pi-times" label="Quitar archivo"
+                            (click)="quitarArchivo()" />
+                        <p-button [outlined]="true" severity="info" icon="pi pi-eye" label="Ver documento"
+                            (click)="verDocumento()" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ng-container>
+
+    <!-- SUBIR AUTO (tramite oficioso) -->
+    <ng-container *ngIf="esTramiteOficioso">
+        <div class="mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
+            <div class="flex flex-wrap items-center gap-3 mb-4">
+                <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 block">Subir auto</label>
+                <p-tag value="Tramite oficioso" severity="warn" icon="pi pi-briefcase" />
+            </div>
+            <div class="w-full">
+                <ng-container *ngIf="!nombreArchivo">
+                    <label class="block mb-2 text-sm font-medium">Seleccionar documento</label>
+                    <input #fileInputOficioso type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                        class="block w-full text-sm text-surface-700 border border-surface rounded-lg cursor-pointer bg-surface-100 dark:bg-surface-800 dark:text-surface-300 focus:outline-none p-2"
+                        (change)="onFileChange($event)" />
+                    <small class="text-xs text-surface-500 mt-1 block">Subir en formato PDF (solo 1 archivo)</small>
+                    <small *ngIf="shouldShowError('documento')" class="text-red-500 text-xs mt-1 block">{{
+                        getError('documento') }}</small>
+                </ng-container>
+                <div *ngIf="nombreArchivo" class="flex flex-col gap-2">
+                    <span class="text-sm">Archivo seleccionado: <strong>{{ nombreArchivo }}</strong></span>
+                    <div class="flex gap-3 mt-1">
+                        <p-button [outlined]="true" severity="danger" icon="pi pi-times" label="Quitar archivo"
+                            (click)="quitarArchivo()" />
+                        <p-button [outlined]="true" severity="info" icon="pi pi-eye" label="Ver documento"
+                            (click)="verDocumento()" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- Acciones -->
+    <div class="mt-4 mb-4 flex flex-wrap justify-end gap-3">
+        <p-button icon="pi pi-upload" label="Enviar auto" severity="warn" [disabled]="acuerdo.invalid"
+            (click)="onAcuerdoConfirm($event)" />
+    </div>
+
+</form>
+
+<!-- Visor PDF -->
 <p-dialog header="Documento" [(visible)]="visibleDocumento" [modal]="true" [closable]="true"
     [style]="{ width: '50rem' }" [draggable]="false" [resizable]="false">
     <object *ngIf="documentoUrl" [data]="documentoUrl" type="application/pdf" width="100%" height="500px">
         <p>No se puede mostrar el PDF. <a [href]="documentoUrl" download>Descargar</a></p>
     </object>
 </p-dialog>
-
-<!-- ===================== BOTONES ENVIAR ===================== -->
-<div class="mt-4 mb-4 flex flex-wrap justify-end gap-3">
-
-    <!-- Enviar acuerdo -->
-    <p-button icon="pi pi-upload" label="Enviar acuerdo" severity="warn" [disabled]="acuerdo.invalid"
-        (click)="onAcuerdoConfirm($event)">
-    </p-button>
-
-</div>

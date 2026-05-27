@@ -4,6 +4,8 @@
 @import "primeicons/primeicons.css";
 @import 'driver.js/dist/driver.css';
 
+@source "./app/**/*.{html,ts}";
+@source "../src/**/*.{html,ts}";
 /* ============================================
    TEMA - Colores personalizados (Tailwind v4)
    ============================================ */
@@ -75,29 +77,24 @@
    ============================================ */
 
 /* Caption: sin borde superior, padding inferior */
-.p-datatable-header {
-  @apply border-t-0 !p-2;
+.personalizado .p-datatable-header {
+  @apply border-t-0 !p-0;
   background: transparent;
 }
 
 /* Cabeceras: peso de fuente medium */
-.p-datatable th {
+.personalizado .p-datatable th {
   font-weight: 500 !important;
 }
-
 /* ============================================
-   DIALOG (p-dialog) - Variante compacta
+   TABLA (p-dialog) - Estilos globales
    ============================================ */
-.dialog-compact .p-dialog-header {
-  padding: 0 0 0 0.6rem !important;
-}
 
-.dialog-compact .p-dialog-content {
-  padding: 0 0.6rem !important;
+.p-dialog-header {
+  @apply !p-4
 }
-
-.dialog-compact .p-dialog-title {
-  font-size: 1.125rem !important; /* text-lg */
+.p-dialog-content {
+  @apply !pt-0 !pb-4 !pl-4 !pr-4 
 }
 
 /* ============================================
