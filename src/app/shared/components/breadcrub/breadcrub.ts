@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router, NavigationEnd, ActivatedRoute, RouterModule, UrlSegment } from '@angular/router';
@@ -39,6 +40,9 @@ export class Breadcrub implements OnInit, OnDestroy {
   breadcrumbs: BreadcrumbItem[] = [];
   visibleDrawer: boolean = false;
   visibleNotificaciones: boolean = false;
+  readonly temaOscuro = signal(false);
+  readonly temaIcono = computed(() => this.temaOscuro() ? 'pi pi-sun' : 'pi pi-moon');
+  readonly temaAriaLabel = computed(() => this.temaOscuro() ? 'Activar modo claro' : 'Activar modo oscuro');
   
   notificaciones = signal<NotificacionResponse[]>([]);
   notificacionToast = signal<NotificacionResponse | null>(null);
@@ -53,9 +57,11 @@ export class Breadcrub implements OnInit, OnDestroy {
   readonly drawerService = inject(DrawerService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly document = inject(DOCUMENT);
   private readonly marcandoLeida = new Set<number>();
 
   ngOnInit(): void {
+    this.cargarTemaGuardado();
     this.buildBreadcrumbs();
 
     this.sub = this.router.events.pipe(
@@ -71,6 +77,35 @@ export class Breadcrub implements OnInit, OnDestroy {
     this.notificacionesService.conectarSocket();
     this.cargarNotificaciones();
   }
+
+  toggleTema(): void {
+    const switchTheme = (): void => {
+      const esOscuro = !this.temaOscuro();
+      this.temaOscuro.set(esOscuro);
+
+      const root = this.document.documentElement;
+      root.classList.toggle('dark', esOscuro);
+      root.style.colorScheme = esOscuro ? 'dark' : 'light';
+      this.document.defaultView?.localStorage.setItem('sijudi-theme', esOscuro ? 'dark' : 'light');
+    };
+
+    if (!this.document.startViewTransition) {
+      switchTheme();
+      return;
+    }
+
+    this.document.startViewTransition(switchTheme);
+  }
+
+  private cargarTemaGuardado(): void {
+    const temaGuardado = this.document.defaultView?.localStorage.getItem('sijudi-theme') === 'dark';
+    this.temaOscuro.set(temaGuardado);
+
+    const root = this.document.documentElement;
+    root.classList.toggle('dark', temaGuardado);
+    root.style.colorScheme = temaGuardado ? 'dark' : 'light';
+  }
+
   private agregarNotificacionSocket(notif: NotificacionResponse): void {
     const nueva: NotificacionResponse = {
       ...notif,

@@ -37,6 +37,15 @@
                 class="cursor-pointer border-2 border-transparent hover:border-primary transition-all">
             </p-avatar>
 
+            <!-- Botón de tema -->
+            <button type="button"
+                class="relative w-[48px] h-[48px] flex items-center justify-center rounded-full border border-surface-200 bg-surface-100 text-primary shadow-sm hover:bg-surface-200 dark:border-surface-700 dark:bg-surface-800 dark:text-primary-300 dark:hover:bg-surface-700 cursor-pointer transition-all"
+                (click)="toggleTema()"
+                [attr.aria-label]="temaAriaLabel()"
+                [attr.aria-pressed]="temaOscuro()">
+                <i class="pi text-xl" [class.pi-sun]="temaOscuro()" [class.pi-moon]="!temaOscuro()"></i>
+            </button>
+
 
             <!-- Botón de Notificaciones -->
             <button type="button"
