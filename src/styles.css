@@ -9,6 +9,19 @@
 @source "./app/**/*.{html,ts}";
 @source "../src/**/*.{html,ts}";
 
+@media (max-width: 767px) {
+
+  html,
+  body {
+    min-height: 100%;
+    background: #315d53;
+  }
+
+  body {
+    margin: 0;
+  }
+}
+
 ::view-transition-group(root) {
   animation-timing-function: var(--expo-out);
 }
@@ -102,8 +115,8 @@
 }
 
 /* Cabeceras: peso de fuente medium */
-.personalizado .p-datatable th {
-  font-weight: 500 !important;
+.personalizado .p-datatable-thead>tr>th {
+  @apply text-base font-semibold;
 }
 
 /* ============================================
@@ -123,6 +136,51 @@
    ============================================ */
 .p-menu.p-menu-overlay {
   z-index: 9999 !important;
+}
+
+
+/* ============================================
+   PRIME SELECT - Protección universal textos largos
+   ============================================ */
+
+.p-select {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.p-select-label {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 640px) {
+  .p-select-overlay,
+  .p-select-panel {
+    width: var(--p-select-overlay-width) !important;
+    max-width: calc(100vw - 2rem) !important;
+  }
+
+  .p-select-list-container,
+  .p-select-list,
+  .p-select-option {
+    max-width: 100% !important;
+  }
+
+  .p-select-option {
+    overflow: hidden !important;
+  }
+
+  .p-select-option-label,
+  .p-select-option span {
+    display: block !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
 }
 
 /* ============================================

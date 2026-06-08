@@ -1,5 +1,6 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
-<div class="h-dvh overflow-hidden px-6 flex items-center justify-center backdrop-blur-3xl bg-cover! bg-center! bg-no-repeat!"
+<div
+    class="min-h-dvh md:h-dvh overflow-hidden px-6 pt-[max(env(safe-area-inset-top),1rem)] pb-[max(env(safe-area-inset-bottom),1rem)] md:pt-0 md:pb-0 flex items-center justify-center backdrop-blur-3xl bg-cover! bg-center! bg-no-repeat! bg-[#e7efe9] md:bg-transparent"
     style="background-image: url('FondoSIJUDI2.png')">
     <div
         class="panel px-10 py-5 flex flex-col items-center gap-12 w-full backdrop-blur-2xl rounded-2xl bg-white/10 border border-white/10 max-w-md">
@@ -125,13 +126,13 @@
                 <p-iconfield icon-position="left">
                     <p-inputicon class="pi pi-user text-black/70!"></p-inputicon>
                     <input pInputText type="text" [(ngModel)]="usuario" (keydown.enter)="passwordFocus()"
-                        class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-black! placeholder:text-black/70! rounded-3xl! shadow-sm!"
+                        class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-black! placeholder:text-black/70!  shadow-sm!"
                         placeholder="Usuario" />
                 </p-iconfield>
                 <p-iconfield icon-position="left">
                     <p-inputicon class="pi pi-lock text-black/70!"></p-inputicon>
                     <input pInputText [type]="verPassword ? 'text' : 'password'" [(ngModel)]="contrasenia" (keydown.enter)="passwordEnter()" #passwordInput
-                        class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-black! placeholder:text-black/70! rounded-3xl! shadow-sm!"
+                        class="appearance-none! border! border-white/10! w-full! outline-0! bg-white/10! text-black! placeholder:text-black/70!  shadow-sm!"
                         placeholder="Contraseña" />
                     <p-inputicon class="cursor-pointer text-black/70! hover:text-black!" (click)="togglePassword()">
                         <i [class]="verPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
@@ -149,7 +150,7 @@
             </div>
 
             <button pButton (click)="validarUsuario()"
-                class="w-full! rounded-3xl! border! border-surface-950! text-white! ">
+                fluid>
                 <span pButtonLabel>Continuar</span>
             </button>
         </div>

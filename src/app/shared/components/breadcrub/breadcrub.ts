@@ -43,12 +43,12 @@ export class Breadcrub implements OnInit, OnDestroy {
   readonly temaOscuro = signal(false);
   readonly temaIcono = computed(() => this.temaOscuro() ? 'pi pi-sun' : 'pi pi-moon');
   readonly temaAriaLabel = computed(() => this.temaOscuro() ? 'Activar modo claro' : 'Activar modo oscuro');
-  
+
   notificaciones = signal<NotificacionResponse[]>([]);
   notificacionToast = signal<NotificacionResponse | null>(null);
   pendientes = signal(0);
   cargandoNotificaciones = signal(false);
-
+  drawerMobileTab: 'perfil' | 'notificaciones' = 'perfil';
   private sub!: Subscription;
   private socketSub?: Subscription;
   private readonly tokenService = inject(TokenService);
@@ -117,7 +117,7 @@ export class Breadcrub implements OnInit, OnDestroy {
     } else {
       const yaExiste = this.notificaciones().some(n => n.id === nueva.id);
       if (yaExiste) {
-        this.notificaciones.update(n => 
+        this.notificaciones.update(n =>
           n.map(notif =>
             notif.id === nueva.id ? { ...notif, ...nueva } : notif
           )
@@ -181,7 +181,7 @@ export class Breadcrub implements OnInit, OnDestroy {
   onToastCerrada(): void {
     this.notificacionToast.set(null);
   }
-  
+
   private buildBreadcrumbs(): void {
     const crumbs: BreadcrumbItem[] = [];
     let route: ActivatedRoute | null = this.activatedRoute.root;

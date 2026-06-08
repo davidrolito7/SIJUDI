@@ -23,12 +23,13 @@ export const environment = {
     //* api demandas y oficialia primera instancia 0.o
     urlApiJuicioOral: 'http://10.1.10.50:81',
     //urlApiJuicioOral: 'http://127.0.0.1:8000',
+    //https://oficialiavirtual.tribunaloaxaca.gob.mx/api
 
     //* api juicio oral penal 0.o
     urlApiJuicioOralPenal: 'https://pruebas.tribunaloaxaca.gob.mx/ApiJuicioOral/api/PromocionesJuicioOral',
     //urlApiJuicioOralPenal:'https://localhost:7057/api/PromocionesJuicioOral'
 
-    //* api notificaciones en tiempo real (Node + Socket.IO)
+    //* api notificaciones en tiempo real
     urlApiNotificaciones: 'http://localhost:3000'
 };
 
