@@ -3,7 +3,7 @@
 
 <div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-950 flex flex-col gap-4">
   <!-- BREADCRUMB -->
-  <app-breadcrub></app-breadcrub>
+  <app-header></app-header>
 
   <!-- ENCABEZADO -->
   <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
@@ -25,7 +25,7 @@
 
             @if (tienePermisoGuardar()) {
                 <div class="relative">
-                    @if ([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ?? 0)) {
+                    @if ([0, 11].includes(detallesAcuerdo().generales.idEstatus ?? 0)) {
                     <p-button type="button" (click)="guardarRespuestaExhorto()">
                     Guardar</p-button>
                     }
@@ -47,7 +47,7 @@
               }
               @if (tienePermisoEnviarArchvios()) {
               <div class="relative">
-                  @if (detallesAcuerdo()?.generales?.idEstatus === 12) {
+                  @if (detallesAcuerdo().generales.idEstatus === 12) {
                   <p-button type="button" (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"
                       ><i class="bi bi-send"></i> Enviar Archivos</p-button>
                   }
@@ -74,63 +74,63 @@
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Estado</span>
-            <span class="text-surface-900 dark:text-surface-50">{{ datosExhortoRecibido?.estadoOrigen }}</span>
+            <span class="text-surface-900 dark:text-surface-50">{{ datosExhortoRecibido.estadoOrigen }}</span>
         </div>
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Municipio</span>
-            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.municipioOrigen}}</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido.municipioOrigen}}</span>
         </div>
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Juzgado</span>
-            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.juzgadoOrigenNombre}}</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido.juzgadoOrigenNombre}}</span>
         </div>
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Juez Exhortante</span>
-            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.juezExhortante}}</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido.juezExhortante}}</span>
         </div>
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Vía</span>
-            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.tipoJuicioAsuntoDelitos}}</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido.tipoJuicioAsuntoDelitos}}</span>
         </div>
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Diligencia</span>
-            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.tipoDiligenciacionNombre}}</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido.tipoDiligenciacionNombre}}</span>
         </div>
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Fecha de Envío</span>
-            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.fechaOrigen}}</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido.fechaOrigen}}</span>
         </div>
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Expediente</span>
-            <span class="text-surface-900 dark:text-surface-50 font-mono">{{datosExhortoRecibido?.numeroExpedienteOrigen}}</span>
+            <span class="text-surface-900 dark:text-surface-50 font-mono">{{datosExhortoRecibido.numeroExpedienteOrigen}}</span>
         </div>
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Oficio</span>
-            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.numeroOficioOrigen}}</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido.numeroOficioOrigen}}</span>
         </div>
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Término (Días)</span>
-            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.diasResponder}}</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido.diasResponder}}</span>
         </div>
 
         <div class="flex flex-col">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Fojas</span>
-            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido?.fojas}}</span>
+            <span class="text-surface-900 dark:text-surface-50">{{datosExhortoRecibido.fojas}}</span>
         </div>
 
         <div class="flex flex-col gap-1 md:col-span-2 lg:col-span-3">
             <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Observaciones</span>
             <p class="text-surface-900 dark:text-surface-50 italic">
-                {{datosExhortoRecibido?.observaciones}}
+                {{datosExhortoRecibido.observaciones}}
             </p>
         </div>
 
@@ -286,14 +286,14 @@
   </div>
 </div>
 
-@if(detallesAcuerdo().generales?.idRespuesta !== 0)
+@if(detallesAcuerdo().generales.idRespuesta !== 0)
 {
   <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
       <div class="flex items-start flex-col md:justify-between md:flex-row">
           <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
 
           <div class="flex items-center">
-            @if([0, 11].includes(detallesAcuerdo()?.generales?.idEstatus ??-1 )){
+            @if([0, 11].includes(detallesAcuerdo().generales.idEstatus ?? -1 )){
               @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
                   <div class="relative" style="margin-right: 1rem;">
                     <p-button type="button"
@@ -550,3 +550,4 @@
       </app-modal-component>
     }
 </div>
+

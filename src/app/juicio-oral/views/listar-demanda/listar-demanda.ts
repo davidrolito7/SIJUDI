@@ -23,7 +23,7 @@ import { ToastModule } from 'primeng/toast';
 // ============================
 // App - shared
 // ============================
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 
 // ============================
@@ -53,7 +53,7 @@ import { TooltipModule } from 'primeng/tooltip';
     InputMaskModule,
     TooltipModule,
     // Shared components
-    Breadcrub,
+    Header,
     Spinner
   ],
   templateUrl: './listar-demanda.html',
@@ -251,3 +251,5 @@ export class ListarDemanda implements OnInit {
     return row as ListarExpedientesResponse;
   }
 }
+
+

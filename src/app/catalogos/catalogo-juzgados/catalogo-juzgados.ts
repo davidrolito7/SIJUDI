@@ -14,12 +14,12 @@ import { TagModule } from 'primeng/tag';
 import { DrawerModule } from 'primeng/drawer';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
-import { Breadcrub } from "../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../shared/components/header/header";
 
 @Component({
   standalone: true,
   selector: 'app-catalogo-juzgados',
-  imports: [ToastModule, TableModule, ButtonModule, InputIconModule, IconFieldModule, Spinner, InputTextModule, TagModule, DrawerModule, ReactiveFormsModule, ConfirmDialog, Breadcrub],
+  imports: [ToastModule, TableModule, ButtonModule, InputIconModule, IconFieldModule, Spinner, InputTextModule, TagModule, DrawerModule, ReactiveFormsModule, ConfirmDialog, Header],
   templateUrl: './catalogo-juzgados.html',
   styleUrl: './catalogo-juzgados.css',
   providers: [MessageService, ConfirmationService]
@@ -112,3 +112,5 @@ export class CatalogoJuzgados {
     });
   }
 }
+
+

@@ -787,7 +787,6 @@ export interface AnexosDelcaradosRequest {
     fojas: number;
     valor?: number;
     archivo: File;
-//firmaDigital: number;
     esValor: boolean;
     observaciones?: string;
 }

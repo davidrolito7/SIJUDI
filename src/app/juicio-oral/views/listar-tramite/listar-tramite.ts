@@ -23,7 +23,7 @@ import { TooltipModule } from 'primeng/tooltip';
 // ============================
 // App - shared
 // ============================
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 
 // ============================
@@ -55,7 +55,7 @@ import { PantallasService } from '../../services/pantallas.service';
     ToastModule,
     TooltipModule,
     // Shared
-    Breadcrub,
+    Header,
     Spinner,
   ],
   templateUrl: './listar-tramite.html',
@@ -374,3 +374,4 @@ export class ListarTramite implements OnInit {
     });
   }
 }
+

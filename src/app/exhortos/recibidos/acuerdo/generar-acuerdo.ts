@@ -14,7 +14,7 @@ import { GenericResponse } from '../../../shared/interface/shared.interface';
 import { archivos, CONATRIB_ExhortosRecibidosArchivos, EnviadoRespuestaArchivosResponse, generales, guardaExhortoRespuesta, ListadoCatalogoTipoDiligenciado, ListadoCatalogoTipoDocumento, ListadoExhortosRecibidosI, promocionExhortos, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { QrService} from '../../../shared/services/qr.service';
 import ValidateForm from '../../../helpers/validateform';
@@ -34,7 +34,7 @@ import { ModalService } from '../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-GenerarAcuerdo',
-  imports: [ConfirmDialog, Breadcrub, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent],
+  imports: [ConfirmDialog, Header, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent],
   templateUrl: './generar-acuerdo.html',
   styleUrl: './generar-acuerdo.css',
   providers: [MessageService,ConfirmationService]
@@ -55,7 +55,7 @@ export class GenerarAcuerdo {
   listadoTipoDiligenciado = signal<ListadoCatalogoTipoDiligenciado[]>([]);
   listadoTipoDocumento = signal<ListadoCatalogoTipoDocumento[]>([]);
   listaDocumentos=signal<archivos[]>([]);
-  datosExhortoRecibido! : ListadoExhortosRecibidosI;
+  datosExhortoRecibido: ListadoExhortosRecibidosI | null = null;
   acuseEnviarAcuerdoArchivos! : EnviadoRespuestaArchivosResponse;
   detallesAcuerdo =signal<respuestaExhorto>(<respuestaExhorto>{});
   puedeEnviarGenerales = signal<boolean>(false);
@@ -1081,4 +1081,6 @@ export class GenerarAcuerdo {
 
 
 }
+
+
 

@@ -3,7 +3,7 @@
 <div class="sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-950">
 
     <!-- HEADER -->
-    <app-breadcrub></app-breadcrub>
+    <app-header></app-header>
     <!-- BUSQUEDA -->
     <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
         <form class="flex flex-col" [formGroup]="validarCausaForm">
@@ -130,3 +130,4 @@
 <app-confirm-dialog key="info" title="No hay coincidencias" message="La causa o el juzgado es incorrecto."
     icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
 </app-confirm-dialog>
+

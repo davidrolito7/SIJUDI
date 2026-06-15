@@ -16,7 +16,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputTextModule } from 'primeng/inputtext';
 // Shared
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { Spinner } from '../../../shared/components/spinner/spinner';
@@ -45,7 +45,7 @@ import { TokenService } from '../../../core/auth/service/token.service';
     ConfirmDialogModule,
     InputTextModule,
     // Shared
-    Breadcrub,
+    Header,
     PdfDialog,
     Spinner,
   ],
@@ -250,3 +250,4 @@ export class DetalleAcuerdo implements OnInit {
     }
   }
 }
+

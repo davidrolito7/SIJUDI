@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Breadcrub } from './breadcrub';
+import { Header } from './header';
 
-describe('Breadcrub', () => {
-  let component: Breadcrub;
-  let fixture: ComponentFixture<Breadcrub>;
+describe('Header', () => {
+  let component: Header;
+  let fixture: ComponentFixture<Header>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Header]
     })
-    .compileComponents();
+      .compileComponents();
 
-    fixture = TestBed.createComponent(Breadcrub);
+    fixture = TestBed.createComponent(Header);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
@@ -20,4 +20,3 @@ describe('Breadcrub', () => {
     expect(component).toBeTruthy();
   });
 });
-

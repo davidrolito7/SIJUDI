@@ -12,7 +12,7 @@ import { ExhortosService } from '../../services/exhorto.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { base64ToFile, downloadBase64 } from '../../../shared/functions/utils';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { Dialog } from "primeng/dialog";
@@ -20,7 +20,7 @@ import { Toast } from "primeng/toast";
 
 @Component({
   selector: 'app-respuestaExhortoRecibido',
-  imports: [PdfDialog, TableModule, Button, CommonModule, Breadcrub, Spinner, ConfirmDialog, Dialog, Toast],
+  imports: [PdfDialog, TableModule, Button, CommonModule, Header, Spinner, ConfirmDialog, Dialog, Toast],
   templateUrl: './respuesta-exhorto-recibido.html',
   styleUrl: './respuesta-exhorto-recibido.css',
   providers: [MessageService,ConfirmationService]
@@ -403,3 +403,5 @@ puedeEditarSegunFlujo = computed(() => {
 
 
 }
+
+

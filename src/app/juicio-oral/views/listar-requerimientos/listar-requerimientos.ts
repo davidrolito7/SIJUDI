@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +18,7 @@ import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-listar-requerimientos',
-  imports: [CommonModule, Breadcrub, RadioButtonModule, TableModule, FormsModule, SelectModule, DatePicker, Button, TagModule, Spinner, IconFieldModule,
+  imports: [CommonModule, Header, RadioButtonModule, TableModule, FormsModule, SelectModule, DatePicker, Button, TagModule, Spinner, IconFieldModule,
     InputIconModule,],
   templateUrl: './listar-requerimientos.html',
   styleUrl: './listar-requerimientos.css',
@@ -242,3 +242,5 @@ export class ListarRequerimientos implements OnInit {
     }
   }
 }
+
+

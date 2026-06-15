@@ -4,7 +4,7 @@ import { JuicioService } from '../../services/juicioenlinea.service';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TableModule } from 'primeng/table';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
@@ -22,7 +22,7 @@ import { ContadoresService } from '../../services/contadores.service';
 
 @Component({
   selector: 'app-detalle-demanda',
-  imports: [CommonModule, TableModule, Breadcrub, ButtonModule, TagModule, PdfDialog, TooltipModule, Spinner, ConfirmDialog, DialogModule, ɵInternalFormsSharedModule, ReactiveFormsModule, ToastModule],
+  imports: [CommonModule, TableModule, Header, ButtonModule, TagModule, PdfDialog, TooltipModule, Spinner, ConfirmDialog, DialogModule, ɵInternalFormsSharedModule, ReactiveFormsModule, ToastModule],
   templateUrl: './detalle-demanda.html',
   styleUrl: './detalle-demanda.css',
   providers: [ConfirmationService, MessageService],
@@ -263,3 +263,4 @@ export class DetalleDemanda implements OnInit {
   }
 
 }
+

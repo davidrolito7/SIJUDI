@@ -21,7 +21,7 @@ import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { MessageService } from 'primeng/api';
 
 
@@ -47,7 +47,7 @@ import { MessageService } from 'primeng/api';
     TooltipModule,
 
     // Shared components
-    Breadcrub,
+    Header,
     Spinner
   ],
   templateUrl: './listar-audiencias.html',
@@ -302,3 +302,4 @@ export class ListarAudiencias implements OnInit {
   }
 
 }
+

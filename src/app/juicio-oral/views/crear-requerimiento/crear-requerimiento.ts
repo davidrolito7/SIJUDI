@@ -17,7 +17,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 import { ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 
 @Component({
   selector: 'app-crear-requerimiento',
@@ -28,7 +28,7 @@ import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
     DatePickerModule, FileUploadModule,
     Spinner, PdfDialog,
     ConfirmDialog,
-    Breadcrub
+    Header
 ],
   templateUrl: './crear-requerimiento.html',
   styleUrl: './crear-requerimiento.css',

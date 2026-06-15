@@ -16,7 +16,7 @@ import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputMaskModule } from 'primeng/inputmask';
 import { TooltipModule } from 'primeng/tooltip';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { PantallasService } from '../../services/pantallas.service';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { TokenService } from '../../../core/auth/service/token.service';
@@ -26,7 +26,7 @@ import { MenuItem } from 'primeng/api';
 @Component({
   selector: 'app-detalle-expediente',
   imports: [CommonModule, RouterModule, DatePickerModule, FormsModule, RadioButtonModule, ButtonModule, TagModule,
-    IconFieldModule, InputIconModule, TableModule, SelectModule, InputTextModule, InputMaskModule, TooltipModule, Breadcrub, Spinner, SpeedDialModule],
+    IconFieldModule, InputIconModule, TableModule, SelectModule, InputTextModule, InputMaskModule, TooltipModule, Header, Spinner, SpeedDialModule],
   templateUrl: './detalle-expediente.html',
   styleUrl: './detalle-expediente.css',
 })
@@ -397,3 +397,4 @@ export class DetalleExpediente {
   items: MenuItem[] | undefined;
 
 }
+

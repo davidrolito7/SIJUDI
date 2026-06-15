@@ -24,7 +24,7 @@ import {
 import { InputMaskModule } from 'primeng/inputmask';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { AuthService } from '../../../core/auth/service/auth.service';
 
@@ -48,7 +48,7 @@ import { AuthService } from '../../../core/auth/service/auth.service';
     InputMaskModule,
     IconFieldModule,
     InputIconModule,
-    Breadcrub,
+    Header,
     Spinner,
   ],
   templateUrl: './busqueda-apelaciones.html',
@@ -261,3 +261,5 @@ export class BusquedaApelaciones implements OnInit {
     return isNaN(parsedDate.getTime()) ? null : parsedDate;
   }
 }
+
+

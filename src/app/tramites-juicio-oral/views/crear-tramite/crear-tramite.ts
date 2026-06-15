@@ -22,7 +22,7 @@ import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm
 import { AvatarModule } from 'primeng/avatar';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { InputMaskModule } from 'primeng/inputmask';
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { HttpResponse } from '@angular/common/http';
 import { driver } from 'driver.js';
@@ -31,7 +31,7 @@ import { driver } from 'driver.js';
   selector: 'app-crear-tramite',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, TextareaModule, FileUploadModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Breadcrub, ConfirmDialogModule,
+    Spinner, TextareaModule, FileUploadModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Header, ConfirmDialogModule,
     PdfDialog
   ],
   templateUrl: './crear-tramite.html',
@@ -308,3 +308,5 @@ export class CrearTramite implements OnInit, AfterViewInit {
     driverObj.drive();
   }
 }
+
+

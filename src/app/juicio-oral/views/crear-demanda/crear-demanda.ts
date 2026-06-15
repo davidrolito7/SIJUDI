@@ -21,7 +21,7 @@ import { FileUpload, FileUploadModule } from 'primeng/fileupload';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { Spinner } from "../../../shared/components/spinner/spinner";
@@ -34,13 +34,14 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { TreeSelectModule } from 'primeng/treeselect';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TooltipModule } from 'primeng/tooltip';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-crear-demanda',
   imports: [CommonModule, FormsModule, ToastModule, SelectModule, DialogModule, ButtonModule,
     InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule, TreeSelectModule,
     InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule, TableModule,
-    TagModule, Breadcrub, InputGroupModule, InputGroupAddonModule, Spinner, PasswordModule, ConfirmDialog, CheckboxModule, InputMaskModule, PdfDialog, DatePickerModule, TooltipModule],
+    TagModule, Header, Breadcrub, InputGroupModule, InputGroupAddonModule, Spinner, PasswordModule, ConfirmDialog, CheckboxModule, InputMaskModule, PdfDialog, DatePickerModule, TooltipModule],
   templateUrl: './crear-demanda.html',
   styleUrl: './crear-demanda.css',
   providers: [ConfirmationService, MessageService]
@@ -1228,3 +1229,4 @@ export class CrearDemanda implements OnInit {
     driverObj.drive();
   }
 }
+

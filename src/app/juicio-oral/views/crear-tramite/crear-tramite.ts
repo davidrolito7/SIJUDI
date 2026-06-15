@@ -28,7 +28,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 // ============================
 // App - shared
 // ============================
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
@@ -74,7 +74,7 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
     TooltipModule,
     ToggleSwitchModule,
     // Shared
-    Breadcrub,
+    Header,
     Spinner,
     ConfirmDialog,
     PdfDialog
@@ -642,3 +642,4 @@ export class CrearTramite implements OnInit {
     return null;
   }
 }
+

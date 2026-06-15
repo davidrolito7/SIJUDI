@@ -44,7 +44,7 @@ export class ExhortosService {
   }
   // Método para guardar los datos generales de un exhort enviado
   setGuardarExhortoEnviado(param: ExhortoEnviadoGuardarGeneralesRequest): Observable<GenericResponse<generalesExhortoEnviado[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     //return this.http.post<GenericResponse<ListadoAmparosRecibidosI[]>>(this.baseUrl + "ListadoNotificaciones", param);
     return this.http.post<GenericResponse<generalesExhortoEnviado[]>>(this.exhortoEnviar + "GuardarGenerales", param, { context: checkToken() });
   }
@@ -60,13 +60,13 @@ export class ExhortosService {
   }
   //Metodo para obtener los municipios del estado seleccionado
   getCatalogoMunicipioDestino(param: EstadoSeleccionado): Observable<GenericResponse<CatalogoMunicipioDestino[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     //return this.http.post<GenericResponse<ListadoAmparosRecibidosI[]>>(this.baseUrl + "ListadoNotificaciones", param);
     return this.http.get<GenericResponse<CatalogoMunicipioDestino[]>>(this.cat + "Municipio?idEstado=" + param.idEstado, { context: checkToken() });
   }
   // Método para obtener el catálogo de órganos destino
   getCatalogoMateriasEstadoDestino(param: EstadoSeleccionado): Observable<GenericResponse<CatalogoMateriasEstadoDestino[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     //return this.http.post<GenericResponse<ListadoAmparosRecibidosI[]>>(this.baseUrl + "ListadoNotificaciones", param);
     return this.http.get<GenericResponse<CatalogoMateriasEstadoDestino[]>>(this.exhortoEnviar + "ConsultarMateriasEstado?idEstado=" + param.idEstado, { context: checkToken() });
   }
@@ -76,25 +76,25 @@ export class ExhortosService {
   }
   // Método para obtener el catálogo municipios origen
   getCatalogoMunicipioOrigen(): Observable<GenericResponse<CatalogoMunicipioOrigen[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.get<GenericResponse<CatalogoMunicipioOrigen[]>>(this.cat + "Municipio?idEstado=20", { context: checkToken() });
   }
   // Método para obtener el catálogo de órganos destino
   getCatalogoEstadoDestino(): Observable<GenericResponse<CatalogoEstadoDestino[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.get<GenericResponse<CatalogoEstadoDestino[]>>(this.cat + "Estado", { context: checkToken() });
   }
   getCatalogojuzgadoOrigen(): Observable<GenericResponse<CatalogoJuzgadoOrigen[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.get<GenericResponse<CatalogoJuzgadoOrigen[]>>(this.Juz, { context: checkToken() });
   }
   getCatalogoGenero(): Observable<GenericResponse<CatalogoGenero[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.get<GenericResponse<CatalogoGenero[]>>(this.cat + "Genero", { context: checkToken() });
   }
   //Metodo para catologos de Materias
   getCatalogoMateria(): Observable<GenericResponse<CatalogoMateria[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.get<GenericResponse<CatalogoMateria[]>>(this.cat + "MateriasUI", { context: checkToken() });
   }
   //Obtener el tipo de documento
@@ -110,12 +110,12 @@ export class ExhortosService {
     );
   }
   getConfigMunicipioMateriaJuzgado(idMunicipio: number, idMateria: number): Observable<GenericResponse<ConfigMateriaJuzgado[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.get<GenericResponse<ConfigMateriaJuzgado[]>>(this.configMatJuz + "?idMunicipio=" + idMunicipio + "&idMateria=" + idMateria, { context: checkToken() });
   }
   //Detalles del exhorto enviado
   getExhortosEnviadosDetalle(idExhortoEnviado: any): Observable<GenericResponse<detalleExhortosEnviados>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.get<GenericResponse<detalleExhortosEnviados>>(this.exhortoEnviar + "DetalleExhortoEnviado?idExhortoEnviado=" + idExhortoEnviado, { context: checkToken() });
   }
   //Método para guardar documento de un exhorto enviado
@@ -129,7 +129,7 @@ export class ExhortosService {
     //return this.http.post(`${this.exhortoEnviar}GuardarRespuestaExhortoRecibidoArchivo`, formData, {context:checkToken()});
   }
   getCatalogoTipoParte(): Observable<GenericResponse<CatalogoTipoParte[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.get<GenericResponse<CatalogoTipoParte[]>>(this.cat + "TipoParte", { context: checkToken() });
   }
   //Método para obtener los archvios y mostrarlos
@@ -172,7 +172,7 @@ export class ExhortosService {
 
   //Metodo para obtener los municipios del estado de oaxaca
   getCatalogoMunicipioOaxaca(): Observable<GenericResponse<CatalogoMunicipioDestino[]>> {
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.get<GenericResponse<CatalogoMunicipioDestino[]>>(this.cat + "Municipio?idEstado=20", { context: checkToken() });
   }
 
@@ -196,19 +196,19 @@ export class ExhortosService {
   }
    // obtenemos el detalle de un exhorto
   getListadoEstatus(tipoTramite: number):Observable<GenericResponse<ListadoEstatus[]>>{
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
      //return this.http.get<GenericResponse<DetalleExhortoRecibidoResponseI>>(this.baseUrl + "DetalleExhortoRecibido?idExhortoRecibido="+idExhortoRecibido,{context:checkToken()});
      const url = `${this.cat}Estatus?tipoTramite=${tipoTramite}`;
      return this.http.get<GenericResponse<|[]>>(url,{context:checkToken()});
   }
   //Obtiene el listado de exhortos recibidos
   getExhortosRecibidosListado(param:UI_ParamlistadoExhortosRecibidosRequest): Observable<GenericResponse<ListadoExhortosRecibidosI>>{
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.post<GenericResponse<ListadoExhortosRecibidosI>>(this.baseUrl + "ListadoExhortosRecibidos",param,{context:checkToken()});
   }
   //Respuestas de los exhortos enviados
   getRespuestaExhortoEnviado(idExhortoEnviado:number):Observable<GenericResponse<respuestExhortoEnviado>>{
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.get<GenericResponse<respuestExhortoEnviado>>(this.apiUI+"/verRespuestaExhortoEnviado?idExhortoEnviado="+idExhortoEnviado,{context:checkToken()});
 
   }
@@ -275,7 +275,7 @@ export class ExhortosService {
   }
    // obtenemos el detalle de un exhorto
   getExhortosRecibidosDetalle(idExhortoRecibido: any):Observable<GenericResponse<DetalleExhortoRecibidoResponseI>>{
-    //const header = new HttpHeaders({'X-Api-Key': this.APIKEY});
+    //const Breadcrub = new HttpHeaders({'X-Api-Key': this.APIKEY});
      return this.http.get<GenericResponse<DetalleExhortoRecibidoResponseI>>(this.baseUrl + "DetalleExhortoRecibido?idExhortoRecibido="+idExhortoRecibido,{context:checkToken()});
   }
   // Método para obtener respuesta de exhortos

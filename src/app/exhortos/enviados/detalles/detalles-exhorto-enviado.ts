@@ -20,13 +20,13 @@ import { downloadBase64,base64ToFile } from '../../../shared/functions/utils';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import generateExEnviadosPDF from '../../reportes/rptExhortoEnviado';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { TagModule } from "primeng/tag";
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-DetallesExhortoEnviado',
-  imports: [Spinner, ToastModule, CommonModule, ButtonModule, TableModule, ConfirmDialog, DialogModule, PdfDialog, Breadcrub, TagModule],
+  imports: [Spinner, ToastModule, CommonModule, ButtonModule, TableModule, ConfirmDialog, DialogModule, PdfDialog, Header, TagModule],
   templateUrl: './detalles-exhorto-enviado.html',
   styleUrl: './detalles-exhorto-enviado.css',
   providers: [MessageService,ConfirmationService]
@@ -508,3 +508,5 @@ cargarActualizacionesDelExhorto()
       });
   }
 }
+
+

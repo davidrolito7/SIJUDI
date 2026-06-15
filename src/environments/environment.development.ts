@@ -30,7 +30,8 @@ export const environment = {
     //urlApiJuicioOralPenal:'https://localhost:7057/api/PromocionesJuicioOral'
 
     //* api notificaciones en tiempo real
-    urlApiNotificaciones: 'http://localhost:3000'
+    // urlApiNotificaciones: 'http://localhost:3000'
+    urlApiNotificaciones: 'https://pruebas.tribunaloaxaca.gob.mx/rabbitmq'
 };
 
 

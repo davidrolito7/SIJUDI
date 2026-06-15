@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject, Signal, signal } from '@angular/core';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { CONATRIB_ExhortosRecibidosArchivos, DetalleExhortoRecibidoResponseI, promocionExhortos, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -21,7 +21,7 @@ import { TokenService } from '../../../core/auth/service/token.service';
 
 @Component({
   selector: 'app-detallesExhortosRecibidos',
-  imports: [Breadcrub, IncompetenciaDialog, ButtonModule, ConfirmDialog, CommonModule, TableModule, PdfDialog, Toast, Spinner],
+  imports: [Header, IncompetenciaDialog, ButtonModule, ConfirmDialog, CommonModule, TableModule, PdfDialog, Toast, Spinner],
   templateUrl: './detalles-exhorto-recibido.html',
   styleUrl: './detalles-exhorto-recibido.css',
   providers:[MessageService,ConfirmationService]
@@ -656,3 +656,5 @@ export class DetallesExhortoRecibido {
       });
   }
 }
+
+

@@ -20,3 +20,4 @@ export class PdfDialog {
     this.visibleChange.emit(value);
   }
 }
+

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { Breadcrub } from '../breadcrub/breadcrub';
+import { Header } from '../header/header';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { usuario, datosFirma } from '../../interface/shared.interface';
@@ -21,7 +21,7 @@ import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-perfil-usuario',
 
-  imports: [ DatePipe, ReactiveFormsModule, FormsModule, ToastModule, Breadcrub, Button, ButtonModule, TabsModule, FileUploadModule, PasswordModule, TagModule, Spinner],
+  imports: [ DatePipe, ReactiveFormsModule, FormsModule, ToastModule, Header, Button, ButtonModule, TabsModule, FileUploadModule, PasswordModule, TagModule, Spinner],
   templateUrl: './perfil-usuario.html',
   styleUrl: './perfil-usuario.css',
   providers: [MessageService]
@@ -257,3 +257,5 @@ constructor(
   this.formularioFirma.patchValue({ file_pfx: null });
 }
 }
+
+

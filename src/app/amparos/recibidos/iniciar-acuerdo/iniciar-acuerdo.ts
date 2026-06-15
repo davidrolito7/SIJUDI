@@ -6,7 +6,7 @@ import {CommonModule} from '@angular/common';
 import { FormControl, FormGroup, Validators,ReactiveFormsModule } from '@angular/forms';
 import { CatalogoAmbito, CatalogoCircuitoResponse, CatalogoClasificacionResponse, CatalogoEstadoResponse, CatalogoMateriasResponse, CatalogoOrganoResponse, CatalogoTipoAsuntoResponse, CatalogoTipoOrganoResponse, CatalogoTipoProcedimientoRespose, ConsultarAsuntoRequest, NotifiViaConsultaAsuntoResponse } from '../../interfaces/amparos.models';
 import { Spinner } from "../../../shared/components/spinner/spinner";
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { AmparosService } from '../../services/amparo.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import ValidateForm from '../../../helpers/validateform';
@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-iniciar-acuerdo',
-  imports: [Spinner, Breadcrub, Button, Select, ReactiveFormsModule, InputTextModule, Toast, Dialog, TableModule,CommonModule],
+  imports: [Spinner, Header, Button, Select, ReactiveFormsModule, InputTextModule, Toast, Dialog, TableModule,CommonModule],
   templateUrl: './iniciar-acuerdo.html',
   styleUrl: './iniciar-acuerdo.css',
   providers:[MessageService, ConfirmationService]
@@ -524,3 +524,5 @@ constructor(
     return !this.acuerdoForm.value.tipoAsunto || this.tipoProcedimientoLista().length === 0;
   }
 }
+
+
