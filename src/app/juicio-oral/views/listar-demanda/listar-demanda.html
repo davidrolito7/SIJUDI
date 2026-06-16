@@ -1,10 +1,9 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 <div class="lg:sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-950">
 
-    <!-- HEADER -->
     <app-header></app-header>
+    <app-breadcrub></app-breadcrub>
 
-    <!-- TÍTULO DE PÁGINA -->
     <div class="mb-2">
         <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
             Demandas electrónicas
@@ -15,7 +14,7 @@
     </div>
 
     <!-- SECCIÓN DE FILTROS -->
-    <div class="border border-surface border-b-0 rounded-t-2xl bg-surface-50 dark:bg-surface-900 p-4 shadow-sm">
+    <div class="border border-dashed border-surface border-b-0 rounded-t-2xl bg-surface-50 dark:bg-surface-900 p-4 ">
         <form (ngSubmit)="aplicarFiltros()" aria-label="Filtros de búsqueda">
             <div class="grid grid-cols-12 gap-4 w-full items-end">
                 <!-- Folio -->
@@ -60,8 +59,8 @@
 </div>
 
 <!-- SECCIÓN DE LA TABLA -->
-<div class="border border-surface rounded-b-2xl bg-surface-0 dark:bg-surface-950 shadow-sm overflow-hidden mb-4 p-0">
-    <p-table #dtInicio stripedRows [value]="inicios()" [rows]="5" [rowsPerPageOptions]="[5, 10, 25, 50]"
+<div class="border border-dashed border-surface rounded-b-2xl bg-surface-0 dark:bg-surface-950 shadow-sm overflow-hidden mb-4 p-0">
+    <p-table class="personalizado"  #dtInicio stripedRows [value]="inicios()" [rows]="5" [rowsPerPageOptions]="[5, 10, 25, 50]"
         [paginator]="true" [lazy]="true" [totalRecords]="totalRecords" (onLazyLoad)="onLazyLoad($event)"
         [globalFilterFields]="[
     'folio',
@@ -69,7 +68,7 @@
     'cat_via_materia.cat_via.descripcion',
     'historial_estado.0.estado.descripcion'
   ]">
-        <ng-template #caption>
+        <!-- <ng-template #caption>
             <div class="flex items-center justify-end">
                 <p-iconfield iconPosition="left">
                     <p-inputicon><i class="pi pi-search"></i></p-inputicon>
@@ -77,9 +76,9 @@
                         placeholder="Buscar en la tabla..." aria-label="Buscar" class="w-full md:w-64" />
                 </p-iconfield>
             </div>
-        </ng-template>
+        </ng-template> -->
 
-        <ng-template #header class="bg-red-500">
+        <ng-template #header>
             <tr>
                 <th scope="col">No. Expediente</th>
                 <th scope="col">Juzgado</th>

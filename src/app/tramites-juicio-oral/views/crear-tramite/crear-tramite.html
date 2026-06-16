@@ -4,6 +4,7 @@
 
     <!-- HEADER -->
     <app-header></app-header>
+    <app-breadcrub></app-breadcrub>
 
     <!-- BUSQUEDA -->
     <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
@@ -62,9 +63,9 @@
         <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
 
         <div class="flex items-center">
-            <p-fileupload id="fileUpload" mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
-                accept="application/pdf" maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true"
-                [customUpload]="true" chooseLabel="Cargar" />
+            <p-fileupload #fileUploadRef id="fileUpload" mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
+                accept="application/pdf" [maxFileSize]="maxFileSizeBytes" [fileLimit]="maxAnexos"
+                (onSelect)="onAnexosSelect($event)" [auto]="true" [customUpload]="true" chooseLabel="Cargar" />
 
             <!-- <p-button routerLink="/form" [outlined]="true" class="mr-3">
                 <i pButtonIcon class="pi pi-user-plus"></i>
@@ -116,7 +117,7 @@
             <div id="observaciones" class="col-span-6 sm:col-span-6" [formGroup]="documentosForm">
                 <label class="block mb-2 text-sm font-medium">Observaciones</label>
                 <textarea  pTextarea rows="5" formControlName="observaciones" name="observaciones" id="observaciones" fluid
-                    class=" text-sm" placeholder="Escribe algo aquí..."></textarea>
+                    class=" text-sm" maxlength="450" placeholder="Escribe algo aquí..."></textarea>
             </div>
 
             <!-- <div class="col-span-6 sm:col-span-1 flex justify-end">
@@ -219,6 +220,16 @@
 
 <app-confirm-dialog key="info" title="No hay conincidencias" message="La causa o el juzgado es incorrecto."
     icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
+</app-confirm-dialog>
+
+<app-confirm-dialog key="archivo-peso" title="Archivo demasiado grande"
+    message="Solo se permiten archivos PDF de hasta 10 MB." icon="pi pi-info" circleClass="bg-blue-500"
+    acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
+</app-confirm-dialog>
+
+<app-confirm-dialog key="archivo-limite" title="Límite de archivos"
+    message="Solo puedes adjuntar un máximo de 10 documentos." icon="pi pi-info" circleClass="bg-blue-500"
+    acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
 </app-confirm-dialog>
 
 @if (busquedaForm.valid && documentosForm.valid && documentosAnexados.length > 0) {

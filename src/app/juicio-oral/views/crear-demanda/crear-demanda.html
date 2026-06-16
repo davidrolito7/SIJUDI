@@ -2,20 +2,29 @@
 
 <div class="sticky top-0 z-50 flex flex-col sm:bg-surface-0 dark:bg-surface-950">
     <app-header></app-header>
+    <app-breadcrub></app-breadcrub>
+    <!-- <h2
+        class="font-normal text-2xl sm:font-semibold text-surface-0 sm:text-surface-800  dark:text-surface-200 dark:sm:bg-surface-950 tracking-tight pb-2">
+    </h2> -->
+    <div class="mb-2">
+        <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
+            Crear Demanda de Primera Instancia
+        </h1>
+        <p class="text-surface-500 dark:text-surface-400 mt-1">
+            Capture la información requerida según corresponda su demanda.
+        </p>
+    </div>
+
 </div>
-<app-breadcrub></app-breadcrub>
-<h2 class="font-normal text-2xl sm:font-semibold text-surface-0 sm:text-surface-800  dark:text-surface-200 dark:sm:bg-surface-950 tracking-tight pb-2">
-    Crear Demanda de Primera Instancia
-</h2>
 
 <!--* FORMULARIO GENERALES  -->
-<div class="grid grid-cols-1 xl:grid-cols-12 xl:gap-4">
-    <div class="xl:col-span-8 min-w-0 ">
+<div class="grid grid-cols-1 xl:grid-cols-12 xl:gap-4 items-stretch">
+    <div class="xl:col-span-8 min-w-0 flex">
         <div id="generales"
-            class="relative z-0 border border-dashed rounded-2xl mb-4 p-4 dark:from-surface-900 dark:to-surface-950 dark:border-surface-700"
+            class="relative z-0 flex-1 border border-dashed rounded-2xl mb-4 p-4 dark:from-surface-900 dark:to-surface-950 dark:border-surface-700"
             [ngClass]="formulario.valid
-  ? 'bg-gradient-to-b from-emerald-100 to-white border-emerald-300'
-  : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
+              ? 'bg-gradient-to-b from-emerald-100 to-white border-emerald-300'
+              : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
             <div class="flex min-h-[44px] items-center gap-4 mb-4">
                 <div class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
                     <span class="text-blue-600 font-bold text-lg">1</span>
@@ -83,12 +92,12 @@
         </div>
     </div>
 
-    <div class="xl:col-span-4">
+    <div class="xl:col-span-4 flex">
         <div id="demanda"
-            class="relative z-0 border border-dashed rounded-2xl mb-4 p-4 dark:from-surface-900 dark:to-surface-950 dark:border-surface-700"
+            class="relative z-0 flex-1 border border-dashed rounded-2xl mb-4 p-4 dark:from-surface-900 dark:to-surface-950 dark:border-surface-700"
             [ngClass]="demandaForm.valid 
-            ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300' 
-            : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
+              ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300' 
+              : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
 
             <!-- Encabezado limpio: se conserva siempre -->
             <div class="flex min-h-[44px] items-center gap-4 mb-4">
@@ -113,12 +122,12 @@
                 @if (!archivoDemanda) {
                 <!-- Sin archivo: toda el área es carga -->
                 <label for="documentoDemanda"
-                    class="relative flex min-h-[258px] w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-dashed border-blue-300 bg-white/80 dark:bg-surface-900/80 transition hover:border-blue-500 hover:bg-blue-50/70 dark:hover:bg-surface-800"
+                    class="relative flex min-h-[232px] w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-dashed border-blue-300 bg-white/80 dark:bg-surface-900/80 transition hover:border-blue-500 hover:bg-blue-50/70 dark:hover:bg-surface-800"
                     (dragover)="onDemandaDragOver($event)" (dragleave)="onDemandaDragLeave($event)"
                     (drop)="onDemandaDrop($event)"
                     [ngClass]="isDemandaDragOver ? 'border-blue-500 bg-blue-50 dark:bg-surface-800' : ''">
 
-                    <div class="flex min-h-[258px] flex-col items-center justify-center px-4 py-6 text-center">
+                    <div class="flex min-h-[232px] flex-col items-center justify-center px-4 py-4 text-center">
                         <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10">
                             <i class="pi pi-cloud-upload text-2xl text-blue-500"></i>
                         </div>
@@ -142,7 +151,6 @@
                         </p>
                     </div>
                 </label>
-
                 <div *ngIf="demandaForm.get('documentoDemanda')?.invalid && demandaForm.get('documentoDemanda')?.touched"
                     class="mt-2 text-red-500 text-sm">
                     Debe cargar el documento de demanda.
@@ -225,7 +233,7 @@
                                 class="block mb-2 text-sm font-medium">Observaciones</label>
 
                             <textarea pTextarea formControlName="demandaObservaciones" fluid appendTo="body"
-                                placeholder="Observaciones sobre el documento de demanda..." rows="5"
+                                placeholder="Observaciones sobre el documento de demanda..." rows="4"
                                 maxLength="200"></textarea>
                         </div>
                     </div>
@@ -1063,4 +1071,3 @@
 
 <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="visibleDocumento">
 </app-pdf-dialog>
-

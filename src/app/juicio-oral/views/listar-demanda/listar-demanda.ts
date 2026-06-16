@@ -32,6 +32,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 import { DetalleDemandaResponse, ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { TooltipModule } from 'primeng/tooltip';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-listar-demanda',
@@ -54,8 +55,9 @@ import { TooltipModule } from 'primeng/tooltip';
     TooltipModule,
     // Shared components
     Header,
-    Spinner
-  ],
+    Spinner,
+    Breadcrub
+],
   templateUrl: './listar-demanda.html',
   styleUrl: './listar-demanda.css',
   providers: [MessageService],
