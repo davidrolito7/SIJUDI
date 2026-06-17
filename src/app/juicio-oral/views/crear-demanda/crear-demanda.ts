@@ -52,18 +52,18 @@ export class CrearDemanda implements OnInit {
 
   //* === DATOS DEL USUARIO Y CATÁLOGOS ===
   catMaterias: CatMateria[] = [];
-  catAcciones: { id: number; desc: string }[] = [
-    { id: 1, desc: 'Acción 1' },
-    { id: 2, desc: 'Acción 2' },
-    { id: 3, desc: 'Acción 3' },
-    { id: 4, desc: 'Otro' }
+  catAcciones: { idAccion: number; desc: string }[] = [
+    { idAccion: 1, desc: 'Acción 1' },
+    { idAccion: 2, desc: 'Acción 2' },
+    { idAccion: 3, desc: 'Acción 3' },
+    { idAccion: 4, desc: 'Otro' }
   ];
-  catJuzgado: { id: number; desc: string }[] = [
-    { id: 1, desc: 'Juzgado Mixto de Zimatlan' },
-    { id: 2, desc: 'Juzgado 1° Civil de Huajuapan' },
-    { id: 3, desc: 'Juzgado 2º Civil de Tuxtepec' },
-    { id: 4, desc: 'Juzgado Mixto de Ixtlán' },
-    { id: 5, desc: 'Oficialia general del centro' },
+  catJuzgado: { idArea: number; desc: string }[] = [
+    { idArea: 80, desc: 'JUZGADO PRIMERO CIVIL DEL DISTRITO JUDICIAL DEL CENTRO' },
+    { idArea: 66, desc: 'JUZGADO FAMILIAR Y CIVIL DE SANTA CRUZ HUATULCO, ESPECIALIZADO EN ORALIDAD MERCANTIL Y LABORAL DEL CIRCUITO JUDICIAL DE LA COSTA' },
+    { idArea: 3, desc: 'Juzgado 2º Civil de Tuxtepec' },
+    { idArea: 4, desc: 'Juzgado Mixto de Ixtlán' },
+    { idArea: 5, desc: 'Oficialia general del centro' },
 
   ];
   catTipoVias: CatTipoVia[] = [];
@@ -75,6 +75,8 @@ export class CrearDemanda implements OnInit {
   private readonly tiposParteActor = [1, 2, 3, 4, 5, 21, 22, 24, 25];
   private readonly tiposParteDemandado = [7, 9, 10, 11, 14];
   private readonly sexoMoral = 3;
+  private readonly grupoVulnerableDiscapacidad = 2;
+  private readonly grupoVulnerableLenguaje = 3;
 
   //* === FORMULARIOS ===
   formulario!: FormGroup;
@@ -122,9 +124,9 @@ export class CrearDemanda implements OnInit {
   resumenAnexos: { descripcion: string; cantidad: string }[] = [];
 
   catGruposVulnerables = [
-    { id: 'NINGUNO', desc: 'Ninguno' },
-    { id: 'DISCAPACIDAD', desc: 'Discapacidad' },
-    { id: 'LENGUAJE', desc: 'Lenguaje Indígena' }
+    { id: 1, desc: 'Ninguno' },
+    { id: 2, desc: 'Discapacidad' },
+    { id: 3, desc: 'Lenguaje Indígena' }
   ];
 
   catDiscapacidades = [
@@ -191,14 +193,14 @@ export class CrearDemanda implements OnInit {
       apoderadoIdCatSexo: [{ value: null, disabled: true }],
       direccion: ['', [Validators.required, Validators.maxLength(250)]],
       correo: ['', [Validators.required, Validators.email, Validators.maxLength(250)]],
-      telefono: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10)]],
+      telefono: ['', [Validators.pattern(/^\d{10}$/)]],
       esMenorEdad: [false],
       idCatSexo: [null, Validators.required],
       idCatTipoParte: [null, Validators.required],
       fechaNacimiento: [''],
-      grupoVulnerable: [[], [Validators.required, Validators.minLength(1)]],
-      idDiscapacidad: [null],
-      idLenguaje: [null]
+      grupoVulnerable: [[], Validators.required],
+      idDiscapacidad: [[]],
+      idLenguaje: [[]]
     });
 
     this.declaracionAnexoForm = this.fb.group({
@@ -218,7 +220,7 @@ export class CrearDemanda implements OnInit {
     });
 
     this.firmaForm = this.fb.group({
-      password_Efirma: ['', [Validators.required, Validators.maxLength(4)]],
+      password_Efirma: ['', [Validators.required, Validators.maxLength(100)]],
     });
   }
 
@@ -312,23 +314,31 @@ export class CrearDemanda implements OnInit {
   }
 
   private configurarSuscripcionGrupoVulnerable(): void {
-    this.parteForm.get('grupoVulnerable')?.valueChanges.subscribe((vals: string[]) => {
+    this.parteForm.get('grupoVulnerable')?.valueChanges.subscribe((vals: number[]) => {
       const discCtrl = this.parteForm.get('idDiscapacidad');
       const lengCtrl = this.parteForm.get('idLenguaje');
       const selected = vals || [];
 
-      if (selected.includes('DISCAPACIDAD')) {
-        discCtrl?.setValidators([Validators.required]);
-      } else {
-        discCtrl?.clearValidators();
-        discCtrl?.setValue(null, { emitEvent: false });
+      if (selected.includes(1) && selected.length > 1) {
+        const valoresNormalizados = selected.filter(item => item !== 1);
+        this.parteForm.get('grupoVulnerable')?.setValue(valoresNormalizados, { emitEvent: false });
+        vals = valoresNormalizados;
       }
 
-      if (selected.includes('LENGUAJE')) {
-        lengCtrl?.setValidators([Validators.required]);
+      const selectedValues = vals || [];
+
+      if (selectedValues.includes(this.grupoVulnerableDiscapacidad)) {
+        discCtrl?.setValidators([Validators.required, Validators.minLength(1)]);
+      } else {
+        discCtrl?.clearValidators();
+        discCtrl?.setValue([], { emitEvent: false });
+      }
+
+      if (selectedValues.includes(this.grupoVulnerableLenguaje)) {
+        lengCtrl?.setValidators([Validators.required, Validators.minLength(1)]);
       } else {
         lengCtrl?.clearValidators();
-        lengCtrl?.setValue(null, { emitEvent: false });
+        lengCtrl?.setValue([], { emitEvent: false });
       }
 
       discCtrl?.updateValueAndValidity({ emitEvent: false });
@@ -373,11 +383,11 @@ export class CrearDemanda implements OnInit {
     grupoVulnerableCtrl?.disable({ emitEvent: false });
 
     discapacidadCtrl?.clearValidators();
-    discapacidadCtrl?.setValue(null, { emitEvent: false });
+    discapacidadCtrl?.setValue([], { emitEvent: false });
     discapacidadCtrl?.disable({ emitEvent: false });
 
     lenguajeCtrl?.clearValidators();
-    lenguajeCtrl?.setValue(null, { emitEvent: false });
+    lenguajeCtrl?.setValue([], { emitEvent: false });
     lenguajeCtrl?.disable({ emitEvent: false });
 
     apoderadoNombreCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
@@ -519,14 +529,14 @@ export class CrearDemanda implements OnInit {
       apoderadoIdCatSexo: valores.apoderadoIdCatSexo ?? null,
       direccion: (valores.direccion ?? '').toUpperCase(),
       correo: (valores.correo ?? '').toUpperCase(),
-      telefono: valores.telefono ?? '',
+      telefono: (valores.telefono ?? '').trim() || undefined,
       esMenorEdad: Boolean(valores.esMenorEdad),
-      idCatSexo: valores.idCatSexo,
-      idCatTipoParte: valores.idCatTipoParte,
-      fechaNacimiento: valores.fechaNacimiento ?? null,
+      idCatSexo: valores.idCatSexo != null ? Number(valores.idCatSexo) : null,
+      idCatTipoParte: valores.idCatTipoParte != null ? Number(valores.idCatTipoParte) : null,
+      fechaNacimiento: this.formatFechaNacimiento(valores.fechaNacimiento),
       grupoVulnerable: valores.grupoVulnerable ?? [],
-      idDiscapacidad: valores.idDiscapacidad ?? null,
-      idLenguaje: valores.idLenguaje ?? null,
+      idDiscapacidad: this.normalizeNumberArray(valores.idDiscapacidad),
+      idLenguaje: this.normalizeNumberArray(valores.idLenguaje),
     };
 
     const normalizar = (s: string) => (s ?? '').replace(/\s+/g, ' ').trim().toUpperCase();
@@ -604,20 +614,22 @@ export class CrearDemanda implements OnInit {
     this.listaPartes.splice(index, 1);
   }
 
-  getGrupoVulnerableDescripcion(grupos?: string[]): string {
+  getGrupoVulnerableDescripcion(grupos?: Array<string | number>): string {
     if (!grupos?.length) return 'NINGUNO';
 
     return grupos
-      .map(grupo => this.catGruposVulnerables.find(item => item.id === grupo)?.desc ?? grupo)
+      .map(grupo => this.getGrupoVulnerableLabel(grupo))
       .join(', ');
   }
 
-  getDiscapacidadDescripcion(id?: number | null): string {
-    return this.catDiscapacidades.find(item => item.id === Number(id))?.desc ?? '';
+  getDiscapacidadDescripcion(id?: number[] | number | null): string {
+    const ids = this.normalizeNumberArray(Array.isArray(id) ? id : id != null ? [id] : []);
+    return ids.map(valor => this.catDiscapacidades.find(item => item.id === valor)?.desc ?? '').filter(Boolean).join(', ');
   }
 
-  getLenguajeDescripcion(id?: number | null): string {
-    return this.catLenguas.find(item => item.id === Number(id))?.desc ?? '';
+  getLenguajeDescripcion(id?: number[] | number | null): string {
+    const ids = this.normalizeNumberArray(Array.isArray(id) ? id : id != null ? [id] : []);
+    return ids.map(valor => this.catLenguas.find(item => item.id === valor)?.desc ?? '').filter(Boolean).join(', ');
   }
 
   getFechaNacimiento(fecha?: Date | string | null): string {
@@ -742,11 +754,24 @@ export class CrearDemanda implements OnInit {
   }
 
   onAnexoSelect(event: any) {
-    this.archivoAnexo = event.files?.[0];
+    const archivo = event.files?.[0];
+    if (!archivo) return;
+
+    if (!this.isPdfValido(archivo, 'anexo')) {
+      this.archivoAnexo = undefined;
+      this.limpiarUploaderAnexo();
+      return;
+    }
+
+    this.archivoAnexo = archivo;
   }
 
   onDemandaSelect(event: any) {
     const selectedFile = event?.files?.[0] ?? event?.target?.files?.[0] ?? null;
+    if (selectedFile && !this.isPdfValido(selectedFile, 'demanda')) {
+      this.quitarDemanda();
+      return;
+    }
 
     this.archivoDemanda = selectedFile ?? undefined;
 
@@ -926,26 +951,26 @@ export class CrearDemanda implements OnInit {
 
   confirmarResumenEnvio() {
     this.visibleResumenEnvio = false;
+    this.enviarFormulario();
 
-    this.confirmationService.confirm({
-      key: 'success',
-      message: 'El resumen se confirmó correctamente.',
-      accept: () => {
-        this.visibleResumenEnvio = false;
-      },
-      reject: () => {
-        this.visibleResumenEnvio = false;
-      }
-    });
+    // this.confirmationService.confirm({
+    //   key: 'success',
+    //   accept: () => {
+    //     this.visibleResumenEnvio = false;
+    //   },
+    //   reject: () => {
+    //     this.visibleResumenEnvio = false;
+    //   }
+    // });
   }
 
   private construirResumenEnvio() {
     const values = this.formulario.getRawValue();
 
-    const juzgado = this.catJuzgado.find(j => Number(j.id) === Number(values.cveMunicipio))?.desc ?? 'N/A';
+    const juzgado = this.catJuzgado.find(j => Number(j.idArea) === Number(values.cveMunicipio))?.desc ?? 'N/A';
     const materia = this.catMaterias.find(m => Number(m.IdCatMateria) === Number(values.idCatMateria))?.Descripcion ?? 'N/A';
     const via = this.catTipoVias.find(v => Number(v.idCatTipoVia) === Number(values.idCatTipoVia))?.descripcion ?? 'N/A';
-    const accion = this.catAcciones.find(a => Number(a.id) === Number(values.accionAEjecutar))?.desc ?? 'N/A';
+    const accion = this.catAcciones.find(a => Number(a.idAccion) === Number(values.accionAEjecutar))?.desc ?? 'N/A';
 
     this.resumenGenerales = [
       { label: 'Juzgado', value: juzgado },
@@ -979,9 +1004,14 @@ export class CrearDemanda implements OnInit {
     const formValue = this.formulario.getRawValue();
     const formData = new FormData();
 
-    Object.entries(formValue).forEach(([key, value]) => {
-      formData.append(key, String(value ?? ''));
-    });
+    formData.append('idArea', String(formValue.cveMunicipio ?? ''));
+    formData.append('idCatMateria', String(formValue.idCatMateria ?? ''));
+    formData.append('idCatTipoVia', String(formValue.idCatTipoVia ?? ''));
+    formData.append('descripcionDemanda', String(formValue.descripcionDemanda ?? ''));
+
+    if (formValue.accionAEjecutar != null && formValue.accionAEjecutar !== '') {
+      formData.append('idAccion', String(formValue.accionAEjecutar));
+    }
 
     if (this.firmaVerificada) {
       formData.append('password_Efirma', this.firmaForm.value.password_Efirma ?? '');
@@ -993,21 +1023,34 @@ export class CrearDemanda implements OnInit {
 
 
     this.listaPartes.forEach((parte, index) => {
-      const opcionales = ['apellidoPaterno', 'apellidoMaterno', 'apoderadoNombre', 'apoderadoApellidoPaterno', 'apoderadoApellidoMaterno', 'apoderadoIdCatSexo'];
-
-      Object.entries(parte).forEach(([key, value]) => {
-        if (key === 'descripcionTipoParte') return;
-        if (opcionales.includes(key) && (!value || value.toString().trim() === '')) return;
-
-        formData.append(`partes[${index}][${key}]`, String(value));
-      });
+      this.appendNullableScalar(formData, `partes[${index}][nombre]`, parte.nombre);
+      this.appendNullableScalar(formData, `partes[${index}][apellidoPaterno]`, parte.apellidoPaterno);
+      this.appendNullableScalar(formData, `partes[${index}][apellidoMaterno]`, parte.apellidoMaterno);
+      this.appendNullableScalar(formData, `partes[${index}][direccion]`, parte.direccion);
+      this.appendNullableScalar(formData, `partes[${index}][correo]`, parte.correo);
+      this.appendNullableScalar(formData, `partes[${index}][telefono]`, parte.telefono);
+      this.appendBoolean(formData, `partes[${index}][esMenorEdad]`, parte.esMenorEdad);
+      this.appendNullableScalar(formData, `partes[${index}][idCatSexo]`, parte.idCatSexo);
+      this.appendNullableScalar(formData, `partes[${index}][idCatTipoParte]`, parte.idCatTipoParte);
+      this.appendNullableScalar(formData, `partes[${index}][fechaNacimiento]`, parte.fechaNacimiento);
+      this.appendBoolean(formData, `partes[${index}][moral]`, parte.moral ?? false);
+      this.appendNullableScalar(formData, `partes[${index}][apoderadoNombre]`, parte.apoderadoNombre);
+      this.appendNullableScalar(formData, `partes[${index}][apoderadoApellidoPaterno]`, parte.apoderadoApellidoPaterno);
+      this.appendNullableScalar(formData, `partes[${index}][apoderadoApellidoMaterno]`, parte.apoderadoApellidoMaterno);
+      this.appendNullableScalar(formData, `partes[${index}][apoderadoIdCatSexo]`, parte.apoderadoIdCatSexo);
+      this.appendIntegerArray(formData, `partes[${index}][grupoVulnerable]`, this.mapGrupoVulnerableToApi(parte.grupoVulnerable));
+      this.appendIntegerArray(formData, `partes[${index}][idDiscapacidad]`, parte.idDiscapacidad);
+      this.appendIntegerArray(formData, `partes[${index}][idLenguaje]`, parte.idLenguaje);
     });
 
     this.anexosDeclarados.forEach((anexo, index) => {
-      Object.entries(anexo).forEach(([key, value]) => {
-        if (key === 'descripcion') return;
-        formData.append(`anexosDeclarados[${index}][${key}]`, String(value ?? ''));
-      });
+      formData.append(`anexosDeclarados[${index}][idCatTipoDocumento]`, String(anexo.idCatTipoDocumento));
+      formData.append(`anexosDeclarados[${index}][cantidad]`, String(anexo.cantidad));
+      formData.append(`anexosDeclarados[${index}][fojas]`, String(anexo.fojas));
+      this.appendBoolean(formData, `anexosDeclarados[${index}][esValor]`, anexo.esValor);
+      this.appendNullableScalar(formData, `anexosDeclarados[${index}][valor]`, anexo.valor);
+      this.appendNullableScalar(formData, `anexosDeclarados[${index}][observaciones]`, anexo.observaciones);
+      formData.append(`anexosDeclarados[${index}][archivo]`, anexo.archivo, anexo.archivo.name);
     });
 
     this.juicioService.crearDemanda(formData).subscribe({
@@ -1065,7 +1108,7 @@ export class CrearDemanda implements OnInit {
     const partes = this.listaPartes ?? [];
     const anexos = this.anexosDeclarados ?? [];
 
-    if (partes.length < 1 || anexos.length < 1) return false;
+    if (partes.length < 2 || anexos.length < 1) return false;
 
     const tieneActor = partes.some(p => this.tiposParteActor.includes(Number(p.idCatTipoParte)));
     const tieneDemandado = partes.some(p => this.tiposParteDemandado.includes(Number(p.idCatTipoParte)));
@@ -1108,11 +1151,11 @@ export class CrearDemanda implements OnInit {
   isCondicionesParticularesCompletas(): boolean {
     if (this.parteForm.get('moral')?.value) return false;
 
-    const grupoVulnerable = this.parteForm.get('grupoVulnerable')?.valid ?? false;
+    const grupoVulnerable = this.parteForm.get('grupoVulnerable')?.valid ?? true;
     const fechaNacimiento = this.parteForm.get('fechaNacimiento')?.valid ?? false;
     const esMenorEdad = this.parteForm.get('esMenorEdad')?.valid ?? false;
-    const requiereDiscapacidad = this.parteForm.get('grupoVulnerable')?.value?.includes('DISCAPACIDAD');
-    const requiereLenguaje = this.parteForm.get('grupoVulnerable')?.value?.includes('LENGUAJE');
+    const requiereDiscapacidad = this.parteForm.get('grupoVulnerable')?.value?.includes(this.grupoVulnerableDiscapacidad);
+    const requiereLenguaje = this.parteForm.get('grupoVulnerable')?.value?.includes(this.grupoVulnerableLenguaje);
     const discapacidad = !requiereDiscapacidad || (this.parteForm.get('idDiscapacidad')?.valid ?? false);
     const lenguaje = !requiereLenguaje || (this.parteForm.get('idLenguaje')?.valid ?? false);
 
@@ -1150,6 +1193,90 @@ export class CrearDemanda implements OnInit {
   shouldShowError(controlName: string, form: FormGroup = this.parteForm): boolean {
     const control = form.get(controlName);
     return control ? control.invalid && (control.dirty || this.formEnviado) : false;
+  }
+
+  private normalizeNumberArray(value: unknown): number[] {
+    if (!Array.isArray(value)) return [];
+
+    return value
+      .map(item => Number(item))
+      .filter(item => !Number.isNaN(item));
+  }
+
+  private formatFechaNacimiento(value: unknown): string | null {
+    if (!value) return null;
+
+    const fecha = value instanceof Date ? value : new Date(String(value));
+    if (Number.isNaN(fecha.getTime())) return String(value);
+
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private getGrupoVulnerableLabel(grupo: string | number): string {
+    if (grupo === 'NINGUNO' || Number(grupo) === 1) return 'Ninguno';
+    if (grupo === 'DISCAPACIDAD' || Number(grupo) === 2) return 'Discapacidad';
+    if (grupo === 'LENGUAJE' || Number(grupo) === 3) return 'Lenguaje Indigena';
+    return String(grupo);
+  }
+
+  private mapGrupoVulnerableToApi(grupos?: Array<string | number>): number[] {
+    if (!grupos?.length) return [];
+
+    return grupos
+      .map(grupo => {
+        if (grupo === 'NINGUNO') return 1;
+        if (grupo === 'DISCAPACIDAD') return 2;
+        if (grupo === 'LENGUAJE') return 3;
+        return Number(grupo);
+      })
+      .filter(grupo => !Number.isNaN(grupo));
+  }
+
+  private appendNullableScalar(formData: FormData, key: string, value: unknown): void {
+    if (value == null) return;
+
+    const normalized = typeof value === 'string' ? value.trim() : value;
+    if (normalized === '') return;
+
+    formData.append(key, String(normalized));
+  }
+
+  private appendBoolean(formData: FormData, key: string, value: boolean): void {
+    formData.append(key, value ? '1' : '0');
+  }
+
+  private appendIntegerArray(formData: FormData, key: string, values?: number[] | null): void {
+    values?.forEach((value, index) => {
+      formData.append(`${key}[${index}]`, String(value));
+    });
+  }
+
+  private isPdfValido(file: File, tipoDocumento: 'demanda' | 'anexo'): boolean {
+    const esPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    const maxSizeBytes = 20 * 1024 * 1024;
+
+    if (!esPdf) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Archivo invÃ¡lido',
+        detail: `El archivo de ${tipoDocumento} debe estar en formato PDF.`
+      });
+      return false;
+    }
+
+    if (file.size > maxSizeBytes) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Archivo demasiado grande',
+        detail: `El archivo de ${tipoDocumento} no debe exceder 20 MB.`
+      });
+      return false;
+    }
+
+    return true;
   }
 
   // =============================================

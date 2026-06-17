@@ -19,10 +19,11 @@ import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { PantallasService } from '../../services/pantallas.service';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-listar-expediente',
-  imports: [CommonModule, FormsModule, DatePickerModule, Header, Spinner, ButtonModule, SelectModule, InputMaskModule, TableModule, IconFieldModule, InputIconModule, TagModule, InputTextModule, ToastModule],
+  imports: [CommonModule, FormsModule, DatePickerModule, Header, Spinner, ButtonModule, SelectModule, InputMaskModule, TableModule, IconFieldModule, InputIconModule, TagModule, InputTextModule, ToastModule, Breadcrub],
   templateUrl: './listar-expediente.html',
   styleUrl: './listar-expediente.css',
   providers: [MessageService]

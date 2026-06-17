@@ -6,6 +6,7 @@
 
     <!-- HEADER -->
     <app-header></app-header>
+    <app-breadcrub></app-breadcrub>
 
     <!-- DETALLE -->
     <div class="mt-2 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl">
@@ -59,7 +60,7 @@
                         {{detalleDemanda.expediente.NumExpediente}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Juzgado: </b>
-                        {{detalleDemanda.expediente.juzgado.Descripcion}}
+                        {{detalleDemanda.expediente.area.Nombre}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Fecha recepción:</b>
                         {{ detalleDemanda.entidad.fechaHoraRecepcion| date:'yyyy-MM-dd' }}

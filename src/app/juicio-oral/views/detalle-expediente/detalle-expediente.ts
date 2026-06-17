@@ -22,11 +22,12 @@ import { Spinner } from "../../../shared/components/spinner/spinner";
 import { TokenService } from '../../../core/auth/service/token.service';
 import { SpeedDialModule } from 'primeng/speeddial';
 import { MenuItem } from 'primeng/api';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-detalle-expediente',
   imports: [CommonModule, RouterModule, DatePickerModule, FormsModule, RadioButtonModule, ButtonModule, TagModule,
-    IconFieldModule, InputIconModule, TableModule, SelectModule, InputTextModule, InputMaskModule, TooltipModule, Header, Spinner, SpeedDialModule],
+    IconFieldModule, InputIconModule, TableModule, SelectModule, InputTextModule, InputMaskModule, TooltipModule, Header, Spinner, SpeedDialModule, Breadcrub],
   templateUrl: './detalle-expediente.html',
   styleUrl: './detalle-expediente.css',
 })

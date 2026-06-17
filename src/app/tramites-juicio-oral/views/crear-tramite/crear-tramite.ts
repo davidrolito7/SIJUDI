@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, signal, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
@@ -14,7 +14,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { TextareaModule } from 'primeng/textarea';
-import { FileSelectEvent, FileUpload, FileUploadModule } from 'primeng/fileupload';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { ConfirmationService, MenuItem } from 'primeng/api';
@@ -32,7 +31,7 @@ import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
   selector: 'app-crear-tramite',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, TextareaModule, FileUploadModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Header, ConfirmDialogModule,
+    Spinner, TextareaModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Header, ConfirmDialogModule,
     PdfDialog,
     Breadcrub
 ],
@@ -43,7 +42,7 @@ import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 export class CrearTramite implements OnInit, AfterViewInit {
   readonly maxFileSizeBytes = 10 * 1024 * 1024;
   readonly maxAnexos = 10;
-  @ViewChild('fileUploadRef') fileUpload?: FileUpload;
+  @ViewChild('anexosInput') anexosInput?: ElementRef<HTMLInputElement>;
 
   //* === FORMULARIOS ===
   busquedaForm!: FormGroup;
@@ -60,6 +59,7 @@ export class CrearTramite implements OnInit, AfterViewInit {
   isLoading: boolean = false;
   mostrarAddDocumentos = signal(false);
   mostrarDocumento = false;
+  isAnexosDragOver = false;
 
 
   //* === OTROS  ===
@@ -171,8 +171,29 @@ export class CrearTramite implements OnInit, AfterViewInit {
     );
   }
 
-  onAnexosSelect(event: FileSelectEvent) {
-    const archivosSeleccionados = this.normalizeSelectedFiles(event.files);
+  onAnexosInputChange(event: Event) {
+    const input = event.target as HTMLInputElement | null;
+    this.processSelectedFiles(input?.files);
+  }
+
+  onAnexosDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.isAnexosDragOver = true;
+  }
+
+  onAnexosDragLeave(event: DragEvent) {
+    event.preventDefault();
+    this.isAnexosDragOver = false;
+  }
+
+  onAnexosDrop(event: DragEvent) {
+    event.preventDefault();
+    this.isAnexosDragOver = false;
+    this.processSelectedFiles(event.dataTransfer?.files);
+  }
+
+  private processSelectedFiles(files: unknown) {
+    const archivosSeleccionados = this.normalizeSelectedFiles(files);
     const archivosValidos = archivosSeleccionados.filter((file) => file.size <= this.maxFileSizeBytes);
     const espaciosDisponibles = this.maxAnexos - this.documentosAnexados.length;
 
@@ -203,7 +224,7 @@ export class CrearTramite implements OnInit, AfterViewInit {
       ...archivosValidos.slice(0, espaciosDisponibles)
     ];
 
-    this.fileUpload?.clear();
+    this.resetAnexosInput();
   }
 
   private normalizeSelectedFiles(files: unknown): File[] {
@@ -220,6 +241,12 @@ export class CrearTramite implements OnInit, AfterViewInit {
 
   private isFileList(files: unknown): files is FileList {
     return typeof FileList !== 'undefined' && files instanceof FileList;
+  }
+
+  private resetAnexosInput() {
+    if (this.anexosInput?.nativeElement) {
+      this.anexosInput.nativeElement.value = '';
+    }
   }
 
   onVerDocumento(file: File): void {
@@ -301,7 +328,7 @@ export class CrearTramite implements OnInit, AfterViewInit {
     });
     this.documentosForm.reset();
     this.documentosAnexados = [];
-    this.fileUpload?.clear();
+    this.resetAnexosInput();
     this.causaValidada = null;
     this.catJuzgados = [];
   }

@@ -49,6 +49,7 @@ import {
 } from '../../interfaces/juicioenlinea.model';
 import { PantallasService } from '../../services/pantallas.service';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-crear-tramite',
@@ -77,8 +78,9 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
     Header,
     Spinner,
     ConfirmDialog,
-    PdfDialog
-  ],
+    PdfDialog,
+    Breadcrub
+],
   templateUrl: './crear-tramite.html',
   styleUrl: './crear-tramite.css',
   providers: [ConfirmationService, MessageService],

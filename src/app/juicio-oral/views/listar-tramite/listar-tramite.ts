@@ -30,7 +30,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 // App - feature
 // ============================
 import { JuicioService } from '../../services/juicioenlinea.service';
-import { Juzgado, ListadoTramitesResponse } from '../../interfaces/juicioenlinea.model';
+import { Area, ListadoTramitesResponse } from '../../interfaces/juicioenlinea.model';
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { PantallasService } from '../../services/pantallas.service';
 
@@ -87,7 +87,7 @@ export class ListarTramite implements OnInit {
   rowsPerPage = 10;
 
   expedienteForm!: FormGroup;
-  juzgados: Juzgado[] = [];
+  juzgados: Area[] = [];
 
   // ============================
   // Constructor / DI

@@ -251,27 +251,27 @@ export interface MovimientoTramite {
 export interface ListarExpedientesResponse {
     idExpediente: number;
     NumExpediente: string;
-    idCatJuzgado: string;
+    idArea: string;
     fechaResponse: string;
     idDemanda: string;
     idSecretario: string;
     numSecretaria: string;
     tramites: DetalleTramiteResponse[];
     demanda: DemandaEntity;
-    juzgado: Juzgado;
+    area: Area;
     ultimo_historial: HistorialExpediente;
 }
 
 export interface DetalleExpedienteResponse {
     idExpediente: number;
     NumExpediente: string;
-    idCatJuzgado: string;
+    idArea: string;
     fechaResponse: string;
     idDemanda: string;
     idSecretario?: string;
     numSecretaria?: string;
     idSubArea?: string;
-    juzgado: Juzgado;
+    area: Area;
     tramites: DetalleTramiteResponse[];
     demanda: DemandaEntity;
     requerimientos: DetalleRequerimiento[];
@@ -685,13 +685,11 @@ export interface DocumentoAcuerdoResponse {
 // 🔟 JUZGADOS & REMITENTES
 // ========================================
 
-export interface Juzgado {
-    IdCatJuzgado: number;
-    CveJuzgado?: string;
-    nombre?: string;
-    lugar?: string;
-    Descripcion: string;
-    Tipo?: string;
+export interface Area {
+    IdArea: number;
+    idMunicipio: string;
+    Nombre: string;
+    Dirección?: string;
     'Activo '?: string;
 }
 
@@ -701,7 +699,7 @@ export interface Remitente {
     dependencia: string;
     remitente: string;
     cargo: string;
-    juzgados: Juzgado[];
+    juzgados: Area[];
 }
 
 // ========================================
@@ -760,7 +758,7 @@ export interface Pantalla {
 export interface PartesRequest {
     nombre: string;
     apellidoMaterno?: string;
-    apellidoPaterno: string;
+    apellidoPaterno?: string;
     apoderadoNombre?: string;
     apoderadoApellidoPaterno?: string;
     apoderadoApellidoMaterno?: string;
@@ -773,9 +771,9 @@ export interface PartesRequest {
     idCatSexo: number | null;
     idCatTipoParte: number | null;
     fechaNacimiento?: Date | string | null;
-    grupoVulnerable?: string[];
-    idDiscapacidad?: number | null;
-    idLenguaje?: number | null;
+    grupoVulnerable?: Array<string | number>;
+    idDiscapacidad?: number[];
+    idLenguaje?: number[];
     descripcionTipoParte?: string;
     filtroParte?: 'busqueda' | 'manual';
 }

@@ -46,7 +46,7 @@
                             <!-- Catálogo de Municipio -->
                             <div id="cveMunicipio" class="col-span-6 grid gap-2">
                                 <label for="cveMunicipio" class="text-sm font-medium">Juzgado</label>
-                                <p-select formControlName="cveMunicipio" fluid [options]="catJuzgado" optionValue="id"
+                                <p-select formControlName="cveMunicipio" fluid [options]="catJuzgado" optionValue="idArea"
                                     placeholder="Selecciona un juzgado" [filter]="true" appendTo="body"
                                     optionLabel="desc" />
                             </div>
@@ -73,7 +73,7 @@
                                 <label for="accionAEjecutar" class="block mb-2 text-sm font-medium">Acción a
                                     ejecutar</label>
                                 <p-select formControlName="accionAEjecutar" fluid appendTo="body"
-                                    [options]="catAcciones" optionValue="id" placeholder="Selecciona una acción"
+                                    [options]="catAcciones" optionValue="idAccion" placeholder="Selecciona una acción"
                                     optionLabel="desc" />
                             </div>
                             <div id="descripcionDemanda" class="col-span-6">
@@ -594,20 +594,22 @@
                     </div>
 
                     <div class="col-span-6 sm:col-span-3"
-                        *ngIf="parteForm.get('grupoVulnerable')?.value?.includes('DISCAPACIDAD')">
+                        *ngIf="parteForm.get('grupoVulnerable')?.value?.includes(2)">
                         <label class="block mb-2 text-sm font-medium">Tipo de discapacidad</label>
-                        <p-select formControlName="idDiscapacidad" [options]="catDiscapacidades" optionValue="id"
-                            optionLabel="desc" placeholder="Selecciona la discapacidad" appendTo="body" fluid />
+                        <p-multiSelect formControlName="idDiscapacidad" [options]="catDiscapacidades" optionValue="id"
+                            optionLabel="desc" placeholder="Selecciona una o más discapacidades" appendTo="body"
+                            fluid></p-multiSelect>
                         <div *ngIf="shouldShowError('idDiscapacidad')" class="text-red-500 text-sm mt-1">
                             {{ getError("idDiscapacidad") }}
                         </div>
                     </div>
 
                     <div class="col-span-6 sm:col-span-3"
-                        *ngIf="parteForm.get('grupoVulnerable')?.value?.includes('LENGUAJE')">
+                        *ngIf="parteForm.get('grupoVulnerable')?.value?.includes(3)">
                         <label class="block mb-2 text-sm font-medium">Lengua indígena</label>
-                        <p-select formControlName="idLenguaje" [options]="catLenguas" optionValue="id"
-                            optionLabel="desc" placeholder="Selecciona la lengua" appendTo="body" fluid />
+                        <p-multiSelect formControlName="idLenguaje" [options]="catLenguas" optionValue="id"
+                            optionLabel="desc" placeholder="Selecciona una o más lenguas" appendTo="body"
+                            fluid></p-multiSelect>
                         <div *ngIf="shouldShowError('idLenguaje')" class="text-red-500 text-sm mt-1">
                             {{ getError("idLenguaje") }}
                         </div>
@@ -1036,7 +1038,7 @@
                     class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Juzgado</span>
                     <span class="font-medium text-right min-w-0">
-                        {{ demandaResponse?.expediente?.juzgado?.Descripcion || 'JUZGADO DEMO DE MUESTRA' }}
+                        {{ demandaResponse?.expediente?.area?.Nombre || 'JUZGADO DEMO DE MUESTRA' }}
                     </span>
                 </div>
 
