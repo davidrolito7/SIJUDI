@@ -23,13 +23,15 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Router } from '@angular/router';
 import { HttpResponse } from '@angular/common/http';
 import { TramitesBusquedaStateService } from '../../service/tramites-busqueda-state.service';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-tramites-juicio-oral',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, BreadcrumbModule, AvatarModule, InputMaskModule, ConfirmDialog, TooltipModule, Header
-  ],
+    Spinner, BreadcrumbModule, AvatarModule, InputMaskModule, ConfirmDialog, TooltipModule, Header,
+    Breadcrub
+],
   templateUrl: './tramites-juicio-oral.html',
   styleUrl: './tramites-juicio-oral.css',
   providers: [ConfirmationService]

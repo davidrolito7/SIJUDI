@@ -4,41 +4,50 @@
 
     <!-- HEADER -->
     <app-header></app-header>
+    <app-breadcrub></app-breadcrub>
+    <div class="mb-2">
+        <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
+            Búsqueda de promociones electrónicas
+        </h1>
+        <p class="text-surface-500 dark:text-surface-400 mt-1">
+            Ingrese la información requerida según corresponda su promoción.
+        </p>
+    </div>
     <!-- BUSQUEDA -->
-    <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
-        <form class="flex flex-col" [formGroup]="validarCausaForm">
+    <div class="bg-surface-50 dark:bg-surface-950 border border-dashed border-slate-300 rounded-2xl p-4">
+        <form class="flex flex-col" [formGroup]="validarCausaForm" (ngSubmit)="onBuscarTramitesElectronicos()">
 
-            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-2 ">
-                Búsqueda de promociones electrónicas
-            </label>
-
-            <div class="grid grid-cols-6 gap-4 w-full items-end">
-                <div class="col-span-6 md:col-span-2">
+            <div class="grid grid-cols-12 gap-4 w-full items-end">
+                <div class="col-span-12 md:col-span-6 lg:col-span-2">
                     <label class="block mb-2 text-sm font-medium">Tipo de Trámite</label>
                     <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
                         (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid
                         placeholder="Selecciona un tipo de trámite" [filter]="true" optionLabel="label"
                         appendTo="body" />
                 </div>
-                <div class="col-span-6 md:col-span-1">
+                <div class="col-span-12 md:col-span-6 lg:col-span-2">
                     <label class="block mb-2 text-sm font-medium">Folio</label>
                     <p-inputmask fluid formControlName="numeroExpediente" class="uppercase text-sm rounded-lg"
                         mask="9999/9999" placeholder="0001/2026" />
                 </div>
 
-                <div class="col-span-6 md:col-span-2">
+                <div class="col-span-12 md:col-span-6 lg:col-span-4">
                     <label class="block mb-2 text-sm font-medium">Juzgado</label>
                     <p-select class="w-full" [options]="catJuzgados" formControlName="idJuzgado"
                         optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
                         optionLabel="descripcion" appendTo="body" />
                 </div>
-                <div class="col-span-6 md:col-span-1">
-                    <p-button (click)="onBuscarTramitesElectronicos()" [disabled]="validarCausaForm.invalid">
-                        <i pButtonIcon class="pi pi-search"></i>
+
+                <div class="col-span-12 md:col-span-4 lg:col-span-2 flex gap-4 ">
+                    <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarBusqueda()"
+                        aria-label="Limpiar filtros"></p-button>
+
+                    <p-button type="submit" aria-label="Buscar" [disabled]="validarCausaForm.invalid"
+                        styleClass="btn-secondary">
+                        <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
                         <span pButtonLabel>Buscar</span>
                     </p-button>
                 </div>
-
             </div>
         </form>
     </div>
@@ -47,7 +56,7 @@
 
 <!-- CONTENIDO (ya no se mete "debajo" visualmente) -->
 @if (mostrarTramites()) {
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
+<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-dashed border-slate-300 rounded-2xl mb-4 p-4">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
         <div>
             <div class="font-medium text-xl text-surface-900 dark:text-surface-0 ">Resultado</div>
@@ -55,8 +64,8 @@
     </div>
 
     <div class="card pt-4">
-        <p-table #dt1 [value]="tramitesElectronicosRecibidos" stripedRows  dataKey="idTramiteElectronicoRecibido" [rows]="10"
-            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+        <p-table #dt1 [value]="tramitesElectronicosRecibidos" stripedRows dataKey="idTramiteElectronicoRecibido"
+            [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="['folio','fechaEnvio','observaciones','cantidadAnexos']">
             <ng-template #caption>
                 <div class="flex">
@@ -130,4 +139,3 @@
 <app-confirm-dialog key="info" title="No hay coincidencias" message="La causa o el juzgado es incorrecto."
     icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
 </app-confirm-dialog>
-
