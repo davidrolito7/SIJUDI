@@ -19,14 +19,20 @@
 
             <div class="grid grid-cols-12 gap-4 w-full items-end">
                 <div class="col-span-12 md:col-span-6 lg:col-span-3">
-                    <label class="block mb-2 text-sm font-medium">Tipo de Trámite</label>
+                    <label class="block mb-2 text-sm font-medium">Tipo de expediente</label>
                     <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
                         (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid
                         placeholder="Selecciona un tipo de trámite" [filter]="true" optionLabel="label"
                         appendTo="body" />
                 </div>
                 <div class="col-span-12 md:col-span-6 lg:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Folio</label>
+                    <label class="block mb-2 text-sm font-medium">Folio
+                        @if (validarCausaForm.get('idCatTipoTramite')?.value == 33) {
+                            de la causa
+                        } @else if (validarCausaForm.get('idCatTipoTramite')?.value == 47) {
+                            del cuaderno
+                        }
+                    </label>
                     <p-inputmask fluid formControlName="numeroExpediente" class="uppercase text-sm rounded-lg"
                         mask="9999/9999" placeholder="0001/2026" />
                 </div>
