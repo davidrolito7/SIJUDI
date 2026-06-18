@@ -18,7 +18,7 @@
         <form class="flex flex-col" [formGroup]="validarCausaForm" (ngSubmit)="onBuscarTramitesElectronicos()">
 
             <div class="grid grid-cols-12 gap-4 w-full items-end">
-                <div class="col-span-12 md:col-span-6 lg:col-span-2">
+                <div class="col-span-12 md:col-span-6 lg:col-span-3">
                     <label class="block mb-2 text-sm font-medium">Tipo de Trámite</label>
                     <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
                         (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid

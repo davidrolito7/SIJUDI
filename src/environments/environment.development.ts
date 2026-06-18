@@ -1,5 +1,5 @@
 export const environment = {
-    production: false,
+    production: true,
     //* false para producción
     //* true para pruebas y si eres abogado para que no solicituar llave/auth
     DEV_SKIP_2FA: true,

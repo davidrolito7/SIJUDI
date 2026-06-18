@@ -1,6 +1,7 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { TooltipModule } from 'primeng/tooltip';
 import { DividerModule } from 'primeng/divider';
 import { AvatarModule } from 'primeng/avatar';
@@ -21,6 +22,47 @@ import { ContadoresService } from '../../../juicio-oral/services/contadores.serv
 import { Observable } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
+
+export const sidebarAnimations = [
+  trigger('sidebarWidth', [
+    state('expanded', style({ width: '17rem' })),
+    state('collapsed', style({ width: '5rem' })),
+    transition('expanded <=> collapsed', [
+      animate('280ms cubic-bezier(0.4, 0, 0.2, 1)'),
+    ]),
+  ]),
+
+  trigger('fadeText', [
+    state('visible', style({ opacity: 1, maxWidth: '14rem' })),
+    state('hidden', style({ opacity: 0, maxWidth: '0px' })),
+    transition('hidden => visible', [animate('220ms 60ms ease-out')]),
+    transition('visible => hidden', [animate('150ms ease-in')]),
+  ]),
+
+  trigger('accordion', [
+    state('closed', style({ height: '0px', opacity: 0 })),
+    state('open', style({ height: '*', opacity: 1 })),
+    transition('closed => open', [
+      animate('220ms cubic-bezier(0.4, 0, 0.2, 1)'),
+    ]),
+    transition('open => closed', [
+      animate('180ms cubic-bezier(0.4, 0, 0.2, 1)'),
+    ]),
+  ]),
+
+  trigger('chevronRotate', [
+    state('closed', style({ transform: 'rotate(0deg)' })),
+    state('open', style({ transform: 'rotate(180deg)' })),
+    transition('closed <=> open', [animate('200ms ease')]),
+  ]),
+
+  trigger('railScale', [
+    state('off', style({ transform: 'scaleY(0)' })),
+    state('on', style({ transform: 'scaleY(1)' })),
+    transition('off <=> on', [animate('180ms ease')]),
+  ]),
+];
+
 @Component({
   selector: 'app-siderbar',
   imports: [
@@ -41,6 +83,7 @@ import { OverlayBadgeModule } from 'primeng/overlaybadge';
   ],
   templateUrl: './siderbar.html',
   styleUrl: './siderbar.css',
+  animations: sidebarAnimations,
 })
 export class Siderbar {
   private readonly router = inject(Router);
@@ -56,7 +99,7 @@ export class Siderbar {
 
 
   readonly modulos = this.menuStore.modulos;
-  readonly showMenu = signal(false);
+  readonly showMenu = signal(true);
 
   readonly selectedModuloId = signal<number | null>(null);
 
@@ -81,11 +124,6 @@ export class Siderbar {
           // }
         },
       });
-
-    effect(() => {
-      this.showMenu.set(!!this.selectedModulo());
-    });
-
   }
 
   // ngOnInit(): void {
@@ -120,10 +158,25 @@ export class Siderbar {
     this.router.navigate(['/perfil'], { replaceUrl: true });
   }
 
+  toggleSidebar(): void {
+    const nextState = !this.showMenu();
+    this.showMenu.set(nextState);
+
+    if (!nextState) {
+      this.selectedModuloId.set(null);
+    }
+  }
+
   toggleModulo(mod: ModulosUsuario): void {
     const same = this.selectedModuloId() === mod.idSistemaModulo;
+
+    if (!this.showMenu()) {
+      this.showMenu.set(true);
+      this.selectedModuloId.set(mod.idSistemaModulo);
+      return;
+    }
+
     this.selectedModuloId.set(same ? null : mod.idSistemaModulo);
-    if (same) this.showMenu.set(false);
   }
 
   closeMenu(): void {

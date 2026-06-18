@@ -39,7 +39,7 @@ import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
   styleUrl: './crear-tramite.css',
   providers: [ConfirmationService]
 })
-export class CrearTramite implements OnInit, AfterViewInit {
+export class CrearTramite implements OnInit {
   readonly maxFileSizeBytes = 10 * 1024 * 1024;
   readonly maxAnexos = 10;
   @ViewChild('anexosInput') anexosInput?: ElementRef<HTMLInputElement>;
@@ -96,12 +96,12 @@ export class CrearTramite implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-    // Retrasamos un poco la ejecución para asegurar que la vista esté completamente renderizada.
-    setTimeout(() => {
-      this.startTutorial();
-    }, 100);
-  }
+  // ngAfterViewInit(): void {
+  //   // Retrasamos un poco la ejecución para asegurar que la vista esté completamente renderizada.
+  //   setTimeout(() => {
+  //     this.startTutorial();
+  //   }, 100);
+  // }
 
   cargarCatalogoJuzgados(idCatTipoTramite: number | null) {
     const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
