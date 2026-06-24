@@ -31,7 +31,7 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { InputIconModule } from "primeng/inputicon";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { validarFirmasUsuarioPromEnviado } from '../../functions/firmas';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -40,7 +40,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-PromocionExhortoEnviadoComponent',
-  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, InputIconModule, ConfirmDialogModule, Breadcrub, Spinner],
+  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, InputIconModule, ConfirmDialogModule, Header, Spinner],
   templateUrl: './promocion-exhorto-enviado.html',
   styleUrl: './promocion-exhorto-enviado.css',
   providers:[MessageService,ConfirmationService]
@@ -1374,3 +1374,5 @@ showDialog(idArchivo: number): void {
 
   }
 }
+
+

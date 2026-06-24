@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Breadcrub } from "../breadcrub/breadcrub";
+import { Header } from "../header/header";
 import { ToastModule } from "primeng/toast";
 import { PerfilUsuarioService } from '../../service/PerfilUsuarioService';
 import { TokenService } from '../../../core/auth/service/token.service';
@@ -52,7 +52,7 @@ interface DashboardSystem {
   standalone: true,
   imports: [
     CommonModule,
-    Breadcrub,
+    Header,
     ToastModule,
     RouterLink
   ],
@@ -618,3 +618,4 @@ export class Dashboard implements OnInit, OnDestroy {
     return metric.title;
   }
 }
+

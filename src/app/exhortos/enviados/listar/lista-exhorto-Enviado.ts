@@ -20,13 +20,13 @@ import { AuthService } from '../../../core/auth/service/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { ToastModule } from "primeng/toast";
 import { Spinner } from '../../../shared/components/spinner/spinner';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 @Component({
   selector: 'app-ListaExhortosEnviados',
   imports: [Button, TableModule, IconField, InputIcon, DatePicker, SelectModule,
-    ToastModule, CardModule, PaginatorModule, FormsModule, CommonModule, InputTextModule, Spinner, Breadcrub, TagModule, TooltipModule],
+    ToastModule, CardModule, PaginatorModule, FormsModule, CommonModule, InputTextModule, Spinner, Header, TagModule, TooltipModule],
   templateUrl: './lista-exhorto-Enviado.html',
   styleUrl: './lista-exhorto-Enviado.css',
   providers: [MessageService]
@@ -301,4 +301,6 @@ export class ListaExhortosEnviados implements OnInit {
   }
 
 }
+
+
 

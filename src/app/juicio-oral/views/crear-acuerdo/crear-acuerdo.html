@@ -7,7 +7,7 @@
 </app-confirm-dialog>
 
 <div class="lg:sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-950">
-    <app-breadcrub></app-breadcrub>
+    <app-header></app-header>
     <div class="mb-2">
         <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">Crear Auto</h1>
         <p class="text-surface-500 dark:text-surface-400 mt-1">Registra un nuevo auto para el expediente seleccionado.
@@ -28,7 +28,7 @@
                 expediente.demanda.descripcionDemanda }}</p>
         </div>
         <div class="flex flex-col gap-2">
-            <p class="text-sm"><span class="font-semibold">Juzgado asignado:</span> {{ expediente.juzgado.Descripcion }}
+            <p class="text-sm"><span class="font-semibold">Juzgado asignado:</span> {{ expediente.area.Nombre }}
             </p>
             <p class="text-sm"><span class="font-semibold">Materia:</span> {{
                 expediente.demanda.cat_via_materia.cat_materia.Descripcion }}</p>
@@ -282,3 +282,4 @@
         <p>No se puede mostrar el PDF. <a [href]="documentoUrl" download>Descargar</a></p>
     </object>
 </p-dialog>
+

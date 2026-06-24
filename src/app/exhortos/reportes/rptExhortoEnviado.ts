@@ -271,8 +271,8 @@ const opciones: Intl.DateTimeFormatOptions = {
         stack: [
            { text: "Exhorto enviado", style: "subheader" },
           {
-            columns:[ {text: "Numero de exhorto:" , style: "header", alignment:"right",margin: [0, 0, -80, 0]}, //margen reducido
-                      {text: generales.numeroExhorto, style: "header" ,color:"red",alignment:"right"}
+            columns:[ {text: "Numero de exhorto:" , style: "Breadcrub", alignment:"right",margin: [0, 0, -80, 0]}, //margen reducido
+                      {text: generales.numeroExhorto, style: "Breadcrub" ,color:"red",alignment:"right"}
                     ],
                     columnGap: 0, // Opcional para eliminar espacio automático entre columnas
           },
@@ -296,7 +296,7 @@ const opciones: Intl.DateTimeFormatOptions = {
   content.push({ text: "\n" });
 
   //Origen - generales*******************************************************************************
-  //content.push({text: 'Información de origen', style: 'header'})
+  //content.push({text: 'Información de origen', style: 'Breadcrub'})
 
   content.push({
     columns:[
@@ -305,7 +305,7 @@ const opciones: Intl.DateTimeFormatOptions = {
           headerRows: 1,
           widths: [55, 180],
           body: [
-            [{ text: "Información de origen", style: "header",colSpan:2, alignment:"center",fillColor: '#D3D3D3' },{}],
+            [{ text: "Información de origen", style: "Breadcrub",colSpan:2, alignment:"center",fillColor: '#D3D3D3' },{}],
             [{ text: "No. Exhorto:",fontSize:8, alignment:'right' },{text: generales.numeroExhorto, fontSize:8, alignment:'left', color:"red", bold:true}],
             [{ text: "Municipio:",fontSize:8, alignment:"right" },{text: generales.municipioOrigen, fontSize:8, alignment:"left"}],
             [{ text: "Juzgado:",fontSize:8, alignment:"right" },{text: generales.juzgadoOrigenNombre, fontSize:8, alignment:"left"}],
@@ -330,7 +330,7 @@ const opciones: Intl.DateTimeFormatOptions = {
           headerRows: 1,
           widths: [50, 180],
           body: [
-            [{ text: "Información de destino", style: "header",colSpan:2, alignment:"center" ,fillColor: '#D3D3D3'},{}],
+            [{ text: "Información de destino", style: "Breadcrub",colSpan:2, alignment:"center" ,fillColor: '#D3D3D3'},{}],
             [{ text: "Estado:",fontSize:8, alignment:"right" },{text: generales.estadoDestino, fontSize:8, alignment:"left"}],
             [{ text: "Municipio:",fontSize:8, alignment:'right' },{text: generales.municipioDestino, fontSize:8, alignment:'left'}],
             [{ text: "Materia:",fontSize:8, alignment:'right' },{text: generales.materiaNombre, fontSize:8, alignment:'left'}],
@@ -350,7 +350,7 @@ const opciones: Intl.DateTimeFormatOptions = {
   content.push({ text: "\n" });
 
   //partes****************************************************************************************
-  content.push({text: 'Partes', style: 'header'})
+  content.push({text: 'Partes', style: 'Breadcrub'})
 
   content.push({
     table: {
@@ -365,7 +365,7 @@ const opciones: Intl.DateTimeFormatOptions = {
   content.push({ text: "\n" });
 
   //promoventes************************************************************************************
-  content.push({text: 'Promoventes', style: 'header'})
+  content.push({text: 'Promoventes', style: 'Breadcrub'})
 
   content.push({
     table: {
@@ -380,7 +380,7 @@ const opciones: Intl.DateTimeFormatOptions = {
   content.push({ text: "\n" });
 
   //archivos****************************************************************************************
-  content.push({text: 'Archivos', style: 'header'})
+  content.push({text: 'Archivos', style: 'Breadcrub'})
 
   content.push({
     table: {
@@ -393,7 +393,7 @@ const opciones: Intl.DateTimeFormatOptions = {
   });
 
   //actualizaciones************************************************************************************
-  content.push({text: 'Actualizaciones', style: 'header'})
+  content.push({text: 'Actualizaciones', style: 'Breadcrub'})
 
   content.push({
     table: {
@@ -407,7 +407,7 @@ const opciones: Intl.DateTimeFormatOptions = {
 
   content.push({ text: "\n" });
    //Promociones************************************************************************************
-  content.push({text: 'Promociones', style: 'header'})
+  content.push({text: 'Promociones', style: 'Breadcrub'})
   content.push({
     table: {
       headerRows: 1,
@@ -418,7 +418,7 @@ const opciones: Intl.DateTimeFormatOptions = {
     margin: [0, 10, 0, 10],
   });
    //Respuesta*************************************************************************************
-  content.push({text: 'Respuesta', style: 'header'})
+  content.push({text: 'Respuesta', style: 'Breadcrub'})
   content.push({
     table: {
       headerRows: 1,

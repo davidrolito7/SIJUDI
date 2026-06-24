@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, AfterViewInit } from '@angular/core';
+import { Component, OnInit, signal, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
@@ -14,7 +14,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { TextareaModule } from 'primeng/textarea';
-import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { ConfirmationService, MenuItem } from 'primeng/api';
@@ -22,23 +21,29 @@ import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm
 import { AvatarModule } from 'primeng/avatar';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { InputMaskModule } from 'primeng/inputmask';
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { HttpResponse } from '@angular/common/http';
 import { driver } from 'driver.js';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-crear-tramite',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, TextareaModule, FileUploadModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Breadcrub, ConfirmDialogModule,
-    PdfDialog
-  ],
+    Spinner, TextareaModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Header, ConfirmDialogModule,
+    PdfDialog,
+    Breadcrub
+],
   templateUrl: './crear-tramite.html',
   styleUrl: './crear-tramite.css',
   providers: [ConfirmationService]
 })
-export class CrearTramite implements OnInit, AfterViewInit {
+export class CrearTramite implements OnInit {
+  readonly maxFileSizeBytes = 10 * 1024 * 1024;
+  readonly maxAnexos = 10;
+  @ViewChild('anexosInput') anexosInput?: ElementRef<HTMLInputElement>;
+
   //* === FORMULARIOS ===
   busquedaForm!: FormGroup;
   documentosForm!: FormGroup;
@@ -54,6 +59,7 @@ export class CrearTramite implements OnInit, AfterViewInit {
   isLoading: boolean = false;
   mostrarAddDocumentos = signal(false);
   mostrarDocumento = false;
+  isAnexosDragOver = false;
 
 
   //* === OTROS  ===
@@ -90,12 +96,12 @@ export class CrearTramite implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-    // Retrasamos un poco la ejecución para asegurar que la vista esté completamente renderizada.
-    setTimeout(() => {
-      this.startTutorial();
-    }, 100);
-  }
+  // ngAfterViewInit(): void {
+  //   // Retrasamos un poco la ejecución para asegurar que la vista esté completamente renderizada.
+  //   setTimeout(() => {
+  //     this.startTutorial();
+  //   }, 100);
+  // }
 
   cargarCatalogoJuzgados(idCatTipoTramite: number | null) {
     const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
@@ -165,9 +171,82 @@ export class CrearTramite implements OnInit, AfterViewInit {
     );
   }
 
-  onAnexosSelect(event: FileSelectEvent) {
-    this.documentosAnexados = [...this.documentosAnexados, ...event.files];
+  onAnexosInputChange(event: Event) {
+    const input = event.target as HTMLInputElement | null;
+    this.processSelectedFiles(input?.files);
+  }
 
+  onAnexosDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.isAnexosDragOver = true;
+  }
+
+  onAnexosDragLeave(event: DragEvent) {
+    event.preventDefault();
+    this.isAnexosDragOver = false;
+  }
+
+  onAnexosDrop(event: DragEvent) {
+    event.preventDefault();
+    this.isAnexosDragOver = false;
+    this.processSelectedFiles(event.dataTransfer?.files);
+  }
+
+  private processSelectedFiles(files: unknown) {
+    const archivosSeleccionados = this.normalizeSelectedFiles(files);
+    const archivosValidos = archivosSeleccionados.filter((file) => file.size <= this.maxFileSizeBytes);
+    const espaciosDisponibles = this.maxAnexos - this.documentosAnexados.length;
+
+    if (archivosValidos.length !== archivosSeleccionados.length) {
+      this.confirmationService.confirm({
+        key: 'archivo-peso',
+        accept: () => { },
+      });
+    }
+
+    if (espaciosDisponibles <= 0) {
+      this.confirmationService.confirm({
+        key: 'archivo-limite',
+        accept: () => { },
+      });
+      return;
+    }
+
+    if (archivosValidos.length > espaciosDisponibles) {
+      this.confirmationService.confirm({
+        key: 'archivo-limite',
+        accept: () => { },
+      });
+    }
+
+    this.documentosAnexados = [
+      ...this.documentosAnexados,
+      ...archivosValidos.slice(0, espaciosDisponibles)
+    ];
+
+    this.resetAnexosInput();
+  }
+
+  private normalizeSelectedFiles(files: unknown): File[] {
+    if (Array.isArray(files)) {
+      return files.filter((file): file is File => file instanceof File);
+    }
+
+    if (this.isFileList(files)) {
+      return Array.from(files);
+    }
+
+    return files instanceof File ? [files] : [];
+  }
+
+  private isFileList(files: unknown): files is FileList {
+    return typeof FileList !== 'undefined' && files instanceof FileList;
+  }
+
+  private resetAnexosInput() {
+    if (this.anexosInput?.nativeElement) {
+      this.anexosInput.nativeElement.value = '';
+    }
   }
 
   onVerDocumento(file: File): void {
@@ -249,6 +328,7 @@ export class CrearTramite implements OnInit, AfterViewInit {
     });
     this.documentosForm.reset();
     this.documentosAnexados = [];
+    this.resetAnexosInput();
     this.causaValidada = null;
     this.catJuzgados = [];
   }
@@ -308,3 +388,5 @@ export class CrearTramite implements OnInit, AfterViewInit {
     driverObj.drive();
   }
 }
+
+

@@ -70,10 +70,10 @@ export function validaPdf(file: File): boolean{
 // Función para verificar si el archivo es un PDF válido
 export function  isPdf(content: ArrayBuffer): boolean {
     const buffer = new Uint8Array(content);
-    const header = new TextDecoder('utf-8').decode(buffer.slice(0, 4)); // Lee los primeros 4 bytes
+    const Breadcrub = new TextDecoder('utf-8').decode(buffer.slice(0, 4)); // Lee los primeros 4 bytes
 
     // Un archivo PDF válido debe comenzar con '%PDF'
-    return header.startsWith('%PDF');
+    return Breadcrub.startsWith('%PDF');
   }
   // funcion para convertir un file a base64
 export function  convertFileToBase64(file: File): Promise<string> {
@@ -122,5 +122,6 @@ export function blobToBase64(blob: Blob): Promise<string> {
     reader.readAsDataURL(blob);
   });
 }
+
 
 

@@ -1,5 +1,5 @@
 import { Component, signal, inject } from '@angular/core';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { ApiService } from '../../service/api.service';
 import { DetalleTramiteElectronicoRecibidoResponse } from '../../interface/tramites-juicio-oral.model';
@@ -12,7 +12,7 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog"; //
 import { TagModule } from 'primeng/tag';
 @Component({
   selector: 'app-detalle-tramite',
-  imports: [Breadcrub, Spinner, DatePipe, TableModule, ButtonModule, TooltipModule, PdfDialog, TagModule],
+  imports: [Header, Spinner, DatePipe, TableModule, ButtonModule, TooltipModule, PdfDialog, TagModule],
   templateUrl: './detalle-tramite.html',
   styleUrl: './detalle-tramite.css',
 })
@@ -87,3 +87,4 @@ export class DetalleTramite {
     this.mostrarDocumento.set(true);
   }
 }
+

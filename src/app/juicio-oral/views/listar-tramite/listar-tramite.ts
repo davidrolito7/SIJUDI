@@ -23,14 +23,14 @@ import { TooltipModule } from 'primeng/tooltip';
 // ============================
 // App - shared
 // ============================
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 
 // ============================
 // App - feature
 // ============================
 import { JuicioService } from '../../services/juicioenlinea.service';
-import { Juzgado, ListadoTramitesResponse } from '../../interfaces/juicioenlinea.model';
+import { Area, ListadoTramitesResponse } from '../../interfaces/juicioenlinea.model';
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { PantallasService } from '../../services/pantallas.service';
 
@@ -55,7 +55,7 @@ import { PantallasService } from '../../services/pantallas.service';
     ToastModule,
     TooltipModule,
     // Shared
-    Breadcrub,
+    Header,
     Spinner,
   ],
   templateUrl: './listar-tramite.html',
@@ -87,7 +87,7 @@ export class ListarTramite implements OnInit {
   rowsPerPage = 10;
 
   expedienteForm!: FormGroup;
-  juzgados: Juzgado[] = [];
+  juzgados: Area[] = [];
 
   // ============================
   // Constructor / DI
@@ -374,3 +374,4 @@ export class ListarTramite implements OnInit {
     });
   }
 }
+

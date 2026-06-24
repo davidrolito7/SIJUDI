@@ -1,18 +1,16 @@
 <app-spinner [isLoading]="isLoading()"></app-spinner>
 <p-toast />
-
 <div class="lg:sticky top-0 z-50 flex flex-col bg-surface-0 dark:bg-surface-950">
 
-    <!-- HEADER -->
+    <app-header></app-header>
     <app-breadcrub></app-breadcrub>
 
-    <!-- TÍTULO DE PÁGINA -->
     <div class="mb-2">
-        <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
-            Expedientes asignados
+        <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
+            Expedientes electrónicos
         </h1>
         <p class="text-surface-500 dark:text-surface-400 mt-1">
-            Gestiona y consulta los expedientes asignados a tu juzgado.
+            Consulta los expedientes asignados a tu juzgado y gestiona sus trámites.
         </p>
     </div>
 
@@ -106,7 +104,7 @@
                     {{ expediente.fechaResponse | date: 'dd/MM/yyyy HH:mm' }} h
                 </td>
                 <td>
-                    {{ expediente.juzgado.Descripcion }}
+                    {{ expediente.area.Nombre }}
                 </td>
                 <td>
                     {{ expediente.demanda.cat_via_materia.cat_materia.Descripcion }}
@@ -135,3 +133,4 @@
         </ng-template>
     </p-table>
 </div>
+

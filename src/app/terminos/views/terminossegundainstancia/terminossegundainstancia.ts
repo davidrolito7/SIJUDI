@@ -24,7 +24,7 @@ import { forkJoin } from 'rxjs';
 import { AfterViewInit } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { Base64ToBlob, base64ToFile } from '../../../shared/functions/utils';
 
@@ -52,8 +52,7 @@ type Item = { id: number; nombre: string; cantidad?: number };
     ToastModule,
     FieldsetModule,
     DialogModule,
-    ConfirmDialog,
-    Breadcrub,
+    ConfirmDialog, Header,
     Spinner
   ],
   // Inyección de MessageService para mostrar mensajes al usuario
@@ -1235,5 +1234,7 @@ export class Terminossegundainstancia implements OnInit, AfterViewInit {
   }
 
 }
+
+
 
 

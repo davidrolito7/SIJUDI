@@ -16,7 +16,7 @@ import {
     HorasEndDisponiblesResponse,
     CrearAudienciaRequest,
     PartesAudiencia,
-    Juzgado,
+    Area,
     Remitente,
     CancelarAudienciaRequest,
     AudienciaCreadaResponse,
@@ -301,8 +301,8 @@ export class JuicioService {
         );
     }
 
-    getJuzgados(): Observable<Juzgado[]> {
-        return this.http.get<{ data: Juzgado[] }>(
+    getJuzgados(): Observable<Area[]> {
+        return this.http.get<{ data: Area[] }>(
             `${this.juzgados}Listar`,
         ).pipe(map(response => response.data));
     }

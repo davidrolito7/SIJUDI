@@ -28,7 +28,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 // ============================
 // App - shared
 // ============================
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
@@ -49,6 +49,7 @@ import {
 } from '../../interfaces/juicioenlinea.model';
 import { PantallasService } from '../../services/pantallas.service';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-crear-tramite',
@@ -74,11 +75,12 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
     TooltipModule,
     ToggleSwitchModule,
     // Shared
-    Breadcrub,
+    Header,
     Spinner,
     ConfirmDialog,
-    PdfDialog
-  ],
+    PdfDialog,
+    Breadcrub
+],
   templateUrl: './crear-tramite.html',
   styleUrl: './crear-tramite.css',
   providers: [ConfirmationService, MessageService],
@@ -642,3 +644,4 @@ export class CrearTramite implements OnInit {
     return null;
   }
 }
+

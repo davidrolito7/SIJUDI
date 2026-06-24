@@ -112,11 +112,18 @@ export class Login2 implements OnInit {
     });
   }
 
-  loginOptions = [
-    { label: 'Google Authenticator', value: 1 },
-    { label: 'Llave Privada', value: 2 },
-  ];
-
+loginOptions = [
+  {
+    label: 'Google Authenticator',
+    mobileLabel: 'Authenticator',
+    value: 1
+  },
+  {
+    label: 'Llave Privada',
+    mobileLabel: 'Llave Privada',
+    value: 2
+  }
+];
   // ─ 0.o ─ Post 2FA: checa tipo persona y decide flujo ──────
 
   private async handlePostTwoFactor(): Promise<void> {

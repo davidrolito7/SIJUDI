@@ -4,7 +4,7 @@
 <div class="lg:sticky top-0 z-50 flex flex-col">
 
     <!-- HEADER -->
-    <app-breadcrub></app-breadcrub>
+    <app-header></app-header>
 
     <!-- DETALLE -->
     <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl">
@@ -58,7 +58,7 @@
                 <!-- Columna Derecha -->
                 <div class="flex flex-col space-y-2">
                     <p class="text-surface-600 dark:text-surface-200">
-                        <b>Juzgado:</b> {{ detalleTramite.expediente.juzgado.Descripcion | uppercase }}
+                        <b>Juzgado:</b> {{ detalleTramite.expediente.area.Nombre | uppercase }}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200">
                         <b>Estado: </b>
@@ -176,3 +176,4 @@
 
     </div>
 </div>
+

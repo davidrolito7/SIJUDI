@@ -5,6 +5,7 @@
 <div class="lg:sticky top-0 z-50 flex flex-col">
 
     <!-- HEADER -->
+    <app-header></app-header>
     <app-breadcrub></app-breadcrub>
 
     <!-- DETALLE -->
@@ -59,7 +60,7 @@
                         {{detalleDemanda.expediente.NumExpediente}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Juzgado: </b>
-                        {{detalleDemanda.expediente.juzgado.Descripcion}}
+                        {{detalleDemanda.expediente.area.Nombre}}
                     </p>
                     <p class="text-surface-600 dark:text-surface-200"><b>Fecha recepción:</b>
                         {{ detalleDemanda.entidad.fechaHoraRecepcion| date:'yyyy-MM-dd' }}
@@ -304,3 +305,4 @@
 
 <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
 </app-pdf-dialog>
+

@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../../core/auth/service/auth.service';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
@@ -19,10 +19,11 @@ import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { PantallasService } from '../../services/pantallas.service';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-listar-expediente',
-  imports: [CommonModule, FormsModule, DatePickerModule, Breadcrub, Spinner, ButtonModule, SelectModule, InputMaskModule, TableModule, IconFieldModule, InputIconModule, TagModule, InputTextModule, ToastModule],
+  imports: [CommonModule, FormsModule, DatePickerModule, Header, Spinner, ButtonModule, SelectModule, InputMaskModule, TableModule, IconFieldModule, InputIconModule, TagModule, InputTextModule, ToastModule, Breadcrub],
   templateUrl: './listar-expediente.html',
   styleUrl: './listar-expediente.css',
   providers: [MessageService]
@@ -180,3 +181,4 @@ export class ListarExpediente {
     return row as ListarExpedientesResponse;
   }
 }
+

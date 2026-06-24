@@ -10,14 +10,14 @@ import { Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Button } from "primeng/button";
 import { Spinner } from "../../../shared/components/spinner/spinner";
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { Tag } from "primeng/tag";
 import { base64ToFile, blobToBase64, downloadBase64, downloadFile } from '../../../shared/functions/utils';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 
 @Component({
   selector: 'app-DetallesAmparoRecibido',
-  imports: [CommonModule, TableModule, Button, Spinner, Breadcrub, Tag, PdfDialog],
+  imports: [CommonModule, TableModule, Button, Spinner, Header, Tag, PdfDialog],
   templateUrl: './detalles-amparo-recibido.html',
   styleUrl: './detalles-amparo-recibido.css',
   providers: [MessageService]
@@ -264,3 +264,5 @@ export class DetallesAmparoRecibido {
   } 
 
 }
+
+

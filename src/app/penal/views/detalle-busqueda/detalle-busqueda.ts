@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { DividerModule } from 'primeng/divider';
 import { Table, TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +18,7 @@ import { CardModule } from 'primeng/card';
   selector: 'app-detalle-busqueda',
   imports: [
     CommonModule,
-    Breadcrub,
+    Header,
     DividerModule,
     TableModule,
     FormsModule,
@@ -66,3 +66,5 @@ export class DetalleBusqueda {
     return isNaN(parsedDate.getTime()) ? null : parsedDate;
   }
 }
+
+

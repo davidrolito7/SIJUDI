@@ -1,7 +1,7 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { AnexosDelcaradosRequest, CatMateria, CatMunicipios, CatSexos, CatTipoDocumento, CatTipoPartes, CatTipoVia, CatVia, CrearDemandaResponse, DatosUsuarioResponse, DocumentosRequest, PartesRequest } from '../../interfaces/juicioenlinea.model';
+import { AnexosDelcaradosRequest, CatMateria, CatMunicipios, CatSexos, CatTipoDocumento, CatTipoPartes, CatTipoVia, CrearDemandaResponse, PartesRequest } from '../../interfaces/juicioenlinea.model';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -21,7 +21,7 @@ import { FileUpload, FileUploadModule } from 'primeng/fileupload';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { Spinner } from "../../../shared/components/spinner/spinner";
@@ -34,13 +34,14 @@ import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { TreeSelectModule } from 'primeng/treeselect';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TooltipModule } from 'primeng/tooltip';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-crear-demanda',
   imports: [CommonModule, FormsModule, ToastModule, SelectModule, DialogModule, ButtonModule,
     InputTextModule, ConfirmDialogModule, ReactiveFormsModule, MultiSelectModule, TextareaModule, TreeSelectModule,
     InputNumberModule, ToggleSwitchModule, FileUploadModule, RadioButtonModule, TableModule,
-    TagModule, Breadcrub, InputGroupModule, InputGroupAddonModule, Spinner, PasswordModule, ConfirmDialog, CheckboxModule, InputMaskModule, PdfDialog, DatePickerModule, TooltipModule],
+    TagModule, Header, Breadcrub, InputGroupModule, InputGroupAddonModule, Spinner, PasswordModule, ConfirmDialog, CheckboxModule, InputMaskModule, PdfDialog, DatePickerModule, TooltipModule],
   templateUrl: './crear-demanda.html',
   styleUrl: './crear-demanda.css',
   providers: [ConfirmationService, MessageService]
@@ -51,18 +52,18 @@ export class CrearDemanda implements OnInit {
 
   //* === DATOS DEL USUARIO Y CATÁLOGOS ===
   catMaterias: CatMateria[] = [];
-  catAcciones: { id: number; desc: string }[] = [
-    { id: 1, desc: 'Acción 1' },
-    { id: 2, desc: 'Acción 2' },
-    { id: 3, desc: 'Acción 3' },
-    { id: 4, desc: 'Otro' }
+  catAcciones: { idAccion: number; desc: string }[] = [
+    { idAccion: 1, desc: 'Acción 1' },
+    { idAccion: 2, desc: 'Acción 2' },
+    { idAccion: 3, desc: 'Acción 3' },
+    { idAccion: 4, desc: 'Otro' }
   ];
-  catJuzgado: { id: number; desc: string }[] = [
-    { id: 1, desc: 'Juzgado Mixto de Zimatlan' },
-    { id: 2, desc: 'Juzgado 1° Civil de Huajuapan' },
-    { id: 3, desc: 'Juzgado 2º Civil de Tuxtepec' },
-    { id: 4, desc: 'Juzgado Mixto de Ixtlán' },
-    { id: 5, desc: 'Oficialia general del centro' },
+  catJuzgado: { idArea: number; desc: string }[] = [
+    { idArea: 80, desc: 'JUZGADO PRIMERO CIVIL DEL DISTRITO JUDICIAL DEL CENTRO' },
+    { idArea: 66, desc: 'JUZGADO FAMILIAR Y CIVIL DE SANTA CRUZ HUATULCO, ESPECIALIZADO EN ORALIDAD MERCANTIL Y LABORAL DEL CIRCUITO JUDICIAL DE LA COSTA' },
+    { idArea: 3, desc: 'Juzgado 2º Civil de Tuxtepec' },
+    { idArea: 4, desc: 'Juzgado Mixto de Ixtlán' },
+    { idArea: 5, desc: 'Oficialia general del centro' },
 
   ];
   catTipoVias: CatTipoVia[] = [];
@@ -70,6 +71,12 @@ export class CrearDemanda implements OnInit {
   catSexos: CatSexos[] = [];
   catTipoPartes: CatTipoPartes[] = [];
   catMunicipios: CatMunicipios[] = [];
+
+  private readonly tiposParteActor = [1, 2, 3, 4, 5, 21, 22, 24, 25];
+  private readonly tiposParteDemandado = [7, 9, 10, 11, 14];
+  private readonly sexoMoral = 3;
+  private readonly grupoVulnerableDiscapacidad = 2;
+  private readonly grupoVulnerableLenguaje = 3;
 
   //* === FORMULARIOS ===
   formulario!: FormGroup;
@@ -102,22 +109,24 @@ export class CrearDemanda implements OnInit {
   editandoAnexo: boolean = false;
   indiceAnexoEditando: number = -1;
 
-  mostrarCampoValor: boolean = false;
   mostrarInputNombre: boolean = false;
 
   folio: string | null = null;
   firmaVerificada: boolean = false;
   showPassword = false;
 
+  demandaPreviewUrl: SafeResourceUrl | null = null;
+  private demandaPreviewObjectUrl: string | null = null;
+  isDemandaDragOver = false;
   resumenGenerales: { label: string; value: string }[] = [];
   resumenPartes: { nombre: string; tipoPersona: string; tipoParte: string; grupoVulnerable: string; email: string }[] = [];
   resumenDemanda: { archivo: string; numeroHojas: string } = { archivo: 'N/A', numeroHojas: 'N/A' };
   resumenAnexos: { descripcion: string; cantidad: string }[] = [];
 
   catGruposVulnerables = [
-    { id: 'NINGUNO', desc: 'Ninguno' },
-    { id: 'DISCAPACIDAD', desc: 'Discapacidad' },
-    { id: 'LENGUAJE', desc: 'Lenguaje Indígena' }
+    { id: 1, desc: 'Ninguno' },
+    { id: 2, desc: 'Discapacidad' },
+    { id: 3, desc: 'Lenguaje Indígena' }
   ];
 
   catDiscapacidades = [
@@ -158,13 +167,13 @@ export class CrearDemanda implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    //this.startTutorial();
-  //this.cargarCatalogoMunicipios();
-    this.cargarCatalogoMaterias();
-    this.cargarCatTipoDocumento();
-    this.cargarCatalogoSexos();
-    this.cargarCatalogoTipoPartes();
+    this.inicializarFormularios();
+    this.cargarCatalogosIniciales();
+    this.configurarSuscripcionesFormularios();
+    this.aplicarAlertaInicial();
+  }
 
+  private inicializarFormularios(): void {
     this.formulario = this.fb.group({
       cveMunicipio: [null, Validators.required],
       idCatMateria: [null, Validators.required],
@@ -183,21 +192,19 @@ export class CrearDemanda implements OnInit {
       apoderadoApellidoMaterno: [{ value: '', disabled: true }],
       apoderadoIdCatSexo: [{ value: null, disabled: true }],
       direccion: ['', [Validators.required, Validators.maxLength(250)]],
-      correo: ['', [Validators.email, Validators.maxLength(250)]],
-      telefono: [''],
+      correo: ['', [Validators.required, Validators.email, Validators.maxLength(250)]],
+      telefono: ['', [Validators.pattern(/^\d{10}$/)]],
       esMenorEdad: [false],
       idCatSexo: [null, Validators.required],
       idCatTipoParte: [null, Validators.required],
       fechaNacimiento: [''],
       grupoVulnerable: [[], Validators.required],
-      idDiscapacidad: [null],
-      idLenguaje: [null]
+      idDiscapacidad: [[]],
+      idLenguaje: [[]]
     });
 
     this.declaracionAnexoForm = this.fb.group({
       idCatTipoDocumento: [null, Validators.required],
-      //documento: ['', Validators.required],
-      //firmaDigital: [false],
       descripcion: [''],
       cantidad: [1, [Validators.required, Validators.min(1)]],
       fojas: [1, [Validators.required, Validators.min(1)]],
@@ -208,33 +215,55 @@ export class CrearDemanda implements OnInit {
 
     this.demandaForm = this.fb.group({
       documentoDemanda: [null, Validators.required],
-      numeroHojas: [null],
+      numeroHojas: [null, [Validators.required, Validators.min(1)]],
       demandaObservaciones: ['', Validators.maxLength(250)]
     });
 
     this.firmaForm = this.fb.group({
-      password_Efirma: ['', [Validators.required, Validators.maxLength(50)]],
+      password_Efirma: ['', [Validators.required, Validators.maxLength(100)]],
     });
+  }
 
+  private aplicarAlertaInicial(): void {
     const alerta = history.state.alerta;
     if (alerta) {
       this.messageService.add(alerta);
     }
+  }
 
+  private cargarCatalogosIniciales(): void {
+    this.cargarCatalogoMaterias();
+    this.cargarCatTipoDocumento();
+    this.cargarCatalogoSexos();
+    this.cargarCatalogoTipoPartes();
+  }
+
+  private configurarSuscripcionesFormularios(): void {
+    this.configurarSuscripcionMateria();
+    this.configurarSuscripcionTipoDocumento();
+    this.configurarSuscripcionValorAnexo();
+    this.configurarSuscripcionParteMoral();
+    this.configurarSuscripcionGrupoVulnerable();
+  }
+
+  private configurarSuscripcionMateria(): void {
     this.formulario.get('idCatMateria')?.valueChanges.subscribe(val => {
       const viaCtrl = this.formulario.get('idCatTipoVia');
       if (!val) {
         viaCtrl?.disable({ emitEvent: false });
         viaCtrl?.setValue(null, { emitEvent: false });
         this.catTipoVias = [];
-      } else {
-        viaCtrl?.setValue(null, { emitEvent: false });
-        viaCtrl?.disable({ emitEvent: false });
-        this.catTipoVias = [];
-        this.cargarCatalogoVias(val);
+        return;
       }
-    });
 
+      viaCtrl?.setValue(null, { emitEvent: false });
+      viaCtrl?.disable({ emitEvent: false });
+      this.catTipoVias = [];
+      this.cargarCatalogoVias(val);
+    });
+  }
+
+  private configurarSuscripcionTipoDocumento(): void {
     this.declaracionAnexoForm.get('idCatTipoDocumento')?.valueChanges.subscribe((val) => {
       const selectedValue = Number(val);
       const ultimo = this.catTipoDocumentos?.[this.catTipoDocumentos.length - 1];
@@ -251,9 +280,12 @@ export class CrearDemanda implements OnInit {
         const tipoSel = this.catTipoDocumentos.find(t => Number(t.idCatTipoDocumento) === selectedValue);
         this.declaracionAnexoForm.patchValue({ descripcion: tipoSel ? tipoSel.descripcion : '' }, { emitEvent: false });
       }
+
       descCtrl?.updateValueAndValidity({ emitEvent: false });
     });
+  }
 
+  private configurarSuscripcionValorAnexo(): void {
     this.declaracionAnexoForm.get('esValor')?.valueChanges.subscribe((on: boolean) => {
       const valorCtrl = this.declaracionAnexoForm.get('valor');
       if (!valorCtrl) return;
@@ -266,145 +298,192 @@ export class CrearDemanda implements OnInit {
         valorCtrl.markAsPristine();
         valorCtrl.markAsUntouched();
       }
+
       valorCtrl.updateValueAndValidity({ emitEvent: false });
     });
+  }
 
+  private configurarSuscripcionParteMoral(): void {
     this.parteForm.get('moral')?.valueChanges.subscribe((isMoral: boolean) => {
-      const paternoCtrl = this.parteForm.get('apellidoPaterno');
-      const maternoCtrl = this.parteForm.get('apellidoMaterno');
-      const generoCtrl = this.parteForm.get('idCatSexo');
-      const fechaNacimientoCtrl = this.parteForm.get('fechaNacimiento');
-      const esMenorEdadCtrl = this.parteForm.get('esMenorEdad');
-      const grupoVulnerableCtrl = this.parteForm.get('grupoVulnerable');
-      const discapacidadCtrl = this.parteForm.get('idDiscapacidad');
-      const lenguajeCtrl = this.parteForm.get('idLenguaje');
-      const apoderadoNombreCtrl = this.parteForm.get('apoderadoNombre');
-      const apoderadoPaternoCtrl = this.parteForm.get('apoderadoApellidoPaterno');
-      const apoderadoMaternoCtrl = this.parteForm.get('apoderadoApellidoMaterno');
-      const apoderadoGeneroCtrl = this.parteForm.get('apoderadoIdCatSexo');
-
       if (isMoral) {
-        paternoCtrl?.clearValidators();
-        paternoCtrl?.setValue('', { emitEvent: false });
-        paternoCtrl?.disable({ emitEvent: false });
-
-        maternoCtrl?.clearValidators();
-        maternoCtrl?.setValue('', { emitEvent: false });
-        maternoCtrl?.disable({ emitEvent: false });
-
-        generoCtrl?.clearValidators();
-        generoCtrl?.setValue(3);
-        generoCtrl?.disable({ emitEvent: false });
-
-        fechaNacimientoCtrl?.setValue(null, { emitEvent: false });
-        fechaNacimientoCtrl?.disable({ emitEvent: false });
-
-        esMenorEdadCtrl?.setValue(false, { emitEvent: false });
-        esMenorEdadCtrl?.disable({ emitEvent: false });
-
-        grupoVulnerableCtrl?.clearValidators();
-        grupoVulnerableCtrl?.setValue([], { emitEvent: false });
-        grupoVulnerableCtrl?.disable({ emitEvent: false });
-
-        discapacidadCtrl?.clearValidators();
-        discapacidadCtrl?.setValue(null, { emitEvent: false });
-        discapacidadCtrl?.disable({ emitEvent: false });
-
-        lenguajeCtrl?.clearValidators();
-        lenguajeCtrl?.setValue(null, { emitEvent: false });
-        lenguajeCtrl?.disable({ emitEvent: false });
-
-        apoderadoNombreCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
-        apoderadoNombreCtrl?.enable({ emitEvent: false });
-
-        apoderadoPaternoCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
-        apoderadoPaternoCtrl?.enable({ emitEvent: false });
-
-        apoderadoMaternoCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
-        apoderadoMaternoCtrl?.enable({ emitEvent: false });
-
-        apoderadoGeneroCtrl?.setValidators([Validators.required]);
-        apoderadoGeneroCtrl?.enable({ emitEvent: false });
+        this.aplicarConfiguracionParteMoral();
       } else {
-        paternoCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
-        paternoCtrl?.enable({ emitEvent: false });
-
-        maternoCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
-        maternoCtrl?.enable({ emitEvent: false });
-
-        generoCtrl?.setValidators([Validators.required]);
-        generoCtrl?.setValue(null, { emitEvent: false });
-        generoCtrl?.enable({ emitEvent: false });
-
-        fechaNacimientoCtrl?.enable({ emitEvent: false });
-        esMenorEdadCtrl?.enable({ emitEvent: false });
-
-        grupoVulnerableCtrl?.setValidators([Validators.required]);
-        grupoVulnerableCtrl?.enable({ emitEvent: false });
-        discapacidadCtrl?.enable({ emitEvent: false });
-        lenguajeCtrl?.enable({ emitEvent: false });
-
-        apoderadoNombreCtrl?.clearValidators();
-        apoderadoNombreCtrl?.setValue('', { emitEvent: false });
-        apoderadoNombreCtrl?.disable({ emitEvent: false });
-
-        apoderadoPaternoCtrl?.clearValidators();
-        apoderadoPaternoCtrl?.setValue('', { emitEvent: false });
-        apoderadoPaternoCtrl?.disable({ emitEvent: false });
-
-        apoderadoMaternoCtrl?.clearValidators();
-        apoderadoMaternoCtrl?.setValue('', { emitEvent: false });
-        apoderadoMaternoCtrl?.disable({ emitEvent: false });
-
-        apoderadoGeneroCtrl?.clearValidators();
-        apoderadoGeneroCtrl?.setValue(null, { emitEvent: false });
-        apoderadoGeneroCtrl?.disable({ emitEvent: false });
+        this.aplicarConfiguracionParteFisica();
       }
-
-      paternoCtrl?.updateValueAndValidity();
-      maternoCtrl?.updateValueAndValidity();
-      generoCtrl?.updateValueAndValidity();
-      fechaNacimientoCtrl?.updateValueAndValidity();
-      esMenorEdadCtrl?.updateValueAndValidity();
-      grupoVulnerableCtrl?.updateValueAndValidity();
-      discapacidadCtrl?.updateValueAndValidity();
-      lenguajeCtrl?.updateValueAndValidity();
-      apoderadoNombreCtrl?.updateValueAndValidity();
-      apoderadoPaternoCtrl?.updateValueAndValidity();
-      apoderadoMaternoCtrl?.updateValueAndValidity();
-      apoderadoGeneroCtrl?.updateValueAndValidity();
     });
+  }
 
-    this.parteForm.get('grupoVulnerable')?.valueChanges.subscribe((vals: string[]) => {
+  private configurarSuscripcionGrupoVulnerable(): void {
+    this.parteForm.get('grupoVulnerable')?.valueChanges.subscribe((vals: number[]) => {
       const discCtrl = this.parteForm.get('idDiscapacidad');
       const lengCtrl = this.parteForm.get('idLenguaje');
-
       const selected = vals || [];
 
-      // Si selecciona NINGUNO y hay otros seleccionados, podríamos querer resetear a solo NINGUNO.
-      // Pero si el array incluye NINGUNO y queremos que se limpie:
-      if (selected.includes('NINGUNO')) {
-        // Opción de limpiar los otros o simplemente ignorarlos.
-        // Aquí asumimos que "NINGUNO" domina y desactiva los otros campos.
+      if (selected.includes(1) && selected.length > 1) {
+        const valoresNormalizados = selected.filter(item => item !== 1);
+        this.parteForm.get('grupoVulnerable')?.setValue(valoresNormalizados, { emitEvent: false });
+        vals = valoresNormalizados;
       }
 
-      if (selected.includes('DISCAPACIDAD')) {
-        discCtrl?.setValidators([Validators.required]);
+      const selectedValues = vals || [];
+
+      if (selectedValues.includes(this.grupoVulnerableDiscapacidad)) {
+        discCtrl?.setValidators([Validators.required, Validators.minLength(1)]);
       } else {
         discCtrl?.clearValidators();
-        discCtrl?.setValue(null, { emitEvent: false });
+        discCtrl?.setValue([], { emitEvent: false });
       }
 
-      if (selected.includes('LENGUAJE')) {
-        lengCtrl?.setValidators([Validators.required]);
+      if (selectedValues.includes(this.grupoVulnerableLenguaje)) {
+        lengCtrl?.setValidators([Validators.required, Validators.minLength(1)]);
       } else {
         lengCtrl?.clearValidators();
-        lengCtrl?.setValue(null, { emitEvent: false });
+        lengCtrl?.setValue([], { emitEvent: false });
       }
 
       discCtrl?.updateValueAndValidity({ emitEvent: false });
       lengCtrl?.updateValueAndValidity({ emitEvent: false });
     });
+  }
+
+  private aplicarConfiguracionParteMoral(): void {
+    const paternoCtrl = this.parteForm.get('apellidoPaterno');
+    const maternoCtrl = this.parteForm.get('apellidoMaterno');
+    const generoCtrl = this.parteForm.get('idCatSexo');
+    const fechaNacimientoCtrl = this.parteForm.get('fechaNacimiento');
+    const esMenorEdadCtrl = this.parteForm.get('esMenorEdad');
+    const grupoVulnerableCtrl = this.parteForm.get('grupoVulnerable');
+    const discapacidadCtrl = this.parteForm.get('idDiscapacidad');
+    const lenguajeCtrl = this.parteForm.get('idLenguaje');
+    const apoderadoNombreCtrl = this.parteForm.get('apoderadoNombre');
+    const apoderadoPaternoCtrl = this.parteForm.get('apoderadoApellidoPaterno');
+    const apoderadoMaternoCtrl = this.parteForm.get('apoderadoApellidoMaterno');
+    const apoderadoGeneroCtrl = this.parteForm.get('apoderadoIdCatSexo');
+
+    paternoCtrl?.clearValidators();
+    paternoCtrl?.setValue('', { emitEvent: false });
+    paternoCtrl?.disable({ emitEvent: false });
+
+    maternoCtrl?.clearValidators();
+    maternoCtrl?.setValue('', { emitEvent: false });
+    maternoCtrl?.disable({ emitEvent: false });
+
+    generoCtrl?.clearValidators();
+    generoCtrl?.setValue(this.sexoMoral);
+    generoCtrl?.disable({ emitEvent: false });
+
+    fechaNacimientoCtrl?.setValue(null, { emitEvent: false });
+    fechaNacimientoCtrl?.disable({ emitEvent: false });
+
+    esMenorEdadCtrl?.setValue(false, { emitEvent: false });
+    esMenorEdadCtrl?.disable({ emitEvent: false });
+
+    grupoVulnerableCtrl?.clearValidators();
+    grupoVulnerableCtrl?.setValue([], { emitEvent: false });
+    grupoVulnerableCtrl?.disable({ emitEvent: false });
+
+    discapacidadCtrl?.clearValidators();
+    discapacidadCtrl?.setValue([], { emitEvent: false });
+    discapacidadCtrl?.disable({ emitEvent: false });
+
+    lenguajeCtrl?.clearValidators();
+    lenguajeCtrl?.setValue([], { emitEvent: false });
+    lenguajeCtrl?.disable({ emitEvent: false });
+
+    apoderadoNombreCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
+    apoderadoNombreCtrl?.enable({ emitEvent: false });
+
+    apoderadoPaternoCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
+    apoderadoPaternoCtrl?.enable({ emitEvent: false });
+
+    apoderadoMaternoCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
+    apoderadoMaternoCtrl?.enable({ emitEvent: false });
+
+    apoderadoGeneroCtrl?.setValidators([Validators.required]);
+    apoderadoGeneroCtrl?.enable({ emitEvent: false });
+
+    this.actualizarValidezParteMoral(
+      paternoCtrl,
+      maternoCtrl,
+      generoCtrl,
+      fechaNacimientoCtrl,
+      esMenorEdadCtrl,
+      grupoVulnerableCtrl,
+      discapacidadCtrl,
+      lenguajeCtrl,
+      apoderadoNombreCtrl,
+      apoderadoPaternoCtrl,
+      apoderadoMaternoCtrl,
+      apoderadoGeneroCtrl
+    );
+  }
+
+  private aplicarConfiguracionParteFisica(): void {
+    const paternoCtrl = this.parteForm.get('apellidoPaterno');
+    const maternoCtrl = this.parteForm.get('apellidoMaterno');
+    const generoCtrl = this.parteForm.get('idCatSexo');
+    const fechaNacimientoCtrl = this.parteForm.get('fechaNacimiento');
+    const esMenorEdadCtrl = this.parteForm.get('esMenorEdad');
+    const grupoVulnerableCtrl = this.parteForm.get('grupoVulnerable');
+    const discapacidadCtrl = this.parteForm.get('idDiscapacidad');
+    const lenguajeCtrl = this.parteForm.get('idLenguaje');
+    const apoderadoNombreCtrl = this.parteForm.get('apoderadoNombre');
+    const apoderadoPaternoCtrl = this.parteForm.get('apoderadoApellidoPaterno');
+    const apoderadoMaternoCtrl = this.parteForm.get('apoderadoApellidoMaterno');
+    const apoderadoGeneroCtrl = this.parteForm.get('apoderadoIdCatSexo');
+
+    paternoCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
+    paternoCtrl?.enable({ emitEvent: false });
+
+    maternoCtrl?.setValidators([Validators.required, Validators.maxLength(100)]);
+    maternoCtrl?.enable({ emitEvent: false });
+
+    generoCtrl?.setValidators([Validators.required]);
+    generoCtrl?.setValue(null, { emitEvent: false });
+    generoCtrl?.enable({ emitEvent: false });
+
+    fechaNacimientoCtrl?.enable({ emitEvent: false });
+    esMenorEdadCtrl?.enable({ emitEvent: false });
+
+    grupoVulnerableCtrl?.setValidators([Validators.required]);
+    grupoVulnerableCtrl?.enable({ emitEvent: false });
+    discapacidadCtrl?.enable({ emitEvent: false });
+    lenguajeCtrl?.enable({ emitEvent: false });
+
+    apoderadoNombreCtrl?.clearValidators();
+    apoderadoNombreCtrl?.setValue('', { emitEvent: false });
+    apoderadoNombreCtrl?.disable({ emitEvent: false });
+
+    apoderadoPaternoCtrl?.clearValidators();
+    apoderadoPaternoCtrl?.setValue('', { emitEvent: false });
+    apoderadoPaternoCtrl?.disable({ emitEvent: false });
+
+    apoderadoMaternoCtrl?.clearValidators();
+    apoderadoMaternoCtrl?.setValue('', { emitEvent: false });
+    apoderadoMaternoCtrl?.disable({ emitEvent: false });
+
+    apoderadoGeneroCtrl?.clearValidators();
+    apoderadoGeneroCtrl?.setValue(null, { emitEvent: false });
+    apoderadoGeneroCtrl?.disable({ emitEvent: false });
+
+    this.actualizarValidezParteMoral(
+      paternoCtrl,
+      maternoCtrl,
+      generoCtrl,
+      fechaNacimientoCtrl,
+      esMenorEdadCtrl,
+      grupoVulnerableCtrl,
+      discapacidadCtrl,
+      lenguajeCtrl,
+      apoderadoNombreCtrl,
+      apoderadoPaternoCtrl,
+      apoderadoMaternoCtrl,
+      apoderadoGeneroCtrl
+    );
+  }
+
+  private actualizarValidezParteMoral(...controles: Array<AbstractControl | null>): void {
+    controles.forEach(control => control?.updateValueAndValidity());
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -437,8 +516,6 @@ export class CrearDemanda implements OnInit {
       this.parteForm.markAllAsTouched();
       return;
     }
-    console.log(this.parteForm.value);
-
     const valores = this.parteForm.getRawValue();
 
     const nuevaParte: PartesRequest = {
@@ -452,17 +529,16 @@ export class CrearDemanda implements OnInit {
       apoderadoIdCatSexo: valores.apoderadoIdCatSexo ?? null,
       direccion: (valores.direccion ?? '').toUpperCase(),
       correo: (valores.correo ?? '').toUpperCase(),
-      telefono: valores.telefono ?? '',
+      telefono: (valores.telefono ?? '').trim() || undefined,
       esMenorEdad: Boolean(valores.esMenorEdad),
-      idCatSexo: valores.idCatSexo,
-      idCatTipoParte: valores.idCatTipoParte,
-      fechaNacimiento: valores.fechaNacimiento ?? null,
+      idCatSexo: valores.idCatSexo != null ? Number(valores.idCatSexo) : null,
+      idCatTipoParte: valores.idCatTipoParte != null ? Number(valores.idCatTipoParte) : null,
+      fechaNacimiento: this.formatFechaNacimiento(valores.fechaNacimiento),
       grupoVulnerable: valores.grupoVulnerable ?? [],
-      idDiscapacidad: valores.idDiscapacidad ?? null,
-      idLenguaje: valores.idLenguaje ?? null,
+      idDiscapacidad: this.normalizeNumberArray(valores.idDiscapacidad),
+      idLenguaje: this.normalizeNumberArray(valores.idLenguaje),
     };
 
-    // Normaliza el nombre completo quitando espacios extra para comparar
     const normalizar = (s: string) => (s ?? '').replace(/\s+/g, ' ').trim().toUpperCase();
     const nombreCompleto = normalizar(
       `${nuevaParte.nombre} ${nuevaParte.apellidoPaterno} ${nuevaParte.apellidoMaterno}`
@@ -487,7 +563,6 @@ export class CrearDemanda implements OnInit {
       return;
     }
 
-    // Validar duplicado por correo
     if (
       nuevaParte.correo &&
       this.listaPartes.some((p: PartesRequest, idx: number) =>
@@ -539,20 +614,22 @@ export class CrearDemanda implements OnInit {
     this.listaPartes.splice(index, 1);
   }
 
-  getGrupoVulnerableDescripcion(grupos?: string[]): string {
+  getGrupoVulnerableDescripcion(grupos?: Array<string | number>): string {
     if (!grupos?.length) return 'NINGUNO';
 
     return grupos
-      .map(grupo => this.catGruposVulnerables.find(item => item.id === grupo)?.desc ?? grupo)
+      .map(grupo => this.getGrupoVulnerableLabel(grupo))
       .join(', ');
   }
 
-  getDiscapacidadDescripcion(id?: number | null): string {
-    return this.catDiscapacidades.find(item => item.id === Number(id))?.desc ?? '';
+  getDiscapacidadDescripcion(id?: number[] | number | null): string {
+    const ids = this.normalizeNumberArray(Array.isArray(id) ? id : id != null ? [id] : []);
+    return ids.map(valor => this.catDiscapacidades.find(item => item.id === valor)?.desc ?? '').filter(Boolean).join(', ');
   }
 
-  getLenguajeDescripcion(id?: number | null): string {
-    return this.catLenguas.find(item => item.id === Number(id))?.desc ?? '';
+  getLenguajeDescripcion(id?: number[] | number | null): string {
+    const ids = this.normalizeNumberArray(Array.isArray(id) ? id : id != null ? [id] : []);
+    return ids.map(valor => this.catLenguas.find(item => item.id === valor)?.desc ?? '').filter(Boolean).join(', ');
   }
 
   getFechaNacimiento(fecha?: Date | string | null): string {
@@ -634,8 +711,6 @@ export class CrearDemanda implements OnInit {
     } else {
       this.anexosDeclarados.push(nuevoAnexo);
     }
-    console.log(this.anexosDeclarados);
-
     this.resetDeclaracionAnexoForm();
   }
 
@@ -668,7 +743,7 @@ export class CrearDemanda implements OnInit {
       esValor: false,
       valor: null
     });
-    
+
     this.archivoAnexo = undefined;
     this.limpiarUploaderAnexo();
     this.visibleListAnexo = false;
@@ -679,14 +754,51 @@ export class CrearDemanda implements OnInit {
   }
 
   onAnexoSelect(event: any) {
-    this.archivoAnexo = event.files?.[0];
+    const archivo = event.files?.[0];
+    if (!archivo) return;
+
+    if (!this.isPdfValido(archivo, 'anexo')) {
+      this.archivoAnexo = undefined;
+      this.limpiarUploaderAnexo();
+      return;
+    }
+
+    this.archivoAnexo = archivo;
   }
 
   onDemandaSelect(event: any) {
     const selectedFile = event?.files?.[0] ?? event?.target?.files?.[0] ?? null;
+    if (selectedFile && !this.isPdfValido(selectedFile, 'demanda')) {
+      this.quitarDemanda();
+      return;
+    }
+
     this.archivoDemanda = selectedFile ?? undefined;
-    this.demandaForm.patchValue({ documentoDemanda: this.archivoDemanda ?? null });
+
+    this.demandaForm.patchValue({
+      documentoDemanda: this.archivoDemanda ?? null
+    });
+
     this.demandaForm.get('documentoDemanda')?.markAsTouched();
+
+    this.limpiarPreviewDemanda();
+
+    if (this.archivoDemanda) {
+      this.demandaPreviewObjectUrl = URL.createObjectURL(this.archivoDemanda);
+
+      this.demandaPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+        `${this.demandaPreviewObjectUrl}#page=1&toolbar=0&navpanes=0&scrollbar=0`
+      );
+    }
+  }
+
+  private limpiarPreviewDemanda(): void {
+    if (this.demandaPreviewObjectUrl) {
+      URL.revokeObjectURL(this.demandaPreviewObjectUrl);
+      this.demandaPreviewObjectUrl = null;
+    }
+
+    this.demandaPreviewUrl = null;
   }
 
   private limpiarUploaderAnexo() {
@@ -698,7 +810,53 @@ export class CrearDemanda implements OnInit {
       this.demandaInput.nativeElement.value = '';
     }
   }
+  onDemandaDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDemandaDragOver = true;
+  }
 
+  onDemandaDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDemandaDragOver = false;
+  }
+
+  onDemandaDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.isDemandaDragOver = false;
+
+    const file = event.dataTransfer?.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.onDemandaSelect({
+      target: {
+        files: [file]
+      }
+    });
+  }
+
+  quitarDemanda(event?: Event): void {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    this.archivoDemanda = undefined;
+    this.demandaPreviewUrl = null;
+
+    this.demandaForm.patchValue({
+      documentoDemanda: null
+    });
+
+    this.demandaForm.get('documentoDemanda')?.markAsTouched();
+    this.demandaForm.get('documentoDemanda')?.updateValueAndValidity();
+
+    this.limpiarUploaderDemanda();
+  }
 
   verDocumento(archivo: File): void {
     if (archivo instanceof File) {
@@ -793,33 +951,26 @@ export class CrearDemanda implements OnInit {
 
   confirmarResumenEnvio() {
     this.visibleResumenEnvio = false;
-    this.demandaResponse = {
-      idDemanda: 1,
-      folio: '0001',
-      expediente: {
-        NumExpediente: '0023/2026',
-        juzgado: {
-          Descripcion: 'JUZGADO DEMO DE MUESTRA'
-        }
-      },
-      fechaHoraRecepcion: new Date().toISOString(),
-    } as unknown as CrearDemandaResponse;
+    this.enviarFormulario();
 
-    this.folio = this.demandaResponse.folio ?? '0001';
-    this.confirmationService.confirm({
-      key: 'success',
-      accept: () => { },
-      reject: () => { }
-    });
+    // this.confirmationService.confirm({
+    //   key: 'success',
+    //   accept: () => {
+    //     this.visibleResumenEnvio = false;
+    //   },
+    //   reject: () => {
+    //     this.visibleResumenEnvio = false;
+    //   }
+    // });
   }
 
   private construirResumenEnvio() {
     const values = this.formulario.getRawValue();
 
-    const juzgado = this.catJuzgado.find(j => Number(j.id) === Number(values.cveMunicipio))?.desc ?? 'N/A';
+    const juzgado = this.catJuzgado.find(j => Number(j.idArea) === Number(values.cveMunicipio))?.desc ?? 'N/A';
     const materia = this.catMaterias.find(m => Number(m.IdCatMateria) === Number(values.idCatMateria))?.Descripcion ?? 'N/A';
     const via = this.catTipoVias.find(v => Number(v.idCatTipoVia) === Number(values.idCatTipoVia))?.descripcion ?? 'N/A';
-    const accion = this.catAcciones.find(a => Number(a.id) === Number(values.accionAEjecutar))?.desc ?? 'N/A';
+    const accion = this.catAcciones.find(a => Number(a.idAccion) === Number(values.accionAEjecutar))?.desc ?? 'N/A';
 
     this.resumenGenerales = [
       { label: 'Juzgado', value: juzgado },
@@ -845,7 +996,7 @@ export class CrearDemanda implements OnInit {
     this.resumenAnexos = (this.anexosDeclarados ?? []).map(a => ({
       descripcion: a.descripcion || 'N/A',
       cantidad: String(a.cantidad ?? 'N/A'),
-     // firma: Number(a.firmaDigital) === 1 ? 'SI' : 'NO'
+      // firma: Number(a.firmaDigital) === 1 ? 'SI' : 'NO'
     }));
   }
   enviarFormulario() {
@@ -853,11 +1004,15 @@ export class CrearDemanda implements OnInit {
     const formValue = this.formulario.getRawValue();
     const formData = new FormData();
 
-    Object.entries(formValue).forEach(([key, value]) => {
-      formData.append(key, String(value ?? ''));
-    });
+    formData.append('idArea', String(formValue.cveMunicipio ?? ''));
+    formData.append('idCatMateria', String(formValue.idCatMateria ?? ''));
+    formData.append('idCatTipoVia', String(formValue.idCatTipoVia ?? ''));
+    formData.append('descripcionDemanda', String(formValue.descripcionDemanda ?? ''));
 
-    // 1. Agregar campos Simples
+    if (formValue.accionAEjecutar != null && formValue.accionAEjecutar !== '') {
+      formData.append('idAccion', String(formValue.accionAEjecutar));
+    }
+
     if (this.firmaVerificada) {
       formData.append('password_Efirma', this.firmaForm.value.password_Efirma ?? '');
     }
@@ -867,29 +1022,37 @@ export class CrearDemanda implements OnInit {
     }
 
 
-    // 2. Mapear y agregar Partes (Limpio y fuertemente tipado)
     this.listaPartes.forEach((parte, index) => {
-      // Definimos qué campos vacíos vamos a ignorar
-      const opcionales = ['apellidoPaterno', 'apellidoMaterno', 'apoderadoNombre', 'apoderadoApellidoPaterno', 'apoderadoApellidoMaterno', 'apoderadoIdCatSexo'];
-
-      Object.entries(parte).forEach(([key, value]) => {
-        // Ignorar propiedades exclusivas de UI y valores nulos/vacíos en opcionales
-        if (key === 'descripcionTipoParte') return;
-        if (opcionales.includes(key) && (!value || value.toString().trim() === '')) return;
-
-        formData.append(`partes[${index}][${key}]`, String(value));
-      });
+      this.appendNullableScalar(formData, `partes[${index}][nombre]`, parte.nombre);
+      this.appendNullableScalar(formData, `partes[${index}][apellidoPaterno]`, parte.apellidoPaterno);
+      this.appendNullableScalar(formData, `partes[${index}][apellidoMaterno]`, parte.apellidoMaterno);
+      this.appendNullableScalar(formData, `partes[${index}][direccion]`, parte.direccion);
+      this.appendNullableScalar(formData, `partes[${index}][correo]`, parte.correo);
+      this.appendNullableScalar(formData, `partes[${index}][telefono]`, parte.telefono);
+      this.appendBoolean(formData, `partes[${index}][esMenorEdad]`, parte.esMenorEdad);
+      this.appendNullableScalar(formData, `partes[${index}][idCatSexo]`, parte.idCatSexo);
+      this.appendNullableScalar(formData, `partes[${index}][idCatTipoParte]`, parte.idCatTipoParte);
+      this.appendNullableScalar(formData, `partes[${index}][fechaNacimiento]`, parte.fechaNacimiento);
+      this.appendBoolean(formData, `partes[${index}][moral]`, parte.moral ?? false);
+      this.appendNullableScalar(formData, `partes[${index}][apoderadoNombre]`, parte.apoderadoNombre);
+      this.appendNullableScalar(formData, `partes[${index}][apoderadoApellidoPaterno]`, parte.apoderadoApellidoPaterno);
+      this.appendNullableScalar(formData, `partes[${index}][apoderadoApellidoMaterno]`, parte.apoderadoApellidoMaterno);
+      this.appendNullableScalar(formData, `partes[${index}][apoderadoIdCatSexo]`, parte.apoderadoIdCatSexo);
+      this.appendIntegerArray(formData, `partes[${index}][grupoVulnerable]`, this.mapGrupoVulnerableToApi(parte.grupoVulnerable));
+      this.appendIntegerArray(formData, `partes[${index}][idDiscapacidad]`, parte.idDiscapacidad);
+      this.appendIntegerArray(formData, `partes[${index}][idLenguaje]`, parte.idLenguaje);
     });
 
-    // 4. Mapear y agregar Anexos Declarados
     this.anexosDeclarados.forEach((anexo, index) => {
-      Object.entries(anexo).forEach(([key, value]) => {
-        if (key === 'descripcion') return; // Evitamos mandar la descripción
-        formData.append(`anexosDeclarados[${index}][${key}]`, String(value ?? ''));
-      });
+      formData.append(`anexosDeclarados[${index}][idCatTipoDocumento]`, String(anexo.idCatTipoDocumento));
+      formData.append(`anexosDeclarados[${index}][cantidad]`, String(anexo.cantidad));
+      formData.append(`anexosDeclarados[${index}][fojas]`, String(anexo.fojas));
+      this.appendBoolean(formData, `anexosDeclarados[${index}][esValor]`, anexo.esValor);
+      this.appendNullableScalar(formData, `anexosDeclarados[${index}][valor]`, anexo.valor);
+      this.appendNullableScalar(formData, `anexosDeclarados[${index}][observaciones]`, anexo.observaciones);
+      formData.append(`anexosDeclarados[${index}][archivo]`, anexo.archivo, anexo.archivo.name);
     });
 
-    // 5. Enviar Petición
     this.juicioService.crearDemanda(formData).subscribe({
       next: (respuesta) => {
         this.isLoading = false;
@@ -912,7 +1075,6 @@ export class CrearDemanda implements OnInit {
     });
   }
 
-  /** Limpia todos los formularios y listas */
   limpiarTodo() {
     this.formulario.reset();
     this.parteForm.reset({ esMenorEdad: false, moral: false });
@@ -942,22 +1104,80 @@ export class CrearDemanda implements OnInit {
   // VALIDACIONES
   // =============================================
 
-  private validarPartesYDocumentosListas(): boolean {
+  validarPartesYDocumentosListas(): boolean {
     const partes = this.listaPartes ?? [];
     const anexos = this.anexosDeclarados ?? [];
 
-    if (partes.length < 1 || anexos.length < 1) return false;
+    if (partes.length < 2 || anexos.length < 1) return false;
 
-    const actores = [1, 2, 3, 4, 5, 21, 22, 24, 25];
-    const demandados = [7, 9, 10, 11, 14];
-
-    const tieneActor = partes.some(p => actores.includes(Number(p.idCatTipoParte)));
-    const tieneDemandado = partes.some(p => demandados.includes(Number(p.idCatTipoParte)));
+    const tieneActor = partes.some(p => this.tiposParteActor.includes(Number(p.idCatTipoParte)));
+    const tieneDemandado = partes.some(p => this.tiposParteDemandado.includes(Number(p.idCatTipoParte)));
 
     return tieneActor && tieneDemandado;
   }
 
-  /** Habilita el botón de acción principal (enviar o firma) */
+  tienePartesCompletas(): boolean {
+    const partes = this.listaPartes ?? [];
+
+    if (partes.length < 1) return false;
+
+    const tieneActor = partes.some(p => this.tiposParteActor.includes(Number(p.idCatTipoParte)));
+    const tieneDemandado = partes.some(p => this.tiposParteDemandado.includes(Number(p.idCatTipoParte)));
+
+    return tieneActor && tieneDemandado;
+  }
+
+  isParteFormularioCompleto(): boolean {
+    return this.parteForm?.valid ?? false;
+  }
+
+  isDatosGeneralesParteCompletos(): boolean {
+    const moral = !!this.parteForm.get('moral')?.value;
+
+    const controles = moral
+      ? ['nombre', 'idCatTipoParte']
+      : ['nombre', 'apellidoPaterno', 'apellidoMaterno', 'idCatSexo', 'idCatTipoParte'];
+
+    return controles.every(controlName => this.parteForm.get(controlName)?.valid ?? false);
+  }
+
+  isApoderadoCompleto(): boolean {
+    if (!this.parteForm.get('moral')?.value) return false;
+
+    return ['apoderadoNombre', 'apoderadoApellidoPaterno', 'apoderadoApellidoMaterno', 'apoderadoIdCatSexo']
+      .every(controlName => this.parteForm.get(controlName)?.valid ?? false);
+  }
+
+  isCondicionesParticularesCompletas(): boolean {
+    if (this.parteForm.get('moral')?.value) return false;
+
+    const grupoVulnerable = this.parteForm.get('grupoVulnerable')?.valid ?? true;
+    const fechaNacimiento = this.parteForm.get('fechaNacimiento')?.valid ?? false;
+    const esMenorEdad = this.parteForm.get('esMenorEdad')?.valid ?? false;
+    const requiereDiscapacidad = this.parteForm.get('grupoVulnerable')?.value?.includes(this.grupoVulnerableDiscapacidad);
+    const requiereLenguaje = this.parteForm.get('grupoVulnerable')?.value?.includes(this.grupoVulnerableLenguaje);
+    const discapacidad = !requiereDiscapacidad || (this.parteForm.get('idDiscapacidad')?.valid ?? false);
+    const lenguaje = !requiereLenguaje || (this.parteForm.get('idLenguaje')?.valid ?? false);
+
+    return grupoVulnerable && fechaNacimiento && esMenorEdad && discapacidad && lenguaje;
+  }
+
+  isContactoCompleto(): boolean {
+    return (this.parteForm.get('correo')?.valid ?? false) && (this.parteForm.get('telefono')?.valid ?? false);
+  }
+
+  isDomicilioCompleto(): boolean {
+    return this.parteForm.get('direccion')?.valid ?? false;
+  }
+
+  isDeclaracionAnexoCompleta(): boolean {
+    return (this.declaracionAnexoForm?.valid ?? false) && !!this.archivoAnexo;
+  }
+
+  tieneAnexosDeclarados(): boolean {
+    return (this.anexosDeclarados?.length ?? 0) > 0;
+  }
+
   canEnviar(): boolean {
     return this.formulario.valid && this.validarPartesYDocumentosListas() && this.demandaForm.valid;
   }
@@ -973,6 +1193,90 @@ export class CrearDemanda implements OnInit {
   shouldShowError(controlName: string, form: FormGroup = this.parteForm): boolean {
     const control = form.get(controlName);
     return control ? control.invalid && (control.dirty || this.formEnviado) : false;
+  }
+
+  private normalizeNumberArray(value: unknown): number[] {
+    if (!Array.isArray(value)) return [];
+
+    return value
+      .map(item => Number(item))
+      .filter(item => !Number.isNaN(item));
+  }
+
+  private formatFechaNacimiento(value: unknown): string | null {
+    if (!value) return null;
+
+    const fecha = value instanceof Date ? value : new Date(String(value));
+    if (Number.isNaN(fecha.getTime())) return String(value);
+
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private getGrupoVulnerableLabel(grupo: string | number): string {
+    if (grupo === 'NINGUNO' || Number(grupo) === 1) return 'Ninguno';
+    if (grupo === 'DISCAPACIDAD' || Number(grupo) === 2) return 'Discapacidad';
+    if (grupo === 'LENGUAJE' || Number(grupo) === 3) return 'Lenguaje Indigena';
+    return String(grupo);
+  }
+
+  private mapGrupoVulnerableToApi(grupos?: Array<string | number>): number[] {
+    if (!grupos?.length) return [];
+
+    return grupos
+      .map(grupo => {
+        if (grupo === 'NINGUNO') return 1;
+        if (grupo === 'DISCAPACIDAD') return 2;
+        if (grupo === 'LENGUAJE') return 3;
+        return Number(grupo);
+      })
+      .filter(grupo => !Number.isNaN(grupo));
+  }
+
+  private appendNullableScalar(formData: FormData, key: string, value: unknown): void {
+    if (value == null) return;
+
+    const normalized = typeof value === 'string' ? value.trim() : value;
+    if (normalized === '') return;
+
+    formData.append(key, String(normalized));
+  }
+
+  private appendBoolean(formData: FormData, key: string, value: boolean): void {
+    formData.append(key, value ? '1' : '0');
+  }
+
+  private appendIntegerArray(formData: FormData, key: string, values?: number[] | null): void {
+    values?.forEach((value, index) => {
+      formData.append(`${key}[${index}]`, String(value));
+    });
+  }
+
+  private isPdfValido(file: File, tipoDocumento: 'demanda' | 'anexo'): boolean {
+    const esPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    const maxSizeBytes = 20 * 1024 * 1024;
+
+    if (!esPdf) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Archivo invÃ¡lido',
+        detail: `El archivo de ${tipoDocumento} debe estar en formato PDF.`
+      });
+      return false;
+    }
+
+    if (file.size > maxSizeBytes) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Archivo demasiado grande',
+        detail: `El archivo de ${tipoDocumento} no debe exceder 20 MB.`
+      });
+      return false;
+    }
+
+    return true;
   }
 
   // =============================================
@@ -1031,7 +1335,6 @@ export class CrearDemanda implements OnInit {
     });
   }
 
-
   startTutorial() {
     const driverObj = driver({
       nextBtnText: 'Siguiente',
@@ -1040,14 +1343,12 @@ export class CrearDemanda implements OnInit {
       showProgress: true,
       showButtons: ['next', 'previous'],
       steps: [
-        { element: '#cveMunicipio', popover: { title: 'Selecciona un municipio', description: 'Haz clic aquí y elige el municipio donde quieras llevar a cabo tu proceso.', side: "left", align: 'start' } },
-        { element: '#idCatMateria', popover: { title: 'Selecciona la materia del caso', description: 'Haz clic aquí y elige la materia a la que pertenece tu demanda.', side: "left", align: 'start' } },
-        { element: '#idCatTipoVia', popover: { title: 'Elige la vía correspondiente', description: 'Después de seleccionar la materia, selecciona la vía que aplique a tu demanda.', side: "bottom", align: 'start' } },
-        { element: '#descripcionDemanda', popover: { title: 'Describe brevemente tu demanda', description: 'Escribe un resumen corto que explique el motivo o el contexto de la demanda.', side: "bottom", align: 'start' } },
-        { element: '#agregarParte', popover: { title: 'Agrega una parte al expediente', description: 'Presiona este botón para añadir una persona u organización relacionada con la demanda .', side: "left", align: 'start' } },
-        //{ element: '#listadoPartes', popover: { title: 'Listado de partes agregadas', description: 'Aquí verás todas las partes que hayas agregado. Puedes editarlas o eliminarlas si es necesario', side: "left", align: 'start' } },
-        { element: '#declaraAnexos', popover: { title: 'Agrega tus anexos', description: 'Presiona este botón para añadir la lista de anexos a declarar .', side: "left", align: 'start' } },
-        { element: '#agregarArchivos', popover: { title: 'Agrega tus archivos', description: 'Presiona este botón para añadir la lista de archivos previamente declarados.', side: "left", align: 'start' } },
+        { element: '#generales', popover: { title: 'Seleccione un valor por cada campo', description: 'Haz clic en cada campo para seleccionar un valor y escribir una observación si es necesario.', side: "left", align: 'start' } },
+        { element: '#demanda', popover: { title: 'Cargue o suelte su demanda', description: 'Haz clic en el área delimitada de carga para seleccionar tu archivo de demanda.', side: "left", align: 'start' } },
+        { element: '#partes', popover: { title: 'Listado de partes', description: 'Aquí verás todas las partes que hayas agregado. Puedes editarlas o eliminarlas si es necesario.', side: "top", align: 'start' } },
+        { element: '#botonAgregarParte', popover: { title: 'Agrega una parte', description: 'Presiona este botón para añadir una persona física o moral relacionada con la demanda.', side: "left", align: 'start' } },
+        { element: '#anexos', popover: { title: 'Agrega tus anexos', description: 'Presiona este botón para añadir la lista de anexos a declarar .', side: "top", align: 'start' } },
+        { element: '#botonAgregarAnexos', popover: { title: 'Agrega tus archivos', description: 'Presiona este botón para añadir la lista de archivos previamente declarados.', side: "left", align: 'start' } },
 
       ]
     });
@@ -1055,3 +1356,4 @@ export class CrearDemanda implements OnInit {
     driverObj.drive();
   }
 }
+

@@ -11,7 +11,7 @@ import { NotificacionResponse } from '../../interface/shared.interface';
     @if (visible && notificacion) {
       <div class="fixed top-4 right-4 z-[9999] max-w-md w-full" @slideInDown>
         <div class="bg-white dark:bg-surface-800 rounded-lg shadow-xl border border-surface-200 dark:border-surface-700 overflow-hidden">
-          <!-- Header con icono y botón cerrar -->
+          <!-- Breadcrub con icono y botón cerrar -->
           <div class="flex items-center justify-between p-4 bg-gradient-to-r" [ngClass]="getGradient()">
             <div class="flex items-center gap-3 flex-1 min-w-0">
               <!-- Icono según acción -->

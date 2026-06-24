@@ -13,7 +13,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { TableModule } from 'primeng/table';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { FileUpload, FileUploadClasses, FileUploadModule } from 'primeng/fileupload';
@@ -26,7 +26,7 @@ import { Spinner } from "../../../shared/components/spinner/spinner";
 
 @Component({
   selector: 'app-detalle-requerimientos',
-  imports: [PdfDialog, FieldsetModule, CardModule, DatePipe, CommonModule, ConfirmDialogModule, DialogModule, FormsModule, ReactiveFormsModule, ButtonModule, Breadcrub, TableModule, ConfirmDialog, FileUploadModule, SelectModule, InputTextModule, TextareaModule, Spinner],
+  imports: [PdfDialog, FieldsetModule, CardModule, DatePipe, CommonModule, ConfirmDialogModule, DialogModule, FormsModule, ReactiveFormsModule, ButtonModule, Header, TableModule, ConfirmDialog, FileUploadModule, SelectModule, InputTextModule, TextareaModule, Spinner],
   templateUrl: './detalle-requerimientos.html',
   styleUrl: './detalle-requerimientos.css',
   providers: [ConfirmationService, MessageService],
@@ -754,3 +754,6 @@ export class DetalleRequerimientos implements OnInit {
 
 
 }
+
+
+

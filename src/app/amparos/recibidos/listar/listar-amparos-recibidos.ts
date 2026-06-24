@@ -13,14 +13,14 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import {InputTextModule} from 'primeng/inputtext';
 import { Spinner } from "../../../shared/components/spinner/spinner";
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { Header } from "../../../shared/components/header/header";
 import { catalogoEstatus, ListadoAmparosRecibidosI } from '../../interfaces/amparos.models';
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { AmparosService } from '../../services/amparo.service';
 
 @Component({
   selector: 'app-ListarAmparosRecibidos',
-  imports: [Spinner, Breadcrub, Select, DatePicker, Button, TableModule, IconField, InputIcon, Tag, Toast,CommonModule,FormsModule,InputTextModule],
+  imports: [Spinner, Header, Select, DatePicker, Button, TableModule, IconField, InputIcon, Tag, Toast,CommonModule,FormsModule,InputTextModule],
   templateUrl: './listar-amparos-recibidos.html',
   styleUrl: './listar-amparos-recibidos.css',
   providers: [MessageService]
@@ -183,3 +183,4 @@ export class ListarAmparosRecibidos {
     });
   }
 }
+

@@ -20,7 +20,7 @@ import { SelectModule } from 'primeng/select';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 // Shared
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
@@ -74,7 +74,7 @@ const OFICIO_ROW: TramitePendiente = {
     InputGroupAddonModule,
     TagModule,
     SelectModule,
-    Breadcrub,
+    Header,
     Spinner,
     ConfirmDialog,
     ConfirmDialogModule,
@@ -544,3 +544,4 @@ export class CrearAcuerdo implements OnInit {
     }
   }
 }
+

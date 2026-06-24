@@ -1,83 +1,280 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<div class="lg:sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-950">
+<div class="sticky top-0 z-50 flex flex-col sm:bg-surface-0 dark:bg-surface-950">
+    <app-header></app-header>
     <app-breadcrub></app-breadcrub>
+    <!-- <h2
+        class="font-normal text-2xl sm:font-semibold text-surface-0 sm:text-surface-800  dark:text-surface-200 dark:sm:bg-surface-950 tracking-tight pb-2">
+    </h2> -->
+    <div class="mb-2">
+        <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
+            Crear Demanda de Primera Instancia
+        </h1>
+        <p class="text-surface-500 dark:text-surface-400 mt-1">
+            Capture la información requerida según corresponda su demanda.
+        </p>
+    </div>
 
-    <h2 class="text-2xl font-semibold text-surface-800 dark:text-surface-200 pl-2 mb-2 tracking-tight">
-        Crear Demanda 1° Instancia
-    </h2>
 </div>
 
-<div
-    class="relative z-0 border border-blue-300 border-dashed rounded-2xl mb-4 p-4 bg-gradient-to-b from-blue-50 to-white dark:from-surface-900 dark:to-surface-950 dark:border-surface-700">
-    <div class="flex items-start flex-col md:justify-between md:flex-row">
-        <div class="font-medium text-xl text-surface-800 dark:text-surface-200  mb-4">Datos generales de la demanda
+<!--* FORMULARIO GENERALES  -->
+<div class="grid grid-cols-1 xl:grid-cols-12 xl:gap-4 items-stretch">
+    <div class="xl:col-span-8 min-w-0 flex">
+        <div id="generales"
+            class="relative z-0 flex-1 border border-dashed rounded-2xl mb-4 p-4 dark:from-surface-900 dark:to-surface-950 dark:border-surface-700"
+            [ngClass]="formulario.valid
+              ? 'bg-gradient-to-b from-emerald-100 to-white border-emerald-300'
+              : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
+            <div class="flex min-h-[44px] items-center gap-4 mb-4">
+                <div class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
+                    <span class="text-blue-600 font-bold text-lg">1</span>
+                </div>
+                <div>
+                    <h3 class="text-base font-semibold leading-tight">
+                        Datos generales de la demanda
+                    </h3>
+                    <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                        Completa los datos según corresponda.
+                    </p>
+                </div>
+            </div>
+
+            <div class="w-full">
+                <form [formGroup]="formulario" appendTo="body">
+                    <div class="grid grid-cols-6 gap-6">
+                        <div class="grid grid-cols-6 col-span-6 sm:col-span-3 gap-4">
+                            <!-- Catálogo de Municipio -->
+                            <div id="cveMunicipio" class="col-span-6 grid gap-2">
+                                <label for="cveMunicipio" class="text-sm font-medium">Juzgado</label>
+                                <p-select formControlName="cveMunicipio" fluid [options]="catJuzgado" optionValue="idArea"
+                                    placeholder="Selecciona un juzgado" [filter]="true" appendTo="body"
+                                    optionLabel="desc" />
+                            </div>
+
+                            <!-- Catálogo de Materias -->
+                            <div id="idCatMateria" class="col-span-6 grid gap-2">
+                                <label for="idCatMateria" class="text-sm font-medium">Materia</label>
+                                <p-select formControlName="idCatMateria" fluid appendTo="body" [options]="catMaterias"
+                                    optionValue="IdCatMateria" placeholder="Selecciona una materia"
+                                    optionLabel="Descripcion" />
+                            </div>
+
+                            <!-- Catálogo de Vías -->
+                            <div id="idCatTipoVia" class="col-span-6 grid gap-2">
+                                <label for="idCatVia" class="text-sm font-medium">Vía</label>
+                                <p-select formControlName="idCatTipoVia" fluid appendTo="body" [filter]="true"
+                                    [disabled]="catTipoVias.length === 0" [options]="catTipoVias"
+                                    optionValue="idCatTipoVia" placeholder="Selecciona una vía"
+                                    optionLabel="descripcion" />
+                            </div>
+                        </div>
+                        <div class="grid col-span-6 sm:col-span-3 gap-4">
+                            <div id="accionAEjecutar" class="col-span-6">
+                                <label for="accionAEjecutar" class="block mb-2 text-sm font-medium">Acción a
+                                    ejecutar</label>
+                                <p-select formControlName="accionAEjecutar" fluid appendTo="body"
+                                    [options]="catAcciones" optionValue="idAccion" placeholder="Selecciona una acción"
+                                    optionLabel="desc" />
+                            </div>
+                            <div id="descripcionDemanda" class="col-span-6">
+                                <label for="descripcionDemanda"
+                                    class="block mb-2 text-sm font-medium">Observaciones</label>
+                                <textarea formControlName="descripcionDemanda" rows="5" fluid appendTo="body"
+                                    placeholder="Observaciones..." pTextarea class="block leading-normal">
+    </textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
         </div>
     </div>
 
-    <div class="w-full">
-        <!--* FORMULARIO GENERALES  -->
-        <form [formGroup]="formulario" appendTo="body">
-            <div class="grid grid-cols-6 gap-6">
-                <div class="col-span-6 sm:col-span-3 grid gap-3 ">
-                    <!-- Catálogo de Municipio -->
-                    <div id="cveMunicipio" class="col-span-6 sm:col-span-3 relative">
-                        <label for="cveMunicipio" class="block mb-2 text-sm font-medium">Juzgado</label>
-                        <p-select formControlName="cveMunicipio" fluid [options]="catJuzgado" optionValue="id"
-                            placeholder="Selecciona un juzgado" [filter]="true" appendTo="body" optionLabel="desc" />
-                    </div>
-                    <!-- Catálogo de Materias (select único) -->
-                    <div id="idCatMateria" class="col-span-6 sm:col-span-3">
-                        <label for="idCatMateria" class="block mb-2 text-sm font-medium">Materia</label>
-                        <p-select formControlName="idCatMateria" fluid appendTo="body" [options]="catMaterias"
-                            optionValue="IdCatMateria" placeholder="Selecciona una materia" optionLabel="Descripcion" />
-                    </div>
+    <div class="xl:col-span-4 flex">
+        <div id="demanda"
+            class="relative z-0 flex-1 border border-dashed rounded-2xl mb-4 p-4 dark:from-surface-900 dark:to-surface-950 dark:border-surface-700"
+            [ngClass]="demandaForm.valid 
+              ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300' 
+              : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
 
-                    <!-- Catálogo de Vías -->
-                    <div id="idCatTipoVia" class="col-span-6 sm:col-span-3">
-                        <label for="idCatVia" class="block mb-2 text-sm font-medium  ">Vía</label>
-
-                        <p-select formControlName="idCatTipoVia" fluid appendTo="body" [filter]="true"
-                            [disabled]="catTipoVias.length === 0" [options]="catTipoVias" optionValue="idCatTipoVia"
-                            placeholder="Selecciona una vía" optionLabel="descripcion" />
-                    </div>
-                </div>
-                <div class="col-span-6 sm:col-span-3">
-                    <div id="descripcionDemanda" class="col-span-6 sm:col-span-6">
-                        <label for="accionAEjecutar" class="block mb-2 text-sm font-medium">Acción a ejecutar</label>
-                        <p-select formControlName="accionAEjecutar" fluid appendTo="body" [options]="catAcciones"
-                            optionValue="id" placeholder="Selecciona una acción" optionLabel="desc" />
-
-                        <label for="descripcionDemanda"
-                            class="block mt-3 mb-2 text-sm font-medium">Observaciones</label>
-                        <textarea formControlName="descripcionDemanda" rows="5" fluid appendTo="body"
-                            placeholder="Observaciones..." pTextarea></textarea>
-                    </div>
+            <!-- Encabezado limpio: se conserva siempre -->
+            <div class="flex min-h-[44px] items-center gap-4 mb-4">
+                <div class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
+                    <span class="text-blue-600 font-bold text-lg">2</span>
                 </div>
 
+                <div>
+                    <h3 class="text-base font-semibold leading-tight">
+                        Documento de demanda
+                    </h3>
+                    <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                        Carga el PDF principal de tu demanda para habilitar el envío.
+                    </p>
+                </div>
             </div>
-        </form>
 
+            <div [formGroup]="demandaForm">
+                <input #demandaInput id="documentoDemanda" type="file" accept=".pdf,application/pdf" class="hidden"
+                    (change)="onDemandaSelect($event)" />
+
+                @if (!archivoDemanda) {
+                <!-- Sin archivo: toda el área es carga -->
+                <label for="documentoDemanda"
+                    class="relative flex min-h-[232px] w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-dashed border-blue-300 bg-white/80 dark:bg-surface-900/80 transition hover:border-blue-500 hover:bg-blue-50/70 dark:hover:bg-surface-800"
+                    (dragover)="onDemandaDragOver($event)" (dragleave)="onDemandaDragLeave($event)"
+                    (drop)="onDemandaDrop($event)"
+                    [ngClass]="isDemandaDragOver ? 'border-blue-500 bg-blue-50 dark:bg-surface-800' : ''">
+
+                    <div class="flex min-h-[232px] flex-col items-center justify-center px-4 py-4 text-center">
+                        <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10">
+                            <i class="pi pi-cloud-upload text-2xl text-blue-500"></i>
+                        </div>
+
+                        <p class="text-sm font-semibold text-surface-800 dark:text-surface-100">
+                            Selecciona o arrastra tu PDF aquí
+                        </p>
+
+                        <p class="mt-1 max-w-[260px] text-xs text-surface-500 dark:text-surface-400">
+                            Se mostrará una vista previa de la primera hoja.
+                        </p>
+
+                        <span
+                            class="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-500 px-3 py-2 text-xs font-semibold text-white">
+                            <i class="pi pi-upload"></i>
+                            Seleccionar demanda
+                        </span>
+
+                        <p class="mt-3 text-[11px] text-surface-400">
+                            Solo PDF. Tamaño máximo recomendado: 1 MB.
+                        </p>
+                    </div>
+                </label>
+                <div *ngIf="demandaForm.get('documentoDemanda')?.invalid && demandaForm.get('documentoDemanda')?.touched"
+                    class="mt-2 text-red-500 text-sm">
+                    Debe cargar el documento de demanda.
+                </div>
+                } @else {
+                <!-- Con archivo: preview + columna derecha -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+                    <!-- Preview -->
+                    <div class="min-w-0">
+                        <label for="numeroHojas" class="block mb-2 text-sm font-medium">
+                            Archivo cargado
+                        </label>
+                        <div
+                            class="relative flex min-h-[230px] w-full flex-col overflow-hidden rounded-2xl border-2 border-dashed border-blue-300 bg-white/80 dark:bg-surface-900/80">
+
+                            <button type="button"
+                                class="absolute right-2 top-2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-surface-600 shadow-sm transition hover:bg-red-50 hover:text-red-600"
+                                title="Quitar documento" (click)="quitarDemanda($event)">
+                                <i class="pi pi-times text-sm"></i>
+                            </button>
+
+                            <div
+                                class="absolute left-3 top-3 right-12 z-10 flex items-start gap-2 rounded-xl bg-white/95 dark:bg-surface-900/95 px-3 py-2 shadow-sm">
+                                <i class="pi pi-file-pdf text-red-500 mt-0.5"></i>
+                                <div class="min-w-0">
+
+                                    <p class="text-sm truncate" [title]="archivoDemanda.name">
+                                        {{ archivoDemanda.name }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button type="button"
+                                class="relative h-full min-h-[230px] w-full bg-surface-100 dark:bg-surface-950 overflow-hidden text-left"
+                                (click)="verDocumento(archivoDemanda)">
+
+                                @if (demandaPreviewUrl) {
+                                <iframe [src]="demandaPreviewUrl"
+                                    class="absolute left-1/2 top-12 h-[720px] w-[540px] origin-top -translate-x-1/2 scale-[0.30] pointer-events-none border-0"
+                                    title="Preview de demanda">
+                                </iframe>
+                                }
+
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent">
+                                </div>
+
+                                <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
+                                    <span
+                                        class="inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1.5 text-xs font-semibold text-surface-700">
+                                        <i class="pi pi-eye"></i>
+                                        Ver documento
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Inputs sin border envolvente -->
+                    <div class="grid grid-cols-1 gap-4 min-w-0">
+                        <div class="col-span-6">
+                            <label for="numeroHojas" class="block mb-2 text-sm font-medium">
+                                Número de fojas
+                            </label>
+
+                            <p-inputnumber [showButtons]="true" buttonLayout="horizontal" spinnerMode="horizontal"
+                                [step]="1" [min]="1" inputId="numeroHojas" formControlName="numeroHojas" fluid
+                                appendTo="body" placeholder="Escribe el número de fojas">
+                                <ng-template #incrementbuttonicon>
+                                    <span class="pi pi-plus"></span>
+                                </ng-template>
+                                <ng-template #decrementbuttonicon>
+                                    <span class="pi pi-minus"></span>
+                                </ng-template>
+                            </p-inputnumber>
+                        </div>
+
+                        <div id="accionAEjecutar" class="col-span-6">
+                            <label for="demandaObservaciones"
+                                class="block mb-2 text-sm font-medium">Observaciones</label>
+
+                            <textarea pTextarea formControlName="demandaObservaciones" fluid appendTo="body"
+                                placeholder="Observaciones sobre el documento de demanda..." rows="4"
+                                maxLength="200"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                }
+            </div>
+        </div>
     </div>
 </div>
-
 <p-toast></p-toast>
 
 <p-confirmdialog />
 
 <!--* LISTA PARTES-->
-<div
-    class="relative z-0 mt-4 border border-blue-300 border-dashed rounded-2xl mb-4 p-4 bg-gradient-to-b from-blue-50 to-white dark:from-surface-900 dark:to-surface-950 dark:border-surface-700">
+<div id="partes"
+    class="relative z-0 border border-dashed rounded-2xl mb-4 p-4 dark:from-surface-900 dark:to-surface-950 dark:border-surface-700"
+    [ngClass]="tienePartesCompletas() 
+    ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300' 
+  : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
 
     <div class="w-full">
-        <p-table class="personalizado" [value]="listaPartes" stripedRows [scrollable]="true" scrollHeight="flex" scrollDirection="both"
-            [tableStyle]="{ 'min-width': '100%', width: 'max-content' }">
+        <p-table class="personalizado" [value]="listaPartes" stripedRows [scrollable]="true" scrollHeight="flex"
+            scrollDirection="both" [tableStyle]="{ 'min-width': '100%', width: 'max-content' }">
             <ng-template #caption>
                 <div class="flex mb-2 ">
-                    <div
-                        class="flex items-center justify-center font-medium text-xl text-surface-800 dark:text-surface-200">
-                        Partes</div>
-                    <p-button id="agregarParte" icon="pi pi-users" class="ml-auto" label="Agregar"
+                    <div class="flex min-h-[44px] items-center gap-4 mb-4">
+                        <div class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
+                            <span class="text-blue-600 font-bold text-lg">3</span>
+                        </div>
+
+                        <div class="text-black dark:text-white">
+                            <h3 class="text-base font-semibold leading-tight ">
+                                Listado de partes
+                            </h3>
+                            <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                                Agrega las partes involucradas en la demanda.
+                            </p>
+                        </div>
+                    </div>
+                    <p-button id="botonAgregarParte" icon="pi pi-users" class="ml-auto" label="Agregar"
                         (click)="showDialog()" />
                 </div>
             </ng-template>
@@ -149,142 +346,80 @@
             </ng-template>
             <ng-template #emptymessage>
                 <tr>
-                    <td colspan="13" class="text-center p-4">No hay partes registradas.</td>
+                    <td colspan="13" class="text-start p-4">No hay partes registradas.</td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
 </div>
 
-<!--* CARGAR DEMENDA Y DE DOCUMENTOS ANEXOS -->
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-4 mt-4 mb-4">
-    <aside class="xl:col-span-3">
-        <div
-            class="relative z-0 rounded-2xl border border-dashed border-blue-300 bg-gradient-to-b from-green-200 to-white dark:from-surface-900 dark:to-surface-950 p-4 shadow-sm h-full">
-            <div class="flex items-start gap-3 mb-3">
-                <div class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
-                    <i class="pi pi-upload text-blue-500"></i>
-                </div>
-                <div>
-                    <h3 class="text-base font-semibold leading-tight">Documento de demanda</h3>
-                    <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                        Carga el PDF principal de tu demanda para habilitar el envío.
-                    </p>
-                </div>
-            </div>
-
-            <div [formGroup]="demandaForm" class="space-y-3">
-                <input #demandaInput id="documentoDemanda" type="file" accept=".pdf,application/pdf" class="hidden"
-                    (change)="onDemandaSelect($event)" />
-
-                <label for="documentoDemanda"
-                    class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-blue-500 bg-blue-500 px-4 py-2.5 text-sm font-semibold text-white cursor-pointer transition-colors hover:bg-blue-600 hover:border-blue-600">
-                    <i class="pi pi-upload"></i>
-                    Seleccionar demanda
-                </label>
-
-                <div
-                    class="rounded-lg border border-surface-200 dark:border-surface-700 px-3 py-2 bg-surface-0 dark:bg-surface-900">
-                    @if (archivoDemanda) {
-                    <div class="flex items-start gap-2">
-                        <i class="pi pi-file text-green-600 mt-0.5"></i>
-                        <div class="min-w-0">
-                            <p class="text-xs font-semibold text-green-700 dark:text-green-500 uppercase">Archivo
-                                cargado</p>
-                            <p class="text-sm truncate" [title]="archivoDemanda.name">{{ archivoDemanda.name }}</p>
-                        </div>
+<!--* LISTA DOCUMENTOS ANEXOS -->
+<div id="anexos"
+    class="relative z-0 mb-4 border border-dashed rounded-2xl p-4 dark:from-surface-900 dark:to-surface-950 dark:border-surface-700"
+    [ngClass]="tieneAnexosDeclarados() ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300'  : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
+    <p-table class="personalizado" [value]="anexosDeclarados" stripedRows [scrollable]="true"
+        scrollDirection="horizontal" [tableStyle]="{ 'min-width': '60rem' }">
+        <ng-template #caption>
+            <div class="flex mb-2">
+                <div class="flex min-h-[44px] items-center gap-4 mb-4">
+                    <div class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
+                        <span class="text-blue-600 font-bold text-lg">4</span>
                     </div>
-                    } @else {
-                    <div class="flex items-start gap-2">
-                        <i class="pi pi-info-circle text-surface-400 mt-0.5"></i>
-                        <p class="text-xs text-surface-500 dark:text-surface-400">
-                            Solo se acepta PDF. Tamaño máximo recomendado: 1 MB.
+                    <div class="text-black dark:text-white">
+                        <h3 class="text-base font-semibold leading-tight ">
+                            Listado de anexos
+                        </h3>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                            Agrega los anexos declarados en la demanda.
                         </p>
                     </div>
-                    }
                 </div>
-
-                <div class="grid grid-cols-6 gap-2 mt-2">
-                    <div class="col-span-6 sm:col-span-6">
-                        <label for="numeroHojas" class="block mb-2 text-sm font-medium">Número de fojas</label>
-                        <p-inputnumber inputId="numeroHojas" formControlName="numeroHojas" class="w-full" [min]="1"
-                            [max]="999" mode="decimal" placeholder="0" />
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-6 gap-2 mt-2">
-                    <div class="col-span-6 sm:col-span-6">
-                        <label for="demandaObservaciones" class="block mb-2 text-sm font-medium">Observaciones</label>
-                        <textarea pTextarea formControlName="demandaObservaciones" fluid appendTo="body"
-                            placeholder="Observaciones sobre el documento de demanda..." rows="3"
-                            maxLength="200"></textarea>
-                    </div>
-                </div>
-                <div *ngIf="demandaForm.get('documentoDemanda')?.invalid && demandaForm.get('documentoDemanda')?.touched"
-                    class="text-red-500 text-sm">
-                    Debe cargar el documento de demanda.
-                </div>
+                <p-button id="botonAgregarAnexos" icon="pi pi-file-plus" class="ml-auto"
+                    [label]="editandoAnexo ? 'Actualizar' : 'Agregar'" (click)="showModalListAnexo()" />
             </div>
-        </div>
-    </aside>
-    <div class="xl:col-span-9 min-w-0 ">
-        <div
-            class="relative z-0 border border-blue-300 border-dashed rounded-2xl p-4 h-full  bg-gradient-to-b from-blue-50 to-white dark:from-surface-900 dark:to-surface-950 dark:border-surface-700">
-            <p-table class="personalizado" [value]="anexosDeclarados" stripedRows [scrollable]="true" scrollDirection="horizontal"
-                [tableStyle]="{ 'min-width': '60rem' }">
-                <ng-template #caption>
-                    <div class="flex mb-2">
-                        <div
-                            class="flex items-center justify-center font-medium text-xl text-surface-800 dark:text-surface-200">
-                            Anexos declarados</div>
-                        <p-button id="declaraAnexos" icon="pi pi-file-plus" class="ml-auto"
-                            [label]="editandoAnexo ? 'Actualizar' : 'Agregar'" (click)="showModalListAnexo()" />
-                    </div>
-                </ng-template>
-                <ng-template #header>
-                    <tr>
-                        <th>Descripción</th>
-                        <th>Cantidad</th>
-                        <th>Valor</th>
-                        <th>Documento</th>
-                        <th>Acciones</th>
-                    </tr>
-                </ng-template>
-                <ng-template #body let-a let-i="rowIndex">
-                    <tr>
-                        <!-- <td>{{ a.idCatTipoDocumento }}</td> -->
-                        <td>
-                            {{ a.descripcion }}
-                        </td>
-                        <td>{{ a.cantidad }}</td>
-                        <td>{{ a.valor ? "$" + (a.valor | number : "1.2-2" : "en-US") : "N/A" }}</td>
-                        <td>
-                            <p-button icon="pi pi-file-pdf" [rounded]="true" severity="success" [raised]="true"
-                                (click)="verDocumento(a.archivo)" pTooltip="Ver PDF" tooltipPosition="top" />
-                        </td>
+        </ng-template>
+        <ng-template #header>
+            <tr>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Valor</th>
+                <th>Documento</th>
+                <th>Acciones</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-a let-i="rowIndex">
+            <tr>
+                <!-- <td>{{ a.idCatTipoDocumento }}</td> -->
+                <td>
+                    {{ a.descripcion }}
+                </td>
+                <td>{{ a.cantidad }}</td>
+                <td>{{ a.valor ? "$" + (a.valor | number : "1.2-2" : "en-US") : "N/A" }}</td>
+                <td>
+                    <p-button icon="pi pi-file-pdf" [rounded]="true" severity="success" [raised]="true"
+                        (click)="verDocumento(a.archivo)" pTooltip="Ver PDF" tooltipPosition="top" />
+                </td>
 
-                        <td>
-                            <div class="flex gap-2">
-                                <p-button icon="pi pi-pencil" [rounded]="true"  [raised]="true" [text]="true" severity="info"
-                                    (click)="editarAnexo(i)" pTooltip="Editar" tooltipPosition="top" />
-                                <p-button icon="pi pi-trash" [rounded]="true" [raised]="true" [text]="true" severity="danger"
-                                    (click)="confirm3($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
-                            </div>
-                        </td>
-                    </tr>
-                </ng-template>
-                <ng-template #emptymessage>
-                    <tr>
-                        <td colspan="7" class="text-center p-4">No hay anexos declarados.</td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </div>
-    </div>
+                <td>
+                    <div class="flex gap-2">
+                        <p-button icon="pi pi-pencil" [rounded]="true" [raised]="true" [text]="true" severity="info"
+                            (click)="editarAnexo(i)" pTooltip="Editar" tooltipPosition="top" />
+                        <p-button icon="pi pi-trash" [rounded]="true" [raised]="true" [text]="true" severity="danger"
+                            (click)="confirm3($event, i)" pTooltip="Eliminar" tooltipPosition="top" />
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="7" class="text-start p-4">No hay anexos declarados.</td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>
 
 <!--* MODAL PARA AGREGAR PARTES -->
-<p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }" [closable]="false">
+<p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '40rem', maxWidth: 'calc(100vw - 2rem)' }">
     <ng-template pTemplate="header">
         <div class="flex justify-between items-center w-full">
             <h2 class="text-lg font-semibold ">Nueva Parte</h2>
@@ -296,7 +431,9 @@
         <div class="space-y-5">
 
             <!-- DATOS GENERALES -->
-            <section class="rounded-xl border border-surface border-dashed p-4 bg-surface-50 dark:bg-surface-950">
+            <section class="rounded-xl border border-surface border-dashed p-4 transition-colors" [ngClass]="isDatosGeneralesParteCompletos()
+  ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300'
+  : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
                 <h3 class="text-base font-semibold mb-1">Datos generales</h3>
                 <p class="text-sm text-gray-500 mb-4">
                     Información principal para identificar a la parte.
@@ -322,13 +459,13 @@
                     </div>
 
                     <div class="col-span-6 sm:col-span-3" *ngIf="!parteForm.get('moral')?.value">
-                       <label for="apellidoPaterno" class="block mb-2 text-sm font-medium">Apellido paterno</label>
+                        <label for="apellidoPaterno" class="block mb-2 text-sm font-medium">Apellido paterno</label>
                         <input id="apellidoPaterno" pInputText type="text" formControlName="apellidoPaterno"
                             maxlength="100" placeholder="Apellido paterno" class="w-full " />
                         <div *ngIf="shouldShowError('apellidoPaterno')" class="text-red-500 text-sm mt-1">
                             {{ getError("apellidoPaterno") }}
                         </div>
-                    </div> 
+                    </div>
 
                     <div class="col-span-6 sm:col-span-3" *ngIf="!parteForm.get('moral')?.value">
                         <label for="apellidoMaterno" class="block mb-2 text-sm font-medium">Apellido materno</label>
@@ -361,7 +498,7 @@
                     @if( parteForm.get('esMenorEdad')?.value) {
                     <div class="col-span-6 ">
                         <div
-                            class="relative z-0 rounded-2xl border border-dashed border-blue-300 bg-gradient-to-b from-green-200 to-white dark:from-surface-900 dark:to-surface-950 p-4 shadow-sm h-full">
+                            class="relative z-0 rounded-2xl border border-dashed border-blue-300 bg-gradient-to-b from-emerald-100 to-white dark:from-surface-900 dark:to-surface-950 p-4 shadow-sm h-full">
                             <div class="flex items-start gap-3">
                                 <div
                                     class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
@@ -382,8 +519,10 @@
             </section>
 
             <!-- APODERADO (SOLO PERSONA MORAL) -->
-            <section class="rounded-xl border border-surface border-dashed p-4 bg-surface-50 dark:bg-surface-950"
-                *ngIf="parteForm.get('moral')?.value">
+            <section class="rounded-xl border border-surface border-dashed p-4 transition-colors"
+                *ngIf="parteForm.get('moral')?.value" [ngClass]="isApoderadoCompleto()
+  ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300'
+  : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
                 <h3 class="text-base font-semibold mb-1">Apoderado</h3>
                 <p class="text-sm text-gray-500 mb-4">
                     Datos de la persona apoderada que representa a la parte moral.
@@ -434,8 +573,10 @@
             </section>
 
             <!-- CONDICIONES PARTICULARES -->
-            <section class="rounded-xl border border-surface border-dashed p-4 bg-surface-50 dark:bg-surface-950"
-                *ngIf="!parteForm.get('moral')?.value">
+            <section class="rounded-xl border border-surface border-dashed p-4 transition-colors"
+                *ngIf="!parteForm.get('moral')?.value" [ngClass]="isCondicionesParticularesCompletas()
+  ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300'
+  : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
                 <h3 class="text-base font-semibold mb-1">Condiciones particulares</h3>
                 <p class="text-sm text-gray-500 mb-4">
                     Datos adicionales que pueden requerir atención especial.
@@ -453,20 +594,22 @@
                     </div>
 
                     <div class="col-span-6 sm:col-span-3"
-                        *ngIf="parteForm.get('grupoVulnerable')?.value?.includes('DISCAPACIDAD')">
+                        *ngIf="parteForm.get('grupoVulnerable')?.value?.includes(2)">
                         <label class="block mb-2 text-sm font-medium">Tipo de discapacidad</label>
-                        <p-select formControlName="idDiscapacidad" [options]="catDiscapacidades" optionValue="id"
-                            optionLabel="desc" placeholder="Selecciona la discapacidad" appendTo="body" fluid />
+                        <p-multiSelect formControlName="idDiscapacidad" [options]="catDiscapacidades" optionValue="id"
+                            optionLabel="desc" placeholder="Selecciona una o más discapacidades" appendTo="body"
+                            fluid></p-multiSelect>
                         <div *ngIf="shouldShowError('idDiscapacidad')" class="text-red-500 text-sm mt-1">
                             {{ getError("idDiscapacidad") }}
                         </div>
                     </div>
 
                     <div class="col-span-6 sm:col-span-3"
-                        *ngIf="parteForm.get('grupoVulnerable')?.value?.includes('LENGUAJE')">
+                        *ngIf="parteForm.get('grupoVulnerable')?.value?.includes(3)">
                         <label class="block mb-2 text-sm font-medium">Lengua indígena</label>
-                        <p-select formControlName="idLenguaje" [options]="catLenguas" optionValue="id"
-                            optionLabel="desc" placeholder="Selecciona la lengua" appendTo="body" fluid />
+                        <p-multiSelect formControlName="idLenguaje" [options]="catLenguas" optionValue="id"
+                            optionLabel="desc" placeholder="Selecciona una o más lenguas" appendTo="body"
+                            fluid></p-multiSelect>
                         <div *ngIf="shouldShowError('idLenguaje')" class="text-red-500 text-sm mt-1">
                             {{ getError("idLenguaje") }}
                         </div>
@@ -495,7 +638,9 @@
             </section>
 
             <!-- CONTACTO -->
-            <section class="rounded-xl border border-surface border-dashed p-4 bg-surface-50 dark:bg-surface-950">
+            <section class="rounded-xl border border-surface border-dashed p-4 transition-colors" [ngClass]="isContactoCompleto()
+  ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300'
+  : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
                 <h3 class="text-base font-semibold mb-1">Contacto</h3>
                 <p class="text-sm text-gray-500 mb-4">
                     Medios para contactar a la parte.
@@ -523,7 +668,9 @@
             </section>
 
             <!-- DOMICILIO -->
-            <section class="rounded-xl border border-surface border-dashed p-4 bg-surface-50 dark:bg-surface-950">
+            <section class="rounded-xl border border-surface border-dashed p-4 transition-colors" [ngClass]="isDomicilioCompleto()
+  ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300'
+  : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
                 <h3 class="text-base font-semibold mb-1">Domicilio</h3>
                 <p class="text-sm text-gray-500 mb-4">
                     Dirección o ubicación de la parte.
@@ -542,7 +689,7 @@
             <!-- ACCIONES -->
             <div class="flex justify-end gap-2 pt-2">
                 <p-button label="Cancelar" severity="secondary" (click)="resetParteForm()" />
-                <p-button type="submit" label="Guardar"  [raised]="true" [disabled]="parteForm.invalid" />
+                <p-button type="submit" label="Guardar" [raised]="true" [disabled]="parteForm.invalid" />
             </div>
         </div>
     </form>
@@ -550,16 +697,18 @@
 
 <!--* MODAL PARA AGREGAR ANEXOS -->
 <p-dialog [header]="editandoAnexo ? 'Editar documento' : 'Declaración de documentos'" [modal]="true"
-    [(visible)]="visibleListAnexo" [style]="{ width: '35rem' }" [closable]="false">
+    [(visible)]="visibleListAnexo" [style]="{ width: '35rem', maxWidth: 'calc(100vw - 2rem)' }">
     <form [formGroup]="declaracionAnexoForm" (ngSubmit)="agregarListAnexo()" class="relative rounded-lg">
         <!-- Modal body -->
-        <div class="space-y-6">
+        <div class="space-y-6 rounded-2xl border border-dashed p-4 transition-colors" [ngClass]="isDeclaracionAnexoCompleta()
+  ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300'
+  : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
             <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6 sm:col-span-6">
                     <label for="idCatTipoDocumento" class="block mb-2 text-sm font-medium  ">Tipo de documento</label>
-                    <p-select formControlName="idCatTipoDocumento" class="w-full" [filter]="true"
-                        [options]="catTipoDocumentos" optionValue="idCatTipoDocumento" appendTo="body"
-                        placeholder="Selecciona un anexo" optionLabel="descripcion" fluid />
+                    <p-select inputId="idCatTipoDocumento" formControlName="idCatTipoDocumento" class="w-full"
+                        [filter]="true" [options]="catTipoDocumentos" optionValue="idCatTipoDocumento"
+                        optionLabel="descripcion" appendTo="body" placeholder="Selecciona un anexo" fluid />
                 </div>
                 <div class="col-span-6" *ngIf="mostrarInputNombre">
                     <label for="descripcion" class="block mb-2 text-sm font-medium  ">
@@ -594,8 +743,8 @@
                     </label>
                     <input id="valor" pInputText type="number" formControlName="fojas" maxlength="12"
                         class="block w-full" placeholder="Escribe el número de fojas" />
-                        <div *ngIf="shouldShowError('fojas', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
-                            {{ getError("fojas", declaracionAnexoForm) }}
+                    <div *ngIf="shouldShowError('fojas', declaracionAnexoForm)" class="text-red-500 text-sm mt-1">
+                        {{ getError("fojas", declaracionAnexoForm) }}
                     </div>
                 </div>
                 <div class="col-span-6 md:col-span-3">
@@ -611,8 +760,8 @@
                 </div>
 
                 <div *ngIf="declaracionAnexoForm.get('esValor')?.value" class="col-span-6  md:col-span-3">
-                         <label for="valor" class="block mb-2 text-sm font-medium  ">
-                        Valor 
+                    <label for="valor" class="block mb-2 text-sm font-medium  ">
+                        Valor
                     </label>
                     <p-inputnumber inputId="valor" formControlName="valor" mode="currency" currency="MXN" locale="es-MX"
                         placeholder="Ingrese una cantidad" class=" w-full" />
@@ -657,73 +806,164 @@
         styleClass="bg-[#ffa032] border-[#ffa032] text-surface-900 hover:enabled:bg-[#ff830a]/80 hover:enabled:border-[#ff830a]/80 disabled:opacity-50 disabled:cursor-not-allowed" />
 </section>
 
-<!--* RESUMEN PREVIO AL ENVÍO -->
-<p-dialog header="Resumen de envío" [modal]="true" [(visible)]="visibleResumenEnvio" [style]="{ width: '55rem' }"
+<!-- RESUMEN PREVIO AL ENVÍO -->
+<p-dialog header="Resumen de envío" [modal]="true" [(visible)]="visibleResumenEnvio" [style]="{ width: '56rem' }"
     [closable]="false">
-    <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-1  dark:from-surface-900 dark:to-surface-950 rounded-lg p-2">
-        <section class="rounded-lg border border-surface-200 border-dashed dark:border-surface-700 p-3 bg-gradient-to-l from-blue-50 to-white dark:from-surface-900 dark:to-surface-950">
-            <h3 class="font-semibold mb-2">Datos generales</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    <div class="max-h-[70vh] overflow-y-auto pr-1 space-y-4 ">
+        <!-- Datos generales -->
+        <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Datos generales</h3>
+                    <p class="text-xs text-slate-500">Información principal del envío</p>
+                </div>
+
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                    Generales
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 @for (item of resumenGenerales; track $index) {
-                <div class="rounded-md bg-surface-50 dark:bg-surface-900 p-2">
-                    <p class="text-xs text-surface-500">{{ item.label }}</p>
-                    <p class="text-sm font-medium break-words">{{ item.value }}</p>
+                <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                    <p class="text-xs font-semibold text-slate-500">{{ item.label }}</p>
+                    <p class="mt-1 text-sm font-semibold text-slate-900 break-words">
+                        {{ item.value }}
+                    </p>
                 </div>
                 }
             </div>
         </section>
 
-        <section class="rounded-lg border border-surface-200 border-dashed dark:border-surface-700 p-3 bg-gradient-to-l from-blue-50 to-white dark:from-surface-900 dark:to-surface-950">
-            <h3 class="font-semibold mb-2">Partes</h3>
+        <!-- Partes -->
+        <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Partes</h3>
+                    <p class="text-xs text-slate-500">Personas involucradas en el trámite</p>
+                </div>
+
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                    {{ resumenPartes.length }} parte(s)
+                </span>
+            </div>
+
             @if (resumenPartes.length > 0) {
-            <div class="space-y-2">
+            <div class="space-y-3">
                 @for (parte of resumenPartes; track $index) {
-                <div class="rounded-md bg-surface-50 dark:bg-surface-900 p-2">
-                    <p class="text-sm font-semibold">{{ parte.nombre }}</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-1 text-sm">
-                        <p><span class="text-surface-500">Tipo persona:</span> {{ parte.tipoPersona }}</p>
-                        <p><span class="text-surface-500">Tipo parte:</span> {{ parte.tipoParte }}</p>
-                        <p><span class="text-surface-500">Grupo vulnerable:</span> {{ parte.grupoVulnerable }}</p>
-                        <p><span class="text-surface-500">Email:</span> {{ parte.email }}</p>
+                <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div
+                            class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 text-sm font-black text-indigo-700">
+                            {{ parte.nombre.charAt(0) || 'P' }}
+                        </div>
+
+                        <div>
+                            <p class="text-sm font-bold text-slate-900">{{ parte.nombre }}</p>
+                            <p class="text-xs text-slate-500">{{ parte.tipoParte }}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                        <p class="text-slate-900">
+                            <span class="font-semibold text-slate-500">Tipo persona:</span>
+                            {{ parte.tipoPersona }}
+                        </p>
+
+                        <p class="text-slate-900">
+                            <span class="font-semibold text-slate-500">Grupo vulnerable:</span>
+                            {{ parte.grupoVulnerable }}
+                        </p>
+
+                        <p class="text-slate-900 break-words sm:col-span-2">
+                            <span class="font-semibold text-slate-500">Email:</span>
+                            {{ parte.email }}
+                        </p>
                     </div>
                 </div>
                 }
             </div>
             } @else {
-            <p class="text-sm text-surface-500">No hay partes agregadas.</p>
+            <p class="rounded-xl bg-slate-50 p-3 text-sm text-slate-500">
+                No hay partes agregadas.
+            </p>
             }
         </section>
 
-        <section class="rounded-lg border border-surface-200 border-dashed dark:border-surface-700 p-3 bg-gradient-to-l from-green-200 to-white dark:from-surface-900 dark:to-surface-950">
-            <h3 class="font-semibold mb-2">Demanda</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                <p><span class="text-surface-500">Archivo:</span> {{ resumenDemanda.archivo }}</p>
-                <p><span class="text-surface-500">Número de fojas:</span> {{ resumenDemanda.numeroHojas }}</p>
+        <!-- Demanda -->
+        <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Demanda</h3>
+                    <p class="text-xs text-slate-500">Documento principal del trámite</p>
+                </div>
+
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                    Archivo
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                    <p class="text-xs font-semibold text-slate-500">Archivo</p>
+                    <p class="mt-1 text-sm font-semibold text-slate-900 break-words">
+                        {{ resumenDemanda.archivo }}
+                    </p>
+                </div>
+
+                <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                    <p class="text-xs font-semibold text-slate-500">Número de fojas</p>
+                    <p class="mt-1 text-sm font-semibold text-slate-900">
+                        {{ resumenDemanda.numeroHojas }}
+                    </p>
+                </div>
             </div>
         </section>
 
-        <section class="rounded-lg border border-surface-200 border-dashed dark:border-surface-700 p-3 bg-gradient-to-l from-blue-50 to-white dark:from-surface-900 dark:to-surface-950">
-            <h3 class="font-semibold mb-2">Anexos declarados</h3>
+        <!-- Anexos -->
+        <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Anexos declarados</h3>
+                    <p class="text-xs text-slate-500">Documentos adicionales incluidos</p>
+                </div>
+
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                    {{ resumenAnexos.length }} anexo(s)
+                </span>
+            </div>
+
             @if (resumenAnexos.length > 0) {
-            <div class="space-y-2">
+            <div class="space-y-3">
                 @for (anexo of resumenAnexos; track $index) {
-                <div class="rounded-md bg-surface-50 dark:bg-surface-900 p-2 text-sm">
-                    <p><span class="text-surface-500">Descripción:</span> {{ anexo.descripcion }}</p>
-                    <p><span class="text-surface-500">Cantidad:</span> {{ anexo.cantidad }}</p>
+                <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm">
+                    <p class="text-slate-900">
+                        <span class="font-semibold text-slate-500">Descripción:</span>
+                        {{ anexo.descripcion }}
+                    </p>
+
+                    <p class="mt-1 text-slate-900">
+                        <span class="font-semibold text-slate-500">Cantidad:</span>
+                        {{ anexo.cantidad }}
+                    </p>
                 </div>
                 }
             </div>
             } @else {
-            <p class="text-sm text-surface-500">No hay anexos declarados.</p>
+            <p class="rounded-xl bg-slate-50 p-3 text-sm text-slate-500">
+                No hay anexos declarados.
+            </p>
             }
         </section>
     </div>
 
-    <div class="flex justify-end gap-2 mt-4">
-        <p-button label="Cancelar" severity="secondary" (onClick)="cancelarResumenEnvio()" />
+    <div class="mt-4 flex justify-end gap-2 border-t border-slate-200 pt-4">
+        <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="cancelarResumenEnvio()" />
+
         <p-button label="Confirmar y enviar" icon="pi pi-check" (onClick)="confirmarResumenEnvio()" />
     </div>
 </p-dialog>
+
 
 <!--* DIALOGO FORMULARIO PARA VALIDAR FIREL -->
 <p-confirmdialog key="firma">
@@ -763,7 +1003,7 @@
     </ng-template>
 </p-confirmdialog>
 
-<!--* DIALOGO DE CONFIRMACION ENVIAR DEMANDA -->
+<!--* MODAL DE CONFIRMACION ENVIAR DEMANDA -->
 <p-confirmdialog key="success">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         @if (message) {
@@ -798,19 +1038,16 @@
                     class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Juzgado</span>
                     <span class="font-medium text-right min-w-0">
-                        {{ demandaResponse?.expediente?.juzgado?.Descripcion || 'JUZGADO DEMO DE MUESTRA' }}
+                        {{ demandaResponse?.expediente?.area?.Nombre || 'JUZGADO DEMO DE MUESTRA' }}
                     </span>
                 </div>
 
                 <div class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg ">
                     <span class="font-semibold text-color-secondary shrink-0">Fecha de envío</span>
                     <span class="font-medium text-right min-w-0">
-                        {{ demandaResponse?.fechaHoraRecepcion ? (demandaResponse?.fechaHoraRecepcion | date:'dd/MM/yyyy
-                        HH:mm') : '26/05/2026 12:00' }} h
+                        {{ (demandaResponse?.fechaHoraRecepcion | date:'dd/MM/yyyy HH:mm') || '26/05/2026 12:00' }} h
                     </span>
                 </div>
-
-
             </div>
 
             <div class="flex justify-end gap-2 mt-6 w-full">

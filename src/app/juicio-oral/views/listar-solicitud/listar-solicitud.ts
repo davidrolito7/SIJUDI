@@ -24,7 +24,7 @@ import { TooltipModule } from 'primeng/tooltip';
 // ============================
 // App – shared
 // ============================
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 
 // ============================
@@ -62,7 +62,7 @@ import { FileUploadModule } from 'primeng/fileupload';
     TooltipModule,
     FileUploadModule,
     // Shared
-    Breadcrub,
+    Header,
     Spinner,
     PdfDialog
 ],
@@ -371,3 +371,5 @@ onFileSelectedSolicitud(event: any): void {
     return new Date(year, month - 1, day);
   }
 }
+
+

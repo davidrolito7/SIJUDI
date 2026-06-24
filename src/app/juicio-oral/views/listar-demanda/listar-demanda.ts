@@ -23,7 +23,7 @@ import { ToastModule } from 'primeng/toast';
 // ============================
 // App - shared
 // ============================
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 
 // ============================
@@ -32,6 +32,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
 import { DetalleDemandaResponse, ListarExpedientesResponse } from '../../interfaces/juicioenlinea.model';
 import { JuicioService } from '../../services/juicioenlinea.service';
 import { TooltipModule } from 'primeng/tooltip';
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-listar-demanda',
@@ -53,9 +54,10 @@ import { TooltipModule } from 'primeng/tooltip';
     InputMaskModule,
     TooltipModule,
     // Shared components
-    Breadcrub,
-    Spinner
-  ],
+    Header,
+    Spinner,
+    Breadcrub
+],
   templateUrl: './listar-demanda.html',
   styleUrl: './listar-demanda.css',
   providers: [MessageService],
@@ -251,3 +253,5 @@ export class ListarDemanda implements OnInit {
     return row as ListarExpedientesResponse;
   }
 }
+
+

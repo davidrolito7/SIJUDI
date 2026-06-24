@@ -17,7 +17,7 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 
 // Shared
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 
 // Feature
@@ -42,7 +42,7 @@ import { ListadoAcuerdosResponse } from '../../interfaces/juicioenlinea.model';
     ToastModule,
     TooltipModule,
     // Shared
-    Breadcrub,
+    Header,
     Spinner,
   ],
   templateUrl: './listar-acuerdo.html',
@@ -239,3 +239,4 @@ export class ListarAcuerdos implements OnInit {
     }
   }
 }
+

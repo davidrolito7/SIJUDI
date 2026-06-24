@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { Breadcrub } from './breadcrub';
 
 describe('Breadcrub', () => {
@@ -8,7 +7,7 @@ describe('Breadcrub', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Breadcrub]
+      imports: [Header]
     })
     .compileComponents();
 
@@ -21,3 +20,4 @@ describe('Breadcrub', () => {
     expect(component).toBeTruthy();
   });
 });
+

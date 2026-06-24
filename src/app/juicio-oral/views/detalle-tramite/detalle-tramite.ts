@@ -16,7 +16,7 @@ import { MessageService } from 'primeng/api';
 // ============================
 // App - shared
 // ============================
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
+import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { base64ToFile } from '../../../shared/functions/utils';
@@ -40,7 +40,7 @@ import { TokenService } from '../../../core/auth/service/token.service';
     ToastModule,
     TooltipModule,
     // Shared
-    Breadcrub,
+    Header,
     Spinner,
     PdfDialog,
   ],
@@ -239,3 +239,4 @@ export class DetalleTramite implements OnInit {
 
 
 }
+

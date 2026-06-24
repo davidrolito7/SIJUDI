@@ -1,253 +1,42 @@
-<div class="flex flex-col w-full">
-    <!-- Toast de notificación push -->
-    <app-notificacion-toast 
-        [notificacion]="notificacionToast()"
-        (cerrada)="onToastCerrada()">
-    </app-notificacion-toast>
+<nav aria-label="Breadcrumb" class="flex items-center gap-1 overflow-x-auto text-xs font-medium whitespace-nowrap">
+    <a routerLink="/" aria-label="Inicio" class="inline-flex items-center justify-center h-7
+    text-surface-200 hover:text-surface-0
+    sm:text-surface-500 sm:hover:text-surface-900
+    dark:text-surface-400 dark:hover:text-surface-0
+    transition-colors">
 
-    <header class="flex items-center justify-between pt-1 pb-2 mb-2 border-b border-surface">
-        <!-- IZQUIERDA -->
-        <div class="flex items-center gap-2">
-            <!-- Botón menú movil 0.o -->
-            <button type="button"
-                class="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-color"
-                (click)="drawerService.open()" aria-label="Abrir menú">
-                <i class="pi pi-bars text-lg"></i>
-            </button>
+        <i class="pi pi-home text-xs border-b border-transparent hover:border-current"></i>
+    </a>
 
-            <!-- Logo  -->
-            <img src="logo.png" alt="Logo" class="hidden sm:block h-12 sm:h-12 w-auto shrink-0" />
-        </div>
+    @for (item of breadcrumbs; track item.label; let last = $last) {
+    <i class="pi pi-chevron-right text-[0.55rem] shrink-0
+        text-surface-200
+        sm:text-surface-500
+        dark:text-surface-600" aria-hidden="true">
+    </i>
 
-        <!-- DERECHA -->
-        <div class="flex items-center gap-3">
-            <div class="hidden md:flex flex-col text-right">
-                <span class="text-sm font-semibold text-surface-900 dark:text-surface-0 leading-tight">
-                    {{ abogadoNombre }}
-                </span>
-                <span class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                    {{ areaNombre ? (areaNombre) : '' }}
-                    {{ areaNombre && perfilNombre ? ' · ' : '' }}
-                    {{ perfilNombre ? (perfilNombre) : '' }}
-                    {{ perfilNombre && subAreaNombre ? ' · ':''}}
-                    {{ subAreaNombre ? ( subAreaNombre) : ''}}
-                </span>
-            </div>
-            <p-avatar [image]="abogadoFotoUrl" (click)="visibleDrawer = true" size="large" shape="circle"
-                class="cursor-pointer border-2 border-transparent hover:border-primary transition-all">
-            </p-avatar>
+    @if (last) {
+    <span aria-current="page" class="font-semibold
+            text-surface-100
+            sm:text-surface-800
+            dark:text-surface-0
+            border-b border-current">
 
-            <!-- Botón de tema -->
-            <button type="button"
-                class="relative w-[48px] h-[48px] flex items-center justify-center rounded-full border border-surface-200 bg-surface-100 text-primary shadow-sm hover:bg-surface-200 dark:border-surface-700 dark:bg-surface-800 dark:text-primary-300 dark:hover:bg-surface-700 cursor-pointer transition-all"
-                (click)="toggleTema()"
-                [attr.aria-label]="temaAriaLabel()"
-                [attr.aria-pressed]="temaOscuro()">
-                <i class="pi text-xl" [class.pi-sun]="temaOscuro()" [class.pi-moon]="!temaOscuro()"></i>
-            </button>
+        {{ item.label }}
+    </span>
+    }
 
+    @if (!last) {
+    <a [routerLink]="item.routerLink" class="inline-flex items-center justify-center h-7
+            text-surface-200 hover:text-surface-0
+            sm:text-surface-500 sm:hover:text-surface-800
+            dark:text-surface-400 dark:hover:text-surface-0
+            transition-colors">
 
-            <!-- Botón de Notificaciones -->
-            <button type="button"
-                class="relative w-[48px] h-[48px] flex items-center justify-center rounded-full border border-surface-200 bg-surface-100 text-primary shadow-sm hover:bg-surface-200 dark:border-surface-700 dark:bg-surface-800 dark:text-primary-300 dark:hover:bg-surface-700 cursor-pointer transition-all"
-                (click)="visibleNotificaciones = true" aria-label="Abrir notificaciones">
-                <i class="pi pi-bell text-xl"></i>
-                @if (pendientes() > 0) {
-                <span
-                    class="absolute top-0 right-0 z-50 w-5 h-5 text-[11px] font-bold text-white bg-red-500 rounded-full flex items-center justify-center shadow-sm border-2 border-surface-0 dark:border-surface-900">
-                    {{ pendientes() }}
-                </span>
-                }
-            </button>
-        </div>
-    </header>
-
-    <!-- BREADCRUMB -->
-    <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-sm font-medium overflow-x-auto">
-        <a routerLink="/" aria-label="Inicio" class="inline-flex items-center justify-center rounded-md p-1.5 shrink-0
-            text-surface-500 transition-colors duration-200
-            hover:bg-surface-200 hover:text-surface-900
-            dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-100">
-            <i class="pi pi-home text-sm"></i>
-        </a>
-
-        @for (item of breadcrumbs; track item.label; let last = $last) {
-        <span class="text-surface-300 dark:text-surface-600 flex items-center shrink-0">
-            <i class="pi pi-chevron-right text-[0.65rem]"></i>
-        </span>
-
-        @if (last) {
-        <span
-            class="inline-flex items-center rounded-md px-2.5 py-1 text-sm font-semibold whitespace-nowrap shrink-0
-                bg-surface-100 text-surface-900 dark:bg-surface-800 dark:text-surface-0 shadow-sm border border-surface">
+        <span class="border-b border-transparent hover:border-current">
             {{ item.label }}
         </span>
-        }
-
-        @if (!last) {
-        <a [routerLink]="item.routerLink" class="inline-flex items-center rounded-md px-2 py-1 text-sm whitespace-nowrap shrink-0
-                text-surface-500 transition-colors duration-200
-                hover:bg-surface-200 hover:text-surface-900
-                dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-100">
-            {{ item.label }}
-        </a>
-        }
-        }
-    </nav>
-</div>
-
-
-<p-drawer [(visible)]="visibleDrawer" position="right" appendTo="body" styleClass="!w-4/5 sm:!w-[30rem]"> <ng-template
-        #headless>
-        <form class="flex flex-col">
-            <div class="flex align-items-center gap-3 p-6">
-                <p-avatar [image]="abogadoFotoUrl" size="xlarge" shape="circle">
-                </p-avatar>
-                <div class="flex-1">
-                    <div class="leading-6 text-color font-medium">{{abogadoNombre}}</div>
-                    <div class="mt-1 leading-5 text-muted-color text-sm">{{ areaNombre ? ('Área: ' + areaNombre) : '' }}
-                        {{ areaNombre && perfilNombre ? ' · ' : '' }}
-                        {{ perfilNombre ? ('Perfil: ' + perfilNombre) : '' }}</div>
-                </div>
-                <p-button (onClick)="onLogout()" pTooltip="Cerrar Sesión" tooltipPosition="left" icon="pi pi-sign-out"
-                    text="" rounded="" severity="secondary" pc1574="" data-pc-section="host"></p-button>
-            </div>
-            <div
-                class="bg-surface-50 dark:bg-surface-800 border border-surface-0 dark:border-surface-900 mr-6 ml-6 rounded-lg  flex items-center justify-between p-1 ">
-                <label class="text-sm font-medium text-color pl-2">Perfil</label>
-
-                <button type="button"
-                    class="px-3 py-2 cursor-pointer rounded-lg bg-primary-400 hover:bg-primary text-surface-0 dark:text-surface-200 text-sm font-normal transition-all"
-                    (click)="onChangeProfile()">
-                    Cambiar de perfil
-                </button>
-            </div>
-
-            <div
-                class="bg-surface-50 dark:bg-surface-800 border border-surface-0 dark:border-surface-900 m-6 rounded-lg  flex items-center justify-between p-1 ">
-                <label class="text-sm font-medium text-color pl-2">Datos Personales</label>
-
-                <button type="button"
-                    class="px-3 py-2 cursor-pointer rounded-lg bg-primary-400 hover:bg-primary text-surface-0 dark:text-surface-200 text-sm font-normal transition-all"
-                    (click)="verPerfil()">
-                    Ver
-                </button>
-            </div>
-        </form>
-    </ng-template>
-
-
-</p-drawer>
-
-<p-drawer [(visible)]="visibleNotificaciones" position="right" appendTo="body" styleClass="!w-4/5 sm:!w-[30rem]">
-    <ng-template #header>
-        <div class="flex items-center gap-2">
-            <i class="pi pi-bell text-lg text-primary"></i>
-            <span class="font-semibold">Notificaciones</span>
-            <span
-                class="ml-auto text-xs bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 px-2 py-1 rounded-full">
-                {{ notificaciones().length }}
-            </span>
-        </div>
-    </ng-template>
-
-    <div class="flex flex-col gap-2">
-        <!-- Estado de carga -->
-        @if (cargandoNotificaciones()) {
-        <div class="text-center text-surface-500 p-8 flex flex-col items-center justify-center min-h-[200px]">
-            <i class="pi pi-spin pi-spinner text-3xl mb-3 text-primary"></i>
-            <p class="text-sm">Cargando notificaciones...</p>
-        </div>
-        }
-
-        <!-- Estado vacío -->
-        @if (!cargandoNotificaciones() && notificaciones().length === 0) {
-        <div class="text-center text-surface-500 p-8 flex flex-col items-center justify-center min-h-[200px]">
-            <i class="pi pi-inbox text-4xl mb-3 opacity-40"></i>
-            <p class="text-sm">No hay notificaciones</p>
-        </div>
-        }
-
-        <!-- Listado de notificaciones -->
-        @for (notif of notificaciones(); track notif.id) {
-        <div @slideOutRight
-            class="grid grid-cols-[3rem_1fr] gap-3 p-3 rounded-lg border border-surface-200 dark:border-surface-700 transition-colors cursor-pointer"
-            [ngClass]="{
-                 'border-l-4 border-l-blue-500': notif.accion === 'NUEVO',
-                 'border-l-4 border-l-orange-500': notif.accion === 'TURNADO',
-                 'border-l-4 border-l-purple-500': notif.accion === 'FORANEO',
-                 'border-l-4 border-l-green-500': notif.accion !== 'NUEVO' && notif.accion !== 'TURNADO' && notif.accion !== 'FORANEO',
-                 'bg-surface-0 dark:bg-surface-900 hover:bg-surface-50 dark:hover:bg-surface-800/50': !notif.leida,
-                 'bg-surface-50 dark:bg-surface-800/30 opacity-70': notif.leida
-             }" (click)="marcarNotificacionLeida(notif)">
-
-            <!-- Icono -->
-            <div class="h-12 w-12 rounded-full flex items-center justify-center text-xs self-center" [ngClass]="{
-                    'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400': notif.accion === 'NUEVO',
-                    'bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400': notif.accion === 'TURNADO',
-                    'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400': notif.accion === 'FORANEO',
-                    'bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400': notif.accion !== 'NUEVO' && notif.accion !== 'TURNADO' && notif.accion !== 'FORANEO'
-                }">
-                <i class="pi text-lg leading-none" [ngClass]="{
-                       'pi-inbox': notif.accion === 'NUEVO',
-                       'pi-send': notif.accion === 'TURNADO',
-                       'pi-globe': notif.accion === 'FORANEO',
-                       'pi-bell': notif.accion !== 'NUEVO' && notif.accion !== 'TURNADO' && notif.accion !== 'FORANEO'
-                   }">
-                </i>
-            </div>
-
-            <!-- Contenido -->
-            <div class="flex flex-col gap-1.5 min-w-0">
-                <!-- Fila superior: Título + Badge + Folio -->
-                <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2 min-w-0">
-                        <span class="font-semibold text-sm text-surface-900 dark:text-surface-0 truncate">
-                            {{ notif.id }}
-                        </span>
-                        <span class="text-xs font-bold px-1.5 py-0.5 rounded whitespace-nowrap flex-shrink-0" [ngClass]="{
-                                'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400': notif.accion === 'NUEVO',
-                                'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400': notif.accion === 'TURNADO',
-                                'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400': notif.accion === 'FORANEO',
-                                'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400': notif.accion !== 'NUEVO' && notif.accion !== 'TURNADO' && notif.accion !== 'FORANEO'
-                            }">
-                            {{ notif.accion }}
-                        </span>
-                    </div>
-
-                    <span
-                        class="text-xs bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 px-2 py-1 rounded font-mono font-semibold flex-shrink-0">
-                        {{ notif.folio }}
-                    </span>
-                </div>
-
-                <!-- Mensaje breve -->
-                <p class="text-xs text-surface-600 dark:text-surface-300 leading-snug m-0">
-                    {{ notif.mensaje }}
-                </p>
-
-                <!-- Metadata en una línea: Área • Perfil • Sub-área -->
-                <div class="flex gap-1 text-xs font-bold">
-                    <span>
-                        <p class="text-surface-900 dark:text-surface-500">
-                            {{ notif.origen.area.descripcion }}
-                        </p>
-                    </span>
-                    <span class="text-surface-300 dark:text-surface-600">•</span>
-                    <span>
-                        <p class="text-surface-900 dark:text-surface-500">
-                            {{ notif.origen.sistemaPerfil.descripcion }}
-                        </p>
-                    </span>
-                    <span class="text-surface-300 dark:text-surface-600">•</span>
-                    <span>
-                        <p class="text-surface-900 dark:text-surface-500">
-                            {{ notif.origen.subArea.descripcion }}
-                        </p>
-                    </span>
-                </div>
-            </div>
-        </div>
-        }
-    </div>
-</p-drawer>
+    </a>
+    }
+    }
+</nav>
