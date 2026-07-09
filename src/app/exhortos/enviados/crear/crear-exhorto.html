@@ -148,8 +148,8 @@
     <!-- Número de fojas -->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Número de fojas*</label>
-      <p-inputNumber inputId="numeroFojas" formControlName="numeroFojas" [showButtons]="true" mode="decimal" [min]="0"
-        [max]="5000" [useGrouping]="false" class="w-full" fluid></p-inputNumber>
+      <p-inputnumber inputId="numeroFojas" formControlName="numeroFojas" [showButtons]="true" mode="decimal" [min]="0"
+        [max]="5000" [useGrouping]="false" class="w-full" fluid></p-inputnumber>
 
 
     </div>
@@ -157,8 +157,8 @@
     <!-- Días para responder -->
     <div class="col-span-12 sm:col-span-3">
       <label class="block mb-2 text-sm font-medium">Días para responder*</label>
-      <p-inputNumber inputId="DiasResponder" formControlName="DiasResponder" [showButtons]="true" mode="decimal"
-        [min]="0" [max]="365" [useGrouping]="false" class="w-full" fluid></p-inputNumber>
+      <p-inputnumber inputId="DiasResponder" formControlName="DiasResponder" [showButtons]="true" mode="decimal"
+        [min]="0" [max]="365" [useGrouping]="false" class="w-full" fluid></p-inputnumber>
 
     </div>
 
@@ -658,9 +658,9 @@
                                         'error-border': formSubmitted && exhortosForm.controls['numeroFojas'].invalid
                                       }">
                     <p-float-label>
-                      <p-inputNumber inputId="numeroFojas" formControlName="numeroFojas" [showButtons]="true"
+                      <p-inputnumber inputId="numeroFojas" formControlName="numeroFojas" [showButtons]="true"
                         mode="decimal" [min]="0" [max]="5000" [useGrouping]="false" class="w-full">
-                      </p-inputNumber>
+                      </p-inputnumber>
                       <label for="numeroFojas">Número de fojas</label>
                     </p-float-label>
                   </div>
@@ -670,9 +670,9 @@
                                         'error-border': formSubmitted && exhortosForm.controls['DiasResponder'].invalid
                                       }">
                     <p-float-label>
-                      <p-inputNumber inputId="DiasResponder" formControlName="DiasResponder" [showButtons]="true"
+                      <p-inputnumber inputId="DiasResponder" formControlName="DiasResponder" [showButtons]="true"
                         mode="decimal" [min]="0" [max]="365" [useGrouping]="false" class="w-full">
-                      </p-inputNumber>
+                      </p-inputnumber>
                       <label for="DiasResponder">Días para responder</label>
                     </p-float-label>
                   </div>

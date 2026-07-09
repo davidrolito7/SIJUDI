@@ -139,15 +139,15 @@
             <!-- FOJAS -->
             <div class="col-span-4 sm:col-span-2">
                 <label class="block mb-2 text-sm font-medium">Fojas</label>
-                <p-inputNumber #fojasInput formControlName="fojas" class="w-full" fluid [min]="1" [max]="99999"
-                    [allowEmpty]="true" [useGrouping]="false" (keydown.enter)="moveNext($event)"></p-inputNumber>
+                <p-inputnumber #fojasInput formControlName="fojas" class="w-full" fluid [min]="1" [max]="99999"
+                    [allowEmpty]="true" [useGrouping]="false" (keydown.enter)="moveNext($event)"></p-inputnumber>
             </div>
 
             <!-- TRASLADOS -->
             <div class="col-span-4 sm:col-span-2">
                 <label class="block mb-2 text-sm font-medium">Traslados</label>
-                <p-inputNumber #trasladosInput formControlName="traslados" class="w-full" fluid [min]="0" [max]="99999"
-                    [allowEmpty]="true" [useGrouping]="false" (keydown.enter)="moveNext($event)"></p-inputNumber>
+                <p-inputnumber #trasladosInput formControlName="traslados" class="w-full" fluid [min]="0" [max]="99999"
+                    [allowEmpty]="true" [useGrouping]="false" (keydown.enter)="moveNext($event)"></p-inputnumber>
             </div>
 
             <!-- DIVIDER -->
@@ -217,12 +217,12 @@
                             <td>{{ anexo.descripcion }}</td>
                             <td class="font-semibold text-center">{{ anexo.cveAnexo }}</td>
                             <td>
-                                <p-inputNumber #cantidadInput [min]="1" [max]="2147483647" [useGrouping]="false"
+                                <p-inputnumber #cantidadInput [min]="1" [max]="2147483647" [useGrouping]="false"
                                     [disabled]="!estaAnexoSeleccionado(anexo.idCatCveAnexos)"
                                     [(ngModel)]="cantidadesAnexos[anexo.idCatCveAnexos]"
                                     [ngModelOptions]="{ standalone: true }"
                                     [inputId]="'cantidad-' + anexo.idCatCveAnexos"
-                                    (onInput)="actualizarCantidad(anexo.idCatCveAnexos, $event)"></p-inputNumber>
+                                    (onInput)="actualizarCantidad(anexo.idCatCveAnexos, $event)"></p-inputnumber>
                             </td>
                         </tr>
                     </ng-template>

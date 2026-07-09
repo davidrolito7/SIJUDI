@@ -1,7 +1,4 @@
-import { Component,Input  } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-
-import { FormsModule } from '@angular/forms';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import * as QRCode from 'qrcode';
 
 @Component({
@@ -10,26 +7,29 @@ import * as QRCode from 'qrcode';
   templateUrl: './qr-generator-component.html',
   styleUrl: './qr-generator-component.css',
 })
-export class QrGeneratorComponent {
-@Input() qrData: string | null = null; // Recibirá el valor desde el padre
-qrCodeUrl: string = '';
-ngOnInit() {
-this.generateQR();
-}
+export class QrGeneratorComponent implements OnChanges {
+  @Input() qrData: string | null = null;
 
-async generateQR() {
+  qrCodeUrl = '';
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['qrData']) {
+      void this.generateQR();
+    }
+  }
+
+  async generateQR(): Promise<void> {
     if (!this.qrData?.trim()) {
       this.qrCodeUrl = '';
       return;
     }
 
     try {
-      // Genera el código QR como Data URL
       this.qrCodeUrl = await QRCode.toDataURL(this.qrData, {
-        width: 100,
-        margin: 5,
+        width: 150,
+        margin: 0,
         color: {
-          dark: '#A6518C',
+          dark: '#000000',
           light: '#FFFFFF'
         }
       });
