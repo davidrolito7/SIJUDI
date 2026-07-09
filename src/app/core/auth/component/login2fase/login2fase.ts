@@ -24,7 +24,7 @@ import { catchError, map, of, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../../environments/environment';
 
-const SISTEMA_ID = 4169;
+const SISTEMA_ID = 1;
 const AREA_ID = 2037;
 const PERFIL_ID = 7241;
 const SUBAREA_ID = 1007;
@@ -48,7 +48,7 @@ export class Login2 implements OnInit {
   codigo: string = '';
   qrData: string = '';
   visible: boolean = false;
-  isLoading= signal<boolean>(false);
+  isLoading = signal<boolean>(false);
   step: 1 | 2 = 1;
 
   constructor(
@@ -61,8 +61,6 @@ export class Login2 implements OnInit {
     private menuStore: UserMenuStore,
     private pantallasService: PantallasService,
     private destroyRef: DestroyRef,
-
-
   ) { }
 
   ngOnInit() {
@@ -87,19 +85,12 @@ export class Login2 implements OnInit {
         const abogado = resp.data?.pD_Abogados?.[0];
         const idTipoPersona = abogado?.idTipoPersona ?? null;
         const nombre = (abogado?.nombre ?? '').toString().trim();
-        const foto   = (abogado?.foto   ?? '').toString().trim();
-        sessionStorage.setItem('AbogadoNombre',     nombre);
+        const foto = (abogado?.foto ?? '').toString().trim();
+        sessionStorage.setItem('AbogadoNombre', nombre);
         sessionStorage.setItem('AbogadoFotoBase64', foto);
 
         if (environment.DEV_SKIP_2FA) {
-          if (idTipoPersona === 1) {
-            // Abogado: completar contexto automáticamente
-            this.loginContextoAutomatico(nombre, foto);
-          } else {
-            // Empleado u otro tipo: saltar 2FA e ir a perfil
-            await this.tokenService.setTwoFactorValidated(true);
-            this.router.navigate(['/perfil']);
-          }
+          await this.routeAuthenticatedUser(idTipoPersona, nombre, foto);
         } else {
           this.getGoogle();
         }
@@ -112,19 +103,18 @@ export class Login2 implements OnInit {
     });
   }
 
-loginOptions = [
-  {
-    label: 'Google Authenticator',
-    mobileLabel: 'Authenticator',
-    value: 1
-  },
-  {
-    label: 'Llave Privada',
-    mobileLabel: 'Llave Privada',
-    value: 2
-  }
-];
-  // ─ 0.o ─ Post 2FA: checa tipo persona y decide flujo ──────
+  loginOptions = [
+    {
+      label: 'Google Authenticator',
+      mobileLabel: 'Authenticator',
+      value: 1
+    },
+    {
+      label: 'Llave Privada',
+      mobileLabel: 'Llave Privada',
+      value: 2
+    }
+  ];
 
   private async handlePostTwoFactor(): Promise<void> {
     const user = this.tokenService.getUserFromToken();
@@ -146,17 +136,7 @@ loginOptions = [
         sessionStorage.setItem('AbogadoNombre', nombre);
         sessionStorage.setItem('AbogadoFotoBase64', foto);
 
-        if (environment.DEV_SKIP_PERFIL && idTipoPersona === 1) {
-          this.loginContextoAutomatico(nombre, foto);
-        } else {
-          await this.tokenService.setTwoFactorValidated(true);
-          const ok = await this.tokenService.isTwoFactorValidated();
-          if (ok) {
-            this.router.navigate(['/perfil']);
-          } else {
-            this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar la sesión, intente de nuevo.', life: 3000 });
-          }
-        }
+        await this.routeAuthenticatedUser(idTipoPersona, nombre, foto);
       },
       error: () => {
         this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al obtener datos del usuario.', life: 3000 });
@@ -170,7 +150,22 @@ loginOptions = [
     });
   }
 
-  // ─ 0.o ─ Login contexto, se agregan los valores fijos de área, perfil y subárea 
+  private async routeAuthenticatedUser(idTipoPersona: number | null, nombre: string, foto: string): Promise<void> {
+    if (idTipoPersona === 1) {
+      this.loginContextoAutomatico(nombre, foto);
+      return;
+    }
+
+    await this.tokenService.setTwoFactorValidated(true);
+    await this.tokenService.setPerfilCompleted(false);
+
+    const ok = await this.tokenService.isTwoFactorValidated();
+    if (ok) {
+      this.router.navigate(['/perfil']);
+    } else {
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar la sesiÃ³n, intente de nuevo.', life: 3000 });
+    }
+  }
 
   private loginContextoAutomatico(nombre: string, foto: string): void {
     const user = this.tokenService.getUserFromToken();
@@ -181,7 +176,6 @@ loginOptions = [
       return;
     }
 
-    // Obtener nombre del área
     this.authService.getAreas(SISTEMA_ID, idG).pipe(
       map(r => (r.data ?? []) as any[]),
       switchMap(areas => {
@@ -230,7 +224,7 @@ loginOptions = [
         );
       }),
       catchError(() => {
-        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al preparar el contexto de sesión.', life: 3000 });
+        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al preparar el contexto de sesiÃ³n.', life: 3000 });
         return of(null);
       }),
     ).subscribe({
@@ -248,7 +242,7 @@ loginOptions = [
 
         const perfilOk = await this.tokenService.isPerfilCompleted();
         if (!perfilOk) {
-          this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar la sesión, intente de nuevo.', life: 3000 });
+          this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar la sesiÃ³n, intente de nuevo.', life: 3000 });
           return;
         }
 
@@ -294,11 +288,9 @@ loginOptions = [
     toRemove.forEach(k => localStorage.removeItem(k));
   }
 
-  // ── Validar código Authenticator ─────────────────────────────────────────
-
   onValidarCodeAthenticator() {
     if (!this.codigo?.trim()) {
-      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ingrese el código para continuar.', life: 3000 });
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ingrese el cÃ³digo para continuar.', life: 3000 });
       return;
     }
 
@@ -310,20 +302,18 @@ loginOptions = [
         if (response.success) {
           await this.handlePostTwoFactor();
         } else {
-          this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Código incorrecto.', life: 3000 });
+          this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'CÃ³digo incorrecto.', life: 3000 });
           this.isLoading.set(false);
           this.cd.detectChanges();
         }
       },
       error: () => {
-        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al intentar validar.', life: 3000 });
+        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'OcurriÃ³ un error al intentar validar.', life: 3000 });
         this.isLoading.set(false);
         this.cd.detectChanges();
       },
     });
   }
-
-  // ── Obtener datos 2FA ────────────────────────────────────────────────────
 
   getGoogle() {
     this.isLoading.set(true);
@@ -337,7 +327,7 @@ loginOptions = [
           this.qrData = `otpauth://totp/Oaxaca-TV-${this.objectTwoAccess!.user}?secret=${this.objectTwoAccess!.encodedSecret}`;
           this.step = 1;
         } else {
-          this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'No se pudo obtener la configuración 2FA.', life: 3000 });
+          this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'No se pudo obtener la configuraciÃ³n 2FA.', life: 3000 });
         }
       },
       error: () => {
@@ -351,15 +341,13 @@ loginOptions = [
     });
   }
 
-  // ── Llave privada ────────────────────────────────────────────────────────
-
   onFileSelect(event: any) {
     const file: File | undefined = event.files?.[0];
     if (!file) return;
     const ext = file.name.split('.').pop()?.toLowerCase();
     if (ext !== 'pjo') {
       this.llaveFile = null;
-      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Solo se permiten archivos con extensión .pjo', life: 3000 });
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Solo se permiten archivos con extensiÃ³n .pjo', life: 3000 });
       return;
     }
     this.llaveFile = file;
@@ -369,7 +357,7 @@ loginOptions = [
 
   onValidarLlavePrivada() {
     if (!this.llaveFile || this.llavePrivadaForm.invalid) {
-      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Seleccione un archivo .pjo y capture la contraseña.', life: 3000 });
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Seleccione un archivo .pjo y capture la contraseÃ±a.', life: 3000 });
       return;
     }
 
@@ -385,24 +373,22 @@ loginOptions = [
         if (response.success) {
           await this.handlePostTwoFactor();
         } else {
-          this.mensaje.add({ severity: 'error', summary: 'Error', detail: response.message || 'Llave privada o contraseña incorrectas.', life: 3000 });
+          this.mensaje.add({ severity: 'error', summary: 'Error', detail: response.message || 'Llave privada o contraseÃ±a incorrectas.', life: 3000 });
           this.isLoading.set(false);
           this.cd.detectChanges();
         }
       },
       error: () => {
-        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al validar la llave privada.', life: 3000 });
+        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'OcurriÃ³ un error al validar la llave privada.', life: 3000 });
         this.isLoading.set(false);
         this.cd.detectChanges();
       },
     });
   }
 
-  // ── Helpers de Enter ─────────────────────────────────────────────────────
-
   codigoEnter() {
     if (!this.codigo?.trim()) {
-      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese el código de Authenticator.', life: 3000 });
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese el cÃ³digo de Authenticator.', life: 3000 });
       return;
     }
     this.onValidarCodeAthenticator();
@@ -411,7 +397,7 @@ loginOptions = [
   contraseniaEnter() {
     const pass = this.llavePrivadaForm.get('password')!.value;
     if (!pass?.trim()) {
-      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su contraseña.', life: 3000 });
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su contraseÃ±a.', life: 3000 });
       return;
     }
     this.onValidarLlavePrivada();

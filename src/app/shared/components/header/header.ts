@@ -180,6 +180,11 @@ export class Header implements OnInit, OnDestroy {
     this.router.navigate(['/datos-personales'], { replaceUrl: true });
   }
 
+    verLlaveAcceso(): void {
+    this.router.navigate(['/llave-acceso'], { replaceUrl: true });
+  }
+
+
   private cargarTemaGuardado(): void {
     const temaGuardado = this.document.defaultView?.localStorage.getItem('sijudi-theme') === 'dark';
     this.temaOscuro.set(temaGuardado);

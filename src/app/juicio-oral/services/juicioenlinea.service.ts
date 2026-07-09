@@ -43,21 +43,21 @@ import { environment } from "../../../environments/environment";
 
 export class JuicioService {
 
-    private demanda = `${environment.urlApiJuicioOral}/api/Demanda/`;
-    private firma = `${environment.urlApiJuicioOral}/api/VerificaFirma`;
-    private catalogos = `${environment.urlApiJuicioOral}/api/Catalogo/`;
-    private permisos = `${environment.urlApiJuicioOral}/api/Permisos/`;
-    private requerimientos = `${environment.urlApiJuicioOral}/api/Requerimiento/`;
-    private expediente = `${environment.urlApiJuicioOral}/api/Expediente/`;
-    private documentos = `${environment.urlApiJuicioOral}/api/Documento/`;
-    private tramites = `${environment.urlApiJuicioOral}/api/Tramites/`;
-    private entregaRecepcion = `${environment.urlApiJuicioOral}/api/EntregaRecepcion/`;
-    private juzgados = `${environment.urlApiJuicioOral}/api/Juzgados/`;
-    private remitente = `${environment.urlApiJuicioOral}/api/Remitentes/`;
-    private audiencia = `${environment.urlApiJuicioOral}/api/Audiencia/`;
-    private solicitud = `${environment.urlApiJuicioOral}/api/Solicitud/`;
-    private acuerdo = `${environment.urlApiJuicioOral}/api/Acuerdo`;
-    private contadores = `${environment.urlApiJuicioOral}/api/Contadores/`;
+    private demanda = `${environment.urlApiJuicioOral}/Demanda/`;
+    private firma = `${environment.urlApiJuicioOral}/VerificaFirma`;
+    private catalogos = `${environment.urlApiJuicioOral}/Catalogo/`;
+    private permisos = `${environment.urlApiJuicioOral}/Permisos/`;
+    private requerimientos = `${environment.urlApiJuicioOral}/Requerimiento/`;
+    private expediente = `${environment.urlApiJuicioOral}/Expediente/`;
+    private documentos = `${environment.urlApiJuicioOral}/Documento/`;
+    private tramites = `${environment.urlApiJuicioOral}/Tramites/`;
+    private entregaRecepcion = `${environment.urlApiJuicioOral}/EntregaRecepcion/`;
+    private juzgados = `${environment.urlApiJuicioOral}/Juzgados/`;
+    private remitente = `${environment.urlApiJuicioOral}/Remitentes/`;
+    private audiencia = `${environment.urlApiJuicioOral}/Audiencia/`;
+    private solicitud = `${environment.urlApiJuicioOral}/Solicitud/`;
+    private acuerdo = `${environment.urlApiJuicioOral}/Acuerdo`;
+    private contadores = `${environment.urlApiJuicioOral}/Contadores/`;
 
 
     constructor(private http: HttpClient, private tokenService: TokenService) { }

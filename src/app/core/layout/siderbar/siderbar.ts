@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { TooltipModule } from 'primeng/tooltip';
 import { DividerModule } from 'primeng/divider';
@@ -20,6 +20,7 @@ import { RippleModule } from 'primeng/ripple';
 import { DrawerService } from '../../../shared/service/drawer.service';
 import { ContadoresService } from '../../../juicio-oral/services/contadores.service';
 import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 
@@ -100,8 +101,9 @@ export class Siderbar {
 
   readonly modulos = this.menuStore.modulos;
   readonly showMenu = signal(true);
-
+  readonly activePantallaRoute = signal<string | null>(null);
   readonly selectedModuloId = signal<number | null>(null);
+  readonly expandedModuloIds = signal<number[]>([]);
 
   readonly selectedModulo = computed(() =>
     this.modulos().find((m) => m.idSistemaModulo === this.selectedModuloId()) ?? null
@@ -114,14 +116,21 @@ export class Siderbar {
   });
 
   constructor(private contadoresService: ContadoresService) {
+    this.syncSelectedModuloFromRoute();
+
+    this.router.events
+      .pipe(
+        filter((event: unknown): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => this.syncSelectedModuloFromRoute());
+
     this.menuStore
       .ensureLoaded()
       .pipe(takeUntilDestroyed())
       .subscribe({
-        next: (mods) => {
-          // if (!this.selectedModuloId() && mods.length > 0) {
-          //   this.selectedModuloId.set(mods[0].idSistemaModulo);
-          // }
+        next: () => {
+          this.syncSelectedModuloFromRoute();
         },
       });
   }
@@ -161,27 +170,18 @@ export class Siderbar {
   toggleSidebar(): void {
     const nextState = !this.showMenu();
     this.showMenu.set(nextState);
-
-    if (!nextState) {
-      this.selectedModuloId.set(null);
-    }
   }
 
   toggleModulo(mod: ModulosUsuario): void {
-    const same = this.selectedModuloId() === mod.idSistemaModulo;
-
     if (!this.showMenu()) {
       this.showMenu.set(true);
-      this.selectedModuloId.set(mod.idSistemaModulo);
-      return;
     }
 
-    this.selectedModuloId.set(same ? null : mod.idSistemaModulo);
+    this.toggleExpandedModulo(mod.idSistemaModulo);
   }
 
   closeMenu(): void {
     this.showMenu.set(false);
-    this.selectedModuloId.set(null);
   }
   // Agrega junto a los otros métodos
   pantallasDeModulo(mod: ModulosUsuario) {
@@ -205,5 +205,84 @@ export class Siderbar {
   }
   getBadge(IdPantalla: number): Observable<number | null> {
     return this.contadoresService.getContadorParaPantalla(IdPantalla);
+  }
+
+  isModuloActive(moduloId: number | null | undefined): boolean {
+    return moduloId != null && this.selectedModuloId() === moduloId;
+  }
+
+  isModuloExpanded(moduloId: number | null | undefined): boolean {
+    if (moduloId == null) {
+      return false;
+    }
+
+    return this.expandedModuloIds().includes(moduloId);
+  }
+
+  private toggleExpandedModulo(moduloId: number | null | undefined): void {
+    if (moduloId == null) {
+      return;
+    }
+
+    this.expandedModuloIds.update((ids) =>
+      ids.includes(moduloId)
+        ? ids.filter((id) => id !== moduloId)
+        : [...ids, moduloId]
+    );
+  }
+
+  private ensureExpandedModulo(moduloId: number | null | undefined): void {
+    if (moduloId == null || this.expandedModuloIds().includes(moduloId)) {
+      return;
+    }
+
+    this.expandedModuloIds.update((ids) => [...ids, moduloId]);
+  }
+
+  private syncSelectedModuloFromRoute(): void {
+    const currentUrl = this.normalizeRoute(this.router.url);
+    if (!currentUrl) {
+      this.activePantallaRoute.set(null);
+      this.selectedModuloId.set(null);
+      return;
+    }
+
+    let matchedModuloId: number | null = null;
+    let matchedPantallaRoute: string | null = null;
+    let longestMatch = -1;
+
+    for (const modulo of this.modulos()) {
+      for (const pantalla of modulo.pantallas ?? []) {
+        const pantallaRoute = this.normalizeRoute(pantalla.descripcion);
+        if (!pantallaRoute || !this.isCurrentRouteForPantalla(currentUrl, pantallaRoute)) {
+          continue;
+        }
+
+        if (pantallaRoute.length > longestMatch) {
+          longestMatch = pantallaRoute.length;
+          matchedModuloId = modulo.idSistemaModulo ?? null;
+          matchedPantallaRoute = pantallaRoute;
+        }
+      }
+    }
+
+    this.activePantallaRoute.set(matchedPantallaRoute);
+    this.selectedModuloId.set(matchedModuloId);
+
+    if (matchedModuloId !== null) {
+      this.ensureExpandedModulo(matchedModuloId);
+    }
+  }
+
+  private isCurrentRouteForPantalla(currentUrl: string, pantallaRoute: string): boolean {
+    return currentUrl === pantallaRoute || currentUrl.startsWith(`${pantallaRoute}/`);
+  }
+
+  private normalizeRoute(route: string | null | undefined): string {
+    return (route ?? '')
+      .split('?')[0]
+      .split('#')[0]
+      .replace(/^\/+/, '')
+      .trim();
   }
 }
