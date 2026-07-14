@@ -17,7 +17,7 @@ import { Spinner } from '../../../../shared/components/spinner/spinner';
 import { environment } from '../../../../../environments/environment';
 import { UserMenuStore } from '../../../layout/siderbar/user-menu.store';
 import { PantallasService } from '../../../../juicio-oral/services/pantallas.service';
-
+import { normalizeRequestOptions } from '../../../../shared/utils/webauthn.utils';
 const SISTEMA_ID = 1;
 const AREA_ID = 2037;
 const PERFIL_ID = 7241;
@@ -60,9 +60,9 @@ export class Login implements OnInit {
     private cd: ChangeDetectorRef,
     private menuStore: UserMenuStore,
     private pantallasService: PantallasService
-  ) {}
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   forgotPassword() {
     window.open('https://virtual.tribunaloaxaca.gob.mx/ForgotPassword', '_blank');
@@ -322,5 +322,98 @@ export class Login implements OnInit {
     if (!localStorage.getItem('userSession')) {
       sessionStorage.removeItem('userSession');
     }
+  }
+
+  async loginConPasskey() {
+    if (!window.PublicKeyCredential) {
+      this.mensaje.add({
+        severity: 'error',
+        summary: 'No compatible',
+        detail: 'Este navegador no soporta llaves de acceso.',
+        life: 3000,
+      });
+      return;
+    }
+
+    this.isLoading = true;
+    this.cd.detectChanges();
+
+    this.authService.passkeyLoginOptions().subscribe({
+      next: async (resp) => {
+        try {
+          if (!resp.success || !resp.data?.options || !resp.data?.operationId) {
+            this.mensaje.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: resp.message ?? 'No se pudo iniciar sesión con llave de acceso.',
+              life: 3000,
+            });
+            this.isLoading = false;
+            this.cd.detectChanges();
+            return;
+          }
+
+          const credential = await navigator.credentials.get(
+            normalizeRequestOptions(resp.data.options)
+          ) as PublicKeyCredential | null;
+
+          if (!credential) {
+            throw new Error('No se pudo obtener la credencial WebAuthn.');
+          }
+
+          const assertionResponse = credential.toJSON();
+          this.authService.passkeyLogin(resp.data.operationId, assertionResponse).subscribe({
+            next: async (loginResp) => {
+              if (!loginResp.success || !loginResp.data?.access_token) {
+                this.mensaje.add({
+                  severity: 'error',
+                  summary: 'Error',
+                  detail: loginResp.message ?? 'No se pudo validar la llave de acceso.',
+                  life: 3000,
+                });
+                return;
+              }
+
+              this.tokenService.saveToken(loginResp.data.access_token, this.recordar);
+              this.authService.actualizaPerfilSeleccionado('');
+              this.continuarSinTwoFactor();
+            },
+            error: () => {
+              this.mensaje.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Error al validar la llave de acceso.',
+                life: 3000,
+              });
+            },
+            complete: () => {
+              this.isLoading = false;
+              this.cd.detectChanges();
+            },
+          });
+        } catch {
+          this.mensaje.add({
+            severity: 'warn',
+            summary: 'Cancelado',
+            detail: 'Se canceló el uso de la llave de acceso.',
+            life: 3000,
+          });
+
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }
+      },
+      error: () => {
+        this.mensaje.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo iniciar el login con llave de acceso.',
+          life: 3000,
+        });
+
+        this.isLoading = false;
+        this.cd.detectChanges();
+      },
+    });
   }
 }

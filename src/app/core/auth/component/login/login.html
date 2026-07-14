@@ -139,7 +139,8 @@
                         <i [class]="verPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
                     </p-inputicon>
                 </p-iconfield>
-                <span class="font-normal text-sm sm:text-base sm:font-medium no-underline ml-2 text-right  text-black/80 cursor-pointer hover:text-black/90"
+                <span
+                    class="font-normal text-sm sm:text-base sm:font-medium no-underline ml-2 text-right  text-black/80 cursor-pointer hover:text-black/90"
                     (click)="forgotPassword()">¿Olvidaste tu Contraseña?</span>
                 <div class="flex items-center justify-between gap-8">
                     <div class="flex items-center text-black/80 ">
@@ -150,9 +151,23 @@
                 </div>
             </div>
 
-            <button pButton (click)="validarUsuario()" fluid>
+            <div class="flex flex-col gap-2 w-full">
+      <button pButton (click)="validarUsuario()" fluid>
                 <span pButtonLabel>Continuar</span>
             </button>
+
+            <div class="flex items-center gap-3 w-full">
+                <div class="h-px bg-black/10 flex-1"></div>
+                <span class="text-xs text-black/50">o</span>
+                <div class="h-px bg-black/10 flex-1"></div>
+            </div>
+
+            <button pButton type="button" class="btn-secondary" (click)="loginConPasskey()" fluid>
+                <i class="pi pi-key mr-2"></i>
+                <span pButtonLabel>Entrar con llave de acceso</span>
+            </button>
+            </div>
+      
         </div>
         <!--<a class="text-white/80 cursor-pointer hover:text-white/90" (click)="forgotPassword()">¿Olvidaste tu Contraseña?</a>-->
     </div>

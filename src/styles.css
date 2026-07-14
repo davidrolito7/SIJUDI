@@ -13,16 +13,16 @@
    ============================================ */
 
 /* Móvil / tablet: tamaño normal */
-html {
+/* html {
   font-size: 100%;
-}
+} */
 
 /* lg en adelante */
-@media (min-width: 64rem) {
+/* @media (min-width: 64rem) {
   html {
     font-size: 90%;
   }
-}
+} */
 
 @media (max-width: 640px) {
   html,

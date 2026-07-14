@@ -37,6 +37,7 @@
     "@angular/platform-server": "^22.0.6",
     "@angular/router": "^22.0.6",
     "@angular/ssr": "^22.0.6",
+    "@github/webauthn-json": "^2.1.1",
     "@primeuix/themes": "^3.0.0-rc.1",
     "dayjs": "^1.11.19",
     "driver.js": "^1.4.0",

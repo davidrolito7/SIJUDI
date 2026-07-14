@@ -337,4 +337,46 @@ postLoginContexto(request: any, remember: boolean): Observable<GenericResponse<a
       })
     );
 }
+ passkeyLoginOptions() {
+    return this.http.post<any>(`${this.constService.ruta}/api/AuthJWT/PasskeyLoginOptions`, {});
+  }
+
+  passkeyLogin(operationId: string, assertionResponse: any) {
+    return this.http.post<any>(
+      `${this.constService.ruta}/api/AuthJWT/PasskeyLogin`,
+      {
+        operationId,
+        assertionResponse
+      },
+      {
+        withCredentials: true
+      }
+    );
+  }
+
+  passkeyRegisterOptions(nombreDispositivo: string) {
+    return this.http.post<any>(
+      `${this.constService.ruta}/api/AuthJWT/PasskeyRegisterOptions`,
+      {
+        nombreDispositivo
+      },
+      {
+        context: checkToken()
+      }
+    );
+  }
+
+  passkeyRegister(operationId: string, attestationResponse: any, nombreDispositivo: string) {
+    return this.http.post<any>(
+      `${this.constService.ruta}/api/AuthJWT/PasskeyRegister`,
+      {
+        operationId,
+        attestationResponse,
+        nombreDispositivo
+      },
+      {
+        context: checkToken()
+      }
+    );
+  }
 }
