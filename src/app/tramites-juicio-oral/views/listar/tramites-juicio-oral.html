@@ -19,26 +19,24 @@
 
             <div class="grid grid-cols-12 gap-4 w-full items-end">
                 <div class="col-span-12 md:col-span-6 lg:col-span-3">
-                    <label class="block mb-2 text-sm font-medium">Tipo</label>
+                    <label for="idCatTipoTramite" class="block mb-2 text-sm font-medium">Tipo</label>
                     <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
                         (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid
                         placeholder="Selecciona un tipo de trámite" [filter]="true" optionLabel="label"
                         appendTo="body" />
                 </div>
                 <div class="col-span-12 md:col-span-6 lg:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Folio
-                        @if (validarCausaForm.get('idCatTipoTramite')?.value == 33) {
-                            de la causa
-                        } @else if (validarCausaForm.get('idCatTipoTramite')?.value == 47) {
-                            del cuaderno
-                        }
+                    <label for="numeroExpediente" class="block mb-2 text-sm font-medium">Folio
+                       
                     </label>
+                   
                     <p-inputmask fluid formControlName="numeroExpediente" class="uppercase text-sm rounded-lg"
-                        mask="9999/9999" placeholder="0001/2026" />
+                        [mask]="numeroExpedienteMask"
+                        [placeholder]="numeroExpedientePlaceholder" />
                 </div>
 
                 <div class="col-span-12 md:col-span-6 lg:col-span-4">
-                    <label class="block mb-2 text-sm font-medium">Juzgado</label>
+                    <label for="idJuzgado" class="block mb-2 text-sm font-medium">Juzgado</label>
                     <p-select class="w-full" [options]="catJuzgados" formControlName="idJuzgado"
                         optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
                         optionLabel="descripcion" appendTo="body" />
@@ -87,7 +85,7 @@
             <ng-template #header>
                 <tr>
                     <th>
-                        Folio
+                        Folio de trámite    
                         <!-- <p-columnFilter type="text" field="folio" display="menu" /> -->
                     </th>
                     <th>

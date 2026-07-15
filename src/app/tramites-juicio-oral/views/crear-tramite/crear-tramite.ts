@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
@@ -39,14 +39,14 @@ import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
   styleUrl: './crear-tramite.css',
   providers: [ConfirmationService]
 })
-export class CrearTramite implements OnInit {
+export class CrearTramite {
   readonly maxFileSizeBytes = 10 * 1024 * 1024;
   readonly maxAnexos = 10;
   @ViewChild('anexosInput') anexosInput?: ElementRef<HTMLInputElement>;
 
   //* === FORMULARIOS ===
-  busquedaForm!: FormGroup;
-  documentosForm!: FormGroup;
+  busquedaForm: FormGroup;
+  documentosForm: FormGroup;
 
   //* === LISTAS Y DATOS TEMPORALES ===
   tramitesElectronicosRecibidos: TramitesElectronicosRecibidosResponse | null = null;
@@ -56,7 +56,7 @@ export class CrearTramite implements OnInit {
 
   //* === ESTADOS DE UI Y MODALES ===
   //* === FLAGS Y VARIABLES DE CONTROL ===
-  isLoading: boolean = false;
+  isLoading = false;
   mostrarAddDocumentos = signal(false);
   mostrarDocumento = false;
   isAnexosDragOver = false;
@@ -69,30 +69,34 @@ export class CrearTramite implements OnInit {
   items: MenuItem[] = [{ label: 'Components' }, { label: 'Form' }, { label: 'InputText', routerLink: '/inputtext' }];
   home: MenuItem = { icon: 'pi pi-home', routerLink: '/' };
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private apiService: ApiService,
-    private sanitizer: DomSanitizer,
-    private readonly confirmationService: ConfirmationService,
+  private readonly apiService = inject(ApiService);
+  private readonly confirmationService = inject(ConfirmationService);
+  private readonly fb = inject(FormBuilder);
+  private readonly sanitizer = inject(DomSanitizer);
 
-  ) { }
+
 
   loading = false;
   catTipoTramite = [
     { label: 'CAUSA', value: 33 },
-    { label: 'CUADERNO DE EJECUCIÓN', value: 47 },
+    { label: 'CUADERNO ANTECEDENTE', value: 34 },
+   // { label: 'CUADERNO DE EJECUCIÓN', value: 47 },
   ];
-  ngOnInit(): void {
-    // Al inicializar, creamos los formularios:
 
+  constructor() {
     this.busquedaForm = this.fb.group({
       idCatTipoTramite: [null, Validators.required],
-      numeroExpediente: ['', [Validators.required, Validators.pattern(/^\d{4}\/\d{4}$/)]],
+      numeroExpediente: ['', Validators.required],
       idJuzgado: [{ value: null, disabled: true }, Validators.required],
       idPantalla: [1]
     });
     this.documentosForm = this.fb.group({
       observaciones: ['', [Validators.required, Validators.maxLength(450)]]
+    });
+
+    this.updateNumeroExpedienteValidator(this.busquedaForm.get('idCatTipoTramite')?.value);
+    this.busquedaForm.get('idCatTipoTramite')?.valueChanges.subscribe((idCatTipoTramite) => {
+      this.updateNumeroExpedienteValidator(idCatTipoTramite);
     });
   }
 
@@ -105,9 +109,12 @@ export class CrearTramite implements OnInit {
 
   cargarCatalogoJuzgados(idCatTipoTramite: number | null) {
     const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
+    const numeroExpedienteCtrl = this.busquedaForm.get('numeroExpediente');
+
     this.catJuzgados = [];
     juzgadoCtrl?.setValue(null, { emitEvent: false });
     juzgadoCtrl?.disable({ emitEvent: false });
+    numeroExpedienteCtrl?.reset('', { emitEvent: false });
     this.mostrarAddDocumentos.set(false);
     this.causaValidada = null;
     this.documentosAnexados = [];
@@ -116,16 +123,32 @@ export class CrearTramite implements OnInit {
 
     this.isLoading = true;
     this.apiService.getCatJuzgados({ idCatTipoTramite }).subscribe({
-      next: (response) => {
+      next: (response: { data: CatJuzgadoResponse[]; }) => {
         this.catJuzgados = response.data;
         juzgadoCtrl?.enable({ emitEvent: false });
         this.isLoading = false;
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error('Error al cargar juzgados:', error);
         this.isLoading = false;
       }
     });
+  }
+
+  get numeroExpedienteMask(): string {
+    return this.busquedaForm.get('idCatTipoTramite')?.value === 34 ? '999999/9999' : '9999/9999';
+  }
+
+  get numeroExpedientePlaceholder(): string {
+    return this.busquedaForm.get('idCatTipoTramite')?.value === 34 ? '000000/0000' : '0000/0000';
+  }
+
+  private updateNumeroExpedienteValidator(idCatTipoTramite: number | null): void {
+    const numeroExpedienteCtrl = this.busquedaForm.get('numeroExpediente');
+    const pattern = idCatTipoTramite === 34 ? /^\d{6}\/\d{4}$/ : /^\d{4}\/\d{4}$/;
+
+    numeroExpedienteCtrl?.setValidators([Validators.required, Validators.pattern(pattern)]);
+    numeroExpedienteCtrl?.updateValueAndValidity({ emitEvent: false });
   }
 
   onValidarCausa() {
@@ -133,43 +156,37 @@ export class CrearTramite implements OnInit {
     this.mostrarAddDocumentos.set(false);
     const params = this.busquedaForm.getRawValue();
     this.apiService.postValidarCausa(params).subscribe(
-      (response) => {
+      (response: { success: boolean; data: ValidarCausaResponse }) => {
         this.isLoading = false;
         if (response.success) {
           this.causaValidada = response.data;
           this.mostrarAddDocumentos.set(true);
 
-          // setTimeout(() => {
-          //   this.startTutorialPostValidacion();
-          // }, 200);
         } else {
           this.confirmationService.confirm({
             key: 'info',
-            accept: () => { },
+            accept: () => { /* empty */ },
           });
         }
-      },
-      (error) => {
-        this.mostrarAddDocumentos.set(false);
-        this.isLoading = false;
       }
+     
     );
   }
 
   loadCatJuzgados() {
     this.apiService.getCatJuzgados().subscribe(
-      (response) => {
+      (response: { success: boolean; data: CatJuzgadoResponse[] }) => {
         if (response.success) {
           this.catJuzgados = response.data;
-
-        } else {
         }
-
       },
-      (error) => {
+      (error: unknown) => {
+        console.error('Error al cargar juzgados:', error);
       }
     );
   }
+
+
 
   onAnexosInputChange(event: Event) {
     const input = event.target as HTMLInputElement | null;
@@ -200,14 +217,14 @@ export class CrearTramite implements OnInit {
     if (archivosValidos.length !== archivosSeleccionados.length) {
       this.confirmationService.confirm({
         key: 'archivo-peso',
-        accept: () => { },
+        accept: () => { /* empty */ },
       });
     }
 
     if (espaciosDisponibles <= 0) {
       this.confirmationService.confirm({
         key: 'archivo-limite',
-        accept: () => { },
+        accept: () => { /* empty */ },
       });
       return;
     }
@@ -215,7 +232,7 @@ export class CrearTramite implements OnInit {
     if (archivosValidos.length > espaciosDisponibles) {
       this.confirmationService.confirm({
         key: 'archivo-limite',
-        accept: () => { },
+        accept: () => { /* empty */ },
       });
     }
 
@@ -264,7 +281,7 @@ export class CrearTramite implements OnInit {
     this.confirmationService.confirm({
       key: 'anexo',
       accept: () => this.onEliminarDocumento(index),
-      reject: () => { }
+      reject: () => { /* empty */}
     });
 
   }
@@ -272,7 +289,7 @@ export class CrearTramite implements OnInit {
     this.confirmationService.confirm({
       key: 'promocion',
       accept: () => this.onEnviarTramite(),
-      reject: () => { }
+      reject: () => { /* empty */}
     });
 
   }
@@ -306,7 +323,7 @@ export class CrearTramite implements OnInit {
     });
 
     this.apiService.postEnviarTramite(formData).subscribe({
-      next: (response) => {
+      next: (response: { data: TramitesElectronicosRecibidosResponse }) => {
         this.isLoading = false;
         this.tramitesElectronicosRecibidos = response.data;
         this.confirmationService.confirm({

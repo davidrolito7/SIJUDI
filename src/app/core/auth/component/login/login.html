@@ -139,8 +139,17 @@
                         <i [class]="verPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
                     </p-inputicon>
                 </p-iconfield>
-                <span class="font-normal text-sm sm:text-base sm:font-medium no-underline ml-2 text-right  text-black/80 cursor-pointer hover:text-black/90"
+
+                <div class="flex flex-col items-end gap-4 w-full">
+                         <span
+                    class="font-normal text-sm sm:text-base sm:font-medium no-underline ml-2 text-surface-600 cursor-pointer hover:text-surface-800"
                     (click)="forgotPassword()">¿Olvidaste tu Contraseña?</span>
+
+                <span
+                    class="font-normal text-sm sm:text-base sm:font-medium no-underline ml-2 text-surface-600 cursor-pointer hover:text-surface-800"
+                    (click)="preRegistro()">¿Aún no tienes una cuenta? Regístrate aquí.</span>
+                </div>
+           
                 <div class="flex items-center justify-between gap-8">
                     <div class="flex items-center text-black/80 ">
                         <p-checkbox [(ngModel)]="recordar" id="rememberme" [binary]="true" class="mr-1"></p-checkbox>

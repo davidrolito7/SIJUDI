@@ -57,6 +57,7 @@ export class CrearDemanda implements OnInit {
     { idAccion: 2, desc: 'Acción 2' },
     { idAccion: 3, desc: 'Acción 3' },
     { idAccion: 4, desc: 'Otro' }
+    
   ];
   catJuzgado: { idArea: number; desc: string }[] = [
     { idArea: 80, desc: 'JUZGADO PRIMERO CIVIL DEL DISTRITO JUDICIAL DEL CENTRO' },
