@@ -12,13 +12,11 @@ import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, finalize, map, Observable, of, switchMap, tap } from 'rxjs';
 import { UserMenuStore } from '../../../layout/siderbar/user-menu.store';
-
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-
 import { TokenService } from '../../service/token.service';
 import { AuthService } from '../../service/auth.service';
 import { areasResponse, responseCatalogoPerfiles, usuarioAreas } from '../../interface/login.interfaces';
@@ -26,7 +24,7 @@ import { GenericResponse } from '../../../../shared/interface/shared.interface';
 import { Spinner } from '../../../../shared/components/spinner/spinner';
 import { PantallasService } from '../../../../juicio-oral/services/pantallas.service';
 
-const SISTEMA_ID = 4169;
+const SISTEMA_ID = 1;
 
 interface PersistedSelection {
   recordar: boolean;
@@ -99,10 +97,21 @@ export class Perfil {
     this.perfilSeleccionado.set(0);
     this.perfilNombreSeleccionado.set('');
     this.perfiles.set([]);
+    this.subAreaId.set(0);
+    this.subAreaNombre.set('');
+    this.subAreas.set([]);
     this.idAreaSistemaUsuario.set(0);
     if (areaId <= 0) return;
-    this.loadPerfilesForArea(areaId, 0);
-    this.loadSubareas(areaId);
+    this.isLoading.set(true);
+    this.loadPerfilesForArea$(areaId, 0).pipe(
+      switchMap(() => this.loadSubareas$(areaId)),
+      catchError(() => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar perfiles y subáreas.' });
+        return of(null);
+      }),
+      finalize(() => this.isLoading.set(false)),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe();
   }
 
   onPerfilChange(perfilId: number): void {
@@ -289,19 +298,26 @@ export class Perfil {
   }
 
   private loadSubareas(idArea: number): void {
-    const area = this.listaAreas().find(f => f.idArea === idArea);
-    this.authService.getSubAreas(area!.idAreaSistema ?? 0, this.idGeneral()).subscribe({
-      next: (response: GenericResponse<usuarioAreas[]>) => {
-        if (response.success) {
-          this.subAreas.set(response.data);
-        } else {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, life: 0 });
-        }
-      },
-      error: (e) => {
+    this.loadSubareas$(idArea).subscribe({
+      error: e => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, life: 0 });
       },
     });
+  }
+
+  private loadSubareas$(idArea: number): Observable<usuarioAreas[]> {
+    const area = this.listaAreas().find(f => f.idArea === idArea);
+    if (!area?.idAreaSistema) return of([]);
+
+    return this.authService.getSubAreas(area.idAreaSistema, this.idGeneral()).pipe(
+      map((response: GenericResponse<usuarioAreas[]>) => {
+        if (!response.success) {
+          throw new Error(response.message ?? 'No se pudieron cargar las subáreas.');
+        }
+        return response.data ?? [];
+      }),
+      tap(subAreas => this.subAreas.set(subAreas))
+    );
   }
 
   private loadPerfilesForArea(areaId: number, restorePerfilId: number): void {

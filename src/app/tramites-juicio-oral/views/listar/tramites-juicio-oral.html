@@ -19,7 +19,7 @@
 
             <div class="grid grid-cols-12 gap-4 w-full items-end">
                 <div class="col-span-12 md:col-span-6 lg:col-span-3">
-                    <label class="block mb-2 text-sm font-medium">Tipo de expediente</label>
+                    <label class="block mb-2 text-sm font-medium">Tipo</label>
                     <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
                         (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid
                         placeholder="Selecciona un tipo de trámite" [filter]="true" optionLabel="label"

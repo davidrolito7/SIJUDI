@@ -139,9 +139,9 @@ export class CrearTramite implements OnInit {
           this.causaValidada = response.data;
           this.mostrarAddDocumentos.set(true);
 
-          setTimeout(() => {
-            this.startTutorialPostValidacion();
-          }, 200);
+          // setTimeout(() => {
+          //   this.startTutorialPostValidacion();
+          // }, 200);
         } else {
           this.confirmationService.confirm({
             key: 'info',

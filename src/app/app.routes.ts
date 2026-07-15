@@ -9,6 +9,7 @@ import { Perfil } from './core/auth/component/perfil/perfil';
 import { redirectGuard } from './core/auth/guard/redirect-guard';
 import { Dashboard } from './shared/components/dashboard/dashboard';
 import { PerfilUsuario } from './shared/components/perfil-usuario/perfil-usuario';
+import { LlaveAcceso } from './shared/components/llave-acceso/llave-acceso';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -74,7 +75,8 @@ export const routes: Routes = [
           import('./terminos/terminos.routes')
             .then(m => m.TERMINOS_ROUTES)
       },
-      { path: 'datos-personales', component: PerfilUsuario }
+      { path: 'datos-personales', component: PerfilUsuario },
+      { path: 'llave-acceso', component: LlaveAcceso },
 
     ],
   },
