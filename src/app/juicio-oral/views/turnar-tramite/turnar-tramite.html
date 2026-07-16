@@ -93,7 +93,7 @@
         <ng-template #header>
             <tr>
                 <th>
-                    <p-tableHeaderCheckbox />
+                    <p-tableheadercheckbox />
                 </th>
                 <th scope="col">Folio</th>
                 <th scope="col">No. Expediente</th>
@@ -108,7 +108,7 @@
         <ng-template #body let-tramite>
             <tr>
                 <td>
-                    <p-tableCheckbox [value]="tramite" />
+                    <p-tablecheckbox [value]="tramite" />
                 </td>
                 <td>{{ tramite.folio }}</td>
                 <td>{{ tramite.expediente.NumExpediente }}</td>

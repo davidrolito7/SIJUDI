@@ -566,11 +566,12 @@
 
                             <ng-template pTemplate="body" let-item let-expanded="expanded">
                                 <tr>
-                                    <td><button type="button" pButton pRipple
+                                    <td>
+                                        <p-button type="button"
                                             [icon]="filaExpandidaId === item.idPromocionEnviado ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-                                            (click)="toggleFilaExpandida(item.idPromocionEnviado)">
-                                        </button>
-
+                                            [text]="true"
+                                            (onClick)="toggleFilaExpandida(item.idPromocionEnviado)">
+                                        </p-button>
                                     </td>
                                     <td style="font-size: small;">{{item?.folioOrigenPromocion}}</td>
                                     <td style="font-size: small;">{{item?.folioPromocionRecibida}}</td>

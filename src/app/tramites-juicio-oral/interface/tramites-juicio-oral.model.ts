@@ -29,6 +29,8 @@ export interface DetalleTramiteElectronicoRecibidoResponse {
     idTramiteElectronicoRecibido: number;
     nombreArchivo: string;
     activo: boolean;
+    folioRecepcionJuz?: string;
+    fechaHoraRec?: Date;
 
 }
 

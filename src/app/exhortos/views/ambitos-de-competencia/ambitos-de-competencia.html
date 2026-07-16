@@ -81,20 +81,20 @@
                     <th style="min-width:15rem">
                         <div class="flex items-center justify-between">
                             Región
-                            <p-columnFilter type="text" field="region" display="menu" />
+                            <p-columnfilter type="text" field="region" display="menu" />
                         </div>
                     </th>
                     <th style="min-width:15rem">
                         <div class="flex items-center justify-between">
 
                             Municipio
-                            <p-columnFilter type="text" field="municipio" display="menu" />
+                            <p-columnfilter type="text" field="municipio" display="menu" />
                         </div>
                     </th>
                     <th style="min-width:10rem">
                         <div class="flex items-center justify-between">
                             Materia
-                            <p-columnFilter field="materia" display="menu" [showMatchModes]="false"
+                            <p-columnfilter field="materia" display="menu" [showMatchModes]="false"
                                 [showOperator]="false" [showAddButton]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-select [ngModel]="value" [options]="listaMateria" optionLabel="nombre"
@@ -102,13 +102,13 @@
                                         (onChange)="filter($event.value)">
                                     </p-select>
                                 </ng-template>
-                            </p-columnFilter>
+                            </p-columnfilter>
                         </div>
                     </th>
                     <th style="min-width:15rem">
                         <div class="flex items-center justify-between">
                             Juzgado
-                            <p-columnFilter type="text" field="juzgado" display="menu" />
+                            <p-columnfilter type="text" field="juzgado" display="menu" />
                         </div>
                     </th>
                     <th style="min-width:10rem">

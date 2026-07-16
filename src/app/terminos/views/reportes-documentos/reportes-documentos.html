@@ -46,17 +46,17 @@
     <!-- Fecha inicio -->
     <div class="col-span-6 md:col-span-6 lg:col-span-2">
       <label class="block mb-2 text-sm font-medium">De</label>
-      <p-datePicker #fechaInicioInput [(ngModel)]="fechaInicio" dateFormat="yy-mm-dd" class="w-full" fluid
+      <p-datepicker #fechaInicioInput [(ngModel)]="fechaInicio" dateFormat="yy-mm-dd" class="w-full" fluid
         appendTo="body" [maxDate]="maxDate">
-      </p-datePicker>
+      </p-datepicker>
     </div>
 
     <!-- Fecha fin -->
     <div class="col-span-6 md:col-span-6 lg:col-span-2">
       <label class="block mb-2 text-sm font-medium">A</label>
-      <p-datePicker #fechaFinInput [(ngModel)]="fechaFin" dateFormat="yy-mm-dd" class="w-full" fluid appendTo="body"
+      <p-datepicker #fechaFinInput [(ngModel)]="fechaFin" dateFormat="yy-mm-dd" class="w-full" fluid appendTo="body"
         [maxDate]="maxDate">
-      </p-datePicker>
+      </p-datepicker>
     </div>
 
     <div class="col-span-3 md:col-span-4 lg:col-span-2 flex gap-4 sm:justify-end md:justify-start">

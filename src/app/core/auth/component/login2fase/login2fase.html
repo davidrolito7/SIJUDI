@@ -73,9 +73,7 @@
                     <div
                         class="flex flex-col sm:flex-row gap-6 items-center justify-center mt-4 lg:items-start lg:justify-start">
                         <div class="w-full sm:w-1/2 flex flex-col items-center lg:items-start gap-3">
-                            <qrcode [qrdata]="qrData" [allowEmptyString]="true" [width]="150" [margin]="0"
-                                [errorCorrectionLevel]="'M'">
-                            </qrcode>
+                            <app-qr-generator-component [qrData]="qrData" />
                             <p class="text-surface-600 dark:text-surface-200 text-sm">
                                 Código para capturar manualmente : <b>{{objectTwoAccess.encodedSecret}}</b>
                             </p>

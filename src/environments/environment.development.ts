@@ -2,7 +2,7 @@ export const environment = {
     production: true,
     //* false para producción
     //* true para pruebas y si eres abogado para que no solicituar llave/auth
-    DEV_SKIP_2FA: true,
+    DEV_SKIP_2FA: false,
     ConstantsService: {
         ruta: 'https://pruebas.tribunaloaxaca.gob.mx/permisos',
         idSistema: 1,
@@ -24,7 +24,7 @@ export const environment = {
 
     //* api juicio oral penal 0.o
     urlApiJuicioOralPenal: 'https://pruebas.tribunaloaxaca.gob.mx/ApiJop/api/PromocionesJuicioOral',
-   // urlApiJuicioOralPenal:'https://localhost:7057/api/PromocionesJuicioOral',
+    //urlApiJuicioOralPenal:'https://localhost:7057/api/PromocionesJuicioOral',
 
     //* api notificaciones en tiempo real
     // urlApiNotificaciones: 'http://localhost:3000',

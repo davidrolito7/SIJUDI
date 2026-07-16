@@ -10,9 +10,9 @@
     <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl">
 
         <div class="flex items-start flex-col md:flex-row justify-between">
-            <label class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
+            <h1 class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
                 Detalle de trámite electrónico #{{detalleTramiteElectronicoRecibido?.folio}}
-            </label>
+            </h1>
         </div>
 
         <!-- Sección: Datos generales -->
@@ -33,21 +33,37 @@
             @if (detalleTramiteElectronicoRecibido) {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div class="flex flex-col space-y-2">
-                    <p class="text-surface-600 dark:text-surface-200"><b>Folio: </b>
+                    <p class="text-surface-600  dark:text-surface-200"><b>Folio de trámite: </b>
                         {{detalleTramiteElectronicoRecibido.folio}}
                     </p>
-                    <p class="text-surface-600 dark:text-surface-200"><b>Fecha recepción:</b>
+                    <p class="text-surface-600 dark:text-surface-200">
+                        <b>Fecha de envío:</b>
+
                         {{ detalleTramiteElectronicoRecibido.fechaEnvio | date:'yyyy-MM-dd HH:mm' }} h
                     </p>
+                    @if(detalleTramiteElectronicoRecibido.folioRecepcionJuz){
+                    <p class="text-surface-600 dark:text-surface-200"><b>Folio de recepción en juzgado:</b>
+                        <span class="bg-yellow-200 px-1  rounded-sm text-black">
+
+                            {{ detalleTramiteElectronicoRecibido.folioRecepcionJuz }}
+                        </span>
+                    </p>
+                    <p class="text-surface-600 dark:text-surface-200 "><b>Fecha de recepción en juzgado:</b>
+                        <span class="bg-blue-200  rounded-sm text-black">
+
+                            {{ detalleTramiteElectronicoRecibido.fechaHoraRec | date:'yyyy-MM-dd HH:mm' }} h
+                        </span>
+                    </p>
+                    }
 
                 </div>
                 <div class="flex flex-col space-y-2">
                     <p class="text-surface-600 dark:text-surface-200"><b>Cantidad de anexos: </b>
                         {{detalleTramiteElectronicoRecibido.observaciones}}
                     </p>
-                    <p class="text-surface-600 dark:text-surface-200 flex gap-2"><b>Activo:</b>
-                        <p-tag [severity]="detalleTramiteElectronicoRecibido.activo ? 'info' : 'danger'"
-                                [value]="detalleTramiteElectronicoRecibido.activo ? 'Activo' : 'Inactivo'" />
+                    <p class="text-surface-600 dark:text-surface-200 flex gap-2"><b>Estatus:</b>
+                        <p-tag [severity]="detalleTramiteElectronicoRecibido.folioRecepcionJuz ? 'success' : 'info'"
+                            [value]="detalleTramiteElectronicoRecibido.folioRecepcionJuz ? 'Recibido en juzgado' : 'Enviando'" />
                     </p>
 
                 </div>
@@ -88,7 +104,7 @@
                             {{ archivo.nombreArchivo }}
                         </td>
                         <td>
-                            <p-tag [severity]="archivo.activo ? 'success' : 'danger'"
+                            <p-tag [severity]="archivo.activo ? 'info' : 'warn'"
                                 [value]="archivo.activo ? 'Activo' : 'Inactivo'" />
                         </td>
 
@@ -111,4 +127,3 @@
     </div>
 
 </div>
-

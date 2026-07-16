@@ -36,36 +36,34 @@
 
             <div class="grid grid-cols-6 gap-4 w-full items-end">
                 <div id="tipoTramite" class="col-span-6 md:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Tipo</label>
+                    <label for="idCatTipoTramite" class="block mb-2 text-sm font-medium">Tipo</label>
                     <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
                         (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid
                         placeholder="Selecciona un tipo de trámite" [filter]="true" optionLabel="label"
                         appendTo="body" />
                 </div>
                 <div id="numeroExpediente" class="col-span-6 md:col-span-1">
+                    <label for="numeroExpediente" class="block mb-2 text-sm font-medium">
+                        Folio
 
-                    <label class="block mb-2 text-sm font-medium">Folio
-                        @if (busquedaForm.get('idCatTipoTramite')?.value == 33) {
-                            de la causa
-                        } @else if (busquedaForm.get('idCatTipoTramite')?.value == 47) {
-                            del cuaderno
-                        }
                     </label>
+
                     <p-inputmask fluid formControlName="numeroExpediente" class="uppercase text-sm rounded-lg"
-                        mask="9999/9999" placeholder="0001/2026" />
+                        [mask]="numeroExpedienteMask"
+                        [placeholder]="numeroExpedientePlaceholder" />
                 </div>
 
                 <div id="juzgado" class="col-span-6 md:col-span-2">
-                    <label class="block mb-2 text-sm font-medium">Juzgado</label>
+                    <label for="idJuzgado" class="block mb-2 text-sm font-medium">Juzgado</label>
                     <p-select class="w-full" [options]="catJuzgados" formControlName="idJuzgado"
                         optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
                         optionLabel="descripcion" appendTo="body" />
                 </div>
                 <div id="botonBuscar" class="col-span-6 md:col-span-1">
-                    <p-button (click)="onValidarCausa()" [disabled]="busquedaForm.invalid">
+                    <button pButton (click)="onValidarCausa()" [disabled]="busquedaForm.invalid">
                         <i pButtonIcon class="pi pi-search"></i>
                         <span pButtonLabel>Buscar</span>
-                    </p-button>
+                    </button>
                 </div>
             </div>
 
@@ -166,7 +164,7 @@
             </div>
             }
             <div id="observaciones" class="col-span-6 sm:col-span-6" [formGroup]="documentosForm">
-                <label class="block mb-2 text-sm font-medium">Observaciones</label>
+                <label for="observaciones" class="block mb-2 text-sm font-medium">Observaciones</label>
                 <textarea pTextarea rows="5" formControlName="observaciones" name="observaciones" id="observaciones"
                     fluid class=" text-sm" maxlength="450" placeholder="Escribe algo aquí..."></textarea>
             </div>
@@ -236,7 +234,7 @@
                     <span class="font-semibold text-color-secondary shrink-0">Fecha de envío</span>
                     <span class="font-medium text-right min-w-0">
                         {{ tramitesElectronicosRecibidos?.fechaEnvio
-                        ? (tramitesElectronicosRecibidos?.fechaEnvio | date:'dd/MM/yyyy HH:mm')
+                        ? (tramitesElectronicosRecibidos.fechaEnvio | date:'dd/MM/yyyy HH:mm')
                         : '—' }}
                     </span>
                 </div>

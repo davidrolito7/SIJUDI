@@ -585,9 +585,9 @@
                 <div class="grid grid-cols-6 gap-4">
                     <div class="col-span-6 sm:col-span-3">
                         <label class="block mb-2 text-sm font-medium">Grupo vulnerable</label>
-                        <p-multiSelect formControlName="grupoVulnerable" [options]="catGruposVulnerables"
+                        <p-multiselect formControlName="grupoVulnerable" [options]="catGruposVulnerables"
                             optionValue="id" optionLabel="desc" placeholder="Selecciona una o más opciones"
-                            appendTo="body" fluid></p-multiSelect>
+                            appendTo="body" fluid></p-multiselect>
                         <div *ngIf="shouldShowError('grupoVulnerable')" class="text-red-500 text-sm mt-1">
                             {{ getError("grupoVulnerable") }}
                         </div>
@@ -596,9 +596,9 @@
                     <div class="col-span-6 sm:col-span-3"
                         *ngIf="parteForm.get('grupoVulnerable')?.value?.includes(2)">
                         <label class="block mb-2 text-sm font-medium">Tipo de discapacidad</label>
-                        <p-multiSelect formControlName="idDiscapacidad" [options]="catDiscapacidades" optionValue="id"
+                        <p-multiselect formControlName="idDiscapacidad" [options]="catDiscapacidades" optionValue="id"
                             optionLabel="desc" placeholder="Selecciona una o más discapacidades" appendTo="body"
-                            fluid></p-multiSelect>
+                            fluid></p-multiselect>
                         <div *ngIf="shouldShowError('idDiscapacidad')" class="text-red-500 text-sm mt-1">
                             {{ getError("idDiscapacidad") }}
                         </div>
@@ -607,9 +607,9 @@
                     <div class="col-span-6 sm:col-span-3"
                         *ngIf="parteForm.get('grupoVulnerable')?.value?.includes(3)">
                         <label class="block mb-2 text-sm font-medium">Lengua indígena</label>
-                        <p-multiSelect formControlName="idLenguaje" [options]="catLenguas" optionValue="id"
+                        <p-multiselect formControlName="idLenguaje" [options]="catLenguas" optionValue="id"
                             optionLabel="desc" placeholder="Selecciona una o más lenguas" appendTo="body"
-                            fluid></p-multiSelect>
+                            fluid></p-multiselect>
                         <div *ngIf="shouldShowError('idLenguaje')" class="text-red-500 text-sm mt-1">
                             {{ getError("idLenguaje") }}
                         </div>
@@ -658,7 +658,7 @@
 
                     <div class="col-span-6 sm:col-span-3">
                         <label for="telefono" class="block mb-2 text-sm font-medium">Teléfono</label>
-                        <p-inputMask id="telefono" mask="(999) 999-9999" [unmask]="true" placeholder="(123) 456-7890"
+                        <p-inputmask id="telefono" mask="(999) 999-9999" [unmask]="true" placeholder="(123) 456-7890"
                             formControlName="telefono" fluid />
                         <div *ngIf="shouldShowError('telefono')" class="text-red-500 text-sm mt-1">
                             {{ getError("telefono") }}

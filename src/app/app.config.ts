@@ -38,6 +38,7 @@ export const appConfig: ApplicationConfig = {
 
     providePrimeNG({
       translation: es.es,
+      license: 'eyJpZCI6ImUxMDY4Mzg3LWEyMmQtNGExOS1iNGUyLTQ5MjUwNWE0MTZjOSIsInByb2R1Y3QiOiJwcmltZXVpIiwidGllciI6ImNvbW11bml0eSIsInR5cGUiOiJkZXYiLCJpYXQiOjE3ODM2OTc0MjUsImV4cCI6MTgxNTIzMzQyNX0.3v2B5VugG78r88n98jB9nCZDBYa1Yqq3yuz5aMvHce7jFG3pI3dSickDDfFCUNT_Fnr467NZ4TQ1BE4_kHraDA',
       theme: {
         preset: Custom,
         options: {

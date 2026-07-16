@@ -9,7 +9,6 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { FileUploadModule } from 'primeng/fileupload';
 import { PasswordModule } from 'primeng/password';
-import { QRCodeComponent } from 'angularx-qrcode';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 
@@ -23,6 +22,7 @@ import { PantallasService } from '../../../../juicio-oral/services/pantallas.ser
 import { catchError, map, of, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../../environments/environment';
+import { QrGeneratorComponent } from '../../../../shared/components/qr-generator-component/qr-generator-component';
 
 const SISTEMA_ID = 1;
 const AREA_ID = 2037;
@@ -35,7 +35,7 @@ const SUBAREA_ID = 1007;
   imports: [
     SelectModule, FormsModule, ButtonModule, InputMaskModule, CommonModule,
     SelectButtonModule, ToggleButtonModule, FileUploadModule, PasswordModule,
-    QRCodeComponent, DialogModule, ToastModule, ReactiveFormsModule, Spinner,
+    QrGeneratorComponent, DialogModule, ToastModule, ReactiveFormsModule, Spinner,
   ],
   templateUrl: './login2fase.html',
   styleUrl: './login2fase.css',

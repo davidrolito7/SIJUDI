@@ -67,7 +67,9 @@ export class Login implements OnInit {
   forgotPassword() {
     window.open('https://virtual.tribunaloaxaca.gob.mx/ForgotPassword', '_blank');
   }
-
+  preRegistro() {
+    window.open('https://virtual.tribunaloaxaca.gob.mx/preregrune', '_blank');
+  }
   passwordFocus() {
     if (this.usuario?.trim()) {
       this.passwordInput.nativeElement.focus();
