@@ -61,6 +61,12 @@ export class TerminosService {
       `${this.apiUrl}/Anexos`,{ context: checkToken() }
     );
   }
+  getUsuariosConEscritos() {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/Usuarios/con-escritos`,
+      { context: checkToken() }
+    );
+  }
 
   // -------------------------
   // BÚSQUEDAS POR CLAVE
@@ -124,7 +130,7 @@ export class TerminosService {
   // REPORTES DOCUMENTOS PDF
   // ==========================
 
-  generarReporteDocumentosPdf(params: {
+  /*generarReporteDocumentosPdf(params: {
     instancia: string;
     juzgado?: string;
     sala?: string;
@@ -144,6 +150,49 @@ export class TerminosService {
         },
         responseType: 'blob',
         context: checkToken()
+      }
+    );
+  }*/
+  buscarReporteEscritos(params: {
+    instancia: string;
+    juzgado?: string;
+    folio?: string;
+    expediente?: string;
+    fechaInicio?: string;
+    fechaFin?: string;
+    personaRecibe?: string;
+    personaCertifica?: string;
+  }) {
+
+    let httpParams = new HttpParams()
+      .set('Instancia', params.instancia);
+
+    if (params.juzgado)
+      httpParams = httpParams.set('Juzgado', params.juzgado);
+
+    if (params.folio)
+      httpParams = httpParams.set('Folio', params.folio);
+
+    if (params.expediente)
+      httpParams = httpParams.set('Expediente', params.expediente);
+
+    if (params.fechaInicio)
+      httpParams = httpParams.set('FechaInicio', params.fechaInicio);
+
+    if (params.fechaFin)
+      httpParams = httpParams.set('FechaFin', params.fechaFin);
+
+    if (params.personaRecibe)
+      httpParams = httpParams.set('PersonaRecibe', params.personaRecibe);
+
+    if (params.personaCertifica)
+      httpParams = httpParams.set('PersonaCertifica', params.personaCertifica);
+
+    return this.http.get<any>(
+      `${this.apiUrl}/Reportes/Escritos`,
+      {
+        context: checkToken(),
+        params: httpParams
       }
     );
   }
@@ -217,7 +266,96 @@ obtenerCertificacion(folio: string):Observable<any> {
     { context: checkToken()}
   );
 }
+generarReportePdf(params: {
+  instancia: string;
+  juzgado?: string;
+  folio?: string;
+  expediente?: string;
+  fechaInicio?: string;
+  fechaFin?: string;
+  personaRecibe?: string;
+  personaCertifica?: string;
+}): Observable<Blob> {
 
+
+  let httpParams = new HttpParams()
+    .set('Instancia', params.instancia);
+
+  if (params.juzgado)
+    httpParams = httpParams.set('Juzgado', params.juzgado);
+
+  if (params.folio)
+    httpParams = httpParams.set('Folio', params.folio);
+
+  if (params.expediente)
+    httpParams = httpParams.set('Expediente', params.expediente);
+
+  if (params.fechaInicio)
+    httpParams = httpParams.set('FechaInicio', params.fechaInicio);
+
+  if (params.fechaFin)
+    httpParams = httpParams.set('FechaFin', params.fechaFin);
+
+  if (params.personaRecibe)
+    httpParams = httpParams.set('PersonaRecibe', params.personaRecibe);
+
+  if (params.personaCertifica)
+    httpParams = httpParams.set('PersonaCertifica', params.personaCertifica);
+
+  return this.http.get(
+    `${this.apiUrl}/Reportes/Escritos/pdf`,
+    {
+      context: checkToken(),
+      params: httpParams,
+      responseType: 'blob'
+    }
+  );
+}
+generarReporteExcel(params: {
+  instancia: string;
+  juzgado?: string;
+  folio?: string;
+  expediente?: string;
+  fechaInicio?: string;
+  fechaFin?: string;
+  personaRecibe?: string;
+  personaCertifica?: string;
+}): Observable<Blob> {
+
+
+  let httpParams = new HttpParams()
+    .set('Instancia', params.instancia);
+
+  if (params.juzgado)
+    httpParams = httpParams.set('Juzgado', params.juzgado);
+
+  if (params.folio)
+    httpParams = httpParams.set('Folio', params.folio);
+
+  if (params.expediente)
+    httpParams = httpParams.set('Expediente', params.expediente);
+
+  if (params.fechaInicio)
+    httpParams = httpParams.set('FechaInicio', params.fechaInicio);
+
+  if (params.fechaFin)
+    httpParams = httpParams.set('FechaFin', params.fechaFin);
+
+  if (params.personaRecibe)
+    httpParams = httpParams.set('PersonaRecibe', params.personaRecibe);
+
+  if (params.personaCertifica)
+    httpParams = httpParams.set('PersonaCertifica', params.personaCertifica);
+
+  return this.http.get(
+    `${this.apiUrl}/Reportes/Escritos/Excel`,
+    {
+      context: checkToken(),
+      params: httpParams,
+      responseType: 'blob'
+    }
+  );
+}
 
 }
 

@@ -18,6 +18,8 @@ import { environment } from '../../../../../environments/environment';
 import { UserMenuStore } from '../../../layout/siderbar/user-menu.store';
 import { PantallasService } from '../../../../juicio-oral/services/pantallas.service';
 
+import { Title } from '@angular/platform-browser';
+
 const SISTEMA_ID = 1;
 const AREA_ID = 2037;
 const PERFIL_ID = 7241;
@@ -59,10 +61,11 @@ export class Login implements OnInit {
     private mensaje: MessageService,
     private cd: ChangeDetectorRef,
     private menuStore: UserMenuStore,
-    private pantallasService: PantallasService
+    private pantallasService: PantallasService,
+    private title: Title
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {this.title.setTitle('Login - Sistema Integral de Justicia Digital | Poder Judicial del Estado de Oaxaca');}
 
   forgotPassword() {
     window.open('https://virtual.tribunaloaxaca.gob.mx/ForgotPassword', '_blank');

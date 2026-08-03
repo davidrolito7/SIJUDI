@@ -11,6 +11,7 @@ import { ContadoresService } from '../../../juicio-oral/services/contadores.serv
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
+
 type DashboardTone =
   | 'orange'
   | 'blue'
@@ -74,7 +75,7 @@ export class Dashboard implements OnInit, OnDestroy {
   horaActual = new Date();
 
   selectedDashboard = 'juicio-linea';
-
+  perfil = sessionStorage.getItem('perfilSeleccionadoDesc')
   dashboards: DashboardSystem[] = [
     {
       id: 'juicio-linea',

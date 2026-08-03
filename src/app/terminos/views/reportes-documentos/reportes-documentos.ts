@@ -13,6 +13,8 @@ import { CatJuzgados, CatSalas } from '../../interface/terminos.model';
 import { ChangeDetectorRef } from '@angular/core';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { Header } from "../../../shared/components/header/header";
+import { TableModule } from "primeng/table";
+import { MessageModule } from "primeng/message";
 
 
 
@@ -28,8 +30,10 @@ import { Header } from "../../../shared/components/header/header";
     ButtonModule,
     DatePickerModule,
     ToastModule,
-    Spinner, Header
-  ],
+    Spinner, Header,
+    TableModule,
+    MessageModule
+],
   templateUrl: './reportes-documentos.html',
   styleUrls: ['./reportes-documentos.css'],
   providers: [MessageService]
@@ -46,6 +50,11 @@ import { Header } from "../../../shared/components/header/header";
  * - Manejar estados de carga y notificaciones
  */
 export class ReportesDocumentosComponent implements OnInit {
+
+  private readonly FOLIO_PRIMERA_REGEX = /^P-\d{1,5}\/\d{4}$/;
+  private readonly FOLIO_SEGUNDA_REGEX = /^S-\d{1,5}\/\d{4}$/;
+  @ViewChild('resultadosSection')
+  resultadosSection!: ElementRef;
 
   /** Indica si el componente ya está listo (uso opcional) */
   ready = true;
@@ -72,6 +81,18 @@ export class ReportesDocumentosComponent implements OnInit {
   /** Fecha final del rango */
   fechaFin: Date | null = null;
 
+  folio = '';
+  expediente = '';
+
+  // ==================================================
+  // Estado de resultados
+  // ==================================================
+  resultados: any[] = [];
+  busquedaRealizada = false;
+
+  usuarios: any[] = [];
+
+  usuarioRecibio: string | null = null;
   // ==================================================
   // Referencias a controles de la vista
   // ==================================================
@@ -146,6 +167,16 @@ export class ReportesDocumentosComponent implements OnInit {
         this.catalogoSalas = [];
       }
     });
+    this.apiService.getUsuariosConEscritos().subscribe({
+      next: (data) => {
+        this.usuarios = data.filter(
+          (u) => u.nombre?.trim().toLowerCase() !== 'administrador del sistema',
+        );
+      },
+      error: (err) => {
+        console.error('Error cargando usuarios', err);
+      },
+    });
   }
 
   // ==================================================
@@ -182,7 +213,7 @@ export class ReportesDocumentosComponent implements OnInit {
    * 4. Descarga el archivo si es válido.
    * 5. Muestra mensajes informativos o de error.
    */
-generarPdf(): void {
+/*generarPdf(): void {
 
   // 🔎 Validación
   if (!this.fechaInicio || !this.fechaFin) {
@@ -264,7 +295,7 @@ generarPdf(): void {
       }
 
     });
-}
+}*/
   /**
    * Restablece todos los filtros del formulario a su estado inicial.
    */
@@ -281,6 +312,236 @@ generarPdf(): void {
    */
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
+  }
+  onFechaInicioChange(): void {
+    if (!this.fechaInicio) {
+      return;
+    }
+
+    this.fechaFin = new Date(this.fechaInicio);
+  }
+  descargarPdf(): void {
+    const params = this.obtenerFiltros();
+    this.isLoading = true;
+    this.cdr.detectChanges();
+    this.apiService.generarReportePdf(params).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+
+        window.open(url, '_blank');
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+
+      error: (err) => {
+        //console.error(err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No fue posible generar el reporte PDF.',
+        });
+      },
+    });
+  }
+  descargarExcel(): void {
+    const params = this.obtenerFiltros();
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
+    this.apiService.generarReporteExcel(params).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+
+        link.href = url;
+        link.download = 'ReporteEscritos.xlsx';
+
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No fue posible generar el reporte Excel.',
+        });
+      },
+    });
+  }
+  private obtenerFiltros() {
+    return {
+      instancia: this.instancia!,
+      juzgado: this.instancia === 'P' ? (this.juzgado ?? '') : (this.sala ?? ''),
+
+      folio: this.folio.trim(),
+      expediente: this.expediente.trim(),
+
+      fechaInicio: this.fechaInicio ? this.fechaInicio.toISOString() : '',
+
+      fechaFin: this.fechaFin ? this.fechaFin.toISOString() : '',
+
+      personaRecibe: this.usuarioRecibio ?? '',
+      personaCertifica: '',
+    };
+  }
+  buscar(): void {
+    if (!this.instancia) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Campo requerido',
+        detail: 'Debe seleccionar una instancia',
+      });
+
+      return;
+    }
+
+    const tieneFiltro =
+      !!this.juzgado ||
+      !!this.sala ||
+      !!this.folio.trim() ||
+      !!this.expediente.trim() ||
+      !!this.usuarioRecibio ||
+      !!this.fechaInicio;
+
+    if (!tieneFiltro) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Filtros insuficientes',
+        detail:
+          'Debe capturar al menos un criterio adicional de búsqueda (Juzgado/Sala, Fecha, Folio, Expediente o Quien recibió).',
+      });
+
+      return;
+    }
+
+    /*if (!this.fechaInicio || !this.fechaFin) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Campos requeridos',
+        detail: 'Debe seleccionar un rango de fechas',
+      });
+
+      return;
+    }*/
+    if (this.fechaInicio && this.fechaFin && this.fechaInicio > this.fechaFin) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Fechas inválidas',
+        detail: 'La fecha inicial no puede ser mayor a la fecha final',
+      });
+
+      return;
+    }
+    /*if (!this.fechaInicio || !this.fechaFin) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Datos incompletos',
+        detail: 'Debe seleccionar una fecha inicial y una fecha final.',
+      });
+
+      return;
+    }*/
+    if (this.folio?.trim()) {
+      const folio = this.folio.trim().toUpperCase();
+
+      const regex = this.instancia === 'P' ? this.FOLIO_PRIMERA_REGEX : this.FOLIO_SEGUNDA_REGEX;
+
+      if (!regex.test(folio)) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Folio inválido',
+          detail:
+            this.instancia === 'P'
+              ? 'Formato esperado: P-1234/2026'
+              : 'Formato esperado: S-1234/2026',
+        });
+
+        return;
+      }
+    }
+    //this.loadingMessage = 'Consultando información...';
+    this.isLoading = true;
+
+    const params = this.obtenerFiltros();
+
+    this.apiService.buscarReporteEscritos(params).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          this.resultados = response.data;
+          this.busquedaRealizada = true;
+          this.irAResultados();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Consulta realizada',
+            detail: `${this.resultados.length} registros encontrados`,
+          });
+
+          console.log(this.resultados);
+        } else {
+          this.resultados = [];
+          this.busquedaRealizada = true;
+
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Sin resultados',
+            detail: response.message,
+          });
+        }
+      },
+
+      error: (err) => {
+        this.isLoading = false;
+        console.error(err);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Ocurrió un problema al realizar la búsqueda.',
+        });
+      },
+    });
+
+    const filtros = {
+      instancia: this.instancia,
+
+      juzgado: this.juzgado,
+      sala: this.sala,
+
+      folio: this.folio,
+      expediente: this.expediente,
+
+      fechaInicio: this.fechaInicio,
+      fechaFin: this.fechaFin,
+
+      usuarioRecibio: this.usuarioRecibio,
+    };
+
+    console.log('Filtros enviados:', filtros);
+  }
+  private irAResultados(): void {
+    setTimeout(() => {
+      this.resultadosSection?.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
   }
 }
 

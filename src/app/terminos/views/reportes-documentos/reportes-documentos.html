@@ -9,9 +9,15 @@
   <!-- HEADER -->
   <div class="flex items-start flex-col md:flex-row justify-between mb-4">
     <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-      Reporte de documentos con término
+      Reporte de documentos con términos
     </label>
-
+    
+  </div>
+  <div class="mb-6 p-3 rounded-lg bg-blue-50 border border-blue-200">
+      <p class="text-sm">
+        <i class="pi pi-info-circle mr-2"></i>
+        Los campos marcados con (*) son obligatorios para realizar la búsqueda.
+      </p>
   </div>
 
   <!-- FILTROS -->
@@ -19,54 +25,204 @@
 
     <!-- Instancia -->
     <div class="col-span-12 md:col-span-6 lg:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Instancia</label>
-      <p-select [options]="instancias" [(ngModel)]="instancia" optionLabel="label" optionValue="value" class="w-full"
+      <label class="block mb-2 text-sm font-medium">Instancia <span class="text-red-500">*</span></label>
+      <p-select 
+        [options]="instancias" 
+        [(ngModel)]="instancia" 
+        optionLabel="label" 
+        optionValue="value" 
+        class="w-full"
         fluid (onChange)="onInstanciaChange()" appendTo="body">
       </p-select>
     </div>
 
     <!-- Juzgado (Primera Instancia) -->
-    <div class="col-span-12 md:col-span-6 lg:col-span-3" *ngIf="instancia === 'P'">
-      <label class="block mb-2 text-sm font-medium">Juzgado</label>
-      <p-select #juzgadoSelect [options]="catalogoJuzgados" [(ngModel)]="juzgado" optionLabel="descripcion"
-        optionValue="cve" placeholder="Selecciona un juzgado" [filter]="true" filterBy="descripcion" class="w-full"
-        fluid appendTo="body" (onChange)="onJuzgadoChange()">
-      </p-select>
-    </div>
-
-    <!-- Sala (Segunda Instancia) -->
-    <div class="col-span-12 md:col-span-6 lg:col-span-3" *ngIf="instancia === 'S'">
-      <label class="block mb-2 text-sm font-medium">Sala</label>
-      <p-select #salaSelect [options]="catalogoSalas" [(ngModel)]="sala" optionLabel="descripcion" optionValue="cve"
-        placeholder="Selecciona una sala" [filter]="true" filterBy="descripcion" class="w-full" fluid appendTo="body"
-        (onChange)="onSalaChange()">
-      </p-select>
-    </div>
+     @if(instancia === 'P')
+     {
+        <div class="col-span-12 md:col-span-6 lg:col-span-3">
+          <label class="block mb-2 text-sm font-medium">Juzgado</label>
+          <p-select #juzgadoSelect 
+              [options]="catalogoJuzgados" 
+              [(ngModel)]="juzgado" 
+              optionLabel="descripcion"
+              optionValue="cve" 
+              placeholder="Seleccione un juzgado" 
+              [filter]="true" filterBy="descripcion" class="w-full"
+              fluid appendTo="body" (onChange)="onJuzgadoChange()">
+          </p-select>
+        </div>
+     }@else {
+        <!-- Sala (Segunda Instancia) -->
+      <div class="col-span-12 md:col-span-6 lg:col-span-3">
+        <label class="block mb-2 text-sm font-medium">Sala</label>
+        <p-select #salaSelect 
+            [options]="catalogoSalas" 
+            [(ngModel)]="sala" 
+            optionLabel="descripcion" 
+            optionValue="cve"
+            placeholder="Seleccione una sala" 
+            [filter]="true" filterBy="descripcion" class="w-full" fluid appendTo="body"
+            (onChange)="onSalaChange()">
+        </p-select>
+      </div>
+     }
+  
 
     <!-- Fecha inicio -->
-    <div class="col-span-6 md:col-span-6 lg:col-span-2">
+    <div class="col-span-12 md:col-span-6 lg:col-span-2">
       <label class="block mb-2 text-sm font-medium">De</label>
-      <p-datepicker #fechaInicioInput [(ngModel)]="fechaInicio" dateFormat="yy-mm-dd" class="w-full" fluid
-        appendTo="body" [maxDate]="maxDate">
+      <p-datepicker #fechaInicioInput 
+          [(ngModel)]="fechaInicio" 
+          dateFormat="yy-mm-dd" class="w-full" fluid
+          appendTo="body" 
+          [maxDate]="maxDate"
+          (onSelect)="onFechaInicioChange()">
       </p-datepicker>
     </div>
 
     <!-- Fecha fin -->
-    <div class="col-span-6 md:col-span-6 lg:col-span-2">
+    <div class="col-span-12 md:col-span-6 lg:col-span-2">
       <label class="block mb-2 text-sm font-medium">A</label>
-      <p-datepicker #fechaFinInput [(ngModel)]="fechaFin" dateFormat="yy-mm-dd" class="w-full" fluid appendTo="body"
-        [maxDate]="maxDate">
+      <p-datepicker #fechaFinInput 
+          [(ngModel)]="fechaFin" 
+          dateFormat="yy-mm-dd" 
+          class="w-full" fluid appendTo="body"
+          [maxDate]="maxDate">
       </p-datepicker>
+    </div>
+    <!--folio-->
+    <div class="col-span-12 md:col-span-6 lg:col-span-2">
+      <label class="block mb-2 text-sm font-medium">Folio</label>
+      <input
+          pInputText
+          [(ngModel)]="folio"
+          class="w-full"
+          [placeholder]="instancia === 'P' ? 'Ej. P-1234/2026' : 'Ej. S-1234/2026'"
+        />
+
+        <!--<small class="block mt-1 min-h-5 text-surface-500">
+          Formato esperado:
+          {{ instancia === 'P' ? 'P-1234/2026' : 'S-1234/2026' }}
+        </small>-->
+    </div>
+
+     <!--expediente-->
+    <div class="col-span-12 md:col-span-6 lg:col-span-2">
+      <label class="block mb-2 text-sm font-medium">Expediente</label>
+      <input
+          pInputText
+          [(ngModel)]="expediente"
+          class="w-full"
+          [placeholder]="instancia === 'P' ? 'Ej. P-1234/2026' : 'Ej. S-1234/2026'"
+        />
+    </div>
+     <!--quien recibe-->
+    <div class="col-span-12 md:col-span-6 lg:col-span-3">
+      <label class="block mb-2 text-sm font-medium">Quién recibió</label>
+      <p-select
+          [options]="usuarios"
+          [(ngModel)]="usuarioRecibio"
+          optionLabel="nombre"
+          optionValue="id"
+          placeholder="Seleccione un usuario"
+          [filter]="true"
+          filterBy="nombre"
+          class="w-full"
+          appendTo="body"
+        >
+        </p-select>
     </div>
 
     <div class="col-span-3 md:col-span-4 lg:col-span-2 flex gap-4 sm:justify-end md:justify-start">
+      <p-button  type="button" icon="pi pi-search" label="Buscar" (click)="buscar()"></p-button>
       <p-button icon="pi pi-filter-slash" [outlined]="true" (click)="limpiar()" aria-label="Limpiar filtros"></p-button>
-
-      <p-button (click)="generarPdf()" >
+      
+      <!--<p-button (click)="generarPdf()" >
          <i pButtonIcon class="pi  pi-file-pdf" aria-hidden="true"></i>
         <span pButtonLabel>Generar</span>
-      </p-button>
+      </p-button>-->
     </div>
   </div>
+</div>
+<!-- ==================================================
+     Resultados de la búsqueda
+     ================================================== -->
+
+<div #resultadosSection class="m-5 bg-surface-50 dark:bg-surface-900 p-4">
+  <!-- Tabla de resultados -->
+  <div *ngIf="resultados.length > 0" class="flex justify-between items-center mb-4">
+    <div>
+      <h3 class="text-lg font-semibold">Resultados de la búsqueda</h3>
+
+      <p class="text-sm text-surface-500">
+        Registros encontrados:
+        <strong>{{ resultados.length }}</strong>
+      </p>
+    </div>
+
+    <div class="flex gap-2">
+      <p-button
+        type="button"
+        icon="pi pi-file-pdf"
+        label="Descargar PDF"
+        severity="danger"
+        (click)="descargarPdf()"
+      ></p-button>
+
+      <p-button
+        type="button"
+        icon="pi pi-file-excel"
+        label="Descargar Excel"
+        severity="success"
+        (click)="descargarExcel()"
+      ></p-button>
+    </div>
+  </div>
+
+  @if(resultados.length > 0)
+  {
+    <p-table
+      [value]="resultados"
+      [scrollable]="true"
+      scrollHeight="500px"
+      size="small"
+    >
+      <ng-template #header>
+        <tr>
+          <th>Folio</th>
+          <th>Expediente</th>
+          <th>Juzgado / Sala</th>
+          <th>Fecha Recepción</th>
+          <th>Recibió</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-row>
+        <tr>
+          <td>{{ row.folio }}</td>
+          <td>{{ row.expediente }}</td>
+          <td>{{ row.juzgado || row.sala }}</td>
+          <td>{{ row.fecharecepcion }}</td>
+          <td class="uppercase">{{ row.personarecibe?.trim() }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+    <!-- Mensaje sin resultados -->
+    <p-message
+      *ngIf="busquedaRealizada && resultados.length === 0"
+      severity="info"
+      text="No se encontraron resultados"
+    >
+    </p-message>
+  
+
+  <!-- Mensaje sin resultados -->
+  <p-message
+    *ngIf="busquedaRealizada && resultados.length === 0"
+    severity="info"
+    text="No se encontraron resultados"
+  >
+  </p-message>
 </div>
 

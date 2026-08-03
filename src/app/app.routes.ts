@@ -12,16 +12,16 @@ import { LlaveAcceso } from './shared/components/llave-acceso/llave-acceso';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: Login, canMatch: [redirectGuard] },
+  { path: 'login', component: Login, canMatch: [redirectGuard] ,title: 'Login - Sistema Integral de Justicia Digital | Poder Judicial del Estado de Oaxaca'},
   {
     path: 'login2fase',
     loadComponent: () =>
       import('./core/auth/component/login2fase/login2fase')
         .then(m => m.Login2),
-    canMatch: [authMatchGuard],
+    canMatch: [authMatchGuard], title: 'Login 2 Fase - Sistema Integral de Justicia Digital | Poder Judicial del Estado de Oaxaca'
   },
 
-  { path: 'perfil', component: Perfil, canMatch: [authMatchGuard] },
+  { path: 'perfil', component: Perfil, canMatch: [authMatchGuard], title: 'Perfil - Sistema Integral de Justicia Digital | Poder Judicial del Estado de Oaxaca' },
 
 
   {

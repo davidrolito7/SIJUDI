@@ -25,8 +25,8 @@ import { environment } from '../../../../../environments/environment';
 import { QrGeneratorComponent } from '../../../../shared/components/qr-generator-component/qr-generator-component';
 
 const SISTEMA_ID = 1;
-const AREA_ID = 2037;
-const PERFIL_ID = 7241;
+const AREA_ID = 1;
+const PERFIL_ID = 10;
 const SUBAREA_ID = 1007;
 
 @Component({
@@ -151,7 +151,7 @@ export class Login2 implements OnInit {
   }
 
   private async routeAuthenticatedUser(idTipoPersona: number | null, nombre: string, foto: string): Promise<void> {
-    if (idTipoPersona === 1) {
+    if (idTipoPersona !== 3) { // diferente de empleado
       this.loginContextoAutomatico(nombre, foto);
       return;
     }
