@@ -184,17 +184,28 @@ constructor(
     });
   }
   onCircuitoChange(circuitoObjeto: CatalogoCircuitoResponse): void {
-    this.cargarCatalogoEstado(this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0, this.acuerdoForm.value.clasificacion?.id ?? 0, circuitoObjeto.cjF_catCircuitoId ?? 0);
+    const ambitoId = this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0;
+    const clasificacionId = this.acuerdoForm.value.clasificacion?.id ?? 0;
+   // this.cargarCatalogoEstado(this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0, this.acuerdoForm.value.clasificacion?.id ?? 0, circuitoObjeto.cjF_catCircuitoId ?? 0);
+    this.cargarCatalogoEstado(ambitoId, clasificacionId, circuitoObjeto.cjF_catCircuitoId ?? 0);
 
-    this.acuerdoForm.value.estado=null;
+    this.acuerdoForm.patchValue({
+      estado: null,
+      tipoOrgano: null,
+      materia: null,
+      organo: null,
+      tipoAsunto: null,
+    });
+
+    //this.acuerdoForm.value.estado=null;
     this.estadoLista.set([]);
-    this.acuerdoForm.value.tipoOrgano=null;
+    //this.acuerdoForm.value.tipoOrgano=null;
     this.tipoOrganoLista.set([]);
-    this.acuerdoForm.value.materia=null;
+    //this.acuerdoForm.value.materia=null;
     this.materiaLista.set([]);
-    this.acuerdoForm.value.organo=null;
+    //this.acuerdoForm.value.organo=null;
     this.organoLista.set([]);
-    this.acuerdoForm.value.tipoAsunto=null;
+    //this.acuerdoForm.value.tipoAsunto=null;
     this.tipoAsuntoLista.set([]);
   }
   cargarCatalogoEstado(idAmbito: number, idClasificacion: number, idCircuito: number): void {
@@ -222,15 +233,26 @@ constructor(
   });
   }
   onEstadoChange(): void {
-    this.cargarCatalogoTipoOrgano(this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0, this.acuerdoForm.value.clasificacion?.id ?? 0, this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0, 1);
+  const ambitoId = this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0;
+  const clasificacionId = this.acuerdoForm.value.clasificacion?.id ?? 0;
+  const circuitoId = this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0;
+    //this.cargarCatalogoTipoOrgano(this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0, this.acuerdoForm.value.clasificacion?.id ?? 0, this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0, 1);
+    this.cargarCatalogoTipoOrgano(ambitoId, clasificacionId, circuitoId, 1);
 
-    this.acuerdoForm.value.tipoOrgano=null;
+     this.acuerdoForm.patchValue({
+      tipoOrgano: null,
+      materia: null,
+      organo: null,
+      tipoAsunto: null,
+    });
+
+    //this.acuerdoForm.value.tipoOrgano=null;
     this.tipoOrganoLista.set([]);
-    this.acuerdoForm.value.materia=null;
+    //this.acuerdoForm.value.materia=null;
     this.materiaLista.set([]);
-    this.acuerdoForm.value.organo=null;
+    //this.acuerdoForm.value.organo=null;
     this.organoLista.set([]);
-    this.acuerdoForm.value.tipoAsunto=null;
+    //this.acuerdoForm.value.tipoAsunto=null;
     this.tipoAsuntoLista.set([]);
   }
   cargarCatalogoTipoOrgano(idAmbito: number, idClasificacion: number, idCircuito: number, idTipoFiltro: number) {
@@ -260,13 +282,26 @@ constructor(
 
   }
   onTipoOrganoChange(tipoOrganoSelect: CatalogoTipoOrganoResponse): void {
-    this.cargarCatalogoMaterias(this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0, this.acuerdoForm.value.clasificacion?.id ?? 0, this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0, 1, this.acuerdoForm.value.estado?.id ?? 0, tipoOrganoSelect.id);
 
-    this.acuerdoForm.value.materia=null;
+    const ambitoId = this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0;
+    const clasificacionId = this.acuerdoForm.value.clasificacion?.id ?? 0;
+    const circuitoId = this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0;
+    const estadoId = this.acuerdoForm.value.estado?.id ?? 0;
+
+    //this.cargarCatalogoMaterias(this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0, this.acuerdoForm.value.clasificacion?.id ?? 0, this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0, 1, this.acuerdoForm.value.estado?.id ?? 0, tipoOrganoSelect.id);
+    this.cargarCatalogoMaterias(ambitoId, clasificacionId, circuitoId, 1, estadoId, tipoOrganoSelect.id);
+
+    this.acuerdoForm.patchValue({
+      materia: null,
+      organo: null,
+      tipoAsunto: null,
+    });
+
+    //this.acuerdoForm.value.materia=null;
     this.materiaLista.set([]);
-    this.acuerdoForm.value.organo=null;
+    //this.acuerdoForm.value.organo=null;
     this.organoLista.set([]);
-    this.acuerdoForm.value.tipoAsunto=null;
+    //this.acuerdoForm.value.tipoAsunto=null;
     this.tipoAsuntoLista.set([]);
   }
   cargarCatalogoMaterias(idAmbito: number, idClasificacion: number, idCircuito: number, idTipoFiltro: number, idEstado: number, idTipoOrganismo: number) {
@@ -294,11 +329,23 @@ constructor(
     });
   }
   onTipoMateriaChange(materiaObjeto: CatalogoMateriasResponse): void {
-    this.cargarCatalogoOrgano(this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0, this.acuerdoForm.value.clasificacion?.id ?? 0, this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0, 1, this.acuerdoForm.value.estado?.id ?? 0, this.acuerdoForm.value.tipoOrgano?.id ?? 0, materiaObjeto.id);
+  const ambitoId = this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0;
+  const clasificacionId = this.acuerdoForm.value.clasificacion?.id ?? 0;
+  const circuitoId = this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0;
+  const estadoId = this.acuerdoForm.value.estado?.id ?? 0;
+  const tipoOrganoId = this.acuerdoForm.value.tipoOrgano?.id ?? 0;
 
-    this.acuerdoForm.value.organo=null;
+   this.cargarCatalogoOrgano(ambitoId, clasificacionId, circuitoId, 1, estadoId, tipoOrganoId, materiaObjeto.id);
+
+    //this.cargarCatalogoOrgano(this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0, this.acuerdoForm.value.clasificacion?.id ?? 0, this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0, 1, this.acuerdoForm.value.estado?.id ?? 0, this.acuerdoForm.value.tipoOrgano?.id ?? 0, materiaObjeto.id);
+
+    this.acuerdoForm.patchValue({
+      organo: null,
+      tipoAsunto: null,
+    });
+    //this.acuerdoForm.value.organo=null;
     this.organoLista.set([]);
-    this.acuerdoForm.value.tipoAsunto=null;
+    //this.acuerdoForm.value.tipoAsunto=null;
     this.tipoAsuntoLista.set([]);
   }
   cargarCatalogoOrgano(idAmbito: number, idClasificacion: number, idCircuito: number, idTipoFiltro: number, idEstado: number, idTipoOrganismo: number, idMateria: number) {
@@ -330,9 +377,28 @@ constructor(
   }*/
   cargarCatalogoTipoAsunto(organo: CatalogoOrganoResponse) {
     const idTipoFiltro=1;
+
+    this.acuerdoForm.patchValue({
+      tipoAsunto: null,
+      tipoProcedimiento: null, 
+    });
+    this.tipoAsuntoLista.set([]);
+    this.tipoProcedimientoLista.set([]);
+
+
     this.isLoading=true;
     this.cd.detectChanges();
-    this.amparosService.getCatalogoTipoAsunto(this.acuerdoForm.value.ambito?.cjF_catAmbitoId ??0,this.acuerdoForm.value.clasificacion?.id ?? 0, this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0, idTipoFiltro, this.acuerdoForm.value.estado?.id ?? 0, this.acuerdoForm.value.tipoOrgano?.id ?? 0, this.acuerdoForm.value.materia?.id ?? 0, organo.id).subscribe({
+
+    const ambitoId = this.acuerdoForm.value.ambito?.cjF_catAmbitoId ?? 0;
+    const clasificacionId = this.acuerdoForm.value.clasificacion?.id ?? 0;
+    const circuitoId = this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0;
+    const estadoId = this.acuerdoForm.value.estado?.id ?? 0;
+    const tipoOrganoId = this.acuerdoForm.value.tipoOrgano?.id ?? 0;
+    const materiaId = this.acuerdoForm.value.materia?.id ?? 0;    
+
+    //this.amparosService.getCatalogoTipoAsunto(this.acuerdoForm.value.ambito?.cjF_catAmbitoId ??0,this.acuerdoForm.value.clasificacion?.id ?? 0, this.acuerdoForm.value.circuito?.cjF_catCircuitoId ?? 0, idTipoFiltro, this.acuerdoForm.value.estado?.id ?? 0, this.acuerdoForm.value.tipoOrgano?.id ?? 0, this.acuerdoForm.value.materia?.id ?? 0, organo.id).
+    this.amparosService.getCatalogoTipoAsunto(ambitoId, clasificacionId, circuitoId, idTipoFiltro,estadoId, tipoOrganoId, materiaId, organo.id).
+    subscribe({
       next:(response:any)=>{
         if(response.success) {
           //console.log('Datos recibidios de organo', response);
