@@ -2,7 +2,7 @@ export const environment = {
     production: true,
     //* false para producción
     //* true para pruebas y si eres abogado para que no solicituar llave/auth
-    DEV_SKIP_2FA: false,
+    DEV_SKIP_2FA: true,
     ConstantsService: {
         ruta: 'https://pruebas.tribunaloaxaca.gob.mx/permisos',
         idSistema: 1,

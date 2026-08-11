@@ -1,14 +1,11 @@
 <!-- ===== DRAWER MÓVIL ===== -->
 <p-drawer [(visible)]="drawerService.visible" (visibleChange)="drawerService.visible.set($event)"
     styleClass="lg:hidden !w-72 z-999">
-
     <ng-template #headless>
         <div class="flex flex-col h-full bg-surface-0 dark:bg-surface-950">
-
             <!-- Header del drawer -->
             <div class="flex items-center justify-between px-4 pt-4 pb-3 border-b border-surface shrink-0">
                 <div class="flex items-center gap-2 min-w-0">
-
                     <!-- Logo -->
                     <img src="Sijudi-01.png" alt="SIJUDI" class="w-9 h-9 object-contain shrink-0" />
 
@@ -26,7 +23,6 @@
                 <button type="button"
                     class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-surface-500 dark:text-surface-300"
                     (click)="drawerService.close()" aria-label="Cerrar menú">
-
                     <i class="pi pi-times text-xs"></i>
                 </button>
             </div>
@@ -34,14 +30,12 @@
             <!-- Contenido scrolleable -->
             <div class="flex-1 overflow-y-auto py-2">
                 <ul class="list-none p-0 m-0">
-
                     @for (mod of modulos(); track mod.idSistemaModulo ?? $index) {
                     <li>
                         <!-- Cabecera del módulo (colapsable) -->
                         <div pRipple pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-slidedown"
                             leaveToClass="hidden" leaveActiveClass="animate-slideup"
                             class="px-4 py-3 flex items-center justify-between cursor-pointer transition-colors text-surface-600 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-900 p-ripple">
-
                             <div class="flex items-center gap-2 min-w-0">
                                 <img class="w-5 h-5 object-contain shrink-0" [src]="svgSrcForModulo(mod)" alt=""
                                     aria-hidden="true" />
@@ -63,7 +57,6 @@
                                     class="flex items-center gap-2 cursor-pointer px-5 py-2.5 rounded-lg text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-900 duration-150 transition-colors p-ripple"
                                     [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis"
                                     (click)="drawerService.close()">
-
                                     <img class="w-4 h-4 object-contain shrink-0" [src]="svgSrcForPantalla(p)" alt=""
                                         aria-hidden="true" />
 
@@ -76,139 +69,153 @@
                         </ul>
                     </li>
                     }
-
                 </ul>
             </div>
 
             <!-- Footer con configuración -->
-            <div class="shrink-0 border-t border-surface">
-                <button type="button"
-                    class="w-full flex items-center gap-2 px-4 py-3 hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors cursor-pointer text-surface-500 dark:text-surface-400"
+            <div
+                class="shrink-0 border-t border-surface hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors cursor-pointer">
+                <button type="button" class="w-full flex items-center text-surface-500 dark:text-surface-400"
                     aria-label="Configuración">
-
                     <i class="pi pi-cog text-sm"></i>
 
-                    <span class="text-sm font-medium">
-                        Configuración
-                    </span>
+                    <span class="text-sm font-medium"> Configuración </span>
                 </button>
             </div>
-
         </div>
     </ng-template>
 </p-drawer>
 
-<div class="h-screen overflow-hidden flex bg-surface dark:bg-surface-950 p-2 sm:p-4 gap-4">
-    <!-- CONTENEDOR UNIFICADO BARRAS LATERALES -->
-    <div class="hidden lg:flex h-[calc(100vh-2rem)] sticky top-4 z-50">
+<div class="flex h-screen overflow-hidden bg-surface-50 dark:bg-[#0C0C0C]">
+    <!-- SIDEBAR DE ESCRITORIO -->
+    <div class="hidden h-screen shrink-0 lg:flex sticky top-0 z-50">
         <aside [@sidebarWidth]="showMenu() ? 'expanded' : 'collapsed'"
-            class="flex flex-col justify-between h-full rounded-2xl shadow-sm border border-slate-200 overflow-hidden relative z-10 bg-gradient-to-b from-sky-50 via-slate-50 to-emerald-50/60 dark:bg-none dark:bg-surface-900 dark:border-slate-800">
-
-            <div class="w-full flex flex-col min-h-0 px-3 py-4">
-
-                <!-- HEADER -->
-                <div class="flex items-center px-2 pb-3 border-b border-slate-200/80 dark:border-slate-800"
+            class="relative flex h-full flex-col overflow-hidden border-r border-[#dde5e2] bg-[#f6f8f7] dark:border-[#242424] dark:bg-[#0B1215]">
+            <!-- CONTENIDO PRINCIPAL -->
+            <div class="flex min-h-0 flex-1 flex-col px-3 py-3">
+                <!-- HEADER DEL SIDEBAR -->
+                <div class="flex h-14 shrink-0 items-center border-b border-[#e2e8e6] px-1 pb-3 dark:border-[#242424]"
                     [ngClass]="showMenu() ? 'justify-between' : 'justify-center'">
-
-                    <button type="button"
-                        class="w-10 h-10 shrink-0 flex items-center justify-center cursor-pointer rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
-                        (click)="!showMenu() && toggleSidebar()"
-                        [attr.aria-label]="showMenu() ? 'SIJUDI' : 'Expandir menú'"
-                        [attr.tabindex]="showMenu() ? -1 : 0">
-
-                        <img class="w-10 h-auto shrink-0 max-w-none" src="Sijudi-01.png" alt="" aria-hidden="true" />
-                    </button>
-
                     @if (showMenu()) {
-                    <button type="button"
-                        class="w-8 h-8 flex items-center justify-center cursor-pointer rounded-lg transition-colors select-none text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-sm hover:ring-1 hover:ring-slate-200 bg-transparent flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 dark:hover:ring-slate-700 dark:focus-visible:ring-offset-slate-950"
-                        (click)="toggleSidebar()" aria-label="Colapsar menú">
+                    <!-- LOGO -->
+                    <a routerLink="/home"
+                        class="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#315d53]/30 dark:focus-visible:ring-[#F8FAFC]/30"
+                        aria-label="Ir al inicio">
+                        <img class="h-auto w-9 max-w-none shrink-0" src="Sijudi-01.png" alt="SIJUDI" />
+                    </a>
 
-                        <i class="pi pi-align-justify text-sm" aria-hidden="true"></i>
+                    <!-- BOTÓN COLAPSAR -->
+                    <button type="button"
+                        class="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-400 outline-none transition-colors hover:bg-white hover:text-[#315d53] focus-visible:ring-2 focus-visible:ring-[#315d53]/30 dark:text-[#CBD5E1] dark:hover:bg-[#171717] dark:hover:text-[#F8FAFC] dark:focus-visible:ring-[#F8FAFC]/30"
+                        (click)="toggleSidebar()" aria-label="Colapsar menú">
+                        <i class="pi pi-bars text-sm" aria-hidden="true"> </i>
                     </button>
+                    } @else {
+                    <!-- MENÚ COLAPSADO -->
+                    <div class="group relative h-10 w-10 shrink-0">
+                        <!-- LOGO -->
+                        <img class="absolute inset-0 m-auto h-auto w-9 max-w-none shrink-0 transition-all duration-200 group-hover:scale-75 group-hover:opacity-0 group-focus-within:opacity-0"
+                            src="Sijudi-01.png" alt="" aria-hidden="true" />
+
+                        <!-- BOTÓN DESPLEGAR -->
+                        <button type="button"
+                            class="absolute inset-0 flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-slate-400 opacity-0 outline-none transition-all duration-200 group-hover:opacity-100 focus:opacity-100 hover:bg-white hover:text-[#315d53] focus-visible:ring-2 focus-visible:ring-[#315d53]/30 dark:text-[#CBD5E1] dark:hover:bg-[#171717] dark:hover:text-[#F8FAFC] dark:focus-visible:ring-[#F8FAFC]/30"
+                            (click)="toggleSidebar()" aria-label="Expandir menú">
+                            <i class="pi pi-bars text-sm" aria-hidden="true"> </i>
+                        </button>
+                    </div>
                     }
                 </div>
 
-                <!-- NAV -->
-                <div class="mt-3 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-1">
-
+                <!-- NAVEGACIÓN -->
+                <nav class="mt-3 flex-1 overflow-y-auto overflow-x-hidden pr-1" aria-label="Navegación principal">
                     @for (mod of modulos(); track mod.idSistemaModulo ?? $index) {
                     <div class="mb-1">
-
+                        <!-- MÓDULO -->
                         <button type="button" [pTooltip]="showMenu() ? undefined : mod.nombre" tooltipPosition="right"
-                            class="group relative w-full min-h-12 px-2.5 py-2 flex items-center gap-3 cursor-pointer rounded-xl transition-all select-none bg-transparent overflow-hidden outline-none"
-                            [ngClass]="isModuloActive(mod.idSistemaModulo)
-                            ? 'text-emerald-900 dark:text-emerald-200 hover:bg-blue-100'
-                            : 'text-slate-700 hover:bg-blue-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-slate-100'"
-                            (click)="toggleModulo(mod)" [attr.aria-expanded]="isModuloExpanded(mod.idSistemaModulo)"
+                            class="group relative flex min-h-11 w-full cursor-pointer items-center gap-3 overflow-hidden rounded-lg px-2 py-1.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#315d53]/30 dark:focus-visible:ring-[#F8FAFC]/30"
+                            [ngClass]="
+                  isModuloActive(mod.idSistemaModulo)
+                    ? 'bg-[#e4eeeb] text-[#294f47] dark:bg-[#101720] dark:text-[#F8FAFC]'
+                    : 'text-slate-600 hover:bg-white hover:text-slate-900 dark:text-[#CBD5E1] dark:hover:bg-[#171717] dark:hover:text-[#F8FAFC]'
+                " (click)="toggleModulo(mod)" [attr.aria-expanded]="isModuloExpanded(mod.idSistemaModulo)"
                             [attr.aria-label]="'Abrir módulo ' + mod.nombre">
-
-                            <!-- RIEL ACTIVO -->
+                            <!-- INDICADOR ACTIVO -->
                             <span
-                                class="absolute left-0 top-1 bottom-1 w-[3px] rounded-r-sm bg-emerald-600 dark:bg-emerald-400 origin-top"
-                                [@railScale]="isModuloActive(mod.idSistemaModulo) ? 'on' : 'off'"
-                                aria-hidden="true">
+                                class="absolute inset-y-2 left-0 w-[3px] rounded-r-full bg-[#315d53] dark:bg-[#F8FAFC]"
+                                [@railScale]="isModuloActive(mod.idSistemaModulo) ? 'on' : 'off'" aria-hidden="true">
                             </span>
 
-                            <!-- ICONO MÓDULO -->
-                            <span
-                                class="w-10 h-10 rounded-[0.8rem] flex items-center justify-center flex-shrink-0 transition-colors duration-200 shadow-sm"
-                                [ngClass]="isModuloActive(mod.idSistemaModulo)
-                                ? 'bg-emerald-600 dark:bg-emerald-500'
-                                : 'bg-white group-hover:bg-slate-50  dark:bg-slate-100  dark:group-hover:bg-white '">
-
-                                <img class="w-5 h-5" [src]="svgSrcForModulo(mod)" alt="" aria-hidden="true"
-                                    [ngClass]="isModuloActive(mod.idSistemaModulo)
-                                    ? 'brightness-0 invert dark:brightness-100 dark:invert-0'
-                                    : ''" />
+                            <!-- ICONO DEL MÓDULO -->
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors"
+                                [ngClass]="
+                    isModuloActive(mod.idSistemaModulo)
+                      ? 'bg-[#315d53] shadow-sm dark:bg-[#101720] dark:ring-1 dark:ring-[#26303A]'
+                      : 'bg-white ring-1 ring-[#dfe7e4] group-hover:ring-[#cbd8d4] dark:bg-[#171717] dark:ring-[#2D2D2D] dark:group-hover:ring-[#3A3A3A]'
+                  ">
+                                <img class="h-[18px] w-[18px]" [src]="svgSrcForModulo(mod)" alt="" aria-hidden="true"
+                                    [ngClass]="
+                      isModuloActive(mod.idSistemaModulo)
+                        ? 'brightness-0 invert'
+                        : 'opacity-70 dark:brightness-0 dark:invert dark:opacity-90'
+                    " />
                             </span>
 
-                            <!-- TEXTO MÓDULO -->
-                            <div class="overflow-hidden flex-1 min-w-0 text-left"
-                                [@fadeText]="showMenu() ? 'visible' : 'hidden'">
-
-                                <span class="block text-[13.5px] font-semibold truncate whitespace-nowrap">
+                            <!-- TEXTO DEL MÓDULO -->
+                            <div class="min-w-0 flex-1 overflow-hidden" [@fadeText]="showMenu() ? 'visible' : 'hidden'">
+                                <span class="block truncate whitespace-nowrap text-[13px] font-medium">
                                     {{ mod.nombre }}
                                 </span>
                             </div>
 
                             <!-- CHEVRON -->
-                            <div class="overflow-hidden shrink-0" [@fadeText]="showMenu() ? 'visible' : 'hidden'">
-
-                                <i class="pi pi-chevron-down text-[10px] text-emerald-600 dark:text-emerald-300 inline-block"
+                            <div class="shrink-0 overflow-hidden" [@fadeText]="showMenu() ? 'visible' : 'hidden'">
+                                <i class="pi pi-chevron-down inline-block text-[9px] text-slate-400 dark:text-[#94A3B8]"
                                     [@chevronRotate]="isModuloExpanded(mod.idSistemaModulo) ? 'open' : 'closed'">
                                 </i>
                             </div>
                         </button>
 
                         <!-- SUBMENÚ -->
-                        <div class="overflow-hidden"
-                            [@accordion]="(showMenu() && isModuloExpanded(mod.idSistemaModulo)) ? 'open' : 'closed'">
-
-                            <div class="pt-1.5 pl-[1.1rem] pr-1 pb-1.5 flex flex-col gap-1">
-
+                        <div class="overflow-hidden" [@accordion]="
+                  showMenu() && isModuloExpanded(mod.idSistemaModulo) ? 'open' : 'closed'
+                ">
+                            <div
+                                class="relative ml-6 flex flex-col gap-1 border-l border-[#d4dedb] py-1 pl-3 dark:border-[#242424]">
                                 @for (p of pantallasDeModulo(mod); track p.idPantalla ?? $index) {
-                                <a class="group px-2.5 py-2 rounded-lg flex items-center gap-2.5 cursor-pointer transition-all outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                                <a class="group relative flex min-h-9 cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#315d53]/30 dark:focus-visible:ring-[#F8FAFC]/30"
                                     [routerLink]="[p.descripcion]" routerLinkActive #rla="routerLinkActive"
-                                    [attr.aria-current]="rla.isActive ? 'page' : null"
-                                    [ngClass]="rla.isActive
-                                        ? 'bg-emerald-200 text-slate-950 font-semibold shadow-sm dark:bg-slate-900 dark:text-slate-100 '
-                                        : 'text-slate-600 bg-transparent hover:bg-emerald-100/80 hover:text-slate-950 hover:shadow-sm  dark:text-slate-300 dark:hover:bg-slate-800/85 dark:hover:text-slate-100 dark:hover:ring-slate-700'">
-
-                                    <!-- ICONO PANTALLA -->
+                                    [attr.aria-current]="rla.isActive ? 'page' : null" [ngClass]="
+                        rla.isActive
+                          ? 'bg-white font-semibold text-[#315d53] shadow-sm ring-1 ring-[#dfe7e4] dark:bg-[#171717] dark:text-[#F8FAFC] dark:ring-[#2D2D2D]'
+                          : 'text-slate-500 hover:bg-white/80 hover:text-slate-800 dark:text-[#AEB8C4] dark:hover:bg-[#171717] dark:hover:text-[#F8FAFC]'
+                      ">
+                                    <!-- INDICADOR DE PANTALLA ACTIVA -->
+                                    @if (rla.isActive) {
                                     <span
-                                        class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors shadow-sm ring-1 ring-emerald-200"
-                                        [ngClass]="rla.isActive
-                                            ? 'bg-white dark:bg-white dark:ring-emerald-700'
-                                            : 'bg-white  group-hover:bg-slate-50  dark:bg-slate-100 dark:group-hover:bg-white'">
+                                        class="absolute -left-[15px] h-2 w-2 rounded-full bg-[#315d53] ring-[3px] ring-[#f6f8f7] dark:bg-[#F8FAFC] dark:ring-[#0B1215]"
+                                        aria-hidden="true">
+                                    </span>
+                                    }
 
-                                        <img class="w-4 h-4" [src]="svgSrcForPantalla(p)" alt="" aria-hidden="true" />
+                                    <!-- ICONO DE LA PANTALLA -->
+                                    <span
+                                        class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors"
+                                        [ngClass]="
+                          rla.isActive
+                            ? 'bg-[#e7efec] dark:bg-[#101720]'
+                            : 'bg-[#edf1f0] group-hover:bg-[#e7edeb] dark:bg-[#171717] dark:group-hover:bg-[#202020]'
+                        ">
+                                        <img class="h-3.5 w-3.5 opacity-75 dark:brightness-0 dark:invert dark:opacity-90"
+                                            [src]="svgSrcForPantalla(p)" alt="" aria-hidden="true" />
                                     </span>
 
-                                    <span class="font-medium text-[13px] truncate flex-1">
+                                    <!-- NOMBRE DE LA PANTALLA -->
+                                    <span class="min-w-0 flex-1 truncate text-[12px]">
                                         {{ p.nombre }}
                                     </span>
 
+                                    <!-- BADGE -->
                                     @if (getBadge(p.idPantalla) | async; as count) {
                                     <p-badge [value]="count.toString()" badgeSize="small" />
                                     }
@@ -216,80 +223,113 @@
                                 }
 
                                 @if (pantallasDeModulo(mod).length === 0) {
-                                <p class="px-2.5 py-2 text-[13px] text-slate-500 dark:text-slate-400">
-                                    No hay pantallas visibles para este módulo.
+                                <p class="px-2 py-2 text-[12px] leading-5 text-slate-400 dark:text-[#94A3B8]">
+                                    No hay pantallas disponibles.
                                 </p>
                                 }
-
                             </div>
                         </div>
                     </div>
                     }
-
-                </div>
+                </nav>
             </div>
 
-            <!-- FOOTER -->
-            <div class="w-full px-3 pb-3 pt-2 border-t border-slate-200/80 dark:border-slate-800">
+            <!-- FOOTER DEL SIDEBAR -->
+            <div class="shrink-0 border-t border-[#e2e8e6] px-3 py-0 dark:border-[#242424]">
                 <button type="button" [pTooltip]="showMenu() ? undefined : 'Configuración'" tooltipPosition="right"
-                    class="w-full px-2.5 py-2.5 flex items-center gap-3 cursor-pointer rounded-xl transition-all select-none text-slate-500 hover:bg-blue-100 hover:text-slate-900 bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 dark:hover:ring-slate-700 dark:focus-visible:ring-offset-slate-950"
+                    class="flex min-h-10 w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-0 text-slate-500 outline-none transition-colors hover:bg-white hover:text-[#315d53] focus-visible:ring-2 focus-visible:ring-[#315d53]/30 dark:text-[#CBD5E1] dark:hover:bg-[#171717] dark:hover:text-[#F8FAFC] dark:focus-visible:ring-[#F8FAFC]/30"
                     aria-label="Configuración">
-
-                    <i class="pi pi-cog text-base flex-shrink-0" aria-hidden="true"></i>
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center">
+                        <i class="pi pi-cog text-sm" aria-hidden="true"> </i>
+                    </span>
 
                     <span class="overflow-hidden" [@fadeText]="showMenu() ? 'visible' : 'hidden'">
-
-                        <span class="text-[13.5px] font-medium whitespace-nowrap">
-                            Configuración
-                        </span>
+                        <span class="whitespace-nowrap text-[13px] font-medium"> Configuración </span>
                     </span>
                 </button>
             </div>
         </aside>
     </div>
 
-    <main class="flex-1 min-w-0 h-[calc(100vh-2rem)] overflow-hidden -mr-4">
-        <div class="h-full overflow-y-auto overflow-x-hidden flex flex-col">
-            <div class="flex-1 pr-4">
+    <!-- CONTENIDO PRINCIPAL -->
+    <!-- CONTENIDO PRINCIPAL -->
+    <main
+        class="min-w-0 flex-1 overflow-y-auto
+           bg-surface-50 text-surface-900
+           dark:bg-[#0C0C0C] dark:text-[#F8FAFC]
+
+           [background-image:repeating-linear-gradient(135deg,transparent_0px,transparent_9px,rgba(120,120,120,0.055)_9px,rgba(120,120,120,0.055)_10px)]
+
+           dark:[background-image:repeating-linear-gradient(135deg,transparent_0px,transparent_9px,rgba(255,255,255,0.025)_9px,rgba(255,255,255,0.025)_10px)]">
+        <div class="flex h-full flex-col overflow-y-auto overflow-x-hidden">
+
+            <!-- HEADER Y BREADCRUMB -->
+            <div class="sticky top-0 z-50
+           bg-white/95 backdrop-blur-sm
+           dark:bg-[#0C0C0C]/95">
+                <app-header></app-header>
+
+                <div class="border-t border-surface-100
+               px-4 py-1
+               dark:border-surface-800">
+                    <app-breadcrub></app-breadcrub>
+                </div>
+            </div>
+
+            <!-- CONTENIDO DE LAS PANTALLAS -->
+            <div class="flex-1 px-4 pb-4">
                 <router-outlet></router-outlet>
             </div>
 
             <!-- FOOTER -->
-            <footer
-                class="border-t border-surface px-3 py-2 sm:px-6 sm:py-3 mt-3 sm:mt-4 flex flex-col sm:flex-row items-center sm:justify-between gap-1 sm:gap-2 text-[10px] sm:text-xs text-center sm:text-left text-surface-200 sm:text-surface-500 dark:text-surface-500">
+            <footer class="flex flex-col items-center gap-1
+                   border-t border-surface-200
+                   bg-white
+                   px-3 py-2
+                   text-center text-[10px] text-surface-500
 
+                   sm:flex-row sm:justify-between sm:gap-2
+                   sm:px-6 sm:py-3 sm:text-left sm:text-xs
+
+                   dark:border-[#242424]
+                   dark:bg-[#0C0C0C]
+                   dark:text-[#AEB8C4]">
                 <span class="leading-tight">
                     © 2026 Poder Judicial del Estado de Oaxaca · Todos los derechos reservados
                 </span>
 
                 <div class="flex items-center justify-center gap-3 sm:gap-4">
-                    <a href="#" class="hover:text-primary transition-colors">
+
+                    <a href="#" class="transition-colors hover:text-primary
+                           dark:hover:text-[#F8FAFC]">
                         Términos y condiciones
                     </a>
 
-                    <a href="#" class="hover:text-primary transition-colors">
+                    <a href="#" class="transition-colors hover:text-primary
+                           dark:hover:text-[#F8FAFC]">
                         Privacidad
                     </a>
 
-                    <!-- Facebook -->
-                    <a href="#" aria-label="Facebook" class="hover:text-primary transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current"
+                    <!-- FACEBOOK -->
+                    <a href="#" aria-label="Facebook" class="transition-colors hover:text-primary
+                           dark:hover:text-[#F8FAFC]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 fill-current sm:h-4 sm:w-4"
                             viewBox="0 0 24 24">
                             <path
                                 d="M22.676 0H1.324C.593 0 0 .593 0 1.324v21.352C0 23.408.593 24 1.324 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24h-1.918c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.592 1.323-1.324V1.324C24 .593 23.408 0 22.676 0" />
                         </svg>
                     </a>
 
-                    <!-- Twitter/X -->
-                    <a href="#" aria-label="Twitter" class="hover:text-primary transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current"
+                    <!-- TWITTER / X -->
+                    <a href="#" aria-label="Twitter" class="transition-colors hover:text-primary
+                           dark:hover:text-[#F8FAFC]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 fill-current sm:h-4 sm:w-4"
                             viewBox="0 0 24 24">
                             <path
                                 d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.629L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                         </svg>
                     </a>
                 </div>
-
             </footer>
         </div>
     </main>

@@ -23,7 +23,9 @@ import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
-
+import { Header } from "../../../shared/components/header/header";
+import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { PantallasService } from '../../../juicio-oral/services/pantallas.service';
 export const sidebarAnimations = [
   trigger('sidebarWidth', [
     state('expanded', style({ width: '17rem' })),
@@ -80,8 +82,9 @@ export const sidebarAnimations = [
     RippleModule,
     BadgeModule,
     OverlayBadgeModule,
-
-  ],
+    Header,
+    Breadcrub
+], 
   templateUrl: './siderbar.html',
   styleUrl: './siderbar.css',
   animations: sidebarAnimations,
@@ -91,9 +94,10 @@ export class Siderbar {
   private readonly tokenService = inject(TokenService);
   private readonly authService = inject(AuthService);
   private readonly menuStore = inject(UserMenuStore);
-  readonly drawerService = inject(DrawerService);
+  private readonly pantallasService = inject(PantallasService);
+  public readonly drawerService = inject(DrawerService);
 
-  visibleDrawer: boolean = false;
+  visibleDrawer = false;
 
   readonly svgSrcForPantalla = svgSrcForPantalla;
   readonly svgSrcForModulo = svgSrcForModulo;

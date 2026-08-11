@@ -18,19 +18,16 @@ import { AvatarModule } from 'primeng/avatar';
 import { ConfirmationService } from 'primeng/api';
 import { InputMaskModule } from 'primeng/inputmask';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
-import { Header } from '../../../shared/components/header/header';
 import { TooltipModule } from 'primeng/tooltip';
 import { Router } from '@angular/router';
 import { HttpResponse } from '@angular/common/http';
-import { Breadcrub } from '../../../shared/components/breadcrub/breadcrub';
 import { TramitesBusquedaState, TramitesBusquedaStateService } from '../../service/tramites-busqueda-state.service';
 
 @Component({
   selector: 'app-tramites-juicio-oral',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, BreadcrumbModule, AvatarModule, InputMaskModule, ConfirmDialog, TooltipModule, Header,
-    Breadcrub
+    Spinner, BreadcrumbModule, AvatarModule, InputMaskModule, ConfirmDialog, TooltipModule
   ],
   templateUrl: './tramites-juicio-oral.html',
   styleUrl: './tramites-juicio-oral.css',

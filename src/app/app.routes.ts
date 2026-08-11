@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { Siderbar } from './core/layout/siderbar/siderbar';
 import { Login } from './core/auth/component/login/login';
-import { Login2 } from './core/auth/component/login2fase/login2fase';
 import { Form } from './form/form';
 import { authMatchGuard } from './core/auth/guard/auth-guard';
 import { Perfil } from './core/auth/component/perfil/perfil';
@@ -76,6 +75,12 @@ export const routes: Routes = [
       },
       { path: 'datos-personales', component: PerfilUsuario },
       { path: 'llave-acceso', component: LlaveAcceso },
+      {
+        path: 'agenda', data: { title: 'Agenda' },
+        loadChildren: () =>
+          import('./agenda/agenda.routes')
+            .then(m => m.AGENDA_ROUTES)
+      }
 
     ],
   },

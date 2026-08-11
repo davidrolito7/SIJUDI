@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, HostListener, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef, ChangeDetectorRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -19,6 +19,7 @@ import { UserMenuStore } from '../../../layout/siderbar/user-menu.store';
 import { PantallasService } from '../../../../juicio-oral/services/pantallas.service';
 
 import { Title } from '@angular/platform-browser';
+import { DrawerService } from '../../../../shared/service/drawer.service';
 
 const SISTEMA_ID = 1;
 const AREA_ID = 2037;
@@ -44,26 +45,36 @@ const SUBAREA_ID = 1007;
   styleUrl: './login.css',
 })
 export class Login implements OnInit {
-  usuario: string = '';
-  contrasenia: string = '';
-  idSistema: number = 1;
-  recordar: boolean = false;
-  verPassword: boolean = false;
-  isLoading: boolean = false;
+  usuario = '' ;
+  contrasenia = '';
+  idSistema = 1;
+  recordar = true;
+  verPassword = false;
+  isLoading = false;
 
   @ViewChild('passwordInput') passwordInput!: ElementRef;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private el: ElementRef,
-    private tokenService: TokenService,
-    private mensaje: MessageService,
-    private cd: ChangeDetectorRef,
-    private menuStore: UserMenuStore,
-    private pantallasService: PantallasService,
-    private title: Title
-  ) {}
+  private readonly authService= inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly el = inject(ElementRef);
+  private readonly tokenService = inject(TokenService);
+  private readonly mensaje = inject(MessageService);
+  private readonly cd = inject(ChangeDetectorRef);
+  private readonly menuStore = inject(UserMenuStore);
+  private readonly drawerService = inject(DrawerService);
+  private readonly pantallasService = inject(PantallasService);
+  private readonly title = inject(Title);
+  // constructor(
+  //  // private authService: AuthService,
+  //   // private router: Router,
+  //   // private el: ElementRef,
+  //   // private tokenService: TokenService,
+  //   // private mensaje: MessageService,
+  //   // private cd: ChangeDetectorRef,
+  //   // private menuStore: UserMenuStore,
+  //   // private pantallasService: PantallasService,
+  //   // private title: Title
+  // ) {}
 
   ngOnInit() {this.title.setTitle('Login - Sistema Integral de Justicia Digital | Poder Judicial del Estado de Oaxaca');}
 

@@ -26,13 +26,14 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { HttpResponse } from '@angular/common/http';
 import { driver } from 'driver.js';
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
+import { ButtonDirective } from 'primeng/button';
 
 @Component({
   selector: 'app-crear-tramite',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
     Spinner, TextareaModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Header, ConfirmDialogModule,
-    PdfDialog,
+    PdfDialog,ButtonDirective,
     Breadcrub
 ],
   templateUrl: './crear-tramite.html',

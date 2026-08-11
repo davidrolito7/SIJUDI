@@ -1,186 +1,228 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<div class="sticky top-0 z-50  flex flex-col bg-surface-0 dark:bg-surface-950">
+<!-- Encabezado -->
 
-    <!-- HEADER -->
-    <app-header></app-header>
-    <app-breadcrub></app-breadcrub>
-    <div class="mb-2">
-        <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
+<div class="relative mx-auto border border-surface-200 bg-white p-5 mt-4 dark:border-surface-800 dark:bg-surface-900">
+    <!-- Esquinas decorativas -->
+    <span
+        class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
+    </span>
+
+    <span
+        class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200">
+    </span>
+
+    <span
+        class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200">
+    </span>
+
+    <span
+        class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200">
+    </span>
+
+    <!-- Encabezado -->
+    <div class="mb-5">
+        <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
             Crear promoción de juicio oral
         </h1>
-        <p class="text-surface-500 dark:text-surface-400 mt-1">
+
+        <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
             Capture la información requerida según corresponda su promoción.
         </p>
     </div>
-    <!-- BUSQUEDA -->
-    <div class="relative z-0 rounded-2xl border border-dashed p-4 dark:from-surface-900 dark:to-surface-950 dark:border-surface-700"
-        [ngClass]="mostrarAddDocumentos()
-            ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300'
-            : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
-        <form class="flex flex-col" [formGroup]="busquedaForm">
-
-            <div class="flex items-start gap-4 mb-4">
-                <div class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
-                    <span class="text-blue-600 font-bold text-lg">1</span>
+    <!-- BÚSQUEDA -->
+    <div class="relative border p-4 transition-colors" [ngClass]="
+      mostrarAddDocumentos()
+        ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40'
+        : 'border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-950/30'
+    ">
+        <form [formGroup]="busquedaForm">
+            <!-- Encabezado sección -->
+            <div class="flex items-start gap-3">
+                <!-- Número -->
+                <div
+                    class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+                    <span class="text-sm font-semibold text-surface-800 dark:text-surface-100"> 01 </span>
                 </div>
-                <div>
-                    <h3 class="text-base font-semibold leading-tight text-surface-900 dark:text-surface-0">
+
+                <div class="min-w-0">
+                    <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
                         Búsqueda de causa o cuaderno
-                    </h3>
-                    <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                    </h2>
+
+                    <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
                         Ingresa los datos de la causa o cuaderno para habilitar la carga de documentos.
                     </p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-6 gap-4 w-full items-end">
-                <div id="tipoTramite" class="col-span-6 md:col-span-2">
-                    <label for="idCatTipoTramite" class="block mb-2 text-sm font-medium">Tipo</label>
-                    <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
-                        (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid
-                        placeholder="Selecciona un tipo de trámite" [filter]="true" optionLabel="label"
-                        appendTo="body" />
-                </div>
-                <div id="numeroExpediente" class="col-span-6 md:col-span-1">
-                    <label for="numeroExpediente" class="block mb-2 text-sm font-medium">
-                        Folio
+            <!-- Separador -->
+            <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
 
+            <!-- Campos -->
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-end">
+                <!-- Tipo -->
+                <div id="tipoTramite" class="md:col-span-2">
+                    <label for="idCatTipoTramite"
+                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Tipo
                     </label>
 
-                    <p-inputmask fluid formControlName="numeroExpediente" class="uppercase text-sm rounded-lg"
-                        [mask]="numeroExpedienteMask"
-                        [placeholder]="numeroExpedientePlaceholder" />
+                    <p-select class="w-full text-sm" [options]="catTipoTramite" formControlName="idCatTipoTramite"
+                        (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" optionLabel="label"
+                        placeholder="Selecciona un tipo de trámite" [filter]="true" appendTo="body" fluid />
                 </div>
 
-                <div id="juzgado" class="col-span-6 md:col-span-2">
-                    <label for="idJuzgado" class="block mb-2 text-sm font-medium">Juzgado</label>
-                    <p-select class="w-full" [options]="catJuzgados" formControlName="idJuzgado"
-                        optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
-                        optionLabel="descripcion" appendTo="body" />
+                <!-- Folio -->
+                <div id="numeroExpediente" class="md:col-span-1">
+                    <label for="numeroExpediente"
+                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Folio
+                    </label>
+
+                    <p-inputmask fluid formControlName="numeroExpediente" class="text-sm uppercase"
+                        [mask]="numeroExpedienteMask" [placeholder]="numeroExpedientePlaceholder" />
                 </div>
-                <div id="botonBuscar" class="col-span-6 md:col-span-1">
-                    <button pButton (click)="onValidarCausa()" [disabled]="busquedaForm.invalid">
+
+                <!-- Juzgado -->
+                <div id="juzgado" class="md:col-span-2">
+                    <label for="idJuzgado"
+                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Juzgado
+                    </label>
+
+                    <p-select class="w-full text-sm" [options]="catJuzgados" formControlName="idJuzgado"
+                        optionValue="idCatJuzgado" optionLabel="descripcion" placeholder="Selecciona un juzgado"
+                        [filter]="true" appendTo="body" fluid />
+                </div>
+
+                <!-- Buscar -->
+                <div id="botonBuscar" class="md:col-span-1">
+                    <button pButton class="w-full" (click)="onValidarCausa()" [disabled]="busquedaForm.invalid">
                         <i pButtonIcon class="pi pi-search"></i>
                         <span pButtonLabel>Buscar</span>
                     </button>
                 </div>
             </div>
-
         </form>
     </div>
+    @if (!mostrarAddDocumentos()) {
+    <div class="relative border p-4 mt-4 transition-colors" [ngClass]="documentosAnexados.length < 0
+      ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/10'
+        : 'border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-950/30'">
 
-</div>
+        <div class="flex items-start gap-3">
+            <div
+                class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+                <span class="text-sm font-semibold text-surface-800 dark:text-surface-100"> 02 </span>
+            </div>
 
-@if (mostrarAddDocumentos()) {
+            <div class="min-w-0">
+                <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
+                    Documento(s) del trámite
+                </h2>
 
-<div class="relative z-0 mt-4 mb-4 rounded-2xl border border-dashed p-4 dark:from-surface-900 dark:to-surface-950 dark:border-surface-700"
-    [ngClass]="documentosAnexados.length > 0
-        ? 'bg-gradient-to-b from-emerald-100 to-white border-green-300'
-        : 'bg-gradient-to-b from-slate-50 to-white border-slate-300'">
-    <div class="flex min-h-[44px] items-center gap-4 mb-4">
-        <div class="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0">
-            <span class="text-blue-600 font-bold text-lg">2</span>
+                <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+                    Carga hasta 10 archivos PDF de máximo 10 MB cada uno.
+                </p>
+            </div>
         </div>
 
-        <div>
-            <h3 class="text-base font-semibold leading-tight text-surface-900 dark:text-surface-0">
-                Documento(s) del trámite
-            </h3>
-            <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                Carga hasta 10 archivos PDF de máximo 10 MB cada uno.
-            </p>
+        <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
+
+        <div id="fileUpload" class="mb-4">
+            <input #anexosInput id="anexosInput" type="file" accept=".pdf,application/pdf" multiple class="hidden"
+                (change)="onAnexosInputChange($event)" />
+
+            <label for="anexosInput"
+                class="relative flex min-h-[232px] w-full cursor-pointer flex-col overflow-hidden border border-dashed  rounded-lg border-surface-300 bg-surface-50/60 transition hover:border-surface-500 hover:bg-surface-100/70 dark:border-surface-700 dark:bg-surface-950/30 dark:hover:border-surface-500 dark:hover:bg-surface-800/50"
+                (dragover)="onAnexosDragOver($event)" (dragleave)="onAnexosDragLeave($event)"
+                (drop)="onAnexosDrop($event)"
+                [ngClass]="isAnexosDragOver ? 'border-primary bg-primary-50/40 dark:bg-primary-950/10' : ''">
+                <div class="flex min-h-[232px] flex-col items-center justify-center px-4 py-4 text-center">
+                    <div
+                        class="mb-3 flex h-12 w-12 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+                        <i class="pi pi-cloud-upload text-xl text-surface-600 dark:text-surface-300"></i>
+                    </div>
+
+                    <p class="text-sm font-semibold text-surface-800 dark:text-surface-100">
+                        Selecciona los PDF del trámite
+                    </p>
+
+                    <p class="mt-1 max-w-[280px] text-sm text-surface-500 dark:text-surface-400">
+                        Los anexos seguirán mostrándose abajo en forma de lista.
+                    </p>
+
+                    <span
+                        class="mt-4 inline-flex items-center gap-2 bg-surface-900 px-3 py-2 text-sm font-medium text-white dark:bg-surface-100 dark:text-surface-900">
+                        <i class="pi pi-upload"></i>
+                        Seleccionar archivos
+                    </span>
+                    <p class="mt-3 text-[11px] text-surface-400">
+                        Solo PDF. Máximo 10 archivos de 10 MB cada uno.
+                    </p>
+                </div>
+            </label>
         </div>
-    </div>
 
-    <div id="fileUpload" class="mb-4">
-        <input #anexosInput id="anexosInput" type="file" accept=".pdf,application/pdf" multiple class="hidden"
-            (change)="onAnexosInputChange($event)" />
-
-        <label for="anexosInput"
-            class="relative flex min-h-[232px] w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-dashed border-blue-300 bg-white/80 dark:bg-surface-900/80 transition hover:border-blue-500 hover:bg-blue-50/70 dark:hover:bg-surface-800"
-            (dragover)="onAnexosDragOver($event)" (dragleave)="onAnexosDragLeave($event)" (drop)="onAnexosDrop($event)"
-            [ngClass]="isAnexosDragOver ? 'border-blue-500 bg-blue-50 dark:bg-surface-800' : ''">
-            <div class="flex min-h-[232px] flex-col items-center justify-center px-4 py-4 text-center">
-                <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10">
-                    <i class="pi pi-cloud-upload text-2xl text-blue-500"></i>
+        <div class="w-full">
+            <div class="grid grid-cols-6 gap-4 w-full items-end">
+                @if (documentosAnexados.length > 0) {
+                <div class="col-span-6 sm:col-span-6">
+                    <p-table [value]="documentosAnexados" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+                        <ng-template #header>
+                            <tr>
+                                <th>Nombre del archivo</th>
+                                <th>Peso</th>
+                                <th>Visualizar</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-documento let-i="index">
+                            <tr>
+                                <td>{{ documento.name }}</td>
+                                <td>{{ documento.size / 1024 | number: '1.0-2' }} KB</td>
+                                <td>
+                                    <button pButton class="btn-secondary" (click)="onVerDocumento(documento)">
+                                        <i class="pi pi-file-pdf"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button pButton (click)="eliminarAnexo(i)" styleClass="btn-rojo" label="Eliminar">
+                                    </button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                    <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+                    </app-pdf-dialog>
+                </div>
+                }
+                <div id="observaciones" class="col-span-6 sm:col-span-6" [formGroup]="documentosForm">
+                    <label for="observaciones" class="block mb-2 text-sm font-medium">Observaciones</label>
+                    <textarea pTextarea rows="5" formControlName="observaciones" name="observaciones" id="observaciones"
+                        fluid class="text-sm" maxlength="450" placeholder="Escribe algo aquí..."></textarea>
                 </div>
 
-                <p class="text-sm font-semibold text-surface-800 dark:text-surface-100">
-                    Selecciona los PDF del trámite
-                </p>
-
-                <p class="mt-1 max-w-[260px] text-xs text-surface-500 dark:text-surface-400">
-                    Los anexos seguirán mostrándose abajo en forma de lista.
-                </p>
-
-                <span
-                    class="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-500 px-3 py-2 text-xs font-semibold text-white">
-                    <i class="pi pi-upload"></i>
-                    Seleccionar archivos
-                </span>
-
-                <p class="mt-3 text-[11px] text-surface-400">
-                    Solo PDF. Máximo 10 archivos de 10 MB cada uno.
-                </p>
+               
             </div>
-        </label>
-    </div>
-
-    <div class="w-full">
-        <div class="grid grid-cols-6 gap-4 w-full items-end">
-            @if (documentosAnexados.length > 0) {
-            <div class="col-span-6 sm:col-span-6 ">
-
-                <p-table [value]="documentosAnexados" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
-                    <ng-template #header>
-                        <tr>
-                            <th>Nombre del archivo</th>
-                            <th>Peso</th>
-                            <th>Visualizar</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template #body let-documento let-i="index">
-                        <tr>
-                            <td>{{ documento.name }}</td>
-                            <td>{{ (documento.size / 1024) | number:'1.0-2' }} KB</td>
-                            <td>
-                                <p-button type="button" class="btn-secondary" (click)="onVerDocumento(documento)">
-                                    <i class="pi pi-file-pdf"></i>
-                                </p-button>
-                            </td>
-                            <td>
-                                <p-button type="button" (click)="eliminarAnexo(i)" styleClass="btn-rojo"
-                                    label="Eliminar">
-                                </p-button>
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-                <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-                </app-pdf-dialog>
-
-            </div>
-            }
-            <div id="observaciones" class="col-span-6 sm:col-span-6" [formGroup]="documentosForm">
-                <label for="observaciones" class="block mb-2 text-sm font-medium">Observaciones</label>
-                <textarea pTextarea rows="5" formControlName="observaciones" name="observaciones" id="observaciones"
-                    fluid class=" text-sm" maxlength="450" placeholder="Escribe algo aquí..."></textarea>
-            </div>
-
-            <!-- <div class="col-span-6 sm:col-span-1 flex justify-end">
-                <p-button routerLink="/form">
-                    <i pButtonIcon class="pi pi-user-plus"></i>
-                    <span pButtonLabel>Agregar</span>
-                </p-button>
-            </div> -->
-        </div>
-        <div>
+            <div></div>
         </div>
     </div>
+    }
+</div>
+
+@if (busquedaForm.valid && documentosForm.valid && documentosAnexados.length > 0) {
+<div class="flex w-full items-center justify-center mt-4">
+    <button pButton (click)="onEnviarPromocion()">
+        <span pButtonLabel>Enviar Trámite</span>
+        <i pButtonIcon class="pi pi-send"></i>
+
+    </button>
+
 </div>
 }
+
 <!--* MODAL DE CONFIRMACION ELIMINAR DOCUMENTO -->
 <app-confirm-dialog key="anexo" title="Confirmación" message="¿Está seguro de eliminar el documento?"
     icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Eliminar" acceptStyleClass="btn-rojo">
@@ -191,18 +233,26 @@
     rejectLabel="Cancelar">
 </app-confirm-dialog>
 
-<!--* RESPONSE ENVIAR PROMOCION -->
-<!-- <app-confirm-dialog key="success" title="Confirmación"
-    [message]="'Promoción enviada correctamente al ' + (tramitesElectronicosRecibidos?.juzgado ?? '')"
-    icon="pi pi-check" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary"
-    [showReject]="false">
-</app-confirm-dialog> -->
+<app-confirm-dialog key="info" title="No hay conincidencias" message="La causa o el juzgado es incorrecto."
+    icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
+</app-confirm-dialog>
+
+<app-confirm-dialog key="archivo-peso" title="Archivo demasiado grande"
+    message="Solo se permiten archivos PDF de hasta 10 MB." icon="pi pi-info" circleClass="bg-blue-500"
+    acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
+</app-confirm-dialog>
+
+<app-confirm-dialog key="archivo-limite" title="Límite de archivos"
+    message="Solo puedes adjuntar un máximo de 10 documentos." icon="pi pi-info" circleClass="bg-blue-500"
+    acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
+</app-confirm-dialog>
+
+
 <p-confirmdialog key="success">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         @if (message) {
         <div
             class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded-2xl w-[90vw] sm:w-auto sm:min-w-[420px] sm:max-w-[520px]">
-
             <!-- Ícono -->
             <div
                 class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
@@ -213,7 +263,6 @@
 
             <!-- Datos de la respuesta -->
             <div class="flex flex-col gap-1 w-full mt-4 text-sm">
-
                 <div
                     class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Folio</span>
@@ -233,9 +282,11 @@
                     class="flex justify-between items-center gap-4 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Fecha de envío</span>
                     <span class="font-medium text-right min-w-0">
-                        {{ tramitesElectronicosRecibidos?.fechaEnvio
-                        ? (tramitesElectronicosRecibidos.fechaEnvio | date:'dd/MM/yyyy HH:mm')
-                        : '—' }}
+                        {{
+                        tramitesElectronicosRecibidos?.fechaEnvio
+                        ? (tramitesElectronicosRecibidos.fechaEnvio | date: 'dd/MM/yyyy HH:mm')
+                        : '—'
+                        }}
                     </span>
                 </div>
 
@@ -253,37 +304,13 @@
                         {{ tramitesElectronicosRecibidos?.cantidadAnexos ?? '—' }}
                     </span>
                 </div>
-
             </div>
 
             <div class="flex justify-end gap-2 mt-6 w-full">
-                <p-button label="Acuse" (onClick)="descargarAcuse()" styleClass="w-32"></p-button>
-                <p-button label="Salir" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
-
+                <button pButton (onClick)="descargarAcuse()" styleClass="w-32">Acuse</button>
+                <button pButton [outlined]="true" (onClick)="onReject()" styleClass="w-32">Salir</button>
             </div>
-
         </div>
         }
     </ng-template>
 </p-confirmdialog>
-
-<app-confirm-dialog key="info" title="No hay conincidencias" message="La causa o el juzgado es incorrecto."
-    icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
-</app-confirm-dialog>
-
-<app-confirm-dialog key="archivo-peso" title="Archivo demasiado grande"
-    message="Solo se permiten archivos PDF de hasta 10 MB." icon="pi pi-info" circleClass="bg-blue-500"
-    acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
-</app-confirm-dialog>
-
-<app-confirm-dialog key="archivo-limite" title="Límite de archivos"
-    message="Solo puedes adjuntar un máximo de 10 documentos." icon="pi pi-info" circleClass="bg-blue-500"
-    acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
-</app-confirm-dialog>
-
-@if (busquedaForm.valid && documentosForm.valid && documentosAnexados.length > 0) {
-<div class="flex w-full items-center justify-center mt-4">
-    <p-button label="Enviar Trámite" (click)="onEnviarPromocion()">
-    </p-button>
-</div>
-}
