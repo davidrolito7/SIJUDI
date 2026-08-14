@@ -23,7 +23,7 @@ export class PerfilUsuarioService {
           //const url = `${this.apiUI}/getFile?idArchivo=${idArchivo}&tipo=${tipoDocumento}`;
         }
         //Metodo para obtener los datos del perfil del usuario 
-        getDatosPerfilUsuario(nue: string, tipoBusqueda: number=4): Observable<any> {
+        getDatosPerfilUsuario(nue: string, tipoBusqueda: number=1): Observable<any> {
         //const url = `${this.baseUrlPermisos}/DatosUsuario?Usuario=${nue}`;
         const url = `${this.baseUrlPermisos}/DatosUsuario?Usuario=${nue}&TipoBusqueda=${tipoBusqueda}`;
         return this.http.post(url, null,{context:checkToken()});

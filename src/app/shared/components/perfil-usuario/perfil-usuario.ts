@@ -102,7 +102,7 @@ constructor(
   this.isLoading = true;
   this.cd.detectChanges();
 
-  this.perfilUsuarioService.getDatosPerfilUsuario(data.Usr)
+  this.perfilUsuarioService.getDatosPerfilUsuario(data.idGeneral)
     .pipe(
       switchMap((response: any) => {
         if (!response.success) {

@@ -97,14 +97,14 @@
             <div class="col-span-8 sm:col-span-4">
                 <div class="card" style="max-height: 250px; overflow-y: auto;">
                     <p-table stripedRows [value]="presentados" [tableStyle]="{ 'min-width': '100%' }">
-                        <ng-template pTemplate="header">
+                        <ng-template #header>
                             <tr>
                                 <th>#</th>
                                 <th>Nombre</th>
                                 <th>Acciones</th>
                             </tr>
                         </ng-template>
-                        <ng-template pTemplate="body" let-nombre let-i="rowIndex">
+                        <ng-template #body let-nombre let-i="rowIndex">
                             <tr>
                                 <td>{{ i + 1 }}</td>
                                 <td>{{ nombre }}</td>
@@ -200,7 +200,7 @@
                 <label class="block mb-2 text-sm font-medium">Anexos</label>
                 <p-table [value]="catalogoAnexos" dataKey="idCatCveAnexos" class="w-full" [scrollable]="true"
                     scrollHeight="250px" styleClass="p-datatable-sm p-datatable-gridlines">
-                    <ng-template pTemplate="header">
+                    <ng-template  #header>
                         <tr>
                             <th style="width: 3rem"></th>
                             <th>Anexo</th>
@@ -208,7 +208,7 @@
                             <th style="width: 10rem">Cantidad</th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-anexo>
+                    <ng-template #body let-anexo>
                         <tr>
                             <td>
                                 <p-checkbox [binary]="true" [ngModel]="estaAnexoSeleccionado(anexo.idCatCveAnexos)"
@@ -247,14 +247,14 @@
             <div class="col-span-8 sm:col-span-4">
                 <div class="card" style="max-height: 250px; overflow-y: auto;">
                     <p-table stripedRows [value]="otrosAnexosLista" [tableStyle]="{ 'min-width': '100%' }">
-                        <ng-template pTemplate="header">
+                        <ng-template #header>
                             <tr>
                                 <th>#</th>
                                 <th>Nombre</th>
                                 <th>Acciones</th>
                             </tr>
                         </ng-template>
-                        <ng-template pTemplate="body" let-item let-i="rowIndex">
+                        <ng-template #body let-item let-i="rowIndex">
                             <tr>
                                 <td>{{ i + 1 }}</td>
                                 <td>{{ item }}</td>
