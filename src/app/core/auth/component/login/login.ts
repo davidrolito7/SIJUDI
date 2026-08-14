@@ -21,8 +21,8 @@ import { PantallasService } from '../../../../juicio-oral/services/pantallas.ser
 import { Title } from '@angular/platform-browser';
 
 const SISTEMA_ID = 1;
-const AREA_ID = 2037;
-const PERFIL_ID = 7241;
+const AREA_ID = 1;
+const PERFIL_ID = 10;
 const SUBAREA_ID = 1007;
 
 @Component({
