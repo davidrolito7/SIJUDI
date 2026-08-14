@@ -1,0 +1,13 @@
+.sede-asignada-0 > td { background-color: color-mix(in srgb, #dbeafe 55%, transparent); }
+.sede-asignada-1 > td { background-color: color-mix(in srgb, #dcfce7 55%, transparent); }
+.sede-asignada-2 > td { background-color: color-mix(in srgb, #fef3c7 55%, transparent); }
+.sede-asignada-3 > td { background-color: color-mix(in srgb, #fce7f3 55%, transparent); }
+.sede-asignada-4 > td { background-color: color-mix(in srgb, #ede9fe 55%, transparent); }
+.sede-asignada-5 > td { background-color: color-mix(in srgb, #cffafe 55%, transparent); }
+
+.dark .sede-asignada-0 > td { background-color: color-mix(in srgb, #1e3a8a 28%, transparent); }
+.dark .sede-asignada-1 > td { background-color: color-mix(in srgb, #14532d 28%, transparent); }
+.dark .sede-asignada-2 > td { background-color: color-mix(in srgb, #78350f 28%, transparent); }
+.dark .sede-asignada-3 > td { background-color: color-mix(in srgb, #831843 28%, transparent); }
+.dark .sede-asignada-4 > td { background-color: color-mix(in srgb, #4c1d95 28%, transparent); }
+.dark .sede-asignada-5 > td { background-color: color-mix(in srgb, #164e63 28%, transparent); }

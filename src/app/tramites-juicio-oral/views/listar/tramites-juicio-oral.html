@@ -1,128 +1,193 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 
-<div class="sticky top-0 z-50 flex flex-col ">
+<div class="relative mx-auto mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+    <!-- Esquinas decorativas -->
+    <span
+        class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200"></span>
 
-    <!-- HEADER -->
-    <div class="mb-2">
-        <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 tracking-tight">
+    <span
+        class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200"></span>
+
+    <span
+        class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200"></span>
+
+    <span
+        class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200"></span>
+
+    <!-- Encabezado -->
+    <div class="mb-5">
+        <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
             Búsqueda de promociones electrónicas
         </h1>
-        <p class="text-surface-500 dark:text-surface-400 mt-1">
+
+        <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
             Ingrese la información requerida según corresponda su promoción.
         </p>
     </div>
-    <!-- BUSQUEDA -->
-    <div class="bg-surface-50 dark:bg-surface-950 border border-dashed border-slate-300 rounded-2xl p-4">
-        <form class="flex flex-col" [formGroup]="validarCausaForm" (ngSubmit)="onBuscarTramitesElectronicos()">
 
-            <div class="grid grid-cols-12 gap-4 w-full items-end">
-                <div class="col-span-12 md:col-span-6 lg:col-span-3">
-                    <label for="idCatTipoTramite" class="block mb-2 text-sm font-medium">Tipo</label>
-                    <p-select class="w-full" [options]="catTipoTramite" formControlName="idCatTipoTramite"
-                        (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" fluid
-                        placeholder="Selecciona un tipo de trámite" [filter]="true" optionLabel="label"
-                        appendTo="body" />
-                </div>
-                <div class="col-span-12 md:col-span-6 lg:col-span-2">
-                    <label for="numeroExpediente" class="block mb-2 text-sm font-medium">Folio
-                       
+    <!-- BÚSQUEDA -->
+    <div
+        class="relative border border-surface-200 bg-surface-50 p-4 transition-colors dark:border-surface-700 dark:bg-surface-950/30">
+        <form [formGroup]="validarCausaForm" (ngSubmit)="onBuscarTramitesElectronicos()">
+            <!-- Encabezado de sección -->
+            <!-- <div>
+                <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
+                    Búsqueda de promoción electrónica
+                </h2>
+
+                <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+                    Ingresa los datos de la causa o cuaderno para consultar las promociones electrónicas
+                    recibidas.
+                </p>
+            </div> -->
+
+            <!-- Separador -->
+            <!-- <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div> -->
+
+            <!-- Campos -->
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-end">
+                <!-- Tipo -->
+                <div id="tipoTramite" class="md:col-span-2">
+                    <label for="idCatTipoTramite"
+                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Tipo
                     </label>
-                   
-                    <p-inputmask fluid formControlName="numeroExpediente" class="uppercase text-sm rounded-lg"
-                        [mask]="numeroExpedienteMask"
-                        [placeholder]="numeroExpedientePlaceholder" />
+
+                    <p-select class="w-full text-sm" [options]="catTipoTramite" formControlName="idCatTipoTramite"
+                        (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" optionLabel="label"
+                        placeholder="Selecciona un tipo de trámite" [filter]="true" appendTo="body" fluid />
                 </div>
 
-                <div class="col-span-12 md:col-span-6 lg:col-span-4">
-                    <label for="idJuzgado" class="block mb-2 text-sm font-medium">Juzgado</label>
-                    <p-select class="w-full" [options]="catJuzgados" formControlName="idJuzgado"
-                        optionValue="idCatJuzgado" fluid placeholder="Selecciona un juzgado" [filter]="true"
-                        optionLabel="descripcion" appendTo="body" />
+                <!-- Folio -->
+                <div id="numeroExpediente" class="md:col-span-1">
+                    <label for="numeroExpediente"
+                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Folio
+                    </label>
+
+                    <p-inputmask fluid formControlName="numeroExpediente" class="text-sm uppercase"
+                        [mask]="numeroExpedienteMask" [placeholder]="numeroExpedientePlaceholder" />
                 </div>
 
-                <div class="col-span-12 md:col-span-4 lg:col-span-2 flex gap-4 ">
-                    <p-button type="button" icon="pi pi-filter-slash" [outlined]="true" (click)="limpiarBusqueda()"
-                        aria-label="Limpiar filtros"></p-button>
+                <!-- Juzgado -->
+                <div id="juzgado" class="md:col-span-2">
+                    <label for="idJuzgado"
+                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Juzgado
+                    </label>
 
-                    <p-button type="submit" aria-label="Buscar" [disabled]="validarCausaForm.invalid"
-                        styleClass="btn-secondary">
-                        <i pButtonIcon class="pi pi-search" aria-hidden="true"></i>
+                    <p-select class="w-full text-sm" [options]="catJuzgados" formControlName="idJuzgado"
+                        optionValue="idCatJuzgado" optionLabel="descripcion" placeholder="Selecciona un juzgado"
+                        [filter]="true" appendTo="body" fluid />
+                </div>
+
+                <!-- Acciones -->
+                <div class="flex gap-2 md:col-span-1">
+                    <button pButton type="button" severity="secondary" [outlined]="true" (click)="limpiarBusqueda()"
+                        aria-label="Limpiar filtros">
+                        <i pButtonIcon class="pi pi-filter-slash"></i>
+                    </button>
+
+                    <button pButton type="submit" class="flex-1" [disabled]="validarCausaForm.invalid">
+                        <i pButtonIcon class="pi pi-search"></i>
                         <span pButtonLabel>Buscar</span>
-                    </p-button>
+                    </button>
                 </div>
             </div>
         </form>
     </div>
 
+
 </div>
+<div class="relative mx-auto mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+    <!-- Esquinas decorativas -->
+    <span
+        class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200"></span>
 
-<!-- CONTENIDO (ya no se mete "debajo" visualmente) -->
-@if (mostrarTramites()) {
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-dashed border-slate-300 rounded-2xl mb-4 p-4">
-    <div class="flex items-start flex-col md:justify-between md:flex-row">
-        <div>
-            <div class="font-medium text-xl text-surface-900 dark:text-surface-0 ">Resultado</div>
+    <span
+        class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200"></span>
+
+    <span
+        class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200"></span>
+
+    <span
+        class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200"></span>
+
+    @if (!mostrarTramites()) {
+    <!-- RESULTADOS -->
+    <div
+        class="relative border border-surface-200 bg-surface-50 p-4 transition-colors dark:border-surface-700 dark:bg-surface-950/30">
+        <!-- Encabezado de resultados -->
+        <div class="mb-4">
+            <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
+                Resultados
+            </h2>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+                Consulta las promociones electrónicas encontradas y realiza las acciones disponibles.
+            </p>
         </div>
-    </div>
 
-    <div class="card pt-4">
+        <!-- Separador -->
+        <div class="my-4 border-t-[0.1px] border-surface-200 dark:border-surface-800"></div>
+
         <p-table #dt1 [value]="tramitesElectronicosRecibidos" stripedRows dataKey="idTramiteElectronicoRecibido"
             [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
-            [globalFilterFields]="['folio','fechaEnvio','observaciones','cantidadAnexos']">
+            [globalFilterFields]="['folio', 'fechaEnvio', 'observaciones', 'cantidadAnexos']">
             <ng-template #caption>
-                <div class="flex">
-                    <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="limpiarBusqueda()" />
-                    <p-iconfield iconPosition="left" class="ml-auto">
-                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-                        <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <button pButton type="button" severity="secondary" [outlined]="true" (click)="limpiarBusqueda()">
+                        <i pButtonIcon class="pi pi-filter-slash"></i>
+                        <span pButtonLabel>Limpiar</span>
+                    </button>
+
+                    <p-iconfield iconPosition="left" class="w-full md:w-auto">
+                        <p-inputicon>
+                            <i class="pi pi-search"></i>
+                        </p-inputicon>
+
+                        <input pInputText class="w-full text-sm" type="text"
+                            (input)="dt1.filterGlobal($event.target.value, 'contains')"
                             placeholder="Buscar una palabra" />
                     </p-iconfield>
                 </div>
             </ng-template>
 
             <ng-template #header>
-                <tr>
-                    <th>
-                        Folio de trámite    
-                        <!-- <p-columnFilter type="text" field="folio" display="menu" /> -->
-                    </th>
-                    <th>
-                        Fecha de Envío
-                        <!-- <p-columnFilter type="date" field="fechaEnvio" display="menu"></p-columnFilter> -->
-                    </th>
-                    <th>
-                        Observaciones
-                        <!-- <p-columnFilter type="text" field="observaciones" display="menu" /> -->
-
-                    </th>
-                    <th>
-                        Cantidad de Documentos
-                        <!-- <p-columnFilter type="numeric" field="cantidadAnexos" display="menu" /> -->
-                    </th>
-                    <th pFrozenColumn alignFrozen="right">
-                        Acciones
-                    </th>
+                <tr >
+                    <th class="text-base font-semibold">Folio de trámite</th>
+                    <th class="text-base font-semibold">Fecha de envío</th>
+                    <th class="text-base font-semibold">Observaciones</th>
+                    <th class="text-base font-semibold">Cantidad de documentos</th>
+                    <th pFrozenColumn alignFrozen="right" class="text-base font-semibold">Acciones</th>
                 </tr>
             </ng-template>
 
             <ng-template #body let-tramite>
                 <tr>
                     <td>{{ tramite.folio }}</td>
-                    <td>{{ tramite.fechaEnvio | date:'yyyy-MM-dd HH:mm' }} h</td>
-                    <td>{{ tramite.observaciones }}</td>
-                    <td>{{ tramite.cantidadAnexos }}</td>
-                    <td pFrozenColumn alignFrozen="right">
-                        <div class="flex gap-2">
 
-                            <p-button pTooltip="Ver detalle" (click)="detalle(tramite.idTramiteElectronicoRecibido)"
-                                tooltipPosition="top">
-                                <i class="pi pi-eye"></i>
-                            </p-button>
-                            <p-button pTooltip="Descargar acuse"
-                                (click)="descargarAcuse(tramite.idTramiteElectronicoRecibido)" tooltipPosition="top"
-                                class="ml-2">
-                                <i class="pi pi-download"></i>
-                            </p-button>
+                    <td>
+                        {{ tramite.fechaEnvio | date: 'yyyy-MM-dd HH:mm' }}
+                        h
+                    </td>
+
+                    <td>{{ tramite.observaciones }}</td>
+
+                    <td>{{ tramite.cantidadAnexos }}</td>
+
+                    <td pFrozenColumn alignFrozen="right">
+                        <div class="flex justify-center gap-2">
+                            <button pButton type="button" pTooltip="Ver detalle" tooltipPosition="top"
+                                (click)="detalle(tramite.idTramiteElectronicoRecibido)" aria-label="Ver detalle">
+                                <i pButtonIcon class="pi pi-eye"></i>
+                            </button>
+
+                            <button pButton type="button" pTooltip="Descargar acuse" tooltipPosition="top"
+                                (click)="descargarAcuse(tramite.idTramiteElectronicoRecibido)"
+                                aria-label="Descargar acuse">
+                                <i pButtonIcon class="pi pi-download"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -130,13 +195,15 @@
 
             <ng-template #emptymessage>
                 <tr>
-                    <td colspan="7">No customers found.</td>
+                    <td colspan="5" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
+                        No se encontraron promociones electrónicas.
+                    </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
+    }
 </div>
-}
 
 <app-confirm-dialog key="info" title="No hay coincidencias" message="La causa o el juzgado es incorrecto."
     icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">

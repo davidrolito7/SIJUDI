@@ -16,17 +16,18 @@
 
     <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="min-w-0">
-            <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">Sedes</h1>
+            <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">Asignación de días
+                inhábiles</h1>
 
             <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
-                Listado de sedes configuradas, puedes buscar por nombre de sede y ver su detalle.
+                Listado de sedes configuradas con días inhábiles, puedes buscar por nombre de sede y ver su detalle.
             </p>
         </div>
 
         <div class="shrink-0">
-            <button pButton type="button" class="w-full sm:w-auto" (click)="irANuevaSede()">
+            <button pButton type="button" class="w-full sm:w-auto" (click)="irANuevaAsignacion()">
                 <i pButtonIcon class="pi pi-plus"></i>
-                <span pButtonLabel>Nueva Sede</span>
+                <span pButtonLabel>Nueva asignación</span>
             </button>
         </div>
     </div>
@@ -40,14 +41,14 @@
             </h2>
 
             <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
-                Realice una búsqueda para agilizar la consulta de las sedes.
+                Realice una búsqueda para agilizar la consulta de las configuraciones.
             </p>
         </div>
 
         <!-- Separador -->
         <div class=" border-t-[0.5px] border-surface-200 dark:border-surface-800"></div>
 
-        <p-table class="personalizado" #dt1 stripedRows [value]="sedes()" dataKey="id" [rows]="10"
+        <p-table class="personalizado" #dt1 stripedRows [value]="diasInhabilesSedes()" dataKey="id" [rows]="10"
             [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="['folio', 'fechaEnvio', 'observaciones', 'cantidadAnexos']">
             <ng-template #caption>
@@ -77,35 +78,37 @@
 
             <ng-template #header>
                 <tr>
-                    <th class="text-base font-semibold">Nombre</th>
+                    <th class="text-base font-semibold">Día Inhabil</th>
                     <th class="text-base font-semibold">Descripcion</th>
-                    <th class="text-base font-semibold">Áreas</th>
-                    <!-- <th class="text-base font-semibold">Activo</th> -->
+                    <th class="text-base font-semibold">Fecha Inicio</th>
+                    <th class="text-base font-semibold">Fecha Fin</th>
+                    <th class="text-base font-semibold">Sedes</th>
                     <th pFrozenColumn alignFrozen="right" class="text-base font-semibold">Acciones</th>
                 </tr>
             </ng-template>
 
-            <ng-template #body let-sede>
+            <ng-template #body let-DiaInhabilSede>
                 <tr>
-                    <td>{{ sede.nombre }}</td>
-                    <td>{{ sede.descripcion }}</td>
+                    <td>{{ DiaInhabilSede.diaInhabil.nombre }}</td>
+                    <td>{{ DiaInhabilSede.diaInhabil.descripcion }}</td>
+                    <td>{{ DiaInhabilSede.diaInhabil.fechaInicio | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>{{ DiaInhabilSede.diaInhabil.fechaFin | date:'dd/MM/yyyy HH:mm' }}</td>
                     <td>
                         <div class="inline-flex items-center gap-2 rounded-lg
                bg-surface-100 px-3 py-1.5
                text-surface-700
                dark:bg-surface-800 dark:text-surface-200">
-                            <i class="pi pi-building-columns text-sm text-primary"></i>
+                            <i class="pi pi-building text-sm text-primary"></i>
 
                             <span class="text-sm font-semibold">
-                                {{ sede.numeroAreas }}
+                                {{ DiaInhabilSede.numeroSedes }}
                             </span>
 
                         </div>
                     </td>
-                    <!-- <td>{{ sede.activo }}</td> -->
                     <td pFrozenColumn alignFrozen="right">
-                        <button pButton type="button" (click)="detalleSede(sede.id)" pTooltip="Ver detalle"
-                            tooltipPosition="top" aria-label="Ver detalle">
+                        <button pButton type="button" (click)="detalleSede(DiaInhabilSede.diaInhabil.id)"
+                            pTooltip="Ver detalle" tooltipPosition="top" aria-label="Ver detalle">
                             <i pButtonIcon class="pi pi-eye"></i>
                         </button>
                     </td>
@@ -122,6 +125,7 @@
         </p-table>
     </div>
 </div>
+
 
 <!-- <app-confirm-dialog key="info" title="No hay coincidencias" message="La causa o el juzgado es incorrecto."
     icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">

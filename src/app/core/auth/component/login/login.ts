@@ -92,7 +92,7 @@ export class Login implements OnInit {
 
   passwordEnter() {
     if (!this.contrasenia?.trim()) {
-      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su contraseÃ±a.', life: 3000 });
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su contraseña.', life: 3000 });
       return;
     }
     this.validarUsuario();
@@ -108,7 +108,7 @@ export class Login implements OnInit {
       return;
     }
     if (!this.contrasenia?.trim()) {
-      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su contraseÃ±a.', life: 3000 });
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su contraseña.', life: 3000 });
       return;
     }
 
@@ -131,13 +131,13 @@ export class Login implements OnInit {
           this.mensaje.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Usuario o contraseÃ±a incorrectos.',
+            detail: 'Usuario o contraseña incorrectos.',
             life: 3000,
           });
         }
       },
       error: () => {
-        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'OcurriÃ³ un error al intentar ingresar.', life: 3000 });
+        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al intentar ingresar.', life: 3000 });
         this.isLoading = false;
         this.cd.detectChanges();
       },

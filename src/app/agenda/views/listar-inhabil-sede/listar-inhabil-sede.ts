@@ -12,19 +12,19 @@ import { ButtonDirective } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ApiAgendaService } from '../../service/apiAgenda.service';
-import { SedeResponse } from '../../interface/agenda.model';
+import { DiaInhabilSedeResponse } from '../../interface/agenda.model';
 
 @Component({
-  selector: 'app-listar-sede',
+  selector: 'app-listar-inhabil-sede',
   imports: [CommonModule, ReactiveFormsModule, Spinner, SelectModule, InputMaskModule, TableModule, IconFieldModule, InputIconModule, ButtonDirective, InputTextModule, FloatLabelModule],
-  templateUrl: './listar-sede.html',
-  styleUrl: './listar-sede.css',
+  templateUrl: './listar-inhabil-sede.html',
+  styleUrl: './listar-inhabil-sede.css',
 })
-export class ListarSede implements OnInit {
+export class ListarInhabilSede implements OnInit {
   isLoading = signal(false);
   formFiltrosTabla!: FormGroup;
 
-  sedes = signal<SedeResponse[]>([]);
+  diasInhabilesSedes = signal<DiaInhabilSedeResponse[]>([]);
 
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -38,28 +38,29 @@ export class ListarSede implements OnInit {
   }
 
   ngOnInit(): void {
-    this.obtenerListadoSedes();
+    this.obtenerListadoDiasInhabilesSedes();
   }
     
 
 
-  obtenerListadoSedes() {
-    this.apiAgendaService.getSedes().subscribe({
+  obtenerListadoDiasInhabilesSedes() {
+    this.apiAgendaService.getDiasInhablesSedes().subscribe({
       next: (response) => {
-        this.sedes.set(response.data);
+        this.diasInhabilesSedes.set(response.data);
       },
       error: (error) => {
-        console.error('Error al obtener el listado de sedes:', error);
+        console.error('Error al obtener el listado de dias inhabiles sedes:', error);
       }
     });
   }
 
 
-  irANuevaSede() {
-    this.router.navigate(['/agenda/crear-sede']);
+
+  irANuevaAsignacion() {
+    this.router.navigate(['/agenda/crear-asignacion']);
   }
 
-   detalleSede(idSede: number) {
-    this.router.navigate(['/agenda/crear-sede'], { state: { idSede } });
+   detalleSede(idDiaInhabil : number) {
+    this.router.navigate(['/agenda/crear-asignacion'], { state: { idDiaInhabil } });
   }
 }

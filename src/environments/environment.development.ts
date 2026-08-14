@@ -2,7 +2,7 @@ export const environment = {
     production: true,
     //* false para producción
     //* true para pruebas y si eres abogado para que no solicituar llave/auth
-    DEV_SKIP_2FA: true,
+    DEV_SKIP_2FA: false,
     ConstantsService: {
         ruta: 'https://pruebas.tribunaloaxaca.gob.mx/permisos',
         idSistema: 1,
@@ -29,6 +29,8 @@ export const environment = {
     //* api notificaciones en tiempo real
     // urlApiNotificaciones: 'http://localhost:3000',
     urlApiNotificaciones: 'https://pruebas.tribunaloaxaca.gob.mx/rabbitmq',
+
+    urlApiAgenda: 'http://localhost:5157/api',
 };
 
 

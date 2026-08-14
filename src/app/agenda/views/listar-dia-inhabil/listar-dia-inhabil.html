@@ -1,0 +1,224 @@
+<app-spinner [isLoading]="isLoading()"></app-spinner>
+        <p-toast />
+<div class="relative mx-auto mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+    <!-- Esquinas decorativas -->
+    <span
+        class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200"></span>
+
+    <span
+        class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200"></span>
+
+    <span
+        class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200"></span>
+
+    <span
+        class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200"></span>
+
+    <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="min-w-0">
+            <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+                Días Inhabiles
+            </h1>
+
+            <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+                Listado de días inhabilitados configurados, puedes buscar por nombre del día inhabilitado y
+                crear un nuevo día inhabilitado.
+            </p>
+        </div>
+
+        <div class="shrink-0">
+            <button pButton (click)="nuevoDiaInhabil()" class="w-full sm:w-auto">
+                <i pButtonIcon class="pi pi-plus"></i>
+                <span pButtonLabel>Nuevo Día Inhabil</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div class="relative bg-surface-50 sm:p-0 p-4 mt-4 gap-4 transition-colors dark:bg-surface-950/30">
+        <!-- Encabezado de resultados -->
+        <div class="p-4">
+            <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
+                Listado
+            </h2>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+                Realice una búsqueda para agilizar la consulta de los días.
+            </p>
+        </div>
+
+        <!-- Separador -->
+        <div class="border-t-[0.5px] border-surface-200 dark:border-surface-800"></div>
+
+        <p-table class="personalizado" #dt1 stripedRows [value]="dias()" dataKey="id" [rows]="10"
+            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [globalFilterFields]="['folio', 'fechaEnvio', 'observaciones', 'cantidadAnexos']">
+            <ng-template #caption>
+                <form [formGroup]="formFiltrosTabla" class="w-full">
+                    <div class="flex w-full p-2 flex-col gap-4 sm:flex-row sm:items-end sm:justify-end">
+                        <div class="w-full sm:w-80">
+                            <p-floatlabel variant="on" class="w-full">
+                                <input pInputText id="on_label" formControlName="nombre" autocomplete="off" fluid />
+                                <label for="on_label">Nombre</label>
+                            </p-floatlabel>
+                        </div>
+
+                        <div class="flex justify-end gap-2">
+                            <button pButton  severity="secondary" aria-label="Limpiar filtros">
+                                <i pButtonIcon class="pi pi-filter-slash"></i>
+                            </button>
+
+                            <!-- <button pButton type="submit" class="hidden sm:inline-flex"
+                                [disabled]="formFiltrosTabla.invalid">
+                                <i pButtonIcon class="pi pi-search"></i>
+                                <span pButtonLabel>Buscar</span>
+                            </button> -->
+                        </div>
+                    </div>
+                </form>
+            </ng-template>
+
+            <ng-template #header>
+                <tr>
+                    <th class="text-base font-semibold">Nombre</th>
+                    <th class="text-base font-semibold">Descripcion</th>
+                    <th class="text-base font-semibold">Fecha Inicio</th>
+                    <th class="text-base font-semibold">Fecha Fin</th>
+                    <th pFrozenColumn alignFrozen="right" class="text-base font-semibold">Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-dia>
+                <tr>
+                    <td>{{ dia.nombre }}</td>
+                    <td>{{ dia.descripcion }}</td>
+                    <td>{{ dia.fechaInicio | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>{{ dia.fechaFin | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td pFrozenColumn alignFrozen="right">
+                        <button pButton type="button" class="btn-secondary" (click)="editarDiaInhabil(dia)"
+                            pTooltip="Ver detalle" tooltipPosition="top" aria-label="Ver detalle">
+                            <i pButtonIcon class="pi pi-pencil"></i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="5" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
+                        No se encontraron días inhabiles.
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<!-- <app-confirm-dialog key="info" title="No hay coincidencias" message="La causa o el juzgado es incorrecto."
+    icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
+</app-confirm-dialog> -->
+
+<p-drawer #drawer [(visible)]="visibleRight" position="right"
+    styleClass="w-full! md:w-[30rem]!" (onHide)="limpiarFormularioDrawer()">
+    <ng-template #header>
+        <div class="min-w-0">
+            <h2 class="text-lg font-medium tracking-tight text-surface-900 dark:text-surface-0">
+                {{ modoEdicion() ? 'Editar Día Inhábil' : 'Nuevo Día Inhábil' }}
+            </h2>
+
+            <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+                {{
+                modoEdicion()
+                ? 'Modifica la información del día inhábil seleccionado.'
+                : 'Captura la información para registrar un nuevo día inhábil.'
+                }}
+            </p>
+        </div>
+    </ng-template>
+
+    <form [formGroup]="formDiaInhabil" (ngSubmit)="guardarDiaInhabil()" class="flex h-full flex-col">
+        <div class="relative border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+            <!-- Esquinas decorativas -->
+            <span
+                class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200"></span>
+
+            <span
+                class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200"></span>
+
+            <span
+                class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200"></span>
+
+            <span
+                class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200"></span>
+
+            <div class="flex flex-col gap-5">
+                <!-- Nombre -->
+                <div class="w-full">
+                    <label for="nombre" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Nombre del día inhábil <strong>*</strong>
+                    </label>
+
+                    <input id="nombre" type="text" formControlName="nombre" pInputText fluid autocomplete="off" />
+
+                    @if (formDiaInhabil.get('nombre')?.invalid && formDiaInhabil.get('nombre')?.touched) {
+                    <small class="mt-1 block text-red-500"> El nombre es obligatorio. </small>
+                    }
+                </div>
+
+                <!-- Descripción -->
+                <div class="w-full">
+                    <label for="descripcion"
+                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Descripción <strong>*</strong>
+                    </label>
+
+                    <textarea id="descripcion" formControlName="descripcion" pTextarea rows="4"
+                        class="w-full resize-none" placeholder="Ingrese una descripción"></textarea>
+
+                    @if (
+                    formDiaInhabil.get('descripcion')?.invalid && formDiaInhabil.get('descripcion')?.touched
+                    ) {
+                    <small class="mt-1 block text-red-500"> La descripción es obligatoria. </small>
+                    }
+                </div>
+
+                <div class="w-full">
+                    <label for="fechaInicio"
+                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Fecha inicio <strong>*</strong>
+                    </label>
+
+                    <p-datepicker inputId="fechaInicio" formControlName="fechaInicio" dateFormat="dd/mm/yy"
+                        [showTime]="true" hourFormat="24" [showIcon]="true" [showButtonBar]="true" [fluid]="true"
+                        appendTo="body" />
+                </div>
+
+                <div class="w-full">
+                    <label for="fechaFin"
+                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Fecha fin <strong>*</strong>
+                    </label>
+
+                    <p-datepicker inputId="fechaFin" formControlName="fechaFin" dateFormat="dd/mm/yy" [showTime]="true"
+                        hourFormat="24" [showIcon]="true" [showButtonBar]="true" [fluid]="true" appendTo="body" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="mt-auto flex justify-end gap-2 border-t border-surface-200 pt-4 dark:border-surface-800">
+            <button pButton type="button" severity="secondary" (click)="cerrarDrawer()">
+                <i pButtonIcon class="pi pi-times"></i>
+                <span pButtonLabel>Cancelar</span>
+            </button>
+
+            <button pButton type="submit" [disabled]="formDiaInhabil.invalid || isSaving()">
+                <i pButtonIcon [class]="modoEdicion() ? 'pi pi-save' : 'pi pi-plus'"></i>
+
+                <span pButtonLabel>
+                    {{ modoEdicion() ? 'Guardar cambios' : 'Registrar' }}
+                </span>
+            </button>
+        </div>
+    </form>
+</p-drawer>
