@@ -57,10 +57,10 @@ export class ListarInhabilSede implements OnInit {
 
 
   irANuevaAsignacion() {
-    this.router.navigate(['/agenda/crear-asignacion']);
+    this.router.navigate(['/agenda/asignaciones/crear']);
   }
 
    detalleSede(idDiaInhabil : number) {
-    this.router.navigate(['/agenda/crear-asignacion'], { state: { idDiaInhabil } });
+    this.router.navigate(['/agenda/asignaciones/editar'], { state: { idDiaInhabil } });
   }
 }

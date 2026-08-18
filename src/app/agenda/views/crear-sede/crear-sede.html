@@ -1,5 +1,5 @@
 <app-spinner [isLoading]="isLoading()"></app-spinner>
-        <p-toast />
+<p-toast />
 
 <div class="relative mx-auto mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
     <!-- Esquinas decorativas -->
@@ -27,7 +27,8 @@
         </div>
 
         <div class="shrink-0">
-            <button pButton type="button" class="w-full sm:w-auto" [disabled]="formGeneral.invalid && areasSeleccionadas.length === 0" (click)="guardarSede()">
+            <button pButton type="button" class="w-full sm:w-auto"
+                [disabled]="formGeneral.invalid && areasSeleccionadas.length === 0" (click)="guardarSede()">
                 <i pButtonIcon class="pi pi-save"></i>
                 <span pButtonLabel>{{ modoEdicion() ? 'Guardar cambios' : 'Guardar' }}</span>
             </button>
@@ -70,18 +71,104 @@
                         class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
                         Nombre de la sede <strong>*</strong>
                     </label>
-
                     <input type="text" formControlName="nombre" pInputText fluid />
                 </div>
+                <div id="icono" class="md:col-span-1">
+                    <label for="icono" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Icono <strong>*</strong>
+                    </label>
+                    <svg class="hidden" aria-hidden="true">
+                        <symbol id="ico-mar" viewBox="0 0 24 24">
+                            <path
+                                d="M2 15c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2M2 19c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2" />
+                        </symbol>
 
-                <div id="tipoTramite" class="md:col-span-4">
+                        <symbol id="ico-montana" viewBox="0 0 24 24">
+                            <path d="m3 20 7-12 3 5 2-3 6 10H3Z" />
+                        </symbol>
+
+                        <symbol id="ico-valle" viewBox="0 0 24 24">
+                            <path d="m2 18 5-6 5 5 5-7 5 8M2 21h20" />
+                        </symbol>
+
+                        <symbol id="ico-nubes" viewBox="0 0 24 24">
+                            <path d="M7 18h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.1 11.8 3.2 3.2 0 0 0 7 18Z" />
+                        </symbol>
+
+                        <symbol id="ico-cerros" viewBox="0 0 24 24">
+                            <path d="m2 20 6-7 4 4 3-3 7 6H2Z" />
+                        </symbol>
+
+                        <symbol id="ico-sol" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="4" />
+                            <path
+                                d="M12 2v2m0 16v2M2 12h2m16 0h2m-2.9-7.1-1.4 1.4M6.3 17.7l-1.4 1.4m0-14.2 1.4 1.4m11.4 11.4 1.4 1.4" />
+                        </symbol>
+
+                        <symbol id="ico-lluvia" viewBox="0 0 24 24">
+                            <path
+                                d="M7 14h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.1 7.8 3.2 3.2 0 0 0 7 14Z M8 17l-1 3m6-3-1 3m6-3-1 3" />
+                        </symbol>
+
+                        <symbol id="ico-tormenta" viewBox="0 0 24 24">
+                            <path
+                                d="M7 14h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.1 7.8 3.2 3.2 0 0 0 7 14Z M13 15l-3 5h3l-1 3 4-6h-3Z" />
+                        </symbol>
+
+                        <symbol id="ico-niebla" viewBox="0 0 24 24">
+                            <path d="M5 8h14M3 12h18M6 16h12M4 20h16" />
+                        </symbol>
+
+                        <symbol id="ico-viento" viewBox="0 0 24 24">
+                            <path d="M3 8h13c3 0 3-4 0-4-1.3 0-2 .7-2 2M3 12h17c3 0 3 4 0 4-1.3 0-2-.7-2-2M3 16h8" />
+                        </symbol>
+
+                        <symbol id="ico-bosque" viewBox="0 0 24 24">
+                            <path d="m6 20 4-8 4 8M10 12l3-7 5 15M3 20h18" />
+                        </symbol>
+
+                        <symbol id="ico-desierto" viewBox="0 0 24 24">
+                            <path d="M2 18c4-5 7-5 11 0 3-4 6-4 9 0M4 21h16M18 4v5m-2.5-2.5h5" />
+                        </symbol>
+
+                        <symbol id="ico-rio" viewBox="0 0 24 24">
+                            <path d="M4 3h16L14 9H9l5 5-6 7M9 9l5 5" />
+                        </symbol>
+
+                        <symbol id="ico-ciudad" viewBox="0 0 24 24">
+                            <path d="M3 21V9h6v12m0 0V3h7v18m0 0v-8h5v8M6 12h1m5-5h1m0 4h1m-1 4h1m5 1h1" />
+                        </symbol>
+
+                        <symbol id="ico-pueblo" viewBox="0 0 24 24">
+                            <path d="m3 11 9-7 9 7v10H3V11Zm6 10v-6h6v6" />
+                        </symbol>
+                    </svg>
+
+                    <p-select formControlName="icono" [options]="iconosPaisaje" optionValue="valor"
+                        placeholder="Selecciona un paisaje" ariaLabel="Selecciona un icono de paisaje" fluid>
+                        <ng-template #selectedItem let-opcion>
+                            @if (opcion) {
+                            <svg class="icono-paisaje">
+                                <use [attr.href]="opcion.svg"></use>
+                            </svg>
+                            }
+                        </ng-template>
+
+                        <ng-template #item let-opcion>
+                            <svg class="icono-paisaje" [attr.aria-label]="opcion.valor" role="img">
+                                <use [attr.href]="opcion.svg"></use>
+                            </svg>
+                        </ng-template>
+                    </p-select>
+                </div>
+                <div id="tipoTramite" class="md:col-span-3">
                     <label for="idCatTipoTramite"
                         class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
                         Descripción <strong>*</strong>
                     </label>
-
                     <input type="text" formControlName="descripcion" pInputText fluid />
                 </div>
+
 
                 <!-- Buscar -->
                 <!-- <div id="botonBuscar" class="md:col-span-1">
@@ -120,33 +207,33 @@
         <div class="mt-4 border-t border-surface-200 dark:border-surface-800"></div>
 
         <p-table #dt class="personalizado" [selection]="areasSeleccionadas"
-            (selectionChange)="alCambiarAreasSeleccionadas($event)" stripedRows [value]="areas()"
-            dataKey="idArea" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            (selectionChange)="alCambiarAreasSeleccionadas($event)" stripedRows [value]="areas()" dataKey="idArea"
+            [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="['nombre', 'sede.nombre']">
             <ng-template #caption>
-                    <div class="flex flex-wrap items-center justify-between gap-4 p-2">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="font-medium text-sm">Áreas seleccionadas</span>
-                            <p-badge [value]="areasSeleccionadas.length.toString()"
-                                [severity]="areasSeleccionadas.length ? 'info' : 'secondary'" />
-                        </div>
-                        <div class="ml-auto flex w-full gap-2 sm:w-80">
-                            <p-iconfield iconPosition="left" class="w-full">
-                                <p-inputicon>
-                                    <i class="pi pi-search"></i>
-                                </p-inputicon>
+                <div class="flex flex-wrap items-center justify-between gap-4 p-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-medium text-sm">Áreas seleccionadas</span>
+                        <p-badge [value]="areasSeleccionadas.length.toString()"
+                            [severity]="areasSeleccionadas.length ? 'info' : 'secondary'" />
+                    </div>
+                    <div class="ml-auto flex w-full gap-2 sm:w-80">
+                        <p-iconfield iconPosition="left" class="w-full">
+                            <p-inputicon>
+                                <i class="pi pi-search"></i>
+                            </p-inputicon>
 
-                                <input pInputText type="text" class="w-full"
-                                    (input)="dt.filterGlobal($event.target.value, 'contains')"
-                                    placeholder="Buscar por nombre" />
-                            </p-iconfield>
-                            <button pButton severity="secondary" aria-label="Limpiar filtros">
-                                <i pButtonIcon class="pi pi-filter-slash"></i>
-                            </button>
-
-                        </div>
+                            <input pInputText type="text" class="w-full"
+                                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                placeholder="Buscar por nombre" />
+                        </p-iconfield>
+                        <button pButton severity="secondary" aria-label="Limpiar filtros">
+                            <i pButtonIcon class="pi pi-filter-slash"></i>
+                        </button>
 
                     </div>
+
+                </div>
             </ng-template>
 
             <ng-template #header>

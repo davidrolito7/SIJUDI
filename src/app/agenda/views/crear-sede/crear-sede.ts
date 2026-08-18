@@ -44,6 +44,7 @@ export class CrearSede implements OnInit {
     this.formGeneral = this.fb.group({
       nombre: ['', Validators.required],
       descripcion: ['', Validators.required],
+      icono: ['', Validators.required]
     });
   }
 
@@ -159,5 +160,23 @@ areaEstaAsignada(area: AreaResponse): boolean {
     return true; // Cambia esto según la lógica que determines para mostrar u ocultar el formulario
   }
 
+
+  iconosPaisaje = [
+    { valor: 'mar', svg: '#ico-mar' },
+    { valor: 'montana', svg: '#ico-montana' },
+    { valor: 'valle', svg: '#ico-valle' },
+    { valor: 'nubes', svg: '#ico-nubes' },
+    { valor: 'cerros', svg: '#ico-cerros' },
+    { valor: 'soleado', svg: '#ico-sol' },
+    { valor: 'lluvia', svg: '#ico-lluvia' },
+    { valor: 'tormenta', svg: '#ico-tormenta' },
+    { valor: 'niebla', svg: '#ico-niebla' },
+    { valor: 'viento', svg: '#ico-viento' },
+    { valor: 'bosque', svg: '#ico-bosque' },
+    { valor: 'desierto', svg: '#ico-desierto' },
+    { valor: 'rio', svg: '#ico-rio' },
+    { valor: 'ciudad', svg: '#ico-ciudad' },
+    { valor: 'pueblo', svg: '#ico-pueblo' }
+  ];
 
 }
