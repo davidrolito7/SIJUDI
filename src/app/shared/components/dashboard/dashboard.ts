@@ -237,9 +237,8 @@ export class Dashboard implements OnInit, OnDestroy {
       });
   }
 
-  esAbogado(): boolean {
-    const user = this.tokenService.getUserFromToken();
-    return user?.idSistemaPerfil === 10;
-  }
-
+esAbogado(): boolean {
+  const user = this.tokenService.getUserFromToken();
+  return [10, 1011].includes(user?.idSistemaPerfil);
+}
 }
