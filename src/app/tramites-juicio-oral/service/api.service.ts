@@ -1,5 +1,5 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse, CatJuzgadoResponse, DetalleTramiteElectronicoRecibidoResponse, TramitesElectronicosRecibidosResponse, ValidarCausaResponse } from '../interface/tramites-juicio-oral.model';
 import { checkToken } from '../../core/auth/interceptor/token.interceptor';
@@ -10,8 +10,7 @@ import { environment } from '../../../environments/environment';
 export class ApiService {
   private apiUrl = environment.urlApiJuicioOralPenal;
 
-  private nasApiUrl = 'https://api.tribunaloaxaca.gob.mx/NasApi/api'
-  constructor(private http: HttpClient) { }
+  private readonly http = inject(HttpClient);
 
   getTramitesElectronicosRecibidos(params?: any): Observable<ApiResponse<TramitesElectronicosRecibidosResponse[]>> {
     const url = `${this.apiUrl}/ListarTramitesElectronicosRecibidos`;
@@ -22,14 +21,20 @@ export class ApiService {
     );
   }
 
-  getCatJuzgados(params?: any): Observable<ApiResponse<CatJuzgadoResponse[]>> {
+  getCatJuzgados(idCatTipoTramite: number): Observable<ApiResponse<CatJuzgadoResponse[]>> {
     const url = `${this.apiUrl}/CatalogoJuzgados`;
     return this.http.post<ApiResponse<CatJuzgadoResponse[]>>(
       url,
       null,
-      { params, context: checkToken() }
+      {  params: { idCatTipoTramite }, context: checkToken() }
     );
   }
+
+  getAllCatJuzgados() {
+    const url = `${this.apiUrl}/CatalogoJuzgadosActivos`;
+    return this.http.get<ApiResponse<CatJuzgadoResponse[]>>(url, { context: checkToken() });
+  }
+
   postValidarCausa(params?: any): Observable<ApiResponse<ValidarCausaResponse>> {
     const url = `${this.apiUrl}/ValidarCausa`;
     return this.http.post<ApiResponse<ValidarCausaResponse>>(

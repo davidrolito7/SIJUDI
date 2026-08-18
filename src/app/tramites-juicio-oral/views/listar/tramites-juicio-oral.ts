@@ -15,13 +15,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { AvatarModule } from 'primeng/avatar';
-import { ConfirmationService } from 'primeng/api';
 import { InputMaskModule } from 'primeng/inputmask';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { Router } from '@angular/router';
 import { HttpResponse } from '@angular/common/http';
 import { TramitesBusquedaState, TramitesBusquedaStateService } from '../../service/tramites-busqueda-state.service';
+import { TokenService } from '../../../core/auth/service/token.service';
+import { finalize } from 'rxjs';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-tramites-juicio-oral',
@@ -31,22 +33,22 @@ import { TramitesBusquedaState, TramitesBusquedaStateService } from '../../servi
   ],
   templateUrl: './tramites-juicio-oral.html',
   styleUrl: './tramites-juicio-oral.css',
-  providers: [ConfirmationService]
+    providers: [ConfirmationService]
 })
 export class TramitesJuicioOral implements OnInit {
-  validarCausaForm!: FormGroup;
+  busquedaForm!: FormGroup;
 
   tramitesElectronicosRecibidos: TramitesElectronicosRecibidosResponse[] = [];
   catJuzgados: CatJuzgadoResponse[] = [];
 
-  isLoading = false;
+  isLoading = signal(false);
   mostrarTramites = signal(false);
 
   private readonly apiService = inject(ApiService);
-  private readonly confirmationService = inject(ConfirmationService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly busquedaState = inject(TramitesBusquedaStateService);
+  private readonly tokenService = inject(TokenService);
 
   catTipoTramite = [
     { label: 'CAUSA', value: 33 },
@@ -78,61 +80,96 @@ export class TramitesJuicioOral implements OnInit {
   }
 
   ngOnInit(): void {
-    this.validarCausaForm = this.fb.group({
+    this.busquedaForm = this.fb.group({
       idCatTipoTramite: [null, Validators.required],
       numeroExpediente: ['', Validators.required],
       idJuzgado: [{ value: null, disabled: true }, Validators.required],
-      idPantalla: [1]
     });
 
-    this.updateNumeroExpedienteValidator(this.validarCausaForm.get('idCatTipoTramite')?.value);
-    this.validarCausaForm.get('idCatTipoTramite')?.valueChanges.subscribe((idCatTipoTramite) => {
+    this.updateNumeroExpedienteValidator(this.busquedaForm.get('idCatTipoTramite')?.value);
+    this.busquedaForm.get('idCatTipoTramite')?.valueChanges.subscribe((idCatTipoTramite) => {
       this.updateNumeroExpedienteValidator(idCatTipoTramite);
     });
 
     this.restaurarBusquedaSiExiste();
+
+    if (!this.eresAbogado()) {
+      this.cargarTodosLosJuzgados();
+    }
   }
 
-  cargarCatalogoJuzgados(idCatTipoTramite: number | null) {
-    const juzgadoCtrl = this.validarCausaForm.get('idJuzgado');
-    const numeroExpedienteCtrl = this.validarCausaForm.get('numeroExpediente');
+  cargarCatalogoJuzgados(idCatTipoTramite: number | null): void {
+    const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
+
+    this.busquedaForm.get('numeroExpediente')?.reset('', { emitEvent: false });
+    this.mostrarTramites.set(false);
+
+    if (!this.eresAbogado()) {
+      return;
+    }
 
     this.catJuzgados = [];
     juzgadoCtrl?.setValue(null, { emitEvent: false });
     juzgadoCtrl?.disable({ emitEvent: false });
-    numeroExpedienteCtrl?.reset('', { emitEvent: false });
-    this.tramitesElectronicosRecibidos = [];
-    this.mostrarTramites.set(false);
-    this.busquedaState.limpiar();
 
-    if (idCatTipoTramite == null) {
+    if (idCatTipoTramite === null) {
       return;
     }
 
-    this.isLoading = true;
-    this.apiService.getCatJuzgados({ idCatTipoTramite }).subscribe({
+    this.isLoading.set(true);
+    this.apiService.getCatJuzgados(idCatTipoTramite).subscribe({
       next: (response) => {
         this.catJuzgados = response.data;
         juzgadoCtrl?.enable({ emitEvent: false });
-        this.isLoading = false;
+        this.isLoading.set(false);
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error('Error al cargar juzgados:', error);
-        this.isLoading = false;
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  eresAbogado(): boolean {
+    return this.tokenService.getUserFromToken()?.idSistemaPerfil === 10;
+  }
+
+  private cargarTodosLosJuzgados(): void {
+    const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
+
+    this.isLoading.set(true);
+    this.apiService.getAllCatJuzgados().subscribe({
+      next: (response) => {
+        this.catJuzgados = response.data;
+        const juzgadoActual = juzgadoCtrl?.value;
+        const juzgadoExiste = this.catJuzgados.some(
+          ({ idCatJuzgado }) => idCatJuzgado === juzgadoActual
+        );
+
+        juzgadoCtrl?.setValue(
+          juzgadoExiste ? juzgadoActual : null,
+          { emitEvent: false }
+        );
+        juzgadoCtrl?.enable({ emitEvent: false });
+        this.isLoading.set(false);
+      },
+      error: (error: unknown) => {
+        console.error('Error al cargar todos los juzgados:', error);
+        this.isLoading.set(false);
       }
     });
   }
 
   get numeroExpedienteMask(): string {
-    return this.validarCausaForm.get('idCatTipoTramite')?.value === 34 ? '999999/9999' : '9999/9999';
+    return this.busquedaForm.get('idCatTipoTramite')?.value === 34 ? '999999/9999' : '9999/9999';
   }
 
   get numeroExpedientePlaceholder(): string {
-    return this.validarCausaForm.get('idCatTipoTramite')?.value === 34 ? '000000/0000' : '0000/0000';
+    return this.busquedaForm.get('idCatTipoTramite')?.value === 34 ? '000000/0000' : '0000/0000';
   }
 
   private updateNumeroExpedienteValidator(idCatTipoTramite: number | null): void {
-    const numeroExpedienteCtrl = this.validarCausaForm.get('numeroExpediente');
+    const numeroExpedienteCtrl = this.busquedaForm.get('numeroExpediente');
     const pattern = idCatTipoTramite === 34 ? /^\d{6}\/\d{4}$/ : /^\d{4}\/\d{4}$/;
 
     numeroExpedienteCtrl?.setValidators([Validators.required, Validators.pattern(pattern)]);
@@ -146,9 +183,15 @@ export class TramitesJuicioOral implements OnInit {
       return;
     }
 
+    if (estado.idSistemaPerfil !== this.getIdSistemaPerfil()) {
+      this.busquedaState.limpiar();
+      this.resetearBusquedaPorCambioDePerfil();
+      return;
+    }
+
     this.updateNumeroExpedienteValidator(estado.filtros.idCatTipoTramite);
 
-    this.validarCausaForm.patchValue({
+    this.busquedaForm.patchValue({
       idCatTipoTramite: estado.filtros.idCatTipoTramite,
       idJuzgado: estado.filtros.idJuzgado,
       idPantalla: estado.filtros.idPantalla
@@ -158,32 +201,32 @@ export class TramitesJuicioOral implements OnInit {
     this.mostrarTramites.set(estado.mostrarTramites);
 
     if (estado.filtros.idCatTipoTramite != null && estado.catJuzgados.length > 0) {
-      this.validarCausaForm.get('idJuzgado')?.enable({ emitEvent: false });
+      this.busquedaForm.get('idJuzgado')?.enable({ emitEvent: false });
     } else {
-      this.validarCausaForm.get('idJuzgado')?.disable({ emitEvent: false });
+      this.busquedaForm.get('idJuzgado')?.disable({ emitEvent: false });
     }
 
     queueMicrotask(() => {
-      this.validarCausaForm.get('numeroExpediente')?.setValue(estado.filtros.numeroExpediente, { emitEvent: false });
-      this.validarCausaForm.get('numeroExpediente')?.markAsTouched();
-      this.validarCausaForm.get('numeroExpediente')?.updateValueAndValidity({ emitEvent: false });
-      this.validarCausaForm.updateValueAndValidity({ emitEvent: false });
+      this.busquedaForm.get('numeroExpediente')?.setValue(estado.filtros.numeroExpediente, { emitEvent: false });
+      this.busquedaForm.get('numeroExpediente')?.markAsTouched();
+      this.busquedaForm.get('numeroExpediente')?.updateValueAndValidity({ emitEvent: false });
+      this.busquedaForm.updateValueAndValidity({ emitEvent: false });
     });
   }
 
   onBuscarTramitesElectronicos() {
-    if (this.validarCausaForm.invalid) {
-      this.validarCausaForm.markAllAsTouched();
+    if (this.busquedaForm.invalid) {
+      this.busquedaForm.markAllAsTouched();
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.mostrarTramites.set(false);
-    const params = this.validarCausaForm.getRawValue();
+    const params = this.busquedaForm.getRawValue();
 
     this.apiService.getTramitesElectronicosRecibidos(params).subscribe(
       (response) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
 
         if (response.success) {
           this.tramitesElectronicosRecibidos = response.data;
@@ -193,15 +236,14 @@ export class TramitesJuicioOral implements OnInit {
           this.tramitesElectronicosRecibidos = [];
           this.mostrarTramites.set(false);
           this.guardarEstadoActual();
-          this.confirmationService.confirm({
-            key: 'info',
-            accept: () => { /* empty */ },
-          });
         }
       },
       (error: unknown) => {
+        this.tramitesElectronicosRecibidos = [];
+        this.mostrarTramites.set(false);
+        this.guardarEstadoActual();
         console.error('Error al buscar trÃ¡mites electrÃ³nicos:', error);
-        this.isLoading = false;
+        this.isLoading.set(false);
       }
     );
   }
@@ -212,8 +254,9 @@ export class TramitesJuicioOral implements OnInit {
   }
 
   descargarAcuse(id: number): void {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.apiService.getAcuseTramite(id)
+      .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (response: HttpResponse<Blob>) => {
           const disposition = response.headers.get('content-disposition') ?? '';
@@ -226,10 +269,8 @@ export class TramitesJuicioOral implements OnInit {
           link.download = filename;
           link.click();
           setTimeout(() => window.URL.revokeObjectURL(url), 100);
-          this.isLoading = false;
         },
         error: () => {
-          this.isLoading = false;
           console.error('Error al descargar el acuse');
         }
       });
@@ -237,8 +278,36 @@ export class TramitesJuicioOral implements OnInit {
 
   limpiarBusqueda() {
     this.busquedaState.limpiar();
-    this.validarCausaForm.reset({ idPantalla: 1 });
-    this.validarCausaForm.get('idJuzgado')?.disable({ emitEvent: false });
+    const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
+
+    this.busquedaForm.reset({
+      idCatTipoTramite: null,
+      numeroExpediente: '',
+      idJuzgado: null
+    });
+
+    if (this.eresAbogado()) {
+      this.catJuzgados = [];
+      juzgadoCtrl?.disable({ emitEvent: false });
+    } else {
+      juzgadoCtrl?.enable({ emitEvent: false });
+    }
+
+    this.tramitesElectronicosRecibidos = [];
+    this.mostrarTramites.set(false);
+  }
+
+  private getIdSistemaPerfil(): number | null {
+    return this.tokenService.getUserFromToken()?.idSistemaPerfil ?? null;
+  }
+
+  private resetearBusquedaPorCambioDePerfil(): void {
+    this.busquedaForm.reset({
+      idCatTipoTramite: null,
+      numeroExpediente: '',
+      idJuzgado: null
+    }, { emitEvent: false });
+    this.busquedaForm.get('idJuzgado')?.disable({ emitEvent: false });
     this.catJuzgados = [];
     this.tramitesElectronicosRecibidos = [];
     this.mostrarTramites.set(false);
@@ -246,7 +315,8 @@ export class TramitesJuicioOral implements OnInit {
 
   private guardarEstadoActual(): void {
     const estado: TramitesBusquedaState = {
-      filtros: this.validarCausaForm.getRawValue(),
+      idSistemaPerfil: this.getIdSistemaPerfil(),
+      filtros: this.busquedaForm.getRawValue(),
       catJuzgados: [...this.catJuzgados],
       resultados: [...this.tramitesElectronicosRecibidos],
       mostrarTramites: this.mostrarTramites()

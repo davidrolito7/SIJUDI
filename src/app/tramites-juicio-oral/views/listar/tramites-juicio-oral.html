@@ -1,4 +1,4 @@
-<app-spinner [isLoading]="isLoading"></app-spinner>
+<app-spinner [isLoading]="isLoading()"></app-spinner>
 
 <div class="relative mx-auto mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
     <!-- Esquinas decorativas -->
@@ -28,7 +28,7 @@
     <!-- BÚSQUEDA -->
     <div
         class="relative border border-surface-200 bg-surface-50 p-4 transition-colors dark:border-surface-700 dark:bg-surface-950/30">
-        <form [formGroup]="validarCausaForm" (ngSubmit)="onBuscarTramitesElectronicos()">
+        <form [formGroup]="busquedaForm" (ngSubmit)="onBuscarTramitesElectronicos()">
             <!-- Encabezado de sección -->
             <!-- <div>
                 <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
@@ -50,7 +50,7 @@
                 <div id="tipoTramite" class="md:col-span-2">
                     <label for="idCatTipoTramite"
                         class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-                        Tipo
+                        Tipo<strong>*</strong>
                     </label>
 
                     <p-select class="w-full text-sm" [options]="catTipoTramite" formControlName="idCatTipoTramite"
@@ -62,7 +62,7 @@
                 <div id="numeroExpediente" class="md:col-span-1">
                     <label for="numeroExpediente"
                         class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-                        Folio
+                        Folio<strong>*</strong>
                     </label>
 
                     <p-inputmask fluid formControlName="numeroExpediente" class="text-sm uppercase"
@@ -73,7 +73,7 @@
                 <div id="juzgado" class="md:col-span-2">
                     <label for="idJuzgado"
                         class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-                        Juzgado
+                        Juzgado<strong>*</strong>
                     </label>
 
                     <p-select class="w-full text-sm" [options]="catJuzgados" formControlName="idJuzgado"
@@ -88,7 +88,7 @@
                         <i pButtonIcon class="pi pi-filter-slash"></i>
                     </button>
 
-                    <button pButton type="submit" class="flex-1" [disabled]="validarCausaForm.invalid">
+                    <button pButton type="submit" class="flex-1" [disabled]="busquedaForm.invalid">
                         <i pButtonIcon class="pi pi-search"></i>
                         <span pButtonLabel>Buscar</span>
                     </button>
@@ -99,6 +99,7 @@
 
 
 </div>
+@if (mostrarTramites()) {
 <div class="relative mx-auto mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
     <!-- Esquinas decorativas -->
     <span
@@ -113,7 +114,7 @@
     <span
         class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200"></span>
 
-    @if (!mostrarTramites()) {
+
     <!-- RESULTADOS -->
     <div
         class="relative border border-surface-200 bg-surface-50 p-4 transition-colors dark:border-surface-700 dark:bg-surface-950/30">
@@ -154,7 +155,7 @@
             </ng-template>
 
             <ng-template #header>
-                <tr >
+                <tr>
                     <th class="text-base font-semibold">Folio de trámite</th>
                     <th class="text-base font-semibold">Fecha de envío</th>
                     <th class="text-base font-semibold">Observaciones</th>
@@ -202,9 +203,8 @@
             </ng-template>
         </p-table>
     </div>
-    }
 </div>
-
+}
 <app-confirm-dialog key="info" title="No hay coincidencias" message="La causa o el juzgado es incorrecto."
     icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
 </app-confirm-dialog>
