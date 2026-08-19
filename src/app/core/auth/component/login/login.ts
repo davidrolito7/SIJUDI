@@ -177,17 +177,34 @@ export class Login implements OnInit {
         sessionStorage.setItem('AbogadoNombre', nombre);
         sessionStorage.setItem('AbogadoFotoBase64', foto);
 
-        await this.tokenService.setTwoFactorValidated(true);
-
         if (idTipoPersona && PERFIL_POR_TIPO_PERSONA[idTipoPersona]) {
+          await this.tokenService.setTwoFactorValidated(false);
+          await this.tokenService.setPerfilCompleted(false);
           this.loginContextoAutomatico(user.idGeneral, idTipoPersona, nombre, foto);
           return;
         }
 
+        if (idTipoPersona === 3) {
+          await this.tokenService.setTwoFactorValidated(true);
+          await this.tokenService.setPerfilCompleted(false);
+          this.router.navigate(['/perfil']);
+          return;
+        }
+
+        await this.tokenService.setTwoFactorValidated(false);
         await this.tokenService.setPerfilCompleted(false);
-        this.router.navigate(['/perfil']);
+        this.invalidarSesionIncompleta();
+        this.mensaje.add({
+          severity: 'error',
+          summary: 'Acceso denegado',
+          detail: 'El tipo de persona no tiene un contexto de acceso configurado.',
+          life: 3000,
+        });
+        this.isLoading = false;
+        this.cd.detectChanges();
       },
       error: () => {
+        this.invalidarSesionIncompleta();
         this.mensaje.add({
           severity: 'error',
           summary: 'Error',
@@ -251,6 +268,7 @@ export class Login implements OnInit {
         );
       }),
       catchError(() => {
+        this.invalidarSesionIncompleta();
         this.mensaje.add({
           severity: 'error',
           summary: 'Error',
@@ -264,6 +282,7 @@ export class Login implements OnInit {
     ).subscribe({
       next: async (result) => {
         if (!result || !result.response?.success) {
+          this.invalidarSesionIncompleta();
           this.mensaje.add({
             severity: 'error',
             summary: 'Acceso denegado',
@@ -278,10 +297,12 @@ export class Login implements OnInit {
         const { idAreaSistemaUsuario, areaName, perfilDesc, subAreaNombre } = result;
         this.guardarContextoStorage(nombre, foto, idAreaSistemaUsuario, areaName, idSistemaPerfil, perfilDesc, subAreaNombre);
 
+        await this.tokenService.setTwoFactorValidated(true);
         await this.tokenService.setPerfilCompleted(true);
 
         const perfilOk = await this.tokenService.isPerfilCompleted();
         if (!perfilOk) {
+          this.invalidarSesionIncompleta();
           this.mensaje.add({
             severity: 'error',
             summary: 'Error',
@@ -302,6 +323,7 @@ export class Login implements OnInit {
           });
       },
       error: () => {
+        this.invalidarSesionIncompleta();
         this.isLoading = false;
         this.cd.detectChanges();
       },
@@ -310,6 +332,12 @@ export class Login implements OnInit {
         this.cd.detectChanges();
       },
     });
+  }
+
+  private invalidarSesionIncompleta(): void {
+    this.tokenService.removeToken();
+    this.tokenService.clearTwoFactorValidated();
+    this.tokenService.clearPerfilCompleted();
   }
 
   private guardarContextoStorage(
