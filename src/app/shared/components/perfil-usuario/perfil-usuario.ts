@@ -17,6 +17,7 @@ import { JsonPipe } from '@angular/common';
  import { of } from 'rxjs';
 import { switchMap, finalize } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
+import { UsrProfile } from '../../../core/auth/interface/login.interfaces';
 
 @Component({
   selector: 'app-perfil-usuario',
@@ -37,6 +38,7 @@ constructor(
 
  selectedTab: string = 'info'; // Pestaña activa
   usuario!: usuario;
+  mS_UserProfile !: UsrProfile;
   datosFirma!: datosFirma;
   pfxVigencia: boolean = false;
   foto: string = '';
@@ -116,7 +118,7 @@ constructor(
         }
 
         this.usuario = response.data.pD_Abogados[0];
-
+       this.mS_UserProfile = response.data.mS_UserProfile[0];
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',

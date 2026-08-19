@@ -14,6 +14,7 @@ export interface GenericResponse<T>{
     folio: string,
     noEmpleado: string,
     tipoUsuario: string,
+    tipoPersonaDescripcion: string
     //domicilio: string,
     celular?: string,
     telefono: string,

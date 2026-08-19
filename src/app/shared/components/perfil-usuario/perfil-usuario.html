@@ -34,10 +34,13 @@
                 <p-tabpanels>
                     @if (usuario) {
                     <p-tabpanel [value]="0">
+                      <p class="text-base m-0 mb-2"><strong>Nombre:</strong> {{ usuario.nombre }}</p>
   <p class="text-base m-0 mb-2"><strong>CURP:</strong> {{ usuario.curp }}</p>
-  <p class="text-base m-0 mb-2"><strong>ID de Usuario:</strong> {{ usuario.folio }}</p>
-  <p class="text-base m-0 mb-2"><strong>No. Empleado:</strong> {{ usuario.noEmpleado }}</p>
-  <p class="text-base m-0 mb-2"><strong>Tipo de Usuario:</strong> {{ usuario.tipoUsuario }}</p>
+  <p class="text-base m-0 mb-2"><strong>Folio:</strong> {{ usuario.folio }}</p>
+  <p class="text-base m-0 mb-2"><strong>Id Usuario:</strong> {{ mS_UserProfile.userName }}</p>
+  @if(usuario.noEmpleado !="0"){
+  <p class="text-base m-0 mb-2"><strong>No. Empleado:</strong> {{ usuario.noEmpleado }}</p> }
+  <p class="text-base m-0 mb-2"><strong>Tipo de Usuario:</strong> {{usuario.tipoPersonaDescripcion}}</p>
   <p class="text-base m-0 mb-2">
     <strong>Domicilio:</strong>
     {{ usuario.direccionPart }}
@@ -51,10 +54,12 @@
 </p-tabpanel>
 
                     <p-tabpanel [value]="1">
+                      
   <p class="text-base m-0 mb-2"><strong>Tel. Celular:</strong> {{ usuario.celular }}</p>
   <p class="text-base m-0 mb-2"><strong>Tel. Particular:</strong> {{ usuario.telefono }}</p>
   <p class="text-base m-0 mb-2"><strong>Correo Personal:</strong> {{ usuario.correoAlterno }}</p>
-  <p class="text-base m-0 mb-2"><strong>Correo Institucional:</strong> {{ usuario.correo }}</p>
+  @if(usuario.correo!=''){<p class="text-base m-0 mb-2"><strong>Correo Institucional:</strong> {{ usuario.correo }}</p>}
+  
 </p-tabpanel>
                     }
                     <p-tabpanel [value]="2">
