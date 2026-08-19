@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, HostListener, ViewChild, ElementRef, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -8,7 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Router } from '@angular/router';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ToastModule } from 'primeng/toast';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
 import { AuthService } from '../../service/auth.service';
 import { TokenService } from '../../service/token.service';
@@ -23,7 +23,6 @@ import { DrawerService } from '../../../../shared/service/drawer.service';
 
 const SISTEMA_ID = 1;
 const AREA_ID = 1;
-const PERFIL_ID = 10;
 const SUBAREA_ID = 1007;
 const PERFIL_POR_TIPO_PERSONA: Record<number, number> = {
   1: 10,
@@ -55,7 +54,8 @@ export class Login implements OnInit {
   idSistema = 1;
   recordar = true;
   verPassword = false;
-  isLoading = false;
+  readonly isLoading = signal(false);
+  private loadingRequests = 0;
 
   @ViewChild('passwordInput') passwordInput!: ElementRef;
 
@@ -64,7 +64,6 @@ export class Login implements OnInit {
   private readonly el = inject(ElementRef);
   private readonly tokenService = inject(TokenService);
   private readonly mensaje = inject(MessageService);
-  private readonly cd = inject(ChangeDetectorRef);
   private readonly menuStore = inject(UserMenuStore);
   private readonly drawerService = inject(DrawerService);
   private readonly pantallasService = inject(PantallasService);
@@ -117,10 +116,11 @@ export class Login implements OnInit {
       return;
     }
 
-    this.isLoading = true;
-    this.cd.detectChanges();
+    this.iniciarCarga();
 
-    this.authService.login(this.usuario, this.contrasenia, this.idSistema, this.recordar).subscribe({
+    this.authService.login(this.usuario, this.contrasenia, this.idSistema, this.recordar).pipe(
+      finalize(() => this.finalizarCarga())
+    ).subscribe({
       next: async (response) => {
         if (response.success) {
           this.authService.actualizaPerfilSeleccionado('');
@@ -143,17 +143,12 @@ export class Login implements OnInit {
       },
       error: () => {
         this.mensaje.add({ severity: 'info', summary: 'Verifique sus datos e intente nuevamente', detail: 'El usuario o la contraseña son incorrectos.', life: 6000 });
-        this.isLoading = false;
-        this.cd.detectChanges();
-      },
-      complete: () => {
-        this.isLoading = false;
-        this.cd.detectChanges();
       },
     });
   }
 
   private continuarSinTwoFactor(): void {
+    this.iniciarCarga();
     const user = this.tokenService.getUserFromToken();
     if (!user?.idGeneral) {
       this.mensaje.add({
@@ -162,12 +157,13 @@ export class Login implements OnInit {
         detail: 'No se pudo obtener el usuario desde el token.',
         life: 3000,
       });
-      this.isLoading = false;
-      this.cd.detectChanges();
+      this.finalizarCarga();
       return;
     }
 
-    this.authService.obtenerDatosUsuario(user.idGeneral).subscribe({
+    this.authService.obtenerDatosUsuario(user.idGeneral).pipe(
+      finalize(() => this.finalizarCarga())
+    ).subscribe({
       next: async (resp) => {
         const abogado = resp.data?.pD_Abogados?.[0];
         const idTipoPersona = abogado?.idTipoPersona ?? null;
@@ -200,8 +196,6 @@ export class Login implements OnInit {
           detail: 'El tipo de persona no tiene un contexto de acceso configurado.',
           life: 3000,
         });
-        this.isLoading = false;
-        this.cd.detectChanges();
       },
       error: () => {
         this.invalidarSesionIncompleta();
@@ -211,14 +205,13 @@ export class Login implements OnInit {
           detail: 'No se pudieron obtener los datos del usuario.',
           life: 3000,
         });
-        this.isLoading = false;
-        this.cd.detectChanges();
       },
     });
   }
 
   private loginContextoAutomatico(idGeneral: number, idTipoPersona: number, nombre: string, foto: string): void {
     const idSistemaPerfil = PERFIL_POR_TIPO_PERSONA[idTipoPersona];
+    this.iniciarCarga();
 
     this.authService.getAreas(SISTEMA_ID, idGeneral).pipe(
       map(r => (r.data ?? []) as any[]),
@@ -275,10 +268,9 @@ export class Login implements OnInit {
           detail: 'Error al preparar el contexto de sesiÃ³n.',
           life: 3000,
         });
-        this.isLoading = false;
-        this.cd.detectChanges();
         return of(null);
       }),
+      finalize(() => this.finalizarCarga()),
     ).subscribe({
       next: async (result) => {
         if (!result || !result.response?.success) {
@@ -289,8 +281,6 @@ export class Login implements OnInit {
             detail: result?.response?.message ?? 'No se puede continuar.',
             life: 3000,
           });
-          this.isLoading = false;
-          this.cd.detectChanges();
           return;
         }
 
@@ -309,8 +299,6 @@ export class Login implements OnInit {
             detail: 'Error al guardar la sesiÃ³n, intente de nuevo.',
             life: 3000,
           });
-          this.isLoading = false;
-          this.cd.detectChanges();
           return;
         }
 
@@ -324,14 +312,18 @@ export class Login implements OnInit {
       },
       error: () => {
         this.invalidarSesionIncompleta();
-        this.isLoading = false;
-        this.cd.detectChanges();
-      },
-      complete: () => {
-        this.isLoading = false;
-        this.cd.detectChanges();
       },
     });
+  }
+
+  private iniciarCarga(): void {
+    this.loadingRequests++;
+    this.isLoading.set(true);
+  }
+
+  private finalizarCarga(): void {
+    this.loadingRequests = Math.max(0, this.loadingRequests - 1);
+    this.isLoading.set(this.loadingRequests > 0);
   }
 
   private invalidarSesionIncompleta(): void {

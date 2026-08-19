@@ -117,15 +117,15 @@ export class TramitesJuicioOral implements OnInit {
     }
 
     this.isLoading.set(true);
-    this.apiService.getCatJuzgados(idCatTipoTramite).subscribe({
+    this.apiService.getCatJuzgados(idCatTipoTramite).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response) => {
         this.catJuzgados = response.data;
         juzgadoCtrl?.enable({ emitEvent: false });
-        this.isLoading.set(false);
       },
       error: (error: unknown) => {
         console.error('Error al cargar juzgados:', error);
-        this.isLoading.set(false);
       }
     });
   }
@@ -138,7 +138,9 @@ export class TramitesJuicioOral implements OnInit {
     const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
 
     this.isLoading.set(true);
-    this.apiService.getAllCatJuzgados().subscribe({
+    this.apiService.getAllCatJuzgados().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response) => {
         this.catJuzgados = response.data;
         const juzgadoActual = juzgadoCtrl?.value;
@@ -151,11 +153,9 @@ export class TramitesJuicioOral implements OnInit {
           { emitEvent: false }
         );
         juzgadoCtrl?.enable({ emitEvent: false });
-        this.isLoading.set(false);
       },
       error: (error: unknown) => {
         console.error('Error al cargar todos los juzgados:', error);
-        this.isLoading.set(false);
       }
     });
   }
@@ -224,9 +224,10 @@ export class TramitesJuicioOral implements OnInit {
     this.mostrarTramites.set(false);
     const params = this.busquedaForm.getRawValue();
 
-    this.apiService.getTramitesElectronicosRecibidos(params).subscribe(
+    this.apiService.getTramitesElectronicosRecibidos(params).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe(
       (response) => {
-        this.isLoading.set(false);
 
         if (response.success) {
           this.tramitesElectronicosRecibidos = response.data;
@@ -243,7 +244,6 @@ export class TramitesJuicioOral implements OnInit {
         this.mostrarTramites.set(false);
         this.guardarEstadoActual();
         console.error('Error al buscar trÃ¡mites electrÃ³nicos:', error);
-        this.isLoading.set(false);
       }
     );
   }

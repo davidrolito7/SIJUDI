@@ -1,5 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
-import { Header } from "../../../shared/components/header/header";
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { ApiService } from '../../service/api.service';
 import { DetalleTramiteElectronicoRecibidoResponse } from '../../interface/tramites-juicio-oral.model';
@@ -10,13 +9,14 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TooltipModule } from 'primeng/tooltip';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog"; // ajusta el path
 import { TagModule } from 'primeng/tag';
+import { finalize } from 'rxjs';
 @Component({
   selector: 'app-detalle-tramite',
-  imports: [Header, Spinner, DatePipe, TableModule, ButtonModule, TooltipModule, PdfDialog, TagModule],
+  imports: [Spinner, DatePipe, TableModule, ButtonModule, TooltipModule, PdfDialog, TagModule],
   templateUrl: './detalle-tramite.html',
   styleUrl: './detalle-tramite.css',
 })
-export class DetalleTramite {
+export class DetalleTramite implements OnInit {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly apiService = inject(ApiService);
 
@@ -41,19 +41,15 @@ export class DetalleTramite {
 
   getDetalleInicio(idTramiteElectronicoRecibido: number): void {
     this.isLoading.set(true);
-    this.apiService.getDetalleTramiteElectronicoRecibido({ idTramiteElectronicoRecibido }).subscribe({
-
-      next: (response: any) => {
-        this.isLoading.set(false);
+    this.apiService.getDetalleTramiteElectronicoRecibido({ idTramiteElectronicoRecibido }).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
+      next: (response) => {
         this.detalleTramiteElectronicoRecibido = response.data || null;
       },
       error: (error) => {
-        this.isLoading.set(false);
         console.error('Error:', error);
         this.detalleTramiteElectronicoRecibido = null;
-      },
-      complete: () => {
-        this.isLoading.set(false);
       }
     });
   }
@@ -61,18 +57,17 @@ export class DetalleTramite {
   openModal(referencia : string): void {
     this.isLoading.set(true);
 
-    this.apiService.getDocumentoNas(referencia).subscribe({
+    this.apiService.getDocumentoNas(referencia).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response) => {
         if (response?.data?.file) {
           this.onVerDocumento(response.data.file, response.data.fileName, 'application/pdf');
         }
-         this.isLoading.set(false);
       },
       error: (error) => {
         console.error('Error al obtener el documento:', error);
-        this.isLoading.set(false);
-      },
-      complete: () => {  this.isLoading.set(false); }
+      }
     });
   }
 

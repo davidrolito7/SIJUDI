@@ -56,7 +56,7 @@ export class CrearTramite implements OnInit {
 
   //* === ESTADOS DE UI Y MODALES ===
   //* === FLAGS Y VARIABLES DE CONTROL ===
-  isLoading = false;
+  readonly isLoading = signal(false);
   mostrarAddDocumentos = signal(false);
   mostrarDocumento = false;
   isAnexosDragOver = false;
@@ -134,16 +134,16 @@ export class CrearTramite implements OnInit {
       return;
     }
 
-    this.isLoading = true;
-    this.apiService.getCatJuzgados(idCatTipoTramite).subscribe({
+    this.isLoading.set(true);
+    this.apiService.getCatJuzgados(idCatTipoTramite).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response) => {
         this.catJuzgados = response.data;
         juzgadoCtrl?.enable({ emitEvent: false });
-        this.isLoading = false;
       },
       error: (error: unknown) => {
         console.error('Error al cargar juzgados:', error);
-        this.isLoading = false;
       }
     });
   }
@@ -155,17 +155,17 @@ export class CrearTramite implements OnInit {
   private cargarTodosLosJuzgados(): void {
     const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
 
-    this.isLoading = true;
-    this.apiService.getAllCatJuzgados().subscribe({
+    this.isLoading.set(true);
+    this.apiService.getAllCatJuzgados().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response) => {
         this.catJuzgados = response.data;
         juzgadoCtrl?.setValue(null, { emitEvent: false });
         juzgadoCtrl?.enable({ emitEvent: false });
-        this.isLoading = false;
       },
       error: (error: unknown) => {
         console.error('Error al cargar todos los juzgados:', error);
-        this.isLoading = false;
       }
     });
   }
@@ -187,12 +187,13 @@ export class CrearTramite implements OnInit {
   }
 
   onValidarCausa() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.mostrarAddDocumentos.set(false);
     const params = this.busquedaForm.getRawValue();
-    this.apiService.postValidarCausa(params).subscribe(
-      (response: { success: boolean; data: ValidarCausaResponse }) => {
-        this.isLoading = false;
+    this.apiService.postValidarCausa(params).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
+      next: (response: { success: boolean; data: ValidarCausaResponse }) => {
         if (response.success) {
           this.causaValidada = response.data;
           this.mostrarAddDocumentos.set(true);
@@ -203,9 +204,9 @@ export class CrearTramite implements OnInit {
             accept: () => { /* empty */ },
           });
         }
-      }
-
-    );
+      },
+      error: (error: unknown) => console.error('Error al validar causa:', error),
+    });
   }
   onAnexosInputChange(event: Event) {
     const input = event.target as HTMLInputElement | null;
@@ -324,7 +325,7 @@ export class CrearTramite implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     const formData = new FormData();
     const busquedaValue = this.busquedaForm.getRawValue();
     const documentosValue = this.documentosForm.getRawValue(); // 👈 observaciones desde aquí
@@ -342,7 +343,7 @@ export class CrearTramite implements OnInit {
     });
 
     this.apiService.postEnviarTramite(formData)
-      .pipe(finalize(() => (this.isLoading = false)))
+      .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
       next: (response: ApiResponse<TramitesElectronicosRecibidosResponse>) => {
         if (!response.success) {
