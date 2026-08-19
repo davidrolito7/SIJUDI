@@ -6,7 +6,7 @@ export const environment = {
     ConstantsService: {
         ruta: 'https://pruebas.tribunaloaxaca.gob.mx/permisos',
         idSistema: 1,
-        //ruta : 'https://localhost:7260'
+        //ruta : 'https://localhost:5164'
     },
 
     urlApiEfirma: 'https://api.tribunaloaxaca.gob.mx/efirma/api/efirma', //este siempre debe apuntar a produccion porque no existe ambiente de pruebas para efirma
@@ -24,7 +24,7 @@ export const environment = {
 
     //* api juicio oral penal 0.o
     urlApiJuicioOralPenal: 'https://pruebas.tribunaloaxaca.gob.mx/ApiJop/api/PromocionesJuicioOral',
-    //urlApiJuicioOralPenal:'https://localhost:7057/api/PromocionesJuicioOral',
+    //urlApiJuicioOralPenal:'http://localhost:5041/api/PromocionesJuicioOral',
 
     //* api notificaciones en tiempo real
     // urlApiNotificaciones: 'http://localhost:3000',

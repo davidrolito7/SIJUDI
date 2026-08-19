@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { CatJuzgadoResponse, TramitesElectronicosRecibidosResponse } from '../interface/tramites-juicio-oral.model';
 
 export interface TramitesBusquedaState {
+  idSistemaPerfil: number | null;
   filtros: {
     idCatTipoTramite: number | null;
     numeroExpediente: string;

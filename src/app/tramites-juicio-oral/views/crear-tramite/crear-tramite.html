@@ -65,7 +65,7 @@
                 <div id="tipoTramite" class="md:col-span-2">
                     <label for="idCatTipoTramite"
                         class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-                        Tipo
+                        Tipo<strong>*</strong>
                     </label>
 
                     <p-select class="w-full text-sm" [options]="catTipoTramite" formControlName="idCatTipoTramite"
@@ -77,7 +77,7 @@
                 <div id="numeroExpediente" class="md:col-span-1">
                     <label for="numeroExpediente"
                         class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-                        Folio
+                        Folio<strong>*</strong>
                     </label>
 
                     <p-inputmask fluid formControlName="numeroExpediente" class="text-sm uppercase"
@@ -88,7 +88,7 @@
                 <div id="juzgado" class="md:col-span-2">
                     <label for="idJuzgado"
                         class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-                        Juzgado
+                        Juzgado<strong>*</strong>
                     </label>
 
                     <p-select class="w-full text-sm" [options]="catJuzgados" formControlName="idJuzgado"
@@ -106,9 +106,9 @@
             </div>
         </form>
     </div>
-    
-    @if (!mostrarAddDocumentos()) {
-    <div class="relative border p-4 mt-4 transition-colors" [ngClass]="documentosAnexados.length < 0
+
+    @if (mostrarAddDocumentos()) {
+    <div class="relative border p-4 mt-4 transition-colors" [ngClass]="documentosAnexados.length > 0 && documentosForm.valid
       ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/10'
         : 'border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-950/30'">
 
@@ -136,11 +136,11 @@
                 (change)="onAnexosInputChange($event)" />
 
             <label for="anexosInput"
-                class="relative flex min-h-[232px] w-full cursor-pointer flex-col overflow-hidden border border-dashed  rounded-lg border-surface-300 bg-surface-50/60 transition hover:border-surface-500 hover:bg-surface-100/70 dark:border-surface-700 dark:bg-surface-950/30 dark:hover:border-surface-500 dark:hover:bg-surface-800/50"
+                class="relative flex min-h-58 w-full cursor-pointer flex-col overflow-hidden border border-dashed  rounded-lg border-surface-300 bg-surface-50/60 transition hover:border-surface-500 hover:bg-surface-100/70 dark:border-surface-700 dark:bg-surface-950/30 dark:hover:border-surface-500 dark:hover:bg-surface-800/50"
                 (dragover)="onAnexosDragOver($event)" (dragleave)="onAnexosDragLeave($event)"
                 (drop)="onAnexosDrop($event)"
                 [ngClass]="isAnexosDragOver ? 'border-primary bg-primary-50/40 dark:bg-primary-950/10' : ''">
-                <div class="flex min-h-[232px] flex-col items-center justify-center px-4 py-4 text-center">
+                <div class="flex min-h-58 flex-col items-center justify-center px-4 py-4 text-center">
                     <div
                         class="mb-3 flex h-12 w-12 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
                         <i class="pi pi-cloud-upload text-xl text-surface-600 dark:text-surface-300"></i>
@@ -150,7 +150,7 @@
                         Selecciona los PDF del trámite
                     </p>
 
-                    <p class="mt-1 max-w-[280px] text-sm text-surface-500 dark:text-surface-400">
+                    <p class="mt-1 max-w-70 text-sm text-surface-500 dark:text-surface-400">
                         Los anexos seguirán mostrándose abajo en forma de lista.
                     </p>
 
@@ -189,7 +189,7 @@
                                     </button>
                                 </td>
                                 <td>
-                                    <button pButton (click)="eliminarAnexo(i)" styleClass="btn-rojo" label="Eliminar">
+                                    <button pButton (click)="eliminarAnexo(i)" styleClass="btn-rojo">Eliminar
                                     </button>
                                 </td>
                             </tr>
@@ -200,12 +200,13 @@
                 </div>
                 }
                 <div id="observaciones" class="col-span-6 sm:col-span-6" [formGroup]="documentosForm">
-                    <label for="observaciones" class="block mb-2 text-sm font-medium">Observaciones</label>
+                    <label for="observaciones"
+                        class="block mb-2 text-sm font-medium">Observaciones<strong>*</strong></label>
                     <textarea pTextarea rows="5" formControlName="observaciones" name="observaciones" id="observaciones"
                         fluid class="text-sm" maxlength="450" placeholder="Escribe algo aquí..."></textarea>
                 </div>
 
-               
+
             </div>
             <div></div>
         </div>
@@ -213,12 +214,15 @@
     }
 </div>
 
-@if (busquedaForm.valid && documentosForm.valid && documentosAnexados.length > 0) {
+@if (mostrarAddDocumentos()) {
 <div class="flex w-full items-center justify-center mt-4">
-    <button pButton (click)="onEnviarPromocion()">
+    <button pButton (click)="onEnviarPromocion()" [disabled]="
+    busquedaForm.invalid ||
+    documentosForm.invalid ||
+    documentosAnexados.length === 0
+  ">
         <span pButtonLabel>Enviar Trámite</span>
         <i pButtonIcon class="pi pi-send"></i>
-
     </button>
 
 </div>
@@ -253,7 +257,7 @@
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         @if (message) {
         <div
-            class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded-2xl w-[90vw] sm:w-auto sm:min-w-[420px] sm:max-w-[520px]">
+            class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded-2xl w-[90vw] sm:w-auto sm:min-w-105 sm:max-w-130">
             <!-- Ícono -->
             <div
                 class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
@@ -308,8 +312,9 @@
             </div>
 
             <div class="flex justify-end gap-2 mt-6 w-full">
-                <button pButton (onClick)="descargarAcuse()" styleClass="w-32">Acuse</button>
-                <button pButton [outlined]="true" (onClick)="onReject()" styleClass="w-32">Salir</button>
+                <button pButton type="button" (click)="descargarAcuse()" [loading]="isDescargandoAcuse()"
+                    [disabled]="isDescargandoAcuse()" styleClass="w-32">Acuse</button>
+                <button pButton type="button" [outlined]="true" (click)="onReject()" styleClass="w-32">Salir</button>
             </div>
         </div>
         }

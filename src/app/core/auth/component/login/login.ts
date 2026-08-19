@@ -25,6 +25,11 @@ const SISTEMA_ID = 1;
 const AREA_ID = 1;
 const PERFIL_ID = 10;
 const SUBAREA_ID = 1007;
+const PERFIL_POR_TIPO_PERSONA: Record<number, number> = {
+  1: 10,
+  6: 1011,
+  7: 1012,
+};
 
 @Component({
   standalone: true,
@@ -137,7 +142,7 @@ export class Login implements OnInit {
         }
       },
       error: () => {
-        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al intentar ingresar.', life: 3000 });
+        this.mensaje.add({ severity: 'info', summary: 'Verifique sus datos e intente nuevamente', detail: 'El usuario o la contraseña son incorrectos.', life: 6000 });
         this.isLoading = false;
         this.cd.detectChanges();
       },
@@ -172,17 +177,34 @@ export class Login implements OnInit {
         sessionStorage.setItem('AbogadoNombre', nombre);
         sessionStorage.setItem('AbogadoFotoBase64', foto);
 
-        await this.tokenService.setTwoFactorValidated(true);
-
-        if (idTipoPersona === 1) {
-          this.loginContextoAutomatico(user.idGeneral, nombre, foto);
+        if (idTipoPersona && PERFIL_POR_TIPO_PERSONA[idTipoPersona]) {
+          await this.tokenService.setTwoFactorValidated(false);
+          await this.tokenService.setPerfilCompleted(false);
+          this.loginContextoAutomatico(user.idGeneral, idTipoPersona, nombre, foto);
           return;
         }
 
+        if (idTipoPersona === 3) {
+          await this.tokenService.setTwoFactorValidated(true);
+          await this.tokenService.setPerfilCompleted(false);
+          this.router.navigate(['/perfil']);
+          return;
+        }
+
+        await this.tokenService.setTwoFactorValidated(false);
         await this.tokenService.setPerfilCompleted(false);
-        this.router.navigate(['/perfil']);
+        this.invalidarSesionIncompleta();
+        this.mensaje.add({
+          severity: 'error',
+          summary: 'Acceso denegado',
+          detail: 'El tipo de persona no tiene un contexto de acceso configurado.',
+          life: 3000,
+        });
+        this.isLoading = false;
+        this.cd.detectChanges();
       },
       error: () => {
+        this.invalidarSesionIncompleta();
         this.mensaje.add({
           severity: 'error',
           summary: 'Error',
@@ -195,7 +217,9 @@ export class Login implements OnInit {
     });
   }
 
-  private loginContextoAutomatico(idGeneral: number, nombre: string, foto: string): void {
+  private loginContextoAutomatico(idGeneral: number, idTipoPersona: number, nombre: string, foto: string): void {
+    const idSistemaPerfil = PERFIL_POR_TIPO_PERSONA[idTipoPersona];
+
     this.authService.getAreas(SISTEMA_ID, idGeneral).pipe(
       map(r => (r.data ?? []) as any[]),
       switchMap(areas => {
@@ -211,7 +235,7 @@ export class Login implements OnInit {
             return this.authService.GetPerfiles(idAreaSistemaUsuario).pipe(
               map((r: any) => {
                 const perfiles = r.data ?? [];
-                const perfil = perfiles.find((p: any) => p.idSistemaPerfil === PERFIL_ID);
+                const perfil = perfiles.find((p: any) => p.idSistemaPerfil === idSistemaPerfil);
                 const perfilDesc = perfil?.descripcion ?? '';
 
                 return this.authService.getSubAreas(idAreaSistema, idGeneral).pipe(
@@ -235,7 +259,7 @@ export class Login implements OnInit {
         const request = {
           idSistema: SISTEMA_ID,
           idArea: AREA_ID,
-          idSistemaPerfil: PERFIL_ID,
+          idSistemaPerfil,
           idSubArea: SUBAREA_ID,
         };
 
@@ -244,6 +268,7 @@ export class Login implements OnInit {
         );
       }),
       catchError(() => {
+        this.invalidarSesionIncompleta();
         this.mensaje.add({
           severity: 'error',
           summary: 'Error',
@@ -257,6 +282,7 @@ export class Login implements OnInit {
     ).subscribe({
       next: async (result) => {
         if (!result || !result.response?.success) {
+          this.invalidarSesionIncompleta();
           this.mensaje.add({
             severity: 'error',
             summary: 'Acceso denegado',
@@ -269,12 +295,14 @@ export class Login implements OnInit {
         }
 
         const { idAreaSistemaUsuario, areaName, perfilDesc, subAreaNombre } = result;
-        this.guardarContextoStorage(nombre, foto, idAreaSistemaUsuario, areaName, perfilDesc, subAreaNombre);
+        this.guardarContextoStorage(nombre, foto, idAreaSistemaUsuario, areaName, idSistemaPerfil, perfilDesc, subAreaNombre);
 
+        await this.tokenService.setTwoFactorValidated(true);
         await this.tokenService.setPerfilCompleted(true);
 
         const perfilOk = await this.tokenService.isPerfilCompleted();
         if (!perfilOk) {
+          this.invalidarSesionIncompleta();
           this.mensaje.add({
             severity: 'error',
             summary: 'Error',
@@ -295,6 +323,7 @@ export class Login implements OnInit {
           });
       },
       error: () => {
+        this.invalidarSesionIncompleta();
         this.isLoading = false;
         this.cd.detectChanges();
       },
@@ -305,18 +334,25 @@ export class Login implements OnInit {
     });
   }
 
+  private invalidarSesionIncompleta(): void {
+    this.tokenService.removeToken();
+    this.tokenService.clearTwoFactorValidated();
+    this.tokenService.clearPerfilCompleted();
+  }
+
   private guardarContextoStorage(
     nombre: string,
     foto: string,
     idAreaSistemaUsuario: number,
     areaName: string,
+    idSistemaPerfil: number,
     perfilDesc: string,
     subAreaNombre: string,
   ): void {
     localStorage.setItem('recordarUsuario', 'false');
 
     sessionStorage.setItem('areaSeleccionada', String(AREA_ID));
-    sessionStorage.setItem('perfilSeleccionado', String(PERFIL_ID));
+    sessionStorage.setItem('perfilSeleccionado', String(idSistemaPerfil));
     sessionStorage.setItem('perfilSeleccionadoDesc', perfilDesc);
     sessionStorage.setItem('idAreaSistemaUsuario', String(idAreaSistemaUsuario));
     sessionStorage.setItem('SubAreaNombre', subAreaNombre);

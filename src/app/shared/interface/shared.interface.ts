@@ -3,7 +3,6 @@ export interface GenericResponse<T>{
     success:boolean;
     status?: number;
     message?: string;
-    mensaje?: string;
     errors: string[];
     data:T;
 }

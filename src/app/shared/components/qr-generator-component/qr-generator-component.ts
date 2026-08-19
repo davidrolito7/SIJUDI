@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, signal } from '@angular/core';
 import * as QRCode from 'qrcode';
 
 @Component({
@@ -10,7 +10,7 @@ import * as QRCode from 'qrcode';
 export class QrGeneratorComponent implements OnChanges {
   @Input() qrData: string | null = null;
 
-  qrCodeUrl = '';
+  readonly qrCodeUrl = signal('');
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['qrData']) {
@@ -20,19 +20,19 @@ export class QrGeneratorComponent implements OnChanges {
 
   async generateQR(): Promise<void> {
     if (!this.qrData?.trim()) {
-      this.qrCodeUrl = '';
+      this.qrCodeUrl.set('');
       return;
     }
 
     try {
-      this.qrCodeUrl = await QRCode.toDataURL(this.qrData, {
+      this.qrCodeUrl.set(await QRCode.toDataURL(this.qrData, {
         width: 150,
         margin: 0,
         color: {
           dark: '#000000',
           light: '#FFFFFF'
         }
-      });
+      }));
     } catch (error) {
       console.error('Error generando QR:', error);
     }

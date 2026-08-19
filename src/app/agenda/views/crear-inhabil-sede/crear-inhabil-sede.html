@@ -73,7 +73,6 @@
                     <td><p-table-checkbox [value]="sede" /></td>
                     <td>
                         <button pButton type="button" text rounded [pRowToggler]="sede"
-                            [disabled]="!sedesSeleccionadas.includes(sede)"
                             [attr.aria-label]="expanded ? 'Ocultar áreas' : 'Mostrar áreas'">
                             <i pButtonIcon [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                         </button>

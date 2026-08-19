@@ -16,10 +16,12 @@
 
     <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="min-w-0">
-            <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">Sedes</h1>
+            <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+                <span class="pi pi-building text-lg text-primary"></span> Sedes
+            </h1>
 
             <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
-                Listado de sedes configuradas, puedes buscar por nombre de sede y ver su detalle.
+                Listado de sedes configuradas para áreas, edite una existente o cree una nueva.
             </p>
         </div>
 
@@ -61,7 +63,7 @@
                         </div>
 
                         <div class="flex justify-end gap-2">
-                            <button pButton  severity="secondary" aria-label="Limpiar filtros">
+                            <button pButton severity="secondary" aria-label="Limpiar filtros">
                                 <i pButtonIcon class="pi pi-filter-slash"></i>
                             </button>
 
@@ -106,7 +108,7 @@
                     <td pFrozenColumn alignFrozen="right">
                         <button pButton type="button" (click)="detalleSede(sede.id)" pTooltip="Ver detalle"
                             tooltipPosition="top" aria-label="Ver detalle">
-                            <i pButtonIcon class="pi pi-eye"></i>
+                            <i pButtonIcon class="pi pi-pencil"></i>
                         </button>
                     </td>
                 </tr>

@@ -6,10 +6,29 @@ import { ListarInhabilSede } from "./views/listar-inhabil-sede/listar-inhabil-se
 import { CrearInhabilSede } from "./views/crear-inhabil-sede/crear-inhabil-sede";
 
 export const AGENDA_ROUTES: Routes = [
-    {path: 'sedes', component: ListarSede},
-    {path: 'crear-sede', component: CrearSede},
-    {path: 'dia-inhabil', component: ListarDiaInhabil},
-    {path: 'asignar-dia-inhabil', component: ListarInhabilSede},
-    {path: 'crear-asignacion', component: CrearInhabilSede},
-
-]
+  {
+    path: 'sedes',
+    children: [
+      { path: '', component: ListarSede },
+      { path: 'crear', component: CrearSede },
+      { path: 'editar', component: CrearSede },
+    //   { path: 'editar', component: EditarSede },
+    ]
+  },
+  {
+    path: 'dias-inhabiles',
+    children: [
+      { path: '', component: ListarDiaInhabil },
+    //   { path: 'crear', component: CrearDiaInhabil },
+    //   { path: 'editar', component: EditarDiaInhabil },
+    ]
+  },
+  {
+    path: 'asignaciones',
+    children: [
+      { path: '', component: ListarInhabilSede },
+      { path: 'crear', component: CrearInhabilSede },
+     { path: 'editar', component: CrearInhabilSede },
+    ]
+  }
+];

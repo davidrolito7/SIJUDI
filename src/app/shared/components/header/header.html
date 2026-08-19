@@ -43,9 +43,8 @@
         PODER JUDICIAL DEL <br>
         ESTADO DE OAXACA
       </p> -->
-       <img
-      src="logo-footer.png" alt="Logo Poder Judicial del Estado de Oaxaca"
-      class="hidden h-11 w-auto shrink-0 sm:block "/> 
+      <img src="logo-footer.png" alt="Logo Poder Judicial del Estado de Oaxaca"
+        class="hidden h-11 w-auto shrink-0 sm:block " />
     </div>
 
     <div class="mr-1 flex shrink-0 items-center gap-2">
@@ -216,7 +215,7 @@
             </div>
           </button>
         </div>
-
+        @if (eresEmpleado()) {
         <div
           class="group rounded-2xl border border-surface-200 border-dashed dark:border-surface-700 bg-surface-0 dark:bg-surface-900 overflow-hidden">
           <button type="button"
@@ -240,7 +239,7 @@
             </div>
           </button>
         </div>
-
+        }
         <div
           class="group rounded-2xl border border-surface-200 border-dashed dark:border-surface-700 bg-surface-0 dark:bg-surface-900 overflow-hidden">
           <button type="button"

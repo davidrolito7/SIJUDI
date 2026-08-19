@@ -12,3 +12,15 @@
 .dark .sede-asignada-3 > td { background-color: color-mix(in srgb, #831843 28%, transparent); }
 .dark .sede-asignada-4 > td { background-color: color-mix(in srgb, #4c1d95 28%, transparent); }
 .dark .sede-asignada-5 > td { background-color: color-mix(in srgb, #164e63 28%, transparent); }
+
+.icono-paisaje {
+    width: 1.25rem;
+    height: 1.25rem;
+    display: block;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}

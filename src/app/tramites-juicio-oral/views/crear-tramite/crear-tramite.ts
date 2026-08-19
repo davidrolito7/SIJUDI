@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild, ElementRef } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
@@ -9,7 +9,8 @@ import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ApiService } from '../../service/api.service';
-import { CatJuzgadoResponse, TramitesElectronicosRecibidosResponse, ValidarCausaResponse } from '../../interface/tramites-juicio-oral.model';
+import { ApiResponse, CatJuzgadoResponse, TramitesElectronicosRecibidosResponse, ValidarCausaResponse } from '../../interface/tramites-juicio-oral.model';
+import { finalize } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Spinner } from '../../../shared/components/spinner/spinner';
@@ -21,26 +22,24 @@ import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm
 import { AvatarModule } from 'primeng/avatar';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { InputMaskModule } from 'primeng/inputmask';
-import { Header } from '../../../shared/components/header/header';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { HttpResponse } from '@angular/common/http';
 import { driver } from 'driver.js';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { ButtonDirective } from 'primeng/button';
+import { TokenService } from '../../../core/auth/service/token.service';
 
 @Component({
   selector: 'app-crear-tramite',
   imports: [
     CommonModule, TableModule, InputTextModule, TagModule, SelectModule, MultiSelectModule, ButtonModule, IconFieldModule, InputIconModule, ReactiveFormsModule,
-    Spinner, TextareaModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, Header, ConfirmDialogModule,
-    PdfDialog,ButtonDirective,
-    Breadcrub
-],
+    Spinner, TextareaModule, ConfirmDialog, AvatarModule, BreadcrumbModule, InputMaskModule, ConfirmDialogModule,
+    ButtonDirective, PdfDialog
+  ],
   templateUrl: './crear-tramite.html',
   styleUrl: './crear-tramite.css',
   providers: [ConfirmationService]
 })
-export class CrearTramite {
+export class CrearTramite implements OnInit {
   readonly maxFileSizeBytes = 10 * 1024 * 1024;
   readonly maxAnexos = 10;
   @ViewChild('anexosInput') anexosInput?: ElementRef<HTMLInputElement>;
@@ -61,6 +60,7 @@ export class CrearTramite {
   mostrarAddDocumentos = signal(false);
   mostrarDocumento = false;
   isAnexosDragOver = false;
+  isDescargandoAcuse = signal(false);
 
 
   //* === OTROS  ===
@@ -74,14 +74,14 @@ export class CrearTramite {
   private readonly confirmationService = inject(ConfirmationService);
   private readonly fb = inject(FormBuilder);
   private readonly sanitizer = inject(DomSanitizer);
-
+  private readonly tokenService = inject(TokenService);
 
 
   loading = false;
   catTipoTramite = [
     { label: 'CAUSA', value: 33 },
     { label: 'CUADERNO ANTECEDENTE', value: 34 },
-   // { label: 'CUADERNO DE EJECUCIÓN', value: 47 },
+    // { label: 'CUADERNO DE EJECUCIÓN', value: 47 },
   ];
 
   constructor() {
@@ -89,7 +89,7 @@ export class CrearTramite {
       idCatTipoTramite: [null, Validators.required],
       numeroExpediente: ['', Validators.required],
       idJuzgado: [{ value: null, disabled: true }, Validators.required],
-      idPantalla: [1]
+      // idPantalla: [1]
     });
     this.documentosForm = this.fb.group({
       observaciones: ['', [Validators.required, Validators.maxLength(450)]]
@@ -101,6 +101,12 @@ export class CrearTramite {
     });
   }
 
+  ngOnInit(): void {
+    if (!this.eresAbogado()) {
+      this.cargarTodosLosJuzgados();
+    }
+  }
+
   // ngAfterViewInit(): void {
   //   // Retrasamos un poco la ejecución para asegurar que la vista esté completamente renderizada.
   //   setTimeout(() => {
@@ -108,29 +114,57 @@ export class CrearTramite {
   //   }, 100);
   // }
 
-  cargarCatalogoJuzgados(idCatTipoTramite: number | null) {
+  cargarCatalogoJuzgados(idCatTipoTramite: number | null): void {
     const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
-    const numeroExpedienteCtrl = this.busquedaForm.get('numeroExpediente');
 
-    this.catJuzgados = [];
-    juzgadoCtrl?.setValue(null, { emitEvent: false });
-    juzgadoCtrl?.disable({ emitEvent: false });
-    numeroExpedienteCtrl?.reset('', { emitEvent: false });
+    this.busquedaForm.get('numeroExpediente')?.reset('', { emitEvent: false });
     this.mostrarAddDocumentos.set(false);
     this.causaValidada = null;
     this.documentosAnexados = [];
 
-    if (idCatTipoTramite == null) return;
+    if (!this.eresAbogado()) {
+      return;
+    }
+
+    this.catJuzgados = [];
+    juzgadoCtrl?.setValue(null, { emitEvent: false });
+    juzgadoCtrl?.disable({ emitEvent: false });
+
+    if (idCatTipoTramite === null) {
+      return;
+    }
 
     this.isLoading = true;
-    this.apiService.getCatJuzgados({ idCatTipoTramite }).subscribe({
-      next: (response: { data: CatJuzgadoResponse[]; }) => {
+    this.apiService.getCatJuzgados(idCatTipoTramite).subscribe({
+      next: (response) => {
         this.catJuzgados = response.data;
         juzgadoCtrl?.enable({ emitEvent: false });
         this.isLoading = false;
       },
       error: (error: unknown) => {
         console.error('Error al cargar juzgados:', error);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  eresAbogado(): boolean {
+    return this.tokenService.getUserFromToken()?.idSistemaPerfil === 10;
+  }
+
+  private cargarTodosLosJuzgados(): void {
+    const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
+
+    this.isLoading = true;
+    this.apiService.getAllCatJuzgados().subscribe({
+      next: (response) => {
+        this.catJuzgados = response.data;
+        juzgadoCtrl?.setValue(null, { emitEvent: false });
+        juzgadoCtrl?.enable({ emitEvent: false });
+        this.isLoading = false;
+      },
+      error: (error: unknown) => {
+        console.error('Error al cargar todos los juzgados:', error);
         this.isLoading = false;
       }
     });
@@ -170,25 +204,9 @@ export class CrearTramite {
           });
         }
       }
-     
+
     );
   }
-
-  loadCatJuzgados() {
-    this.apiService.getCatJuzgados().subscribe(
-      (response: { success: boolean; data: CatJuzgadoResponse[] }) => {
-        if (response.success) {
-          this.catJuzgados = response.data;
-        }
-      },
-      (error: unknown) => {
-        console.error('Error al cargar juzgados:', error);
-      }
-    );
-  }
-
-
-
   onAnexosInputChange(event: Event) {
     const input = event.target as HTMLInputElement | null;
     this.processSelectedFiles(input?.files);
@@ -282,7 +300,7 @@ export class CrearTramite {
     this.confirmationService.confirm({
       key: 'anexo',
       accept: () => this.onEliminarDocumento(index),
-      reject: () => { /* empty */}
+      reject: () => { /* empty */ }
     });
 
   }
@@ -290,7 +308,7 @@ export class CrearTramite {
     this.confirmationService.confirm({
       key: 'promocion',
       accept: () => this.onEnviarTramite(),
-      reject: () => { /* empty */}
+      reject: () => { /* empty */ }
     });
 
   }
@@ -323,17 +341,21 @@ export class CrearTramite {
       formData.append('Archivos', file, file.name);
     });
 
-    this.apiService.postEnviarTramite(formData).subscribe({
-      next: (response: { data: TramitesElectronicosRecibidosResponse }) => {
-        this.isLoading = false;
+    this.apiService.postEnviarTramite(formData)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+      next: (response: ApiResponse<TramitesElectronicosRecibidosResponse>) => {
+        if (!response.success) {
+          return;
+        }
+
         this.tramitesElectronicosRecibidos = response.data;
         this.confirmationService.confirm({
           key: 'success',
-          accept: () => this.resetForms(),
           reject: () => this.resetForms()
         });
       },
-      error: () => (this.isLoading = false),
+      error: (error: unknown) => console.error('Error al enviar el trámite:', error),
     });
   }
   private resetForms(): void {
@@ -342,7 +364,7 @@ export class CrearTramite {
       idCatTipoTramite: null,
       numeroExpediente: '',
       idJuzgado: null,
-      idPantalla: 1
+      //idPantalla: 1
     });
     this.documentosForm.reset();
     this.documentosAnexados = [];
@@ -352,9 +374,13 @@ export class CrearTramite {
   }
   descargarAcuse(): void {
     const id = this.tramitesElectronicosRecibidos?.idTramiteElectronicoRecibido;
-    if (!id) return;
+    if (!id || this.isDescargandoAcuse()) {
+      return;
+    }
 
+    this.isDescargandoAcuse.set(true);
     this.apiService.getAcuseTramite(id)
+      .pipe(finalize(() => this.isDescargandoAcuse.set(false)))
       .subscribe({
         next: (response: HttpResponse<Blob>) => {
           const disposition = response.headers.get('content-disposition') ?? '';
@@ -366,7 +392,7 @@ export class CrearTramite {
           link.href = url;
           link.download = filename;
           link.click();
-          window.URL.revokeObjectURL(url);
+          setTimeout(() => window.URL.revokeObjectURL(url), 100);
         },
         error: () => console.error('Error al descargar el acuse')
       });

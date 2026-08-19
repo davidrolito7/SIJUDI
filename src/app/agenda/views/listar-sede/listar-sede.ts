@@ -56,10 +56,10 @@ export class ListarSede implements OnInit {
 
 
   irANuevaSede() {
-    this.router.navigate(['/agenda/crear-sede']);
+    this.router.navigate(['/agenda/sedes/crear']);
   }
 
    detalleSede(idSede: number) {
-    this.router.navigate(['/agenda/crear-sede'], { state: { idSede } });
+    this.router.navigate(['/agenda/sedes/editar'], { state: { idSede } });
   }
 }
