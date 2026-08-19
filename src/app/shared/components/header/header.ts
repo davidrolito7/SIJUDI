@@ -219,5 +219,11 @@ export class Header implements OnInit, OnDestroy {
     this.pendientes.update(p => p + 1);
     this.notificacionToast.set({ ...nueva });
   }
+
+    eresEmpleado(): boolean {
+    const idSistemaPerfil = this.tokenService.getUserFromToken()?.idSistemaPerfil;
+
+    return ![10,1011,1012].includes(idSistemaPerfil);
+  }
 }
 
