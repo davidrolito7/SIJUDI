@@ -2,11 +2,11 @@ export const environment = {
     production: true,
     //* false para producción
     //* true para pruebas y si eres abogado para que no solicituar llave/auth
-    DEV_SKIP_2FA: true,
+    DEV_SKIP_2FA: false,
     ConstantsService: {
         ruta: 'https://pruebas.tribunaloaxaca.gob.mx/permisos',
         idSistema: 1,
-        //ruta : 'https://localhost:7260'
+        //ruta : 'https://localhost:5164'
     },
 
     urlApiEfirma: 'https://api.tribunaloaxaca.gob.mx/efirma/api/efirma', //este siempre debe apuntar a produccion porque no existe ambiente de pruebas para efirma

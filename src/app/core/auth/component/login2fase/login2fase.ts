@@ -28,6 +28,11 @@ const SISTEMA_ID = 1;
 const AREA_ID = 1;
 const PERFIL_ID = 10;
 const SUBAREA_ID = 1007;
+const PERFIL_POR_TIPO_PERSONA: Record<number, number> = {
+  1: 10,
+  6: 1011,
+  7: 1012,
+};
 
 @Component({
   selector: 'app-login2',
@@ -152,7 +157,7 @@ export class Login2 implements OnInit {
 
   private async routeAuthenticatedUser(idTipoPersona: number | null, nombre: string, foto: string): Promise<void> {
     if (idTipoPersona !== 3) { // diferente de empleado
-      this.loginContextoAutomatico(nombre, foto);
+      this.loginContextoAutomatico(idTipoPersona, nombre, foto);
       return;
     }
 
@@ -167,9 +172,10 @@ export class Login2 implements OnInit {
     }
   }
 
-  private loginContextoAutomatico(nombre: string, foto: string): void {
+  private loginContextoAutomatico(idTipoPersona: number | null, nombre: string, foto: string): void {
     const user = this.tokenService.getUserFromToken();
     const idG = user?.idGeneral ?? 0;
+    const idSistemaPerfil = idTipoPersona ? PERFIL_POR_TIPO_PERSONA[idTipoPersona] ?? PERFIL_ID : PERFIL_ID;
 
     if (!idG) {
       this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'No se pudo obtener el identificador del usuario.', life: 3000 });
@@ -191,7 +197,7 @@ export class Login2 implements OnInit {
             return this.authService.GetPerfiles(idAreaSistemaUsuario).pipe(
               map((r: any) => {
                 const perfiles = r.data ?? [];
-                const perfil = perfiles.find((p: any) => p.idSistemaPerfil === PERFIL_ID);
+                const perfil = perfiles.find((p: any) => p.idSistemaPerfil === idSistemaPerfil);
                 const perfilDesc = perfil?.descripcion ?? '';
 
                 return this.authService.getSubAreas(idAreaSistema, idG).pipe(
@@ -215,7 +221,7 @@ export class Login2 implements OnInit {
         const request = {
           idSistema: SISTEMA_ID,
           idArea: AREA_ID,
-          idSistemaPerfil: PERFIL_ID,
+          idSistemaPerfil,
           idSubArea: SUBAREA_ID,
         };
 
@@ -235,7 +241,7 @@ export class Login2 implements OnInit {
         }
 
         const { idAreaSistemaUsuario, areaName, perfilDesc, subAreaNombre } = result;
-        this.guardarContextoStorage(nombre, foto, idAreaSistemaUsuario, areaName, perfilDesc, subAreaNombre);
+        this.guardarContextoStorage(nombre, foto, idAreaSistemaUsuario, areaName, idSistemaPerfil, perfilDesc, subAreaNombre);
 
         await this.tokenService.setTwoFactorValidated(true);
         await this.tokenService.setPerfilCompleted(true);
@@ -265,13 +271,14 @@ export class Login2 implements OnInit {
     foto: string,
     idAreaSistemaUsuario: number,
     areaName: string,
+    idSistemaPerfil: number,
     perfilDesc: string,
     subAreaNombre: string,
   ): void {
     localStorage.setItem('recordarUsuario', 'false');
 
     sessionStorage.setItem('areaSeleccionada', String(AREA_ID));
-    sessionStorage.setItem('perfilSeleccionado', String(PERFIL_ID));
+    sessionStorage.setItem('perfilSeleccionado', String(idSistemaPerfil));
     sessionStorage.setItem('perfilSeleccionadoDesc', perfilDesc);
     sessionStorage.setItem('idAreaSistemaUsuario', String(idAreaSistemaUsuario));
     sessionStorage.setItem('SubAreaNombre', subAreaNombre);
