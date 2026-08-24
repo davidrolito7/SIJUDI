@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -26,6 +26,12 @@ import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { Header } from "../../../shared/components/header/header";
 import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 import { PantallasService } from '../../../juicio-oral/services/pantallas.service';
+
+type AvisoFooter = {
+  tipo: 'informacion' | 'alerta';
+  mensaje: string;
+};
+
 export const sidebarAnimations = [
   trigger('sidebarWidth', [
     state('expanded', style({ width: '17rem' })),
@@ -64,6 +70,14 @@ export const sidebarAnimations = [
     state('on', style({ transform: 'scaleY(1)' })),
     transition('off <=> on', [animate('180ms ease')]),
   ]),
+
+  trigger('footerNotice', [
+    transition(':enter', [
+      style({ opacity: 1, transform: 'translateX(-100%)' }),
+      animate('20s linear', style({ opacity: 1, transform: 'translateX(100vw)' })),
+    ]),
+  ]),
+
 ];
 
 @Component({
@@ -95,6 +109,7 @@ export class Siderbar {
   private readonly authService = inject(AuthService);
   private readonly menuStore = inject(UserMenuStore);
   private readonly pantallasService = inject(PantallasService);
+  private readonly destroyRef = inject(DestroyRef);
   public readonly drawerService = inject(DrawerService);
 
   visibleDrawer = false;
@@ -108,6 +123,21 @@ export class Siderbar {
   readonly activePantallaRoute = signal<string | null>(null);
   readonly selectedModuloId = signal<number | null>(null);
   readonly expandedModuloIds = signal<number[]>([]);
+  readonly avisoFooterActivo = signal(0);
+  readonly avisosFooter: readonly AvisoFooter[] = [
+    // {
+    //   tipo: 'alerta',
+    //   mensaje: 'La plataforma estará en mantenimiento del 12 al 15 de septiembre.',
+    // },
+    {
+      tipo: 'informacion',
+      mensaje: 'Consulta el estado de tus promociones desde el módulo de Penal Acusatorio .',
+    },
+    {
+      tipo: 'informacion',
+      mensaje: 'Mantén actualizados tus datos de contacto para recibir notificaciones.',
+    },
+  ];
 
   readonly selectedModulo = computed(() =>
     this.modulos().find((m) => m.idSistemaModulo === this.selectedModuloId()) ?? null
@@ -120,6 +150,14 @@ export class Siderbar {
   });
 
   constructor(private contadoresService: ContadoresService) {
+    afterNextRender(() => {
+      const intervalId = window.setInterval(() => {
+        this.avisoFooterActivo.update((indice) => (indice + 1) % this.avisosFooter.length);
+      }, 20000);
+
+      this.destroyRef.onDestroy(() => window.clearInterval(intervalId));
+    });
+
     this.syncSelectedModuloFromRoute();
 
     this.router.events

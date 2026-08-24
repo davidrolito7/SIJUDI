@@ -12,6 +12,8 @@ import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
 import { AuthService } from '../../service/auth.service';
 import { TokenService } from '../../service/token.service';
+import { DatosUsuarioData } from '../../interface/login.interfaces';
+import { GenericResponse } from '../../../../shared/interface/shared.interface';
 import { MessageService } from 'primeng/api';
 import { Spinner } from '../../../../shared/components/spinner/spinner';
 import { environment } from '../../../../../environments/environment';
@@ -124,14 +126,7 @@ export class Login implements OnInit {
       next: async (response) => {
         if (response.success) {
           this.authService.actualizaPerfilSeleccionado('');
-
-          if (environment.DEV_SKIP_2FA) {
-            this.continuarSinTwoFactor();
-          } else {
-            await this.tokenService.setTwoFactorValidated(false);
-            await this.tokenService.setPerfilCompleted(false);
-            this.router.navigate(['login2fase']);
-          }
+          this.evaluarAutenticacion();
         } else {
           this.mensaje.add({
             severity: 'error',
@@ -147,7 +142,7 @@ export class Login implements OnInit {
     });
   }
 
-  private continuarSinTwoFactor(): void {
+  private evaluarAutenticacion(): void {
     this.iniciarCarga();
     const user = this.tokenService.getUserFromToken();
     if (!user?.idGeneral) {
@@ -165,37 +160,16 @@ export class Login implements OnInit {
       finalize(() => this.finalizarCarga())
     ).subscribe({
       next: async (resp) => {
-        const abogado = resp.data?.pD_Abogados?.[0];
-        const idTipoPersona = abogado?.idTipoPersona ?? null;
-        const nombre = (abogado?.nombre ?? '').toString().trim();
-        const foto = (abogado?.foto ?? '').toString().trim();
+        // digitalCert === false => el usuario no tiene certificado digital, se omite el 2FA
+        const digitalCert = resp.data?.mS_UserProfile?.[0]?.digitalCert ?? true;
 
-        sessionStorage.setItem('AbogadoNombre', nombre);
-        sessionStorage.setItem('AbogadoFotoBase64', foto);
-
-        if (idTipoPersona && PERFIL_POR_TIPO_PERSONA[idTipoPersona]) {
+        if (environment.DEV_SKIP_2FA || !digitalCert) {
+          await this.continuarSinTwoFactor(resp, user.idGeneral);
+        } else {
           await this.tokenService.setTwoFactorValidated(false);
           await this.tokenService.setPerfilCompleted(false);
-          this.loginContextoAutomatico(user.idGeneral, idTipoPersona, nombre, foto);
-          return;
+          this.router.navigate(['login2fase']);
         }
-
-        if (idTipoPersona === 3) {
-          await this.tokenService.setTwoFactorValidated(true);
-          await this.tokenService.setPerfilCompleted(false);
-          this.router.navigate(['/perfil']);
-          return;
-        }
-
-        await this.tokenService.setTwoFactorValidated(false);
-        await this.tokenService.setPerfilCompleted(false);
-        this.invalidarSesionIncompleta();
-        this.mensaje.add({
-          severity: 'error',
-          summary: 'Acceso denegado',
-          detail: 'El tipo de persona no tiene un contexto de acceso configurado.',
-          life: 3000,
-        });
       },
       error: () => {
         this.invalidarSesionIncompleta();
@@ -206,6 +180,40 @@ export class Login implements OnInit {
           life: 3000,
         });
       },
+    });
+  }
+
+  private async continuarSinTwoFactor(resp: GenericResponse<DatosUsuarioData>, idGeneral: number): Promise<void> {
+    const abogado = resp.data?.pD_Abogados?.[0];
+    const idTipoPersona = abogado?.idTipoPersona ?? null;
+    const nombre = (abogado?.nombre ?? '').toString().trim();
+    const foto = (abogado?.foto ?? '').toString().trim();
+
+    sessionStorage.setItem('AbogadoNombre', nombre);
+    sessionStorage.setItem('AbogadoFotoBase64', foto);
+
+    if (idTipoPersona && PERFIL_POR_TIPO_PERSONA[idTipoPersona]) {
+      await this.tokenService.setTwoFactorValidated(false);
+      await this.tokenService.setPerfilCompleted(false);
+      this.loginContextoAutomatico(idGeneral, idTipoPersona, nombre, foto);
+      return;
+    }
+
+    if (idTipoPersona === 3) {
+      await this.tokenService.setTwoFactorValidated(true);
+      await this.tokenService.setPerfilCompleted(false);
+      this.router.navigate(['/perfil']);
+      return;
+    }
+
+    await this.tokenService.setTwoFactorValidated(false);
+    await this.tokenService.setPerfilCompleted(false);
+    this.invalidarSesionIncompleta();
+    this.mensaje.add({
+      severity: 'error',
+      summary: 'Acceso denegado',
+      detail: 'El tipo de persona no tiene un contexto de acceso configurado.',
+      life: 3000,
     });
   }
 

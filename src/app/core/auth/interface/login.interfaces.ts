@@ -104,6 +104,11 @@ export interface UsrAbogado {
 
 
 
+export interface DatosUsuarioData {
+  mS_UserProfile: UsrProfile[],
+  pD_Abogados: UsrAbogado[]
+}
+
 export interface twoAccess {
   activo: boolean,
   encodedSecret: string,
