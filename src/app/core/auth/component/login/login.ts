@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, HostListener, ViewChild, ElementRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -109,6 +110,9 @@ export class Login implements OnInit {
   }
 
   validarUsuario() {
+    if (this.isLoading()) {
+      return;
+    }
     if (!this.usuario?.trim()) {
       this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su usuario.', life: 3000 });
       return;
@@ -136,9 +140,55 @@ export class Login implements OnInit {
           });
         }
       },
-      error: () => {
-        this.mensaje.add({ severity: 'info', summary: 'Verifique sus datos e intente nuevamente', detail: 'El usuario o la contraseña son incorrectos.', life: 6000 });
+      error: (err: HttpErrorResponse) => {
+        this.manejarErrorLogin(err);
       },
+    });
+  }
+
+  private manejarErrorLogin(err: HttpErrorResponse): void {
+    if (err.status === 0) {
+      // El navegador no pudo leer la respuesta (falla de red o, más común en este caso,
+      // el 429 lo generó un proxy/rate-limiter cuya respuesta no trae cabeceras CORS).
+      // err.error aquí es un Error de fetch/XHR (p. ej. "Failed to fetch"), no el JSON
+      // del API, así que no se debe mostrar tal cual al usuario.
+      this.mensaje.add({
+        severity: 'warn',
+        summary: 'Intente más tarde',
+        detail: 'Es posible que hayas superado el número de intentos permitidos; espera unos segundos e intenta de nuevo.',
+        life: 6000,
+      });
+      return;
+    }
+
+    const body = err.error as { message?: string; errors?: string[] | null } | null;
+
+    if (err.status === 429) {
+      this.mensaje.add({
+        severity: 'warn',
+        summary: 'Demasiados intentos',
+        detail: body?.message || 'Ha superado el número de intentos permitidos. Intente más tarde.',
+        life: 6000,
+      });
+      return;
+    }
+
+    if (err.status === 401) {
+      const detalle = body?.errors?.[0] || body?.message || 'El usuario o la contraseña son incorrectos.';
+      this.mensaje.add({
+        severity: 'info',
+        summary: 'Verifique sus datos e intente nuevamente',
+        detail: detalle,
+        life: 6000,
+      });
+      return;
+    }
+
+    this.mensaje.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: body?.message || 'Ocurrió un error al iniciar sesión. Intente nuevamente.',
+      life: 6000,
     });
   }
 

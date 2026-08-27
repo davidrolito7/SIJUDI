@@ -189,7 +189,7 @@ constructor(
   get fotoFinal(): string {
       return this.foto
         ? 'data:image/png;base64,' + this.foto
-        : 'assets/img/perfilgenerico.png';
+        : '/profile.png';
     }
 
     resetForm() {

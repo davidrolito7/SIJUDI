@@ -205,7 +205,7 @@ export class Header implements OnInit, OnDestroy {
   }
 
   get abogadoFotoUrl(): string {
-    return this.tokenService.getAbogadoFotoUrl();
+    return this.tokenService.getAbogadoFotoUrl() || '/profile.png';
   }
 
   get areaNombre(): string {
