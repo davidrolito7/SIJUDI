@@ -17,7 +17,6 @@ import { ButtonModule } from 'primeng/button';
 import { AppIcon } from "./icon/app-icon.component";
 import { StyleClassModule } from 'primeng/styleclass';
 import { RippleModule } from 'primeng/ripple';
-import { DrawerService } from '../../../shared/service/drawer.service';
 import { ContadoresService } from '../../../juicio-oral/services/contadores.service';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -110,7 +109,6 @@ export class Siderbar {
   private readonly menuStore = inject(UserMenuStore);
   private readonly pantallasService = inject(PantallasService);
   private readonly destroyRef = inject(DestroyRef);
-  public readonly drawerService = inject(DrawerService);
 
   visibleDrawer = false;
 

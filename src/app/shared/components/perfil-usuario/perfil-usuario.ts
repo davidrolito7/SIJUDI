@@ -8,7 +8,6 @@ import { PerfilUsuarioService } from '../../service/PerfilUsuarioService';
 import { MessageService } from 'primeng/api';
 import { Button } from "primeng/button";
 import { ButtonModule } from 'primeng/button';
-import { TabsModule } from 'primeng/tabs';
 import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
 import { PasswordModule } from 'primeng/password';
 import { TagModule } from 'primeng/tag';
@@ -22,7 +21,7 @@ import { UsrProfile } from '../../../core/auth/interface/login.interfaces';
 @Component({
   selector: 'app-perfil-usuario',
 
-  imports: [ DatePipe, ReactiveFormsModule, FormsModule, ToastModule, Header, Button, ButtonModule, TabsModule, FileUploadModule, PasswordModule, TagModule, Spinner],
+  imports: [ DatePipe, ReactiveFormsModule, FormsModule, ToastModule, Header, Button, ButtonModule, FileUploadModule, PasswordModule, TagModule, Spinner],
   templateUrl: './perfil-usuario.html',
   styleUrl: './perfil-usuario.css',
   providers: [MessageService]
@@ -46,7 +45,6 @@ constructor(
   archivoSeleccionado: File | null = null;
   errorMessage: string = '';
   isLoading = false;
-  value: number = 0;
 
   ngOnInit(): void {
     this.formularioFirma = this.fb.group({

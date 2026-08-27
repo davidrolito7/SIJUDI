@@ -1,92 +1,4 @@
-<!-- ===== DRAWER MÓVIL ===== -->
-<p-drawer [(visible)]="drawerService.visible" (visibleChange)="drawerService.visible.set($event)"
-    styleClass="lg:hidden !w-72 z-999">
-    <ng-template #headless>
-        <div class="flex flex-col h-full bg-surface-0 dark:bg-surface-950">
-            <!-- Header del drawer -->
-            <div class="flex items-center justify-between px-4 pt-4 pb-3 border-b border-surface shrink-0">
-                <div class="flex items-center gap-2 min-w-0">
-                    <!-- Logo -->
-                    <img src="Sijudi-01.png" alt="SIJUDI" class="w-9 h-9 object-contain shrink-0" />
-
-                    <div class="flex flex-col min-w-0">
-                        <span class="text-sm font-semibold leading-5 text-surface-900 dark:text-surface-0 truncate">
-                            SIJUDI
-                        </span>
-
-                        <span class="text-[11px] font-medium leading-4 text-surface-500 dark:text-surface-400 truncate">
-                            Justicia más cerca de ti
-                        </span>
-                    </div>
-                </div>
-
-                <button type="button"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-surface-500 dark:text-surface-300"
-                    (click)="drawerService.close()" aria-label="Cerrar menú">
-                    <i class="pi pi-times text-xs"></i>
-                </button>
-            </div>
-
-            <!-- Contenido scrolleable -->
-            <div class="flex-1 overflow-y-auto py-2">
-                <ul class="list-none p-0 m-0">
-                    @for (mod of modulos(); track mod.idSistemaModulo ?? $index) {
-                    <li>
-                        <!-- Cabecera del módulo (colapsable) -->
-                        <div pRipple pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-slidedown"
-                            leaveToClass="hidden" leaveActiveClass="animate-slideup"
-                            class="px-4 py-3 flex items-center justify-between cursor-pointer transition-colors text-surface-600 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-900 p-ripple">
-                            <div class="flex items-center gap-2 min-w-0">
-                                <img class="w-5 h-5 object-contain shrink-0" [src]="svgSrcForModulo(mod)" alt=""
-                                    aria-hidden="true" />
-
-                                <span class="font-semibold text-xs uppercase tracking-wide truncate">
-                                    {{ mod.nombre }}
-                                </span>
-                            </div>
-
-                            <i
-                                class="pi pi-chevron-down text-[10px] text-surface-400 dark:text-surface-500 transition-transform duration-300 shrink-0"></i>
-                        </div>
-
-                        <!-- Pantallas del módulo -->
-                        <ul class="list-none p-0 m-0 hidden overflow-y-hidden transition-all duration-400 ease-in-out">
-                            @for (p of pantallasDeModulo(mod); track p.idPantalla ?? $index) {
-                            <li class="px-3">
-                                <a pRipple
-                                    class="flex items-center gap-2 cursor-pointer px-5 py-2.5 rounded-lg text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-900 duration-150 transition-colors p-ripple"
-                                    [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis"
-                                    (click)="drawerService.close()">
-                                    <img class="w-4 h-4 object-contain shrink-0" [src]="svgSrcForPantalla(p)" alt=""
-                                        aria-hidden="true" />
-
-                                    <span class="font-medium text-xs uppercase tracking-wide truncate">
-                                        {{ p.nombre }}
-                                    </span>
-                                </a>
-                            </li>
-                            }
-                        </ul>
-                    </li>
-                    }
-                </ul>
-            </div>
-
-            <!-- Footer con configuración -->
-            <div
-                class="shrink-0 border-t border-surface hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors cursor-pointer">
-                <button type="button" class="w-full flex items-center text-surface-500 dark:text-surface-400"
-                    aria-label="Configuración">
-                    <i class="pi pi-cog text-sm"></i>
-
-                    <span class="text-sm font-medium"> Configuración </span>
-                </button>
-            </div>
-        </div>
-    </ng-template>
-</p-drawer>
-
-<div class="flex h-screen overflow-hidden bg-surface-50 dark:bg-[#0C0C0C]">
+<div class="flex min-h-screen lg:h-screen lg:overflow-hidden bg-surface-50 dark:bg-[#0C0C0C]">
     <!-- SIDEBAR DE ESCRITORIO -->
     <div class="hidden h-screen shrink-0 lg:flex sticky top-0 z-50">
         <aside [@sidebarWidth]="showMenu() ? 'expanded' : 'collapsed'"
@@ -252,33 +164,33 @@
 
     <!-- CONTENIDO PRINCIPAL -->
     <main
-        class="min-w-0 flex flex-1 flex-col overflow-hidden
+        class="min-w-0 flex flex-1 flex-col lg:overflow-hidden
            bg-surface-50 text-surface-900
            dark:bg-[#0C0C0C] dark:text-[#F8FAFC]
 
            bg-[repeating-linear-gradient(135deg,transparent_0px,transparent_9px,rgba(120,120,120,0.055)_9px,rgba(120,120,120,0.055)_10px)]
 
            dark:bg-[repeating-linear-gradient(135deg,transparent_0px,transparent_9px,rgba(255,255,255,0.025)_9px,rgba(255,255,255,0.025)_10px)]">
-            <!-- HEADER Y BREADCRUMB -->
-            <div class="sticky top-0 z-50
+        <!-- HEADER Y BREADCRUMB -->
+        <div class="sticky top-0 z-50
            bg-white/95 backdrop-blur-sm
            dark:bg-[#0C0C0C]/95">
-                <app-header></app-header>
+            <app-header></app-header>
 
-                <div class="border-t border-surface-100
+            <div class="border-t border-surface-100
                px-4 py-1
                dark:border-surface-800">
-                    <app-breadcrub></app-breadcrub>
-                </div>
+                <app-breadcrub></app-breadcrub>
             </div>
+        </div>
 
-            <!-- CONTENIDO DE LAS PANTALLAS -->
-            <div class="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4">
-                <router-outlet></router-outlet>
-            </div>
+        <!-- CONTENIDO DE LAS PANTALLAS -->
+        <div class="min-h-0 flex-1 lg:overflow-y-auto overflow-x-hidden px-4 pb-4">
+            <router-outlet></router-outlet>
+        </div>
 
-            <!-- FOOTER -->
-<footer class="relative flex shrink-0 items-center overflow-hidden
+        <!-- FOOTER -->
+        <footer class="relative flex shrink-0 items-center overflow-hidden
                border-t border-surface-200
                bg-white
                px-3 py-2
@@ -288,72 +200,65 @@
                dark:bg-[#0C0C0C]
                dark:text-[#AEB8C4]">
 
-    <div class="footer-notice" role="status" aria-live="polite">
-        @for (aviso of avisosFooter; track aviso.mensaje; let indice = $index) {
-            @if (avisoFooterActivo() === indice) {
-                <div
-                    [@footerNotice]
-                    class="footer-notice__ticker"
+            <div class="footer-notice" role="status" aria-live="polite">
+                @for (aviso of avisosFooter; track aviso.mensaje; let indice = $index) {
+                @if (avisoFooterActivo() === indice) {
+                <div [@footerNotice] class="footer-notice__ticker"
                     [class.footer-notice--alert]="aviso.tipo === 'alerta'"
                     [class.footer-notice--info]="aviso.tipo === 'informacion'">
 
-                    <i
-                        [ngClass]="aviso.tipo === 'alerta'
+                    <i [ngClass]="aviso.tipo === 'alerta'
                             ? 'pi pi-exclamation-triangle'
-                            : 'pi pi-info-circle'"
-                        class="footer-notice__icon"
-                        aria-hidden="true">
+                            : 'pi pi-info-circle'" class="footer-notice__icon" aria-hidden="true">
                     </i>
 
                     <span class="footer-notice__message">
                         {{ aviso.mensaje }}
                     </span>
                 </div>
-            }
-        }
-    </div>
+                }
+                }
+            </div>
 
-    <div class="relative z-10 ml-auto flex shrink-0 items-center gap-3
+            <div class="relative z-10 ml-auto flex shrink-0 items-center gap-3
                 bg-white pl-4
                 sm:gap-4
                 dark:bg-[#0C0C0C]">
 
-        <span class="whitespace-nowrap leading-tight">
-            © 2026 Poder Judicial del Estado de Oaxaca
-        </span>
+                <span class="whitespace-nowrap leading-tight">
+                    © 2026 Poder Judicial del Estado de Oaxaca
+                </span>
 
-        <a
-            href="#"
-            class="whitespace-nowrap transition-colors hover:text-primary
+                <a href="#" class="whitespace-nowrap transition-colors hover:text-primary
                    dark:hover:text-[#F8FAFC]">
-            Términos y condiciones
-        </a>
+                    Términos y condiciones
+                </a>
 
-                    <!-- FACEBOOK -->
-                    <a href="#" aria-label="Facebook" class="transition-colors hover:text-primary
+                <!-- FACEBOOK -->
+                <a href="#" aria-label="Facebook" class="transition-colors hover:text-primary
                    dark:hover:text-[#F8FAFC]">
 
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 fill-current sm:h-4 sm:w-4"
-                            viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 fill-current sm:h-4 sm:w-4"
+                        viewBox="0 0 24 24">
 
-                            <path
-                                d="M22.676 0H1.324C.593 0 0 .593 0 1.324v21.352C0 23.408.593 24 1.324 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24h-1.918c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.592 1.323-1.324V1.324C24 .593 23.408 0 22.676 0" />
-                        </svg>
-                    </a>
+                        <path
+                            d="M22.676 0H1.324C.593 0 0 .593 0 1.324v21.352C0 23.408.593 24 1.324 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24h-1.918c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.592 1.323-1.324V1.324C24 .593 23.408 0 22.676 0" />
+                    </svg>
+                </a>
 
-                    <!-- TWITTER / X -->
-                    <a href="#" aria-label="Twitter" class="transition-colors hover:text-primary
+                <!-- TWITTER / X -->
+                <a href="#" aria-label="Twitter" class="transition-colors hover:text-primary
                    dark:hover:text-[#F8FAFC]">
 
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 fill-current sm:h-4 sm:w-4"
-                            viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 fill-current sm:h-4 sm:w-4"
+                        viewBox="0 0 24 24">
 
-                            <path
-                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.629L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                        </svg>
-                    </a>
-                </div>
+                        <path
+                            d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.629L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                </a>
+            </div>
 
-            </footer>
+        </footer>
     </main>
 </div>
