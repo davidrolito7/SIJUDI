@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { Router } from '@angular/router';
+import { TramitesBusquedaStateService } from '../../../tramites-juicio-oral/service/tramites-busqueda-state.service';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HMAC-SHA256 con Web Crypto API
@@ -77,6 +78,7 @@ export class TokenService {
   private readonly PANTALLAS_KEY = 'pantallas_usuario';
 
   private readonly router = inject(Router);
+  private readonly tramitesBusquedaState = inject(TramitesBusquedaStateService);
 
   private sessionExpiredSubject = new BehaviorSubject<boolean>(false);
   sessionExpired$ = this.sessionExpiredSubject.asObservable();
@@ -280,6 +282,8 @@ export class TokenService {
   }
   
   private limpiarDatosSesion(): void {
+    this.tramitesBusquedaState.limpiar();
+
     const recordar = localStorage.getItem('recordarUsuario') === 'true';
     const keys = [
       'AbogadoNombre',

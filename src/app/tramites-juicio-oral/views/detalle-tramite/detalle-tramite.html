@@ -1,130 +1,164 @@
 <app-spinner [isLoading]="isLoading()" />
 
+<div class="relative border border-surface-200 bg-white p-5 mt-4 dark:border-surface-800 dark:bg-surface-900">
+  <!-- Esquinas decorativas -->
+  <span
+    class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200">
+  </span>
 
-<div class="lg:sticky top-0 z-50 flex flex-col">
+  <!-- Encabezado -->
+  <div class="mb-5">
+    <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+      Detalle de trámite electrónico #{{ detalleTramiteElectronicoRecibido?.folio }}
+    </h1>
 
-    <!-- HEADER -->
-        <!-- <app-header></app-header> -->
+    <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+      Consulta los datos generales del trámite y los archivos anexos enviados.
+    </p>
+  </div>
 
-
-    <!-- DETALLE -->
-    <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl">
-
-        <div class="flex items-start flex-col md:flex-row justify-between">
-            <h1 class="font-medium text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0 p-4">
-                Detalle de trámite electrónico #{{detalleTramiteElectronicoRecibido?.folio}}
-            </h1>
-        </div>
-
-        <!-- Sección: Datos generales -->
+  <div class="flex flex-col gap-4">
+    <!-- DATOS GENERALES -->
+    <div class="relative border p-4 border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-950/30">
+      <div class="flex items-start gap-3">
         <div
-            class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 transition delay-100 duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.01]">
-            <span class="flex items-center">
-                <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                    height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd"
-                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm9.408-5.5a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2h-.01ZM10 10a1 1 0 1 0 0 2h1v3h-1a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2h-1v-4a1 1 0 0 0-1-1h-2Z"
-                        clip-rule="evenodd" />
-                </svg>
-                Datos generales
+          class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+          <i class="pi pi-info-circle text-sm text-surface-800 dark:text-surface-100"></i>
+        </div>
+
+        <div class="min-w-0">
+          <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
+            Datos generales
+          </h2>
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+            Información general del trámite electrónico recibido.
+          </p>
+        </div>
+      </div>
+
+      <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
+
+      @if (detalleTramiteElectronicoRecibido) {
+      <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wide text-surface-500 dark:text-surface-400">Folio de
+            trámite</p>
+          <p class="mt-1 text-sm font-medium text-surface-800 dark:text-surface-100">
+            {{ detalleTramiteElectronicoRecibido.folio }}</p>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wide text-surface-500 dark:text-surface-400">Fecha de
+            envío</p>
+          <p class="mt-1 text-sm font-medium text-surface-800 dark:text-surface-100">
+            {{ detalleTramiteElectronicoRecibido.fechaEnvio | date:'yyyy-MM-dd HH:mm' }} h</p>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wide text-surface-500 dark:text-surface-400">Cantidad de
+            anexos</p>
+          <p class="mt-1 text-sm font-medium text-surface-800 dark:text-surface-100">
+            {{ detalleTramiteElectronicoRecibido.observaciones }}</p>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wide text-surface-500 dark:text-surface-400">Estatus</p>
+          <p class="mt-1">
+            <p-tag [severity]="detalleTramiteElectronicoRecibido.folioRecepcionJuz ? 'success' : 'info'"
+              [value]="detalleTramiteElectronicoRecibido.folioRecepcionJuz ? 'Recibido en juzgado' : 'Enviando'" />
+          </p>
+        </div>
+
+        @if (detalleTramiteElectronicoRecibido.folioRecepcionJuz) {
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wide text-surface-500 dark:text-surface-400">Folio de
+            recepción en juzgado</p>
+          <p class="mt-1 text-sm font-medium text-surface-800 dark:text-surface-100">
+            <span class="bg-yellow-200 px-1 rounded-sm text-black">
+              {{ detalleTramiteElectronicoRecibido.folioRecepcionJuz }}
             </span>
+          </p>
         </div>
 
-        <div class="p-5 w-full">
-            @if (detalleTramiteElectronicoRecibido) {
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <div class="flex flex-col space-y-2">
-                    <p class="text-surface-600  dark:text-surface-200"><b>Folio de trámite: </b>
-                        {{detalleTramiteElectronicoRecibido.folio}}
-                    </p>
-                    <p class="text-surface-600 dark:text-surface-200">
-                        <b>Fecha de envío:</b>
-
-                        {{ detalleTramiteElectronicoRecibido.fechaEnvio | date:'yyyy-MM-dd HH:mm' }} h
-                    </p>
-                    @if(detalleTramiteElectronicoRecibido.folioRecepcionJuz){
-                    <p class="text-surface-600 dark:text-surface-200"><b>Folio de recepción en juzgado:</b>
-                        <span class="bg-yellow-200 px-1  rounded-sm text-black">
-
-                            {{ detalleTramiteElectronicoRecibido.folioRecepcionJuz }}
-                        </span>
-                    </p>
-                    <p class="text-surface-600 dark:text-surface-200 "><b>Fecha de recepción en juzgado:</b>
-                        <span class="bg-blue-200  rounded-sm text-black">
-
-                            {{ detalleTramiteElectronicoRecibido.fechaHoraRec | date:'yyyy-MM-dd HH:mm' }} h
-                        </span>
-                    </p>
-                    }
-
-                </div>
-                <div class="flex flex-col space-y-2">
-                    <p class="text-surface-600 dark:text-surface-200"><b>Cantidad de anexos: </b>
-                        {{detalleTramiteElectronicoRecibido.observaciones}}
-                    </p>
-                    <p class="text-surface-600 dark:text-surface-200 flex gap-2"><b>Estatus:</b>
-                        <p-tag [severity]="detalleTramiteElectronicoRecibido.folioRecepcionJuz ? 'success' : 'info'"
-                            [value]="detalleTramiteElectronicoRecibido.folioRecepcionJuz ? 'Recibido en juzgado' : 'Enviando'" />
-                    </p>
-
-                </div>
-
-            </div>
-            }
-        </div>
-
-        <div
-            class="flex items-center justify-between w-full p-4 bg-surface-200 dark:bg-surface-800 font-medium text-surface-600 dark:text-surface-0 transition delay-100 duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.01]">
-            <span class="flex items-center">
-                <svg class="w-5 h-5 mr-2 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                    height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M6 16v-3h.375a.626.626 0 0 1 .625.626v1.749a.626.626 0 0 1-.626.625H6Zm6-2.5a.5.5 0 1 1 1 0v2a.5.5 0 0 1-1 0v-2Z" />
-                    <path fill-rule="evenodd"
-                        d="M11 7V2h7a2 2 0 0 1 2 2v5h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2H3a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h6a2 2 0 0 0 2-2Zm7.683 6.006 1.335-.024-.037-2-1.327.024a2.647 2.647 0 0 0-2.636 2.647v1.706a2.647 2.647 0 0 0 2.647 2.647H20v-2h-1.335a.647.647 0 0 1-.647-.647v-1.706a.647.647 0 0 1 .647-.647h.018ZM5 11a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.376A2.626 2.626 0 0 0 9 15.375v-1.75A2.626 2.626 0 0 0 6.375 11H5Zm7.5 0a2.5 2.5 0 0 0-2.5 2.5v2a2.5 2.5 0 0 0 5 0v-2a2.5 2.5 0 0 0-2.5-2.5Z"
-                        clip-rule="evenodd" />
-                    <path d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Z" />
-                </svg>
-                Anexos
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wide text-surface-500 dark:text-surface-400">Fecha de
+            recepción en juzgado</p>
+          <p class="mt-1 text-sm font-medium text-surface-800 dark:text-surface-100">
+            <span class="bg-blue-200 px-1 rounded-sm text-black">
+              {{ detalleTramiteElectronicoRecibido.fechaHoraRec | date:'yyyy-MM-dd HH:mm' }} h
             </span>
+          </p>
         </div>
-
-        <div class="p-3">
-            <p-table stripedRows [value]="detalleTramiteElectronicoRecibido?.archivos ?? []"
-                [tableStyle]="{ 'min-width': '50rem' }">
-                <ng-template #header>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Activo</th>
-                        <th>Acciones</th>
-                    </tr>
-                </ng-template>
-                <ng-template #body let-archivo>
-                    <tr>
-                        <td class="font-semibold">
-                            {{ archivo.nombreArchivo }}
-                        </td>
-                        <td>
-                            <p-tag [severity]="archivo.activo ? 'info' : 'warn'"
-                                [value]="archivo.activo ? 'Activo' : 'Inactivo'" />
-                        </td>
-
-                        <td>
-                            <p-button icon="pi pi-file-pdf" [rounded]="true" [raised]="true" severity="success"
-                                (click)="openModal(archivo.referencia)" pTooltip="Ver PDF" tooltipPosition="top" />
-                        </td>
-                    </tr>
-                </ng-template>
-                <ng-template #emptymessage>
-                    <tr>
-                        <td colspan="4" class="text-center p-4">No hay anexos registrados.</td>
-                    </tr>
-                </ng-template>
-            </p-table>
-            <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-            </app-pdf-dialog>
-        </div>
-
+        }
+      </div>
+      }
     </div>
 
+    <!-- ANEXOS -->
+    <div class="relative border p-4 border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-950/30">
+      <div class="flex items-start gap-3">
+        <div
+          class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+          <i class="pi pi-paperclip text-sm text-surface-800 dark:text-surface-100"></i>
+        </div>
+
+        <div class="min-w-0">
+          <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
+            Anexos
+          </h2>
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+            Archivos adjuntos enviados con el trámite.
+          </p>
+        </div>
+      </div>
+
+      <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
+
+      <div class="border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-900">
+        <p-table stripedRows [value]="detalleTramiteElectronicoRecibido?.archivos ?? []"
+          [tableStyle]="{ 'min-width': '50rem' }">
+          <ng-template #header>
+            <tr>
+              <th>Nombre</th>
+              <th>Activo</th>
+              <th>Acciones</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-archivo>
+            <tr>
+              <td class="font-semibold">
+                {{ archivo.nombreArchivo }}
+              </td>
+              <td>
+                <p-tag [severity]="archivo.activo ? 'info' : 'warn'"
+                  [value]="archivo.activo ? 'Activo' : 'Inactivo'" />
+              </td>
+
+              <td>
+                <p-button icon="pi pi-file-pdf" [rounded]="true" [raised]="true" severity="success"
+                  (click)="openModal(archivo.referencia)" pTooltip="Ver PDF" tooltipPosition="top" />
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="4" class="text-center p-4">No hay anexos registrados.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
+      </app-pdf-dialog>
+    </div>
+  </div>
 </div>

@@ -23,8 +23,8 @@ export const environment = {
     urlApiJuicioOral: 'https://oficialiavirtual.tribunaloaxaca.gob.mx/api',
 
     //* api juicio oral penal 0.o
-    urlApiJuicioOralPenal: 'https://pruebas.tribunaloaxaca.gob.mx/ApiJop/api/PromocionesJuicioOral',
-    //urlApiJuicioOralPenal:'http://localhost:5041/api/PromocionesJuicioOral',
+   // urlApiJuicioOralPenal: 'https://pruebas.tribunaloaxaca.gob.mx/ApiJop/api/PromocionesJuicioOral',
+    urlApiJuicioOralPenal:'http://localhost:5041/api/PromocionesJuicioOral',
 
     //* api notificaciones en tiempo real
     // urlApiNotificaciones: 'http://localhost:3000',

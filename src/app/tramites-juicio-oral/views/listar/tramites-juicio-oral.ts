@@ -19,7 +19,7 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { Router } from '@angular/router';
-import { HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { TramitesBusquedaState, TramitesBusquedaStateService } from '../../service/tramites-busqueda-state.service';
 import { TokenService } from '../../../core/auth/service/token.service';
 import { finalize } from 'rxjs';
@@ -49,6 +49,7 @@ export class TramitesJuicioOral implements OnInit {
   private readonly router = inject(Router);
   private readonly busquedaState = inject(TramitesBusquedaStateService);
   private readonly tokenService = inject(TokenService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   catTipoTramite = [
     { label: 'CAUSA', value: 33 },
@@ -239,13 +240,17 @@ export class TramitesJuicioOral implements OnInit {
           this.guardarEstadoActual();
         }
       },
-      (error: unknown) => {
+      (error: HttpErrorResponse) => {
         this.tramitesElectronicosRecibidos = [];
         this.mostrarTramites.set(false);
         this.guardarEstadoActual();
-        console.error('Error al buscar trÃ¡mites electrÃ³nicos:', error);
+        this.mostrarErrorBusqueda(error);
       }
     );
+  }
+
+  private mostrarErrorBusqueda(_err: HttpErrorResponse): void {
+    this.confirmationService.confirm({ key: 'info' });
   }
 
   detalle(idTramiteElectronicoRecibido: number) {
