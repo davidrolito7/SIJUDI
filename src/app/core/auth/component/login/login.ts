@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, HostListener, ViewChild, ElementRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -12,6 +13,8 @@ import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
 import { AuthService } from '../../service/auth.service';
 import { TokenService } from '../../service/token.service';
+import { DatosUsuarioData } from '../../interface/login.interfaces';
+import { GenericResponse } from '../../../../shared/interface/shared.interface';
 import { MessageService } from 'primeng/api';
 import { Spinner } from '../../../../shared/components/spinner/spinner';
 import { environment } from '../../../../../environments/environment';
@@ -107,6 +110,9 @@ export class Login implements OnInit {
   }
 
   validarUsuario() {
+    if (this.isLoading()) {
+      return;
+    }
     if (!this.usuario?.trim()) {
       this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su usuario.', life: 3000 });
       return;
@@ -124,14 +130,7 @@ export class Login implements OnInit {
       next: async (response) => {
         if (response.success) {
           this.authService.actualizaPerfilSeleccionado('');
-
-          if (environment.DEV_SKIP_2FA) {
-            this.continuarSinTwoFactor();
-          } else {
-            await this.tokenService.setTwoFactorValidated(false);
-            await this.tokenService.setPerfilCompleted(false);
-            this.router.navigate(['login2fase']);
-          }
+          this.evaluarAutenticacion();
         } else {
           this.mensaje.add({
             severity: 'error',
@@ -141,13 +140,59 @@ export class Login implements OnInit {
           });
         }
       },
-      error: () => {
-        this.mensaje.add({ severity: 'info', summary: 'Verifique sus datos e intente nuevamente', detail: 'El usuario o la contraseña son incorrectos.', life: 6000 });
+      error: (err: HttpErrorResponse) => {
+        this.manejarErrorLogin(err);
       },
     });
   }
 
-  private continuarSinTwoFactor(): void {
+  private manejarErrorLogin(err: HttpErrorResponse): void {
+    if (err.status === 0) {
+      // El navegador no pudo leer la respuesta (falla de red o, más común en este caso,
+      // el 429 lo generó un proxy/rate-limiter cuya respuesta no trae cabeceras CORS).
+      // err.error aquí es un Error de fetch/XHR (p. ej. "Failed to fetch"), no el JSON
+      // del API, así que no se debe mostrar tal cual al usuario.
+      this.mensaje.add({
+        severity: 'warn',
+        summary: 'Intente más tarde',
+        detail: 'Es posible que hayas superado el número de intentos permitidos; espera unos segundos e intenta de nuevo.',
+        life: 6000,
+      });
+      return;
+    }
+
+    const body = err.error as { message?: string; errors?: string[] | null } | null;
+
+    if (err.status === 429) {
+      this.mensaje.add({
+        severity: 'warn',
+        summary: 'Demasiados intentos',
+        detail: body?.message || 'Ha superado el número de intentos permitidos. Intente más tarde.',
+        life: 6000,
+      });
+      return;
+    }
+
+    if (err.status === 401) {
+      const detalle = body?.errors?.[0] || body?.message || 'El usuario o la contraseña son incorrectos.';
+      this.mensaje.add({
+        severity: 'info',
+        summary: 'Verifique sus datos e intente nuevamente',
+        detail: detalle,
+        life: 6000,
+      });
+      return;
+    }
+
+    this.mensaje.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: body?.message || 'Ocurrió un error al iniciar sesión. Intente nuevamente.',
+      life: 6000,
+    });
+  }
+
+  private evaluarAutenticacion(): void {
     this.iniciarCarga();
     const user = this.tokenService.getUserFromToken();
     if (!user?.idGeneral) {
@@ -165,37 +210,16 @@ export class Login implements OnInit {
       finalize(() => this.finalizarCarga())
     ).subscribe({
       next: async (resp) => {
-        const abogado = resp.data?.pD_Abogados?.[0];
-        const idTipoPersona = abogado?.idTipoPersona ?? null;
-        const nombre = (abogado?.nombre ?? '').toString().trim();
-        const foto = (abogado?.foto ?? '').toString().trim();
+        // digitalCert === false => el usuario no tiene certificado digital, se omite el 2FA
+        const digitalCert = resp.data?.mS_UserProfile?.[0]?.digitalCert ?? true;
 
-        sessionStorage.setItem('AbogadoNombre', nombre);
-        sessionStorage.setItem('AbogadoFotoBase64', foto);
-
-        if (idTipoPersona && PERFIL_POR_TIPO_PERSONA[idTipoPersona]) {
+        if (environment.DEV_SKIP_2FA || !digitalCert) {
+          await this.continuarSinTwoFactor(resp, user.idGeneral);
+        } else {
           await this.tokenService.setTwoFactorValidated(false);
           await this.tokenService.setPerfilCompleted(false);
-          this.loginContextoAutomatico(user.idGeneral, idTipoPersona, nombre, foto);
-          return;
+          this.router.navigate(['login2fase']);
         }
-
-        if (idTipoPersona === 3) {
-          await this.tokenService.setTwoFactorValidated(true);
-          await this.tokenService.setPerfilCompleted(false);
-          this.router.navigate(['/perfil']);
-          return;
-        }
-
-        await this.tokenService.setTwoFactorValidated(false);
-        await this.tokenService.setPerfilCompleted(false);
-        this.invalidarSesionIncompleta();
-        this.mensaje.add({
-          severity: 'error',
-          summary: 'Acceso denegado',
-          detail: 'El tipo de persona no tiene un contexto de acceso configurado.',
-          life: 3000,
-        });
       },
       error: () => {
         this.invalidarSesionIncompleta();
@@ -206,6 +230,40 @@ export class Login implements OnInit {
           life: 3000,
         });
       },
+    });
+  }
+
+  private async continuarSinTwoFactor(resp: GenericResponse<DatosUsuarioData>, idGeneral: number): Promise<void> {
+    const abogado = resp.data?.pD_Abogados?.[0];
+    const idTipoPersona = abogado?.idTipoPersona ?? null;
+    const nombre = (abogado?.nombre ?? '').toString().trim();
+    const foto = (abogado?.foto ?? '').toString().trim();
+
+    sessionStorage.setItem('AbogadoNombre', nombre);
+    sessionStorage.setItem('AbogadoFotoBase64', foto);
+
+    if (idTipoPersona && PERFIL_POR_TIPO_PERSONA[idTipoPersona]) {
+      await this.tokenService.setTwoFactorValidated(false);
+      await this.tokenService.setPerfilCompleted(false);
+      this.loginContextoAutomatico(idGeneral, idTipoPersona, nombre, foto);
+      return;
+    }
+
+    if (idTipoPersona === 3) {
+      await this.tokenService.setTwoFactorValidated(true);
+      await this.tokenService.setPerfilCompleted(false);
+      this.router.navigate(['/perfil']);
+      return;
+    }
+
+    await this.tokenService.setTwoFactorValidated(false);
+    await this.tokenService.setPerfilCompleted(false);
+    this.invalidarSesionIncompleta();
+    this.mensaje.add({
+      severity: 'error',
+      summary: 'Acceso denegado',
+      detail: 'El tipo de persona no tiene un contexto de acceso configurado.',
+      life: 3000,
     });
   }
 

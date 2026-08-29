@@ -2,19 +2,23 @@ import { DOCUMENT } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { Router } from '@angular/router';
-import { finalize, Subscription } from 'rxjs';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { filter, finalize, Subscription } from 'rxjs';
 import { AvatarModule } from 'primeng/avatar';
 import { DrawerModule } from 'primeng/drawer';
 import { Button } from 'primeng/button';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
+import { StyleClassModule } from 'primeng/styleclass';
+import { RippleModule } from 'primeng/ripple';
 import { TokenService } from '../../../core/auth/service/token.service';
 import { AuthService } from '../../../core/auth/service/auth.service';
-import { DrawerService } from '../../service/drawer.service';
 import { NotificacionesService } from '../../services/notificaciones.service';
 import { NotificacionResponse } from '../../interface/shared.interface';
 import { NotificacionToastComponent } from '../notificacion-toast/notificacion-toast';
+import { UserMenuStore } from '../../../core/layout/siderbar/user-menu.store';
+import { svgSrcForPantalla, svgSrcForModulo } from '../../../core/layout/siderbar/icon/menu-icons.map';
+import { ModulosUsuario } from '../../../core/auth/interface/login.interfaces';
 
 @Component({
   selector: 'app-header',
@@ -27,6 +31,10 @@ import { NotificacionToastComponent } from '../notificacion-toast/notificacion-t
     BadgeModule,
     OverlayBadgeModule,
     NotificacionToastComponent,
+    RouterLink,
+    RouterLinkActive,
+    StyleClassModule,
+    RippleModule,
   ],
   templateUrl: './header.html',
   styleUrl: './header.css',
@@ -40,8 +48,9 @@ import { NotificacionToastComponent } from '../notificacion-toast/notificacion-t
   ]
 })
 export class Header implements OnInit, OnDestroy {
-  visibleDrawer = false;
-  visibleNotificaciones = false;
+  readonly visibleDrawer = signal(false);
+  readonly visibleNotificaciones = signal(false);
+  readonly visibleMenuDrawer = signal(false);
   readonly temaOscuro = signal(false);
   readonly temaIcono = computed(() => this.temaOscuro() ? 'pi pi-sun' : 'pi pi-moon');
   readonly temaAriaLabel = computed(() => this.temaOscuro() ? 'Activar modo claro' : 'Activar modo oscuro');
@@ -52,14 +61,52 @@ export class Header implements OnInit, OnDestroy {
   cargandoNotificaciones = signal(false);
   drawerMobileTab: 'perfil' | 'notificaciones' = 'perfil';
 
+  readonly svgSrcForPantalla = svgSrcForPantalla;
+  readonly svgSrcForModulo = svgSrcForModulo;
+
   private socketSub?: Subscription;
+  private navigationSub?: Subscription;
   private readonly tokenService = inject(TokenService);
   private readonly notificacionesService = inject(NotificacionesService);
   private readonly authService = inject(AuthService);
-  readonly drawerService = inject(DrawerService);
+  private readonly menuStore = inject(UserMenuStore);
+  readonly modulos = this.menuStore.modulos;
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   private readonly marcandoLeida = new Set<number>();
+
+  pantallasDeModulo(mod: ModulosUsuario) {
+    return (mod.pantallas ?? []).filter((p) => p.visibleMenu);
+  }
+
+  closeMenuDrawer(): void {
+    this.visibleMenuDrawer.set(false);
+    this.scheduleOverlayMaskCleanup();
+  }
+
+  closeNotificacionesDrawer(): void {
+    this.visibleNotificaciones.set(false);
+    this.scheduleOverlayMaskCleanup();
+  }
+
+  closePerfilDrawer(): void {
+    this.visibleDrawer.set(false);
+    this.scheduleOverlayMaskCleanup();
+  }
+
+  // Bug conocido de PrimeNG (primefaces/primeng#19498): al cerrar un Drawer al mismo
+  // tiempo que el router reemplaza el contenido de la página, la máscara del overlay
+  // puede quedar atascada a mitad de su animación de salida (nunca llega 'animationend'),
+  // bloqueando todos los clics. Si sigue en el DOM pasado el tiempo de la transición y
+  // ningún drawer sigue abierto, la limpiamos manualmente.
+  private scheduleOverlayMaskCleanup(): void {
+    setTimeout(() => {
+      if (this.visibleMenuDrawer() || this.visibleNotificaciones() || this.visibleDrawer()) return;
+
+      this.document.querySelectorAll('.p-drawer-mask').forEach((mask) => mask.remove());
+      this.document.body.classList.remove('p-overflow-hidden');
+    }, 400);
+  }
 
   ngOnInit(): void {
     this.cargarTemaGuardado();
@@ -72,10 +119,19 @@ export class Header implements OnInit, OnDestroy {
 
     this.notificacionesService.conectarSocket();
     this.cargarNotificaciones();
+
+    this.navigationSub = this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.closeMenuDrawer();
+        this.closeNotificacionesDrawer();
+        this.closePerfilDrawer();
+      });
   }
 
   ngOnDestroy(): void {
     this.socketSub?.unsubscribe();
+    this.navigationSub?.unsubscribe();
     this.notificacionesService.desconectarSocket();
   }
 
@@ -149,7 +205,7 @@ export class Header implements OnInit, OnDestroy {
   }
 
   get abogadoFotoUrl(): string {
-    return this.tokenService.getAbogadoFotoUrl();
+    return this.tokenService.getAbogadoFotoUrl() || '/profile.png';
   }
 
   get areaNombre(): string {

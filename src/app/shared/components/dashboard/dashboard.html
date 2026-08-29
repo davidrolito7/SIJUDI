@@ -1,182 +1,126 @@
 <p-toast></p-toast>
 
+<section class="mt-4 w-full text-surface-900 dark:text-surface-0">
+  @if (contadores$ | async; as contadores) {
+    <div class="relative mx-auto border border-surface-200 bg-white p-4 dark:border-surface-800 dark:bg-surface-900 sm:p-5">
+      <span class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200"></span>
+      <span class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200"></span>
+      <span class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200"></span>
+      <span class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200"></span>
 
-<section class="w-full text-surface-900 dark:bg-surface-950 dark:text-surface-0">
-  <main class="mt-2 w-full">
-    @if (contadores$ | async; as contadores) {
-    <!-- Encabezado del dashboard -->
-    <section
-      class="mb-5 overflow-hidden rounded-2xl border border-surface-200 bg-surface-0 p-5 shadow-sm dark:border-surface-800 dark:bg-surface-900 lg:p-6">
-      <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-        <div class="min-w-0 flex-1">
-          <div
-            class="mb-3 inline-flex items-center gap-2 rounded-full border border-surface-200 bg-surface-50 px-3 py-1 text-xs font-medium text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
-            <i class="pi pi-chart-line text-xs"></i>
-            Panel principal
+      <header class="mb-5 flex flex-col gap-4 border-b border-surface-200 pb-5 dark:border-surface-800 sm:flex-row sm:items-start sm:justify-between">
+        <div class="flex min-w-0 items-start gap-3">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center border border-surface-300 bg-surface-50 dark:border-surface-700 dark:bg-surface-950/30">
+            <i [class]="currentDashboard.icon + ' text-base text-surface-700 dark:text-surface-200'"></i>
           </div>
 
-          <div class="flex items-start gap-4">
-            <div
-              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-300 dark:ring-indigo-500/20">
-              <i [class]="currentDashboard.icon + ' text-lg'"></i>
+          <div class="min-w-0">
+            <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+              {{ currentDashboard.title }}
+            </h1>
+            <p class="mt-1 max-w-4xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+              {{ currentDashboard.description }}
+            </p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-surface-500 dark:text-surface-400">
+              <span class="inline-flex items-center gap-1.5">
+                <i class="pi pi-clock"></i>
+                Última actualización: {{ horaActual | date:'dd/MM/yyyy HH:mm' }} h
+              </span>
+              <span class="inline-flex items-center gap-1.5">
+                <i class="pi pi-info-circle"></i>
+                {{ currentDashboard.summary }}
+              </span>
             </div>
+          </div>
+        </div>
 
+        <button type="button"
+          class="inline-flex shrink-0 items-center justify-center gap-2 border border-surface-300 bg-white px-3 py-2 text-sm font-medium text-surface-700 transition-colors hover:border-surface-500 hover:bg-surface-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-surface-700 dark:bg-surface-900 dark:text-surface-200 dark:hover:bg-surface-800"
+          aria-label="Actualizar métricas del dashboard seleccionado"
+          [disabled]="isRefreshing"
+          (click)="refreshDashboard()">
+          <i class="pi pi-refresh text-sm" [ngClass]="{ 'animate-spin': isRefreshing }"></i>
+          <span>{{ isRefreshing ? 'Actualizando...' : 'Refrescar' }}</span>
+        </button>
+      </header>
+
+      @if (visibleDashboards.length > 1) {
+        <section class="relative border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-950/30">
+          <div class="flex items-start gap-3">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+              <span class="text-sm font-semibold text-surface-800 dark:text-surface-100">01</span>
+            </div>
             <div class="min-w-0">
-              <h1 class="text-2xl font-semibold tracking-tight text-surface-950 dark:text-surface-0 sm:text-3xl">
-                {{ currentDashboard.title }}
-              </h1>
-
-              <p class="mt-2 max-w-5xl text-sm leading-6 text-surface-500 dark:text-surface-400">
-                {{ currentDashboard.description }}
-              </p>
-
-              <div class="mt-4 flex flex-wrap items-center gap-3">
-                <span class="inline-flex items-center gap-2 text-xs text-surface-500 dark:text-surface-400">
-                  <i class="pi pi-clock text-xs"></i>
-                  Última actualización:
-                  <strong class="font-medium text-surface-700 dark:text-surface-200">
-                    {{ horaActual | date:'dd/MM/yyyy HH:mm' }} h
-                  </strong>
-                </span>
-
-                <span
-                  class="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700 ring-1 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/20">
-                  <i class="pi pi-info-circle text-xs"></i>
-                  {{ currentDashboard.summary }}
-                </span>
-              </div>
+              <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">Vista del dashboard</h2>
+              <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">Selecciona el módulo que deseas consultar.</p>
             </div>
+          </div>
+
+          <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
+
+          <div class="grid gap-2 sm:grid-cols-2" role="tablist" aria-label="Selector de dashboards">
+            @for (dashboard of visibleDashboards; track dashboard.id; let i = $index) {
+              <button type="button" role="tab"
+                class="flex min-w-0 items-center gap-3 border px-3 py-3 text-left text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary-400"
+                [attr.aria-selected]="selectedDashboard === dashboard.id"
+                [attr.aria-controls]="'panel-' + dashboard.id"
+                [attr.id]="'tab-' + dashboard.id"
+                [ngClass]="selectedDashboard === dashboard.id
+                  ? 'border-surface-700 bg-white text-surface-950 dark:border-surface-200 dark:bg-surface-900 dark:text-surface-0'
+                  : 'border-surface-200 bg-surface-50 text-surface-500 hover:border-surface-400 hover:bg-white dark:border-surface-700 dark:bg-surface-950/30 dark:text-surface-400 dark:hover:bg-surface-900'"
+                (click)="selectDashboard(dashboard.id)"
+                (keydown)="onTabKeydown($event, i)">
+                <i class="shrink-0" [class]="dashboard.icon" [ngClass]="selectedDashboard === dashboard.id ? 'text-primary-600 dark:text-primary-300' : 'text-surface-400'"></i>
+                <span class="min-w-0 truncate">{{ dashboard.shortTitle }}</span>
+              </button>
+            }
+          </div>
+        </section>
+      }
+
+      <section class="relative mt-4 border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-950/30"
+        [attr.id]="'panel-' + selectedDashboard"
+        [attr.aria-labelledby]="'tab-' + selectedDashboard">
+        <div class="flex items-start gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+            <span class="text-sm font-semibold text-surface-800 dark:text-surface-100">{{ visibleDashboards.length > 1 ? '02' : '01' }}</span>
+          </div>
+          <div class="min-w-0">
+            <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">Indicadores y seguimiento</h2>
+            <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">Información actualizada del módulo seleccionado.</p>
           </div>
         </div>
 
-        <div class="flex flex-col items-start gap-3">
-          <!-- <span
-            class="inline-flex w-fit items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-500/20">
-            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-            Componentes separados
-          </span> -->
+        <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
 
-          <button
-            type="button"
-            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-surface-200 bg-surface-0 px-4 py-2.5 text-sm font-medium text-surface-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300 disabled:cursor-not-allowed disabled:opacity-60 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-200 dark:hover:border-primary-500/30 dark:hover:bg-primary-500/10 dark:hover:text-primary-300"
-            aria-label="Actualizar métricas del dashboard seleccionado"
-            title="Actualizar métricas"
-            [disabled]="isRefreshing"
-            (click)="refreshDashboard()"
-          >
-            <i
-              class="pi pi-refresh text-sm"
-              [ngClass]="{ 'animate-spin': isRefreshing }"
-            ></i>
-            <span>{{ isRefreshing ? 'Actualizando...' : 'Refrescar' }}</span>
-          </button>
-        </div>
-      </div>
-    </section>
-    @if (visibleDashboards.length > 1) {
-    <section class="mb-5">
-      <div class="w-full overflow-x-auto rounded-2xl">
-        <div
-          class="relative grid w-max min-w-full rounded-2xl border border-surface-200 bg-surface-100 p-1 shadow-sm dark:border-surface-800 dark:bg-surface-900/80"
-          [style.gridTemplateColumns]="'repeat(' + visibleDashboards.length + ', minmax(0, 1fr))'" role="tablist"
-          aria-label="Selector de dashboards">
-          <span aria-hidden="true"
-            class="absolute left-1 top-1 h-[calc(100%-0.5rem)] rounded-xl bg-surface-0 shadow-sm ring-1 ring-inset ring-surface-200 transition-transform duration-300 ease-out dark:bg-surface-800 dark:ring-surface-700"
-            [style.width.%]="indicatorWidth" [style.transform]="indicatorTransform"></span>
-
-          @for (dashboard of visibleDashboards; track dashboard.id; let i = $index) {
-          <button type="button" role="tab"
-            class="relative z-10 flex min-w-0 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-400"
-            [attr.aria-selected]="selectedDashboard === dashboard.id" [attr.aria-controls]="'panel-' + dashboard.id"
-            [attr.id]="'tab-' + dashboard.id" [ngClass]="{
-              'text-surface-950 dark:text-surface-0':
-                selectedDashboard === dashboard.id,
-              'text-surface-500 hover:text-surface-800 dark:text-surface-400 dark:hover:text-surface-100':
-                selectedDashboard !== dashboard.id
-            }" (click)="selectDashboard(dashboard.id)" (keydown)="onTabKeydown($event, i)">
-            <i class="shrink-0" [class]="dashboard.icon" [ngClass]="{
-                'text-primary-500': selectedDashboard === dashboard.id,
-                'text-surface-400': selectedDashboard !== dashboard.id
-              }"></i>
-
-            <span class="min-w-0 truncate">
-              {{ dashboard.shortTitle }}
-            </span>
-          </button>
-          }
-        </div>
-      </div>
-    </section>
-    }
-
-    <!-- Contenido del dashboard seleccionado -->
-    <section
-      class="mb-6 rounded-2xl border border-surface-200 bg-surface-0 p-4 shadow-sm dark:border-surface-800 dark:bg-surface-900 lg:p-5"
-      [attr.id]="'panel-' + selectedDashboard" [attr.aria-labelledby]="'tab-' + selectedDashboard">
-      @if (isRefreshing) {
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4" aria-hidden="true">
-          @for (item of [1, 2, 3, 4]; track item) {
-            <div
-              class="relative overflow-hidden rounded-2xl border border-surface-200 bg-surface-0 p-5 shadow-sm dark:border-surface-800 dark:bg-surface-900"
-            >
-              <div class="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-surface-100 dark:bg-surface-800"></div>
-
-              <div class="relative flex justify-between gap-4">
-                <div class="min-w-0 flex-1">
-                  <div class="h-3 w-28 animate-pulse rounded-full bg-surface-200 dark:bg-surface-700"></div>
-                  <div class="mt-4 h-10 w-20 animate-pulse rounded-xl bg-surface-200 dark:bg-surface-700"></div>
-                </div>
-
-                <div class="h-11 w-11 shrink-0 animate-pulse rounded-2xl bg-surface-200 ring-1 ring-surface-200 dark:bg-surface-700 dark:ring-surface-700"></div>
-              </div>
-
-              <div class="relative mt-5 flex items-center gap-2">
-                <div class="h-7 w-24 animate-pulse rounded-full bg-surface-200 dark:bg-surface-700"></div>
-                <div class="h-3 w-32 animate-pulse rounded-full bg-surface-100 dark:bg-surface-800"></div>
-              </div>
-            </div>
-          }
-        </div>
-
-        <div class="my-6 flex items-center gap-3" aria-hidden="true">
-          <div class="h-px flex-1 bg-surface-200 dark:bg-surface-800"></div>
-          <div class="h-7 w-44 animate-pulse rounded-full bg-surface-200 dark:bg-surface-700"></div>
-          <div class="h-px flex-1 bg-surface-200 dark:bg-surface-800"></div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-4" aria-hidden="true">
-          @for (item of [1, 2, 3, 4]; track item) {
-            <div
-              class="rounded-2xl border border-surface-200 bg-surface-0 p-5 shadow-sm dark:border-surface-800 dark:bg-surface-900"
-            >
-              <div class="flex items-center gap-4">
-                <div class="h-12 w-12 shrink-0 animate-pulse rounded-2xl bg-surface-200 dark:bg-surface-700"></div>
-
-                <div class="min-w-0 flex-1">
-                  <div class="h-3 w-36 animate-pulse rounded-full bg-surface-200 dark:bg-surface-700"></div>
-                  <div class="mt-3 flex items-end gap-2">
-                    <div class="h-7 w-14 animate-pulse rounded-lg bg-surface-200 dark:bg-surface-700"></div>
-                    <div class="h-3 w-20 animate-pulse rounded-full bg-surface-100 dark:bg-surface-800"></div>
+        @if (isRefreshing) {
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4" aria-hidden="true">
+            @for (item of [1, 2, 3, 4]; track item) {
+              <div class="border border-surface-200 bg-white p-4 dark:border-surface-700 dark:bg-surface-900">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 shrink-0 animate-pulse bg-surface-200 dark:bg-surface-700"></div>
+                  <div class="min-w-0 flex-1">
+                    <div class="h-3 w-28 animate-pulse bg-surface-200 dark:bg-surface-700"></div>
+                    <div class="mt-3 h-6 w-16 animate-pulse bg-surface-200 dark:bg-surface-700"></div>
                   </div>
                 </div>
               </div>
-            </div>
+            }
+          </div>
+        } @else {
+          @if (currentDashboard.id === 'estadisticas') {
+            <app-dashboard-estadisticas></app-dashboard-estadisticas>
           }
-        </div>
-      } @else {
-        @if (currentDashboard.id === 'estadisticas') {
-        <app-dashboard-estadisticas></app-dashboard-estadisticas>
-        }
 
-        @if (selectedDashboard === 'oficialia') {
-        <app-dashboard-oficialia [pendientesRecibir]="contadores?.pendientes_recibir || 0"></app-dashboard-oficialia>
-        }
+          @if (selectedDashboard === 'oficialia') {
+            <app-dashboard-oficialia [pendientesRecibir]="contadores?.pendientes_recibir || 0"></app-dashboard-oficialia>
+          }
 
-        @if (selectedDashboard === 'exhortos') {
-        <app-dashboard-exhortos></app-dashboard-exhortos>
+          @if (selectedDashboard === 'exhortos') {
+            <app-dashboard-exhortos></app-dashboard-exhortos>
+          }
         }
-      }
-    </section>
-    }
-  </main>
+      </section>
+    </div>
+  }
 </section>

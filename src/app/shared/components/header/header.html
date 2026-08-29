@@ -4,7 +4,7 @@
   <!-- <header
     class="liquid-glass flex items-center justify-between p-2 rounded-2xl shadow-sm sm:px-0 sm:pb-1 sm:pt-1 sm:rounded-l-3xl sm:rounded-r-full bg-primary-300 sm:shadow-none sm:border-surface dark:sm:from-primary-950 dark:sm:via-surface-950 dark:sm:to-primary-950"
   > -->
-  <header class="liquid-glass sticky top-0 z-40
+  <header class=" sticky top-0 z-40
            flex items-center justify-between
            border-b border-[#274a43]
            bg-[#315d53]
@@ -26,7 +26,7 @@
              focus-visible:ring-2 focus-visible:ring-[#b2915b]/60
              lg:hidden
              dark:border-slate-700 dark:bg-slate-800
-             dark:text-slate-200 dark:hover:bg-[#b2915b]/20" (click)="drawerService.open()" aria-label="Abrir menú">
+             dark:text-slate-200 dark:hover:bg-[#b2915b]/20" (click)="visibleMenuDrawer.set(true)" aria-label="Abrir menú">
         <i class="pi pi-bars text-sm"></i>
       </button>
 
@@ -65,7 +65,7 @@
 
 
 
-      <p-avatar [image]="abogadoFotoUrl" (click)="visibleDrawer = true; drawerMobileTab = 'perfil'" shape="circle"
+      <p-avatar [image]="abogadoFotoUrl" (click)="visibleDrawer.set(true); drawerMobileTab = 'perfil'" shape="circle"
         class="cursor-pointer
          border border-white/15
          transition-all
@@ -88,7 +88,7 @@
          dark:border-slate-700
          dark:bg-slate-800
          dark:text-slate-300
-         dark:hover:bg-[#b2915b]/20" (click)="visibleNotificaciones = true" aria-label="Abrir notificaciones">
+         dark:hover:bg-[#b2915b]/20" (click)="visibleNotificaciones.set(true)" aria-label="Abrir notificaciones">
         <i class="pi pi-bell text-lg"></i>
 
         @if (pendientes() > 0) {
@@ -106,6 +106,92 @@
     </div>
   </header>
 </div>
+
+<!-- ===== DRAWER MENÚ MÓVIL ===== -->
+<p-drawer [(visible)]="visibleMenuDrawer" appendTo="body" styleClass="lg:hidden !w-72 z-999">
+  <ng-template #headless>
+    <div class="flex flex-col h-full bg-surface-0 dark:bg-surface-950">
+      <!-- Header del drawer -->
+      <div class="flex items-center justify-between px-4 pt-4 pb-3 border-b border-surface shrink-0">
+        <div class="flex items-center gap-2 min-w-0">
+          <!-- Logo -->
+          <img src="Sijudi-01.png" alt="SIJUDI" class="w-9 h-9 object-contain shrink-0" />
+
+          <div class="flex flex-col min-w-0">
+            <span class="text-sm font-semibold leading-5 text-surface-900 dark:text-surface-0 truncate">
+              SIJUDI
+            </span>
+
+            <span class="text-[11px] font-medium leading-4 text-surface-500 dark:text-surface-400 truncate">
+              Justicia más cerca de ti
+            </span>
+          </div>
+        </div>
+
+        <button type="button"
+          class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-surface-500 dark:text-surface-300"
+          (click)="closeMenuDrawer()" aria-label="Cerrar menú">
+          <i class="pi pi-times text-xs"></i>
+        </button>
+      </div>
+
+      <!-- Contenido scrolleable -->
+      <div class="flex-1 overflow-y-auto py-2">
+        <ul class="list-none p-0 m-0">
+          @for (mod of modulos(); track mod.idSistemaModulo ?? $index) {
+          <li>
+            <!-- Cabecera del módulo (colapsable) -->
+            <div pRipple pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-slidedown"
+              leaveToClass="hidden" leaveActiveClass="animate-slideup"
+              class="px-4 py-3 flex items-center justify-between cursor-pointer transition-colors text-surface-600 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-900 p-ripple">
+              <div class="flex items-center gap-2 min-w-0">
+                <img class="w-5 h-5 object-contain shrink-0" [src]="svgSrcForModulo(mod)" alt=""
+                  aria-hidden="true" />
+
+                <span class="font-semibold text-xs uppercase tracking-wide truncate">
+                  {{ mod.nombre }}
+                </span>
+              </div>
+
+              <i
+                class="pi pi-chevron-down text-[10px] text-surface-400 dark:text-surface-500 transition-transform duration-300 shrink-0"></i>
+            </div>
+
+            <!-- Pantallas del módulo -->
+            <ul class="list-none p-0 m-0 hidden overflow-y-hidden transition-all duration-400 ease-in-out">
+              @for (p of pantallasDeModulo(mod); track p.idPantalla ?? $index) {
+              <li class="px-3">
+                <a pRipple
+                  class="flex items-center gap-2 cursor-pointer px-5 py-2.5 rounded-lg text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-900 duration-150 transition-colors p-ripple"
+                  [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis">
+                  <img class="w-4 h-4 object-contain shrink-0" [src]="svgSrcForPantalla(p)" alt=""
+                    aria-hidden="true" />
+
+                  <span class="font-medium text-xs uppercase tracking-wide truncate">
+                    {{ p.nombre }}
+                  </span>
+                </a>
+              </li>
+              }
+            </ul>
+          </li>
+          }
+        </ul>
+      </div>
+
+      <!-- Footer con configuración -->
+      <div
+        class="shrink-0 border-t border-surface hover:bg-surface-50 dark:hover:bg-surface-900 transition-colors cursor-pointer">
+        <button type="button" class="w-full flex items-center text-surface-500 dark:text-surface-400"
+          aria-label="Configuración">
+          <i class="pi pi-cog text-sm"></i>
+
+          <span class="text-sm font-medium"> Configuración </span>
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</p-drawer>
 
 <p-drawer [(visible)]="visibleDrawer" position="right" appendTo="body" styleClass="!w-4/5 sm:!w-[30rem]">
   <ng-template #headless>
@@ -265,7 +351,7 @@
             </div>
           </button>
         </div>
-        <div
+        <!-- <div
           class="group rounded-2xl border border-surface-200 border-dashed dark:border-surface-700 bg-surface-0 dark:bg-surface-900 overflow-hidden">
           <button type="button"
             class="w-full flex items-center gap-3 p-3 cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors text-left"
@@ -289,7 +375,7 @@
               <i class="pi pi-chevron-right text-xs"></i>
             </div>
           </button>
-        </div>
+        </div> -->
       </div>
       }
 

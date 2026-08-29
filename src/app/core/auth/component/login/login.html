@@ -160,7 +160,7 @@
                 </div> -->
             </div>
 
-            <button pButton (click)="validarUsuario()" fluid>
+            <button pButton (click)="validarUsuario()" [disabled]="isLoading()" fluid>
                 <span pButtonLabel>Continuar</span>
             </button>
             <div class="flex items-center justify-center">

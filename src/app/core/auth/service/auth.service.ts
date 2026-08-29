@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { environment } from '../../../../environments/environment';
 import { catchError, Observable, of, tap, throwError } from 'rxjs';
 import { TokenService } from './token.service';
-import { responseLogin, areasResponse, twoAccess, usuarioAreas } from '../interface/login.interfaces';
+import { responseLogin, areasResponse, twoAccess, usuarioAreas, DatosUsuarioData } from '../interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
 import { checkToken, tokenInterceptor } from '../interceptor/token.interceptor';
 import { BehaviorSubject } from 'rxjs';
@@ -94,7 +94,7 @@ export class AuthService {
   //2= por folio rune
   //3= por codigo llave
   //4= por numero de empleado
-  obtenerDatosUsuario(idUsuario: string, tipoBusqueda: number = 1): Observable<any> {
+  obtenerDatosUsuario(idUsuario: string, tipoBusqueda = 1): Observable<GenericResponse<DatosUsuarioData>> {
     const url = `${this.constService.ruta}/api/Permisos/DatosUsuario?Usuario=${idUsuario}&TipoBusqueda=${tipoBusqueda}`;
 
     //const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
@@ -104,7 +104,7 @@ export class AuthService {
     //  'accept': '*/*'
     //});
 
-    return this.http.post(url, null, { context: checkToken() });
+    return this.http.post<GenericResponse<DatosUsuarioData>>(url, null, { context: checkToken() });
   }
 
   validarToken(token: string): Observable<any> {

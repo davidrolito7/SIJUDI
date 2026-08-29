@@ -1,19 +1,80 @@
-:root {
-  /* Color predominante del sidebar */
-  --sidebar-accent: #b2915b;
+.footer-notice {
+    position: absolute;
 
-  /* Café más oscuro para textos */
-  --sidebar-accent-dark: #6f5838;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 440px;
 
-  /* Fondo cálido */
-  --sidebar-background: #fcfaf6;
+    display: flex;
+    align-items: center;
 
-  /* Fondo de iconos */
-  --sidebar-icon-background: #f1ebe2;
+    overflow: hidden;
+    pointer-events: none;
 
-  /* Bordes cálidos */
-  --sidebar-border: #e6ded1;
+    line-height: 1.25;
+    z-index: 0;
+}
 
-  /* Color secundario */
-  --sidebar-secondary: #315d53;
+.footer-notice__ticker {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.35rem;
+
+    white-space: nowrap;
+}
+
+.footer-notice__ticker .footer-notice__icon {
+    flex: 0 0 auto;
+}
+
+.footer-notice__message {
+    display: block;
+
+    border-radius: 0.25rem;
+    font-weight: 600;
+    padding: 0.1rem 0.35rem;
+}
+
+.footer-notice--info .footer-notice__icon {
+    color: #0284c7;
+}
+
+.footer-notice--info .footer-notice__message {
+    background: #e0f2fe;
+    color: #075985;
+}
+
+.footer-notice--alert .footer-notice__icon {
+    color: #ea580c;
+}
+
+.footer-notice--alert .footer-notice__message {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+:host-context(.dark) .footer-notice--info .footer-notice__icon {
+    color: #7dd3fc;
+}
+
+:host-context(.dark) .footer-notice--info .footer-notice__message {
+    background: #0c4a6e;
+    color: #e0f2fe;
+}
+
+:host-context(.dark) .footer-notice--alert .footer-notice__icon {
+    color: #fdba74;
+}
+
+:host-context(.dark) .footer-notice--alert .footer-notice__message {
+    background: #7c2d12;
+    color: #ffedd5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .footer-notice__ticker {
+        animation: none !important;
+    }
 }
