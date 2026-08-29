@@ -380,13 +380,13 @@ export class Login2 implements OnInit {
         if (response.success) {
           await this.handlePostTwoFactor();
         } else {
-          this.mensaje.add({ severity: 'error', summary: 'Error', detail: response.message || 'Llave privada o contraseÃ±a incorrectas.', life: 3000 });
+          this.mensaje.add({ severity: 'error', summary: 'Error', detail: response.message || 'Llave privada o contraseña incorrectas.', life: 3000 });
           this.isLoading.set(false);
           this.cd.detectChanges();
         }
       },
       error: () => {
-        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'OcurriÃ³ un error al validar la llave privada.', life: 3000 });
+        this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al validar la llave privada.', life: 3000 });
         this.isLoading.set(false);
         this.cd.detectChanges();
       },
@@ -395,7 +395,7 @@ export class Login2 implements OnInit {
 
   codigoEnter() {
     if (!this.codigo?.trim()) {
-      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese el cÃ³digo de Authenticator.', life: 3000 });
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese el código de Authenticator.', life: 3000 });
       return;
     }
     this.onValidarCodeAthenticator();
@@ -404,7 +404,7 @@ export class Login2 implements OnInit {
   contraseniaEnter() {
     const pass = this.llavePrivadaForm.get('password')!.value;
     if (!pass?.trim()) {
-      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su contraseÃ±a.', life: 3000 });
+      this.mensaje.add({ severity: 'error', summary: 'Error', detail: 'Por favor, ingrese su contraseña.', life: 3000 });
       return;
     }
     this.onValidarLlavePrivada();
