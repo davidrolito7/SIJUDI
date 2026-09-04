@@ -57,7 +57,7 @@ export class DetallesExhortoEnviado {
   movimientos=signal<VerMovimientosEnviadosResponse[]>([]);
   //idPromocionEnviadoSeleccionado: number | null = null;
   //Asignar el id de la pantalla, para poder obtener las secciones(permisos) de esta pantalla
-  idPantalla=14195;
+  idPantalla=11;
   secciones : secciones[] = [] ;
   responseSecciones!: GenericResponse<secciones[]>;
   private perfilSeleccionadoService = inject(AuthService);

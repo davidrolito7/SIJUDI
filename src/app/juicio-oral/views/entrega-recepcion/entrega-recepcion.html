@@ -110,7 +110,7 @@
                 </td>
                 <td>{{ tramite.folio }}</td>
                 <td>{{ tramite.expediente.NumExpediente }}</td>
-                <td>{{ tramite.expediente.juzgado.Descripcion }}</td>
+                <td>{{ tramite.expediente.area.Descripcion }}</td>
                 <td>
                     <p-tag [value]="(getDescripcionTramite(tramite) | uppercase) ?? ''"
                         [severity]="getTagTramite(tramite).severity" [icon]="getTagTramite(tramite).icon" />

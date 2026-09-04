@@ -125,10 +125,10 @@
                     <td>{{ juzgado.municipio }}</td>
                     <td>{{ juzgado.materia }}</td>
                     <td>{{ juzgado.juzgado }}</td>
-                    @if (tienePermisoEliminarAsignacion) {
+                      @if (tienePermisoEliminarAsignacion) {
                     <td>
-                        <p-button type="button" severity="danger" label="Eliminar" icon="pi pi-trash"
-                            (click)="abrirConfirmacionEliminarJuzgado()"></p-button>
+                        <button pButton severity="danger"  icon="pi pi-trash"
+                            (click)="abrirConfirmacionEliminarJuzgado()">Eliminar</button>
 
                     </td>
                     }
@@ -304,7 +304,7 @@
             <!-- Municipio -->
             <div class="col-span-6">
                 <label class="block mb-2 text-sm font-medium">Municipio</label>
-                <p-select id="municipio" name="municipioRegion" class="w-full" [options]="listaMunicipiosRegion"
+                <p-select id="municipio" name="municipioRegion" class="w-full uppercase" [options]="listaMunicipiosRegion"
                     [(ngModel)]="selectedMunicipioRegion" optionLabel="descripcion" [editable]="true" appendTo="body"
                     [filter]="true" filterPlaceholder="Buscar municipio..." inputId="municipio-dropdown"
                     (onChange)="onMunicipioChange($event)" required fluid>
@@ -315,7 +315,7 @@
             <div class="col-span-6">
                 <label class="block mb-2 text-sm font-medium">Juzgado</label>
                 <p-select id="juzgado" name="juzgadoRegion" class="w-full" [options]="listaJuzgado"
-                    [(ngModel)]="selectedJuzgado" optionLabel="descripcion" [editable]="true" appendTo="body"
+                    [(ngModel)]="selectedJuzgado" optionLabel="nombre" [editable]="true" appendTo="body"
                     [filter]="true" filterPlaceholder="Buscar juzgado..." inputId="juzgado-dropdown"
                     (onChange)="onJuzgadoChange($event)" required fluid>
                 </p-select>

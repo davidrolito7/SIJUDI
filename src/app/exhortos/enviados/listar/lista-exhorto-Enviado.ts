@@ -153,8 +153,8 @@ export class ListaExhortosEnviados implements OnInit {
       fechaIni: fechaIni,
       fechaFin: fechaFin,
       perfil: perfil,
-      estatus : this.selectedEstatus?.idEstatus ?? 0,
-      IdAreaAdminAplicaciones : area
+     //// estatus : this.selectedEstatus?.idEstatus ?? 0,
+     //// IdAreaAdminAplicaciones : area
     };
 
      this.isLoading=true;

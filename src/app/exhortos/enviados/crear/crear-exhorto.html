@@ -100,26 +100,26 @@
         </div>
 
         <!-- Municipio origen -->
-        <div class="md:col-span-2">
+        <!-- <div class="md:col-span-2">
           <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
             Municipio origen<strong>*</strong>
           </label>
           <p-select id="municipio-origen" [options]="listaMunicipioOrigen()" formControlName="municipioOrigen"
             optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar municipio..."
             inputId="municipioOrigen-dropdown" class="w-full" fluid></p-select>
-        </div>
+        </div> -->
 
         <!-- Juzgado origen -->
-        <div class="md:col-span-2">
+        <!-- <div class="md:col-span-2">
           <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
             Juzgado origen
           </label>
           <p-select id="juzgado" [options]="listaJuzgadoOrigen()" optionLabel="juzgado" formControlName="juzgadoOrigen"
             appendTo="body" filter="true" filterPlaceholder="Buscar juzgado..." inputId="juzgado-dropdown"
             class="w-full" fluid></p-select>
-        </div>
+        </div> -->
        <!-- Tipo de juicio -->
-        <div class="md:col-span-2">
+        <div class="md:col-span-4">
           <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
             Tipo de juicio<strong>*</strong>
           </label>
@@ -146,10 +146,17 @@
             class="w-full" maxlength="50" />
         </div>
 
- 
+     <!-- Número de fojas -->
+        <div class="md:col-span-2">
+          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+            Número de fojas<strong>*</strong>
+          </label>
+          <p-inputnumber inputId="numeroFojas" formControlName="numeroFojas" [showButtons]="true" mode="decimal"
+            [min]="0" [max]="5000" [useGrouping]="false" class="w-full" fluid></p-inputnumber>
+        </div>
 
         <!-- Nombre de juez -->
-        <div class="md:col-span-3">
+        <div class="md:col-span-6">
           <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
             Nombre de juez
           </label>
@@ -157,14 +164,7 @@
             maxlength="100" />
         </div>
 
-        <!-- Número de fojas -->
-        <div class="md:col-span-3">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Número de fojas<strong>*</strong>
-          </label>
-          <p-inputnumber inputId="numeroFojas" formControlName="numeroFojas" [showButtons]="true" mode="decimal"
-            [min]="0" [max]="5000" [useGrouping]="false" class="w-full" fluid></p-inputnumber>
-        </div>
+    
       </div>
       </div>
 

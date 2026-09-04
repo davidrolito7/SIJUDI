@@ -135,8 +135,8 @@ export class ListarAmparosRecibidos {
       fechaIni: fechaIni,
       fechaFin: fechaFin,
       estatus: this.selectedEstatus?.idEstatus || 0,
-      perfil: perfil,
-      idAreaAdminAplicaciones: Number(idArea)
+    ////  perfil: perfil,
+    ////  idAreaAdminAplicaciones: Number(idArea)
     };
     this.isLoading = true;
     this.cd.detectChanges();

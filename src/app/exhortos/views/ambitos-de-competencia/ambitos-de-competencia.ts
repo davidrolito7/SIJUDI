@@ -69,7 +69,7 @@ export class AmbitosDeCompetencia {
   isLoading: boolean = false;
   visibleDrawer: boolean = false;
   //Asignar el id de la pantalla, para poder obtener las secciones(permisos) de esta pantalla
-  idPantalla = 14147;
+  idPantalla = 6;
 
   secciones: secciones[] = [];
   responseSecciones!: GenericResponse<secciones[]>;

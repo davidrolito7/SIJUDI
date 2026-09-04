@@ -202,17 +202,17 @@ export class CrearExhortoComponent {
   listaMunicipioDestino = signal<CatalogoMunicipioDestino[]>([]);
   //municipioDestinoSelect!: CatalogoMunicipioDestino;
 
-  //listaMunicipioOrigen: CatalogoMunicipioOrigen[] = [];
-  listaMunicipioOrigen = signal<CatalogoMunicipioOrigen[]>([]);
-  //municipioOrigenSelect!: CatalogoMunicipioOrigen;
+  // //listaMunicipioOrigen: CatalogoMunicipioOrigen[] = [];
+  // //listaMunicipioOrigen = signal<CatalogoMunicipioOrigen[]>([]);
+  // //municipioOrigenSelect!: CatalogoMunicipioOrigen;
 
   //listaMateriaEstadoDestino : CatalogoMateriasEstadoDestino []=[];
   listaMateriaEstadoDestino = signal<CatalogoMateriasEstadoDestino[]>([]);
   //materiaEstadoDestinoSelect! : CatalogoMateriasEstadoDestino ;
 
-  //listaJuzgadoOrigen: CatalogoJuzgadoOrigen[] = [];
-  listaJuzgadoOrigen = signal<CatalogoJuzgadoOrigen[]>([]);
-  //JuzgadoOrigenSelect!: CatalogoJuzgadoOrigen;
+  // // //listaJuzgadoOrigen: CatalogoJuzgadoOrigen[] = [];
+  // // listaJuzgadoOrigen = signal<CatalogoJuzgadoOrigen[]>([]);
+  // // //JuzgadoOrigenSelect!: CatalogoJuzgadoOrigen;
 
   //listagenero: CatalogoGenero[] = [];
   listagenero = signal<CatalogoGenero[]>([]);
@@ -274,7 +274,7 @@ export class CrearExhortoComponent {
   //tipoViaSelect!:tipoVia;
 
   //Asignar el id de la pantalla, para poder obtener las secciones(permisos) de esta pantalla
-  idPantalla = 14198;
+  idPantalla = 14;
 
   secciones: secciones[] = [];
   responseSecciones!: GenericResponse<secciones[]>;
@@ -337,8 +337,8 @@ export class CrearExhortoComponent {
 
     // 1. Lógica general inicial
     this.cargarCatalogoEstadoDestino();
-    this.cargarCatalogoMunicipioOrigen();
-    this.cargarCatalogoJuzgadoOrigen();
+   //// this.cargarCatalogoMunicipioOrigen();
+   //// this.cargarCatalogoJuzgadoOrigen();
     this.catalogoGenero();
     this.CatalogoMateria();
     this.catalogoTipoParte();
@@ -441,7 +441,7 @@ export class CrearExhortoComponent {
         this.verificarYFiltrarJuzgados();
 
         // Juzgado Origen
-        const municipioOrigenObj = this.listaMunicipioOrigen().find(m => m.idMunicipio === state.datosExhorto.municipioOrigenTrue);
+       //// const municipioOrigenObj = this.listaMunicipioOrigen().find(m => m.idMunicipio === state.datosExhorto.municipioOrigenTrue);
         const materiaOrigenObj = this.listaMateria().find(m => m.idCatMateria === state.datosExhorto.materiaOrigenId);
         const tipoDiligenciaObj = this.listaTipoDiligencia().find(t => t.descripcion === state.datosExhorto.tipoDiligenciacionNombre);
         const materiaEstadoDestinoObj = this.listaMateriaEstadoDestino().find(m => m.nombre === state.datosExhorto.materiaNombre);
@@ -450,11 +450,11 @@ export class CrearExhortoComponent {
         //console.log('materiaOrigenObj:', materiaOrigenObj);
         //console.log('listaMateria:', this.listaMateria);
 
-        if (municipioOrigenObj) {
-          //this.municipioOrigenSelect = municipioOrigenObj;
-          this.exhortosForm.get('municipioOrigen')?.enable();
-          this.exhortosForm.patchValue({ municipioOrigen: municipioOrigenObj });
-        }
+            // // if (municipioOrigenObj) {
+            // //   //this.municipioOrigenSelect = municipioOrigenObj;
+            // //   this.exhortosForm.get('municipioOrigen')?.enable();
+            // //   this.exhortosForm.patchValue({ municipioOrigen: municipioOrigenObj });
+            // // }
 
         if (materiaEstadoDestinoObj) {
           //this.materiaEstadoDestinoSelect = materiaEstadoDestinoObj;
@@ -484,22 +484,22 @@ export class CrearExhortoComponent {
 
         }
 
-        if (municipioOrigenObj && materiaOrigenObj) {
-          this.getConfigMunicipioMateriaJuzgado(municipioOrigenObj, materiaOrigenObj).then(() => {
-            const juzgadoObj = this.listaJuzgadoOrigen().find(
-              j => j.juzgado === state.datosExhorto.juzgadoOrigenNombre
-            );
+        // // if (municipioOrigenObj && materiaOrigenObj) {
+        // //   this.getConfigMunicipioMateriaJuzgado(municipioOrigenObj, materiaOrigenObj).then(() => {
+        // //     const juzgadoObj = this.listaJuzgadoOrigen().find(
+        // //       j => j.juzgado === state.datosExhorto.juzgadoOrigenNombre
+        // //     );
 
-            if (juzgadoObj) {
-              //this.JuzgadoOrigenSelect = juzgadoObj;
-              this.exhortosForm.get('juzgadoOrigen')?.enable();
-              this.exhortosForm.patchValue({ juzgadoOrigen: juzgadoObj });
-              //console.log('✅ Juzgado origen precargado:', juzgadoObj);
-            } else {
-              console.warn('⚠️ No se encontró juzgado con nombre:', state.datosExhorto.juzgadoOrigenNombre);
-            }
-          });
-        }
+        // //     if (juzgadoObj) {
+        // //       //this.JuzgadoOrigenSelect = juzgadoObj;
+        // //       this.exhortosForm.get('juzgadoOrigen')?.enable();
+        // //       this.exhortosForm.patchValue({ juzgadoOrigen: juzgadoObj });
+        // //       //console.log('✅ Juzgado origen precargado:', juzgadoObj);
+        // //     } else {
+        // //       console.warn('⚠️ No se encontró juzgado con nombre:', state.datosExhorto.juzgadoOrigenNombre);
+        // //     }
+        // //   });
+        // // }
 
         this.idExhortoEditando = state.datosExhorto.idExhortoEnviado;
         this.numeroExhorto = state.datosExhorto.numeroExhorto;
@@ -600,29 +600,29 @@ export class CrearExhortoComponent {
 
     const juzgadoControl = this.exhortosForm.get('juzgadoOrigen');
 
-    const idMateria = typeof materiaObj === 'object' ? (materiaObj as CatalogoMateria)?.idCatMateria : materiaObj;
-    const idMunicipio = typeof municipioObj === 'object' ? (municipioObj as CatalogoMunicipioOrigen)?.idMunicipio : municipioObj;
+    // const idMateria = typeof materiaObj === 'object' ? (materiaObj as CatalogoMateria)?.idCatMateria : materiaObj;
+    // const idMunicipio = typeof municipioObj === 'object' ? (municipioObj as CatalogoMunicipioOrigen)?.idMunicipio : municipioObj;
 
-    if (idMateria && idMunicipio) {
-      juzgadoControl?.enable();
+    // if (idMateria && idMunicipio) {
+    //   juzgadoControl?.enable();
 
-      this.ExhortosService.getConfigMunicipioMateriaJuzgado(idMunicipio, idMateria).subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            //console.log('Juzgados filtrados:', response.data);
-            this.listaJuzgadoOrigen.set(response.data);
-          } else {
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
-          }
-        },
-        error: () => {
-          //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el catálogo de juzgados.' });
-        }
-      });
-    } else {
-      juzgadoControl?.disable();
-      this.listaJuzgadoOrigen.set([]);
-    }
+    //   this.ExhortosService.getConfigMunicipioMateriaJuzgado(idMunicipio, idMateria).subscribe({
+    //     next: (response: any) => {
+    //       if (response.success) {
+    //         //console.log('Juzgados filtrados:', response.data);
+    //         this.listaJuzgadoOrigen.set(response.data);
+    //       } else {
+    //         this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
+    //       }
+    //     },
+    //     error: () => {
+    //       //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el catálogo de juzgados.' });
+    //     }
+    //   });
+    // } else {
+    //   juzgadoControl?.disable();
+    //   this.listaJuzgadoOrigen.set([]);
+    // }
   }
 
   CatalogoMateria() {
@@ -699,9 +699,9 @@ export class CrearExhortoComponent {
       materiaClave: this.exhortosForm.value.materiaEstadoDestino?.clave ?? '',// this.materiaEstadoDestinoSelect.clave,
       idCatMateria: this.exhortosForm.value.materiaOrigen?.idCatMateria ?? 0, // materia origen
       estadoOrigenId: 20, //Oaxaca
-      municipioOrigenId: this.exhortosForm.value.municipioOrigen?.idMunicipio ?? 0,//this.municipioOrigenSelect.idMunicipio,
-      juzgadoOrigenId: this.exhortosForm.value.juzgadoOrigen?.idJuzgado.toString() ?? '', //this.JuzgadoOrigenSelect.idJuzgado.toString(),
-      juzgadoOrigenNombre: this.exhortosForm.value.juzgadoOrigen?.juzgado ?? '', //this.JuzgadoOrigenSelect.juzgado,
+     //// municipioOrigenId: this.exhortosForm.value.municipioOrigen?.idMunicipio ?? 0,//this.municipioOrigenSelect.idMunicipio,
+    ////  juzgadoOrigenId: this.exhortosForm.value.juzgadoOrigen?.idJuzgado.toString() ?? '', //this.JuzgadoOrigenSelect.idJuzgado.toString(),
+     //// juzgadoOrigenNombre: this.exhortosForm.value.juzgadoOrigen?.juzgado ?? '', //this.JuzgadoOrigenSelect.juzgado,
       numeroExpedienteOrigen: this.exhortosForm.value.noExpediente as string,
       numeroOficioOrigen: this.exhortosForm.value.OficioOrigen as string,
       //tipoJuicioAsuntoDelitos: this.exhortosForm.value.Tipojuicio as string,
@@ -766,27 +766,27 @@ export class CrearExhortoComponent {
   }
 
   //Metodo para obtener los municipios origen
-  cargarCatalogoMunicipioOrigen() {
-    return new Promise((resolve, reject) => {
-      this.isLoading = true;
-      this.cd.detectChanges();
-      this.ExhortosService.getCatalogoMunicipioOrigen().subscribe(
-        (response: any) => {
-          //console.log('Datos recibidos del catálogo municipio origen:', response);
-          this.listaMunicipioOrigen.set(response.data);
-          this.isLoading = false;
-          this.cd.detectChanges();
-        },
-        error => {
-          //console.error('Error al cargar el catálogo de materias', error);
-          //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
-          this.isLoading = false;
-          this.cd.detectChanges();
-          reject(error);
-        }
-      );
-    });
-  }
+  // // cargarCatalogoMunicipioOrigen() {
+  // //   return new Promise((resolve, reject) => {
+  // //     this.isLoading = true;
+  // //     this.cd.detectChanges();
+  // //     this.ExhortosService.getCatalogoMunicipioOrigen().subscribe(
+  // //       (response: any) => {
+  // //         //console.log('Datos recibidos del catálogo municipio origen:', response);
+  // //         this.listaMunicipioOrigen.set(response.data);
+  // //         this.isLoading = false;
+  // //         this.cd.detectChanges();
+  // //       },
+  // //       error => {
+  // //         //console.error('Error al cargar el catálogo de materias', error);
+  // //         //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
+  // //         this.isLoading = false;
+  // //         this.cd.detectChanges();
+  // //         reject(error);
+  // //       }
+  // //     );
+  // //   });
+  // // }
 
 
   cargarCatalogoMunicipioDestino(estado: CatalogoEstadoDestino): Promise<void> {
@@ -1127,32 +1127,32 @@ export class CrearExhortoComponent {
   }
 
   //Metodo para obtener los juzgados origen
-  cargarCatalogoJuzgadoOrigen() {
-    this.ExhortosService.getCatalogojuzgadoOrigen().subscribe({
-      next: (response: any) => {
-        if (response.success) { //console.log('Datos recibidos del catálogo juzgados:', response);
-          this.listaJuzgadoOrigen.set(response.data);
-        }
-        else {
-          this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
-        }
-      },
-      error: (e) => {
-        //console.error('Error al cargar el catálogo de materias', e);
-        //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
-      },
-      complete: () => {
-        //console.log('FIN:');
-      }
+  // // cargarCatalogoJuzgadoOrigen() {
+  // //   this.ExhortosService.getCatalogojuzgadoOrigen().subscribe({
+  // //     next: (response: any) => {
+  // //       if (response.success) { //console.log('Datos recibidos del catálogo juzgados:', response);
+  // //         this.listaJuzgadoOrigen.set(response.data);
+  // //       }
+  // //       else {
+  // //         this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
+  // //       }
+  // //     },
+  // //     error: (e) => {
+  // //       //console.error('Error al cargar el catálogo de materias', e);
+  // //       //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
+  // //     },
+  // //     complete: () => {
+  // //       //console.log('FIN:');
+  // //     }
 
-      /*},
-        error => {
-          console.error('Error al cargar el catálogo de materias', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
-        }
-      );*/
-    });
-  }
+  // //     /*},
+  // //       error => {
+  // //         console.error('Error al cargar el catálogo de materias', error);
+  // //         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
+  // //       }
+  // //     );*/
+  // //   });
+  // // }
 
   // Método para manejar la selección de archivos
   /*onSelect(event: FileUploadSelectEvent) {
@@ -1745,37 +1745,37 @@ export class CrearExhortoComponent {
     });
   }
 
-  getConfigMunicipioMateriaJuzgado(municipio: CatalogoMunicipioOrigen, materia: CatalogoMateria): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const idMunicipio = municipio?.idMunicipio;
-      const claveMateria = materia?.clave;
+  // // getConfigMunicipioMateriaJuzgado(municipio: CatalogoMunicipioOrigen, materia: CatalogoMateria): Promise<void> {
+  // //   return new Promise((resolve, reject) => {
+  // //     const idMunicipio = municipio?.idMunicipio;
+  // //     const claveMateria = materia?.clave;
 
-      if (!idMunicipio || !claveMateria) {
-        console.warn('❌ Parámetros inválidos para getConfigMunicipioMateriaJuzgado:', { idMunicipio, claveMateria });
-        reject('Parámetros inválidos');
-        return;
-      }
+  // //     if (!idMunicipio || !claveMateria) {
+  // //       console.warn('❌ Parámetros inválidos para getConfigMunicipioMateriaJuzgado:', { idMunicipio, claveMateria });
+  // //       reject('Parámetros inválidos');
+  // //       return;
+  // //     }
 
-      this.ExhortosService.getConfigMunicipioMateriaJuzgado(idMunicipio, claveMateria).subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            //console.log('✅ Juzgados filtrados:', response.data);
-            this.listaJuzgadoOrigen.set(response.data);
-            resolve();
-          } else {
-            //console.error('❌ Error en respuesta del backend:', response.message);
-            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
-            reject(response.errors);
-          }
-        },
-        error: (error) => {
-          //console.error('❌ Error HTTP al obtener juzgados:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar juzgados.', sticky: true });
-          reject(error);
-        }
-      });
-    });
-  }
+  // //     this.ExhortosService.getConfigMunicipioMateriaJuzgado(idMunicipio, claveMateria).subscribe({
+  // //       next: (response: any) => {
+  // //         if (response.success) {
+  // //           //console.log('✅ Juzgados filtrados:', response.data);
+  // //           this.listaJuzgadoOrigen.set(response.data);
+  // //           resolve();
+  // //         } else {
+  // //           //console.error('❌ Error en respuesta del backend:', response.message);
+  // //           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true });
+  // //           reject(response.errors);
+  // //         }
+  // //       },
+  // //       error: (error) => {
+  // //         //console.error('❌ Error HTTP al obtener juzgados:', error);
+  // //         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar juzgados.', sticky: true });
+  // //         reject(error);
+  // //       }
+  // //     });
+  // //   });
+  // // }
 
   validarContraseñaPFX(password: string): Promise<boolean> {
     return new Promise((resolve, reject) => {

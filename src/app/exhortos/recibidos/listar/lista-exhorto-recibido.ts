@@ -140,8 +140,8 @@ export class ListaExhortosRecibidos implements OnInit {
       fechaIni: fechaIni,
       fechaFin: fechaFin,
       perfil: perfil,
-      estatus : this.selectedEstatus?.idEstatus,
-      IdAreaAdminAplicaciones : area 
+   ////   estatus : this.selectedEstatus?.idEstatus,
+   ////   IdAreaAdminAplicaciones : area 
     };
     console.log(this.selectedEstatus?.idEstatus);
 
