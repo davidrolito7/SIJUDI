@@ -28,21 +28,21 @@
     <div class="mt-6 md:mt-0 flex items-center gap-2">
 
 
-      @if(!tienePermisoGuardar()){
+      @if(tienePermisoGuardar()){
       @if (mostrarBotonGuardar) {
       <p-button (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-check">
       </p-button>
       }
       }
 
-      @if (!mostrarBotonEnviarGenerales) {
-      @if(!tienePermisoEnviarGenerales()){
+      @if (mostrarBotonEnviarGenerales) {
+      @if(tienePermisoEnviarGenerales()){
       <p-button (onClick)="enviarGenerales()" label="Enviar generales" icon="pi pi-send">
       </p-button>
       }
       }
       @if (mostrarBotonEnviarArchivos) {
-      @if(!tienePermisoEnviarArchvios()){
+      @if(tienePermisoEnviarArchvios()){
       <p-button (onClick)="enviarArchivos()" label="Enviar archivos" icon="pi pi-file">
       </p-button>
 
@@ -90,34 +90,33 @@
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-end">
         <!-- Materia origen -->
-        <div class="md:col-span-2">
+        <div class="md:col-span-3">
           <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Materia origen<strong>*</strong>
+            Juzgado origen<strong>*</strong>
           </label>
-          <p-select id="materiaOrigen" name="materiaOrigen" inputId="materia-dropdown" formControlName="materiaOrigen"
-            [options]="listaMateria()" optionLabel="nombre" required appendTo="body" [filter]="true"
-            filterPlaceholder="Buscar materia..." (onChange)="getVias($event.value)" class="w-full" fluid></p-select>
+          <span
+            class="p-inputtext p-component  flex w-full items-center bg-surface-100 dark:bg-surface-800">
+            {{ juzgadoOrigenNombre() }}
+          </span>
         </div>
-
-        <!-- Municipio origen -->
-        <!-- <div class="md:col-span-2">
+        <div class="md:col-span-3">
           <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
             Municipio origen<strong>*</strong>
           </label>
-          <p-select id="municipio-origen" [options]="listaMunicipioOrigen()" formControlName="municipioOrigen"
-            optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar municipio..."
-            inputId="municipioOrigen-dropdown" class="w-full" fluid></p-select>
-        </div> -->
-
-        <!-- Juzgado origen -->
-        <!-- <div class="md:col-span-2">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Juzgado origen
+          <span
+            class="p-inputtext p-component uppercase flex w-full items-center bg-surface-100 dark:bg-surface-800">
+            {{ municipioOrigenNombre() }}
+          </span>
+        </div>
+        <div class="md:col-span-2">
+          <label for="materiaOrigen" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+            Materia origen<strong>*</strong>
           </label>
-          <p-select id="juzgado" [options]="listaJuzgadoOrigen()" optionLabel="juzgado" formControlName="juzgadoOrigen"
-            appendTo="body" filter="true" filterPlaceholder="Buscar juzgado..." inputId="juzgado-dropdown"
-            class="w-full" fluid></p-select>
-        </div> -->
+          <p-select id="materiaOrigen" name="materiaOrigen" inputId="materia-dropdown" formControlName="materiaOrigen"
+            [options]="listaMateria()" optionLabel="descripcion" required appendTo="body" [filter]="true"
+            filterPlaceholder="Buscar materia..." (onChange)="getVias($event.value)" class="w-full" fluid></p-select>
+        </div>
+
        <!-- Tipo de juicio -->
         <div class="md:col-span-4">
           <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
@@ -495,7 +494,7 @@
     </div>
 
     <div class="mt-4 md:mt-0 flex items-center">
-      @if (!tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
+      @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
       <div class="relative" style="margin-right: 1rem;">
         <p-button (click)="openNewFirma()" severity="warn" icon="pi pi-pen-to-square" label="Firmar con FIREL">
         </p-button>
@@ -518,7 +517,6 @@
 
   <div class="w-full">
     <div class="grid grid-cols-6 gap-4 w-full items-end">
-      @if (listaDocumentos().length > 0) {
       <div class="col-span-6 sm:col-span-6 ">
 
         <p-table [value]="listaDocumentos()" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
@@ -598,7 +596,7 @@
 
                 <!--ELIMINAR DOCUMENTO-->
                 @if(idEstatus == 1 || idEstatus==0 ){ <!--//Pendiente de enviar-->
-                @if(!tienePermisoEliminarArchivo()){
+                @if(tienePermisoEliminarArchivo()){
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                   (click)="eliminarDocumento(documento,2,i)"></p-button>
 
@@ -614,7 +612,7 @@
         </app-pdf-dialog>
         }
       </div>
-      }
+      
 
 
       <!-- <div class="col-span-6 sm:col-span-1 flex justify-end">
@@ -639,8 +637,6 @@
                 <h5 class="mr-3 font-semibold dark:text-white">Generales</h5>
                 <p class="text-gray-500 dark:text-gray-400">Datos generales del exhorto </p>
               </div
-
-
             </div>
 
           </div>

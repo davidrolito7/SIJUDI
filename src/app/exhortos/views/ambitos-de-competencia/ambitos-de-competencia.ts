@@ -34,7 +34,7 @@ import { Spinner } from "../../../shared/components/spinner/spinner";
     InputIconModule,
     ConfirmDialog,
     Spinner
-], templateUrl: './ambitos-de-competencia.html',
+  ], templateUrl: './ambitos-de-competencia.html',
   styleUrl: './ambitos-de-competencia.css',
   providers: [MessageService, ConfirmationService]
 
@@ -58,13 +58,13 @@ export class AmbitosDeCompetencia {
   listaMateria: CatalogoMateria[] = [];
   listaMunicipiosOaxaca: CatalogoMunicipioDestino[] = [];
   listaMatJuz: ConfigMateriaJuzgado[] = [];
-  listaConfiJuzgado= signal<ConfigMateriaJuzgado[]>([]);
+  listaConfiJuzgado = signal<ConfigMateriaJuzgado[]>([]);
   selectedMunicipio: CatalogoMunicipioDestino | null = null
   isHeightExpanded = false;
   visible: boolean = false;
   materiaSelect: any;
   formSubmitted: boolean = false;
-  confirmacionEliminarJuzgado: boolean = false
+  //// confirmacionEliminarJuzgado: boolean = false
 
   isLoading: boolean = false;
   visibleDrawer: boolean = false;
@@ -114,19 +114,19 @@ export class AmbitosDeCompetencia {
     this.selectedMunicipio = event.value;
   }
 
-
-  abrirConfirmacionEliminarJuzgado() {
-    this.confirmacionEliminarJuzgado = true
+  confirmacionEliminarConfig(juzgado: ConfigMateriaJuzgado) {
+    this.confirmationService.confirm({
+      key: 'ambitoCompetencia',
+      accept: () => this.eliminarConfig(juzgado),
+    });
   }
 
-  eliminarJuzgado(juzgado: ConfigMateriaJuzgado) {
+  eliminarConfig(juzgado: ConfigMateriaJuzgado) {
     //console.log('Eliminando juzgado:', juzgado);
     this.ExhortosService.getQuitarAsignacionJuzgado(juzgado.idConfiguracion).subscribe({
       next: (response: any) => {
         if (response.success) {
-          //console.log('Datos recibidos del catálogo:', response);
-          this.listaMatJuz = this.listaMatJuz.filter(item => item !== juzgado);
-          //this.listaMateria = response.data;
+          this.listaConfiJuzgado.update(lista => lista.filter(item => item !== juzgado));
         }
         else {
           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
@@ -136,7 +136,7 @@ export class AmbitosDeCompetencia {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar un Juzgado' });
       },
     });
-    this.confirmacionEliminarJuzgado = false
+    ////  this.confirmacionEliminarJuzgado = false
   }
 
   CatalogoMateria() {
@@ -176,7 +176,7 @@ export class AmbitosDeCompetencia {
     });
   }
   getConfigMuncipioJuzgado(): void {
-    this.isLoading=true;
+    this.isLoading = true;
     this.ExhortosService.getConfigMunicipioMateriaJuzgado(0, 0)
       .subscribe({
         next: (response: any) => {
@@ -185,19 +185,16 @@ export class AmbitosDeCompetencia {
           } else {
             this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors });
           }
-          this.isLoading=false;
+          this.isLoading = false;
         },
         error: () => {
-          this.isLoading=false;
+          this.isLoading = false;
           this.cd.detectChanges();
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
             detail: 'Error al cargar el catálogo de configuraciones'
           });
-        },
-        complete:()=>{
-
         }
       });
   }
@@ -271,7 +268,7 @@ export class AmbitosDeCompetencia {
 
       const idAreaSistemaUsuario = this.authService.getAreaSistemaUsuario(); // Obtener perfil del servicio
       const perfilSeleccionado = this.authService.getPerfilSeleccionado();
-      this.isLoading=true
+      this.isLoading = true
       //const idAreaSistemaUsuario = localStorage.getItem('idAreaSistemaUsuario');
       //const perfilSeleccionado = localStorage.getItem('perfilSeleccionado');
       this.authService.GetSeccionesUsuario(idAreaSistemaUsuario, this.idPantalla.toString(), perfilSeleccionado)
@@ -310,6 +307,7 @@ export class AmbitosDeCompetencia {
       accept: () => this.AgregarJuzgadoConf(form),
     });
   }
+
   onSubmit(form: NgForm) {
     console.log('SUBMIT value:', form.value, 'valid=', form.valid);
 

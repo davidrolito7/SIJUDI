@@ -9,9 +9,9 @@ export const environment = {
         //ruta : 'https://localhost:5164'
     },
 
-    urlApiEfirma: 'https://pruebas.tribunaloaxaca.gob.mx/efirma/api/efirma', //este siempre debe apuntar a produccion porque no existe ambiente de pruebas para efirma
-    //urlApiExhortosElectronicos: "https://pruebas.tribunaloaxaca.gob.mx/exhortoselectronicos/api",
-    urlApiExhortosElectronicos: "https://localhost:44345/api",
+    urlApiEfirma: 'https://api.tribunaloaxaca.gob.mx/efirmaPruebas/api/efirma', //este siempre debe apuntar a produccion porque no existe ambiente de pruebas para efirma
+    urlApiExhortosElectronicos: "https://pruebas.tribunaloaxaca.gob.mx/exhortoselectronicos/api",
+    //urlApiExhortosElectronicos: "https://localhost:44345/api",
 
     //urlApiAmparosPJF:'https://localhost:44397/Api',
     urlApiAmparosPJF: 'https://pruebas.tribunaloaxaca.gob.mx/amparosApi/api',

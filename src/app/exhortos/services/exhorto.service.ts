@@ -32,7 +32,7 @@ export class ExhortosService {
   private deleteConfigMatJuz = environment.urlApiExhortosElectronicos + "/Configuraciones/quitarAsignacionJuzgado";//'https://api.tribunaloaxaca.gob.mx/exhortoselectronicos/api/Configuraciones/quitarAsignacionJuzgado'
   private configJuz = environment.urlApiExhortosElectronicos + "/Configuraciones";//'https://api.tribunaloaxaca.gob.mx/exhortoselectronicos/api/Configuraciones';
   private turnos = environment.urlApiExhortosElectronicos+"/Turnos";
-  
+  private permisos = environment.ConstantsService.ruta + "/api/Permisos";
   constructor(private http: HttpClient) { }
 
   actualizarExhortoEnviado(request: any): Observable<GenericResponse<any>> {
@@ -57,6 +57,9 @@ export class ExhortosService {
   enviarArchivosExhortosEnviados(idExhortoEnviado: number) {
     const url = `${this.exhortoEnviar}EntregarArchivos?idExhortoEnviado=${idExhortoEnviado}`;
     return this.http.post<GenericResponse<EnviadoArchivoRecibidoConAcuseResponse>>(url, null, { context: checkToken() });
+  }
+  getdetalleArea(): Observable<GenericResponse<any>> {
+    return this.http.get<GenericResponse<any>>(this.permisos + "/Area", { context: checkToken() });
   }
   //Metodo para obtener los municipios del estado seleccionado
   getCatalogoMunicipioDestino(param: EstadoSeleccionado): Observable<GenericResponse<CatalogoMunicipioDestino[]>> {

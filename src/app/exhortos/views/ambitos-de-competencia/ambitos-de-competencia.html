@@ -22,12 +22,12 @@
 
         <div class="flex items-start flex-col md:flex-row justify-between">
             <div>
-                <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 ">
+                <h1 class="font-bold text-2xl text-surface-900 dark:text-surface-0 ">
                     Búsqueda de juzgados
-                </label>
-                <label class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                </h1>
+                <p class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
                     Filtre cada una de las opciones para buscar el ámbito de competencia deseado.
-                </label>
+                </p>
             </div>
 
             <div class="mt-6 md:mt-0 flex items-center">
@@ -66,10 +66,10 @@
                     </div>
 
                     <div class="md:ml-auto flex gap-4  ">
-                        <p-button [outlined]="true" (click)="exportarCSV(dt1)" class="whitespace-nowrap ">
+                        <button pButton [outlined]="true" (click)="exportarCSV(dt1)" class="whitespace-nowrap ">
                             <i pButtonIcon class="pi pi-file-excel color"></i>
                             <span pButtonLabel>Exportar</span>
-                        </p-button>
+                        </button>
 
                     </div>
                 </div>
@@ -128,7 +128,7 @@
                       @if (tienePermisoEliminarAsignacion) {
                     <td>
                         <button pButton severity="danger"  icon="pi pi-trash"
-                            (click)="abrirConfirmacionEliminarJuzgado()">Eliminar</button>
+                            (click)="confirmacionEliminarConfig(juzgado)">Eliminar</button>
 
                     </td>
                     }
@@ -294,7 +294,7 @@
         <div class="grid grid-cols-6 gap-4 w-full items-end">
             <!-- Región -->
             <div class="col-span-6">
-                <label class="block mb-2 text-sm font-medium">Región</label>
+                <label for="region" class="block mb-2 text-sm font-medium">Región</label>
                 <p-select id="region" name="region" class="w-full" [options]="listaRegion" [(ngModel)]="selectRegion"
                     optionLabel="descripcion" appendTo="body" [filter]="true" filterPlaceholder="Buscar región..."
                     inputId="region-dropdown" (onChange)="onRegionChange($event)" required fluid>
@@ -303,7 +303,7 @@
 
             <!-- Municipio -->
             <div class="col-span-6">
-                <label class="block mb-2 text-sm font-medium">Municipio</label>
+                <label for="municipio" class="block mb-2 text-sm font-medium">Municipio</label>
                 <p-select id="municipio" name="municipioRegion" class="w-full uppercase" [options]="listaMunicipiosRegion"
                     [(ngModel)]="selectedMunicipioRegion" optionLabel="descripcion" [editable]="true" appendTo="body"
                     [filter]="true" filterPlaceholder="Buscar municipio..." inputId="municipio-dropdown"
@@ -313,7 +313,7 @@
 
             <!-- Juzgado -->
             <div class="col-span-6">
-                <label class="block mb-2 text-sm font-medium">Juzgado</label>
+                <label for="juzgado" class="block mb-2 text-sm font-medium">Juzgado</label>
                 <p-select id="juzgado" name="juzgadoRegion" class="w-full" [options]="listaJuzgado"
                     [(ngModel)]="selectedJuzgado" optionLabel="nombre" [editable]="true" appendTo="body"
                     [filter]="true" filterPlaceholder="Buscar juzgado..." inputId="juzgado-dropdown"
@@ -323,7 +323,7 @@
 
             <!-- Tipo de Materia -->
             <div class="col-span-6">
-                <label class="block mb-2 text-sm font-medium">Tipo de Materia</label>
+                <label for="materia" class="block mb-2 text-sm font-medium">Tipo de Materia</label>
                 <p-select id="materia" name="materiaRegion" class="w-full" [options]="listaMateria"
                     [(ngModel)]="selectMateria" optionLabel="nombre" appendTo="body" [filter]="true"
                     filterPlaceholder="Buscar materia..." inputId="materia-dropdown" required fluid>
@@ -343,4 +343,9 @@
 
 <app-confirm-dialog key="confirmAgregarConfig" title="Confirmación" message="¿Desea agregar esta configuración?"
     icon="pi pi-check" circleClass="bg-primary" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+
+<app-confirm-dialog key="ambitoCompetencia" title="Confirmación" message="¿Está seguro de eliminar esta configuración?"
+    icon="pi pi-trash" circleClass="bg-red-600 dark:bg-surface-0" acceptLabel="Eliminar"
+    acceptStyleClass="bg-red-600 border-red-600" rejectLabel="Cancelar">
 </app-confirm-dialog>

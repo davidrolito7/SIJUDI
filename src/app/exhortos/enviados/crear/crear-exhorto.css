@@ -9,3 +9,12 @@
   color: red;
   font-weight: bold;
 }
+
+
+::ng-deep .p-select-label {
+    text-transform: uppercase;
+}
+
+::ng-deep .p-select-option {
+    text-transform: uppercase;
+}
