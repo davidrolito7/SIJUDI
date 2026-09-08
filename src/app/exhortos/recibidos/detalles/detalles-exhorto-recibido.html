@@ -24,7 +24,7 @@
               }
               @if (tienePermisoRecibir() && tienePermisoDeclararIncompetencia() && detallesExhortos()?.actualizaciones?.length==0) {
                 <div  class="relative">
-                    1
+                    
                   @if (detallesExhortos() !== undefined ? detallesExhortos()?.generales?.estatus=='Recibido': false) {
                     <p-button
                       (onClick)="dialogIncomp.open(idExhortoRecibido)"

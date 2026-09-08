@@ -60,7 +60,7 @@ export class DetallesExhortoRecibido {
   dialogData: any = {}; // Para almacenar la información del archivo del diálogo
 
    //Asignamos el id pantalla
-  idPantalla=14157;
+  idPantalla=9;
   //Obtenemos las secciones de la pantalla actual
   secciones : secciones[] = [] ;
   perfilSeleccionado! : Signal<string>;
