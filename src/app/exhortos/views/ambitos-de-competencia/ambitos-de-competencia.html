@@ -1,97 +1,93 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
-<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
 
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-950 flex flex-col gap-4">
+<div class="relative mx-auto mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+    <!-- Esquinas decorativas -->
+    <span
+        class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200"></span>
 
-    <!-- HEADER -->
-    <!-- <header
-        class="border border-surface rounded-2xl bg-surface-50 dark:bg-surface-950 flex items-center justify-between overflow-hidden">
-        <p-breadcrumb class="hidden lg:block" styleClass="bg-surface-50 dark:bg-surface-950" [home]="home"
-            [model]="items" />
+    <span
+        class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200"></span>
 
-        <div class="ml-auto flex items-center gap-2 pr-4 pt-2 pb-2">
-            <span class="text-base font-medium text-surface-700 dark:text-surface-200">Abogado: Juan Pérez</span>
-            <p-avatar image="https://www.primefaces.org/cdn/primevue/images/landing/apps/main-avatar.png" size="large"
-                shape="circle" class="shrink-0 p-avatar p-avatar-circle p-avatar-image p-avatar-lg p-component">
-            </p-avatar>
-        </div>
-    </header> -->
+    <span
+        class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200"></span>
 
-    <!-- TITULO -->
-    <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
+    <span
+        class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200"></span>
 
-        <div class="flex items-start flex-col md:flex-row justify-between">
-            <div>
-                <h1 class="font-bold text-2xl text-surface-900 dark:text-surface-0 ">
-                    Búsqueda de juzgados
-                </h1>
-                <p class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-                    Filtre cada una de las opciones para buscar el ámbito de competencia deseado.
-                </p>
-            </div>
+    <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="min-w-0">
+            <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+                <span class="pi pi-map-marker text-lg text-primary"></span> Búsqueda de juzgados
+            </h1>
 
-            <div class="mt-6 md:mt-0 flex items-center">
-                @if(!tienePermisoAgregarJuzgadoMateria) {
-                <button (click)="visibleDrawer = true" pButton class="whitespace-nowrap btn-secondary  ">
-                    <i pButtonIcon class="pi pi-plus color"></i>
-                    <span pButtonLabel>Agregar</span>
-                </button>
-                }
-            </div>
-
-
+            <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+                Filtre cada una de las opciones para buscar el ámbito de competencia deseado.
+            </p>
         </div>
 
+        @if(!tienePermisoAgregarJuzgadoMateria) {
+        <div class="shrink-0">
+            <button pButton type="button" class="w-full sm:w-auto" (click)="visibleDrawer = true">
+                <i pButtonIcon class="pi pi-plus"></i>
+                <span pButtonLabel>Agregar</span>
+            </button>
+        </div>
+        }
     </div>
-</div>
 
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
+    <!-- RESULTADOS -->
+    <div class="relative bg-surface-50 sm:p-0 p-4 mt-4 gap-4 transition-colors dark:bg-surface-950/30">
+        <!-- Encabezado de resultados -->
+        <div class="p-4">
+            <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
+                Resultado
+            </h2>
 
-        <p-table #dt1  [value]="listaConfiJuzgado()" dataKey="idConfiguracion" [rows]="10"
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+                Listado de ámbitos de competencia encontrados con base en los filtros aplicados.
+            </p>
+        </div>
+
+        <!-- Separador -->
+        <div class="border-t-[0.5px] border-surface-200 dark:border-surface-800"></div>
+
+        <p-table class="personalizado" #dt1 [value]="listaConfiJuzgado()" dataKey="idConfiguracion" [rows]="10"
             [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
             [globalFilterFields]="['region','municipio','materia','juzgado']">
             <ng-template #caption>
-                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                    <div>
-                        <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-1">
-                            Resultado
-                        </div>
-
-                        <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-                            <div class="flex items-center gap-2">
-                                <i class="pi pi-briefcase text-base! leading-normal!"></i>
-                                <span>{{ totalRegistros }} Registros</span>
-                            </div>
-                        </div>
+                <div class="flex w-full p-2 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="inline-flex items-center gap-2 rounded-lg
+               bg-surface-100 px-3 py-1.5
+               text-surface-700
+               dark:bg-surface-800 dark:text-surface-200">
+                        <i class="pi pi-briefcase text-sm text-primary"></i>
+                        <span class="text-sm font-semibold">{{ totalRegistros }} Registros</span>
                     </div>
 
-                    <div class="md:ml-auto flex gap-4  ">
-                        <button pButton [outlined]="true" (click)="exportarCSV(dt1)" class="whitespace-nowrap ">
-                            <i pButtonIcon class="pi pi-file-excel color"></i>
+                    <div class="flex justify-end gap-2">
+                        <button pButton [outlined]="true" (click)="exportarCSV(dt1)" class="whitespace-nowrap">
+                            <i pButtonIcon class="pi pi-file-excel"></i>
                             <span pButtonLabel>Exportar</span>
                         </button>
-
                     </div>
                 </div>
-
             </ng-template>
 
             <ng-template #header>
                 <tr>
-                    <th style="min-width:15rem">
+                    <th class="text-base font-semibold" style="min-width:15rem">
                         <div class="flex items-center justify-between">
                             Región
                             <p-columnfilter type="text" field="region" display="menu" />
                         </div>
                     </th>
-                    <th style="min-width:15rem">
+                    <th class="text-base font-semibold" style="min-width:15rem">
                         <div class="flex items-center justify-between">
-
                             Municipio
                             <p-columnfilter type="text" field="municipio" display="menu" />
                         </div>
                     </th>
-                    <th style="min-width:10rem">
+                    <th class="text-base font-semibold" style="min-width:10rem">
                         <div class="flex items-center justify-between">
                             Materia
                             <p-columnfilter field="materia" display="menu" [showMatchModes]="false"
@@ -105,17 +101,14 @@
                             </p-columnfilter>
                         </div>
                     </th>
-                    <th style="min-width:15rem">
+                    <th class="text-base font-semibold" style="min-width:15rem">
                         <div class="flex items-center justify-between">
                             Juzgado
                             <p-columnfilter type="text" field="juzgado" display="menu" />
                         </div>
                     </th>
-                    <th style="min-width:10rem">
-                        <div class="flex items-center justify-between">
-                            Acciones
-                        </div>
-                    </th>
+                    <th pFrozenColumn alignFrozen="right" class="text-base font-semibold" style="min-width:10rem">
+                        Acciones</th>
                 </tr>
             </ng-template>
 
@@ -125,11 +118,12 @@
                     <td>{{ juzgado.municipio }}</td>
                     <td>{{ juzgado.materia }}</td>
                     <td>{{ juzgado.juzgado }}</td>
-                      @if (tienePermisoEliminarAsignacion) {
-                    <td>
-                        <button pButton severity="danger"  icon="pi pi-trash"
-                            (click)="confirmacionEliminarConfig(juzgado)">Eliminar</button>
-
+                    @if (tienePermisoEliminarAsignacion) {
+                    <td pFrozenColumn alignFrozen="right">
+                        <button pButton severity="danger" (click)="confirmacionEliminarConfig(juzgado)">
+                            <i pButtonIcon class="pi pi-trash"></i>
+                            <span pButtonLabel>Eliminar</span>
+                        </button>
                     </td>
                     }
                 </tr>
@@ -137,157 +131,16 @@
 
             <ng-template #emptymessage>
                 <tr>
-                    <td colspan="7">No hay registros.</td>
+                    <td colspan="5" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
+                        No hay registros.
+                    </td>
                 </tr>
             </ng-template>
         </p-table>
-
+    </div>
 </div>
 
-
 <p-toast></p-toast>
-<!-- 
-<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 mt-5">
-    <div class="mx-auto max-w-7xl px-4 lg:px-6">
-        <div class="flex-row mb-3 justify-between space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
-            <div>
-                <p class="mr-3 text-3xl font-semibold dark:text-white">Juzgados</p>
-            </div>
-
-        </div>
-
-        <section class="flex items-center mb-10  bg-gray-50 dark:bg-gray-900">
-            <div class="w-full max-w-7xl px-0 mx-auto">
-                <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
-                    <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-                        <div class="relative overflow-hidden bg-white dark:bg-gray-800 sm:rounded-lg mt-0">
-                            <div
-                                class="flex-row items-center justify-between p-4 pb-0 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
-                                <div>
-                                    <h5 class="mr-3 font-semibold dark:text-white">Búsqueda</h5>
-                                    <p class="text-gray-500 dark:text-gray-400">Datos generales de los Juzgados</p>
-                                </div>
-                                <div class="flex items-center">
-                                    <button type="submit" class="text-white  bg-morado hover:bg-morado_hover focus:outline-none focus:ring-2 focus:ring-violeta/50 
-                                  font-medium rounded-full text-sm px-8 py-2.5 text-center
-                                  me-2 mb-0 dark:focus:ring-yellow-900">
-                                        Buscar Juzgado
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="overflow-x-auto"
-                            [ngStyle]="isHeightExpanded ? { 'min-height': '300px', 'max-height': '500px' } : {}">
-                            <div class="p-4 grid gap-4 sm:grid-cols-4 sm:gap-6"
-                                [ngClass]="{ 'submitted': formSubmitted }">
-                                <div class="w-full sm:col-span-2">
-                                    <div class="w-full mt-4 mb-4"
-                                        [ngClass]="{ 'error-border': formSubmitted && materiaSelectModel.invalid }">
-                                        <p-floatLabel>
-                                            <p-select id="materia" name="materia" inputId="materia-dropdown"
-                                                [options]="listaMateria" [(ngModel)]="materiaSelect"
-                                                optionLabel="nombre" #materiaSelectModel="ngModel" required
-                                                appendTo="body"
-                                                [ngClass]="{ 'p-invalid': formSubmitted && materiaSelectModel.invalid }"
-                                                [filter]="true" filterPlaceholder="Buscar materia..."
-                                                [style]="{'width': '100%' }"></p-select>
-                                            <label for="materia-dropdown">Tipo de Materia</label>
-                                        </p-floatLabel>
-                                    </div>
-                                </div>
-                                <div class="w-full sm:col-span-2">
-                                    <div class="w-full mt-4"
-                                        [ngClass]="{ 'error-border': formSubmitted && municipioSelectModel.invalid }">
-                                        <p-floatLabel>
-                                            <p-select id="municipio" name="municipio" inputId="municipio-dropdown"
-                                                required [options]="listaMunicipiosOaxaca"
-                                                [(ngModel)]="selectedMunicipio" (onChange)="onMunicipioChange($event)"
-                                                optionLabel="descripcion" #municipioSelectModel="ngModel"
-                                                appendTo="body" [filter]="true" filterPlaceholder="Buscar municipio..."
-                                                [style]="{'width': '100%' }"></p-select>
-                                            <label for="municipio-dropdown">Municipio</label>
-                                        </p-floatLabel>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <section class="bg-gray-50 dark:bg-gray-900 mt-10">
-            <div class="w-full max-w-7xl px-0 mx-auto">
-                <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-                    <div class="relative overflow-hidden bg-white dark:bg-gray-800 sm:rounded-lg mt-0">
-                        <div
-                            class="flex-row items-center justify-between p-4 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
-                            <div>
-                                <h5 class="mr-3 font-semibold dark:text-white">Juzgados</h5>
-                                <p class="text-gray-500 dark:text-gray-400">Juzgados encontrados</p>
-                            </div>
-                            <div class="flex items-center">
-                                <button type="button" class="text-white  bg-morado hover:bg-morado_hover focus:outline-none focus:ring-2 focus:ring-violeta/50
-                                          font-medium rounded-full text-sm px-8 py-2.5 text-center
-                                          me-2 mb-0 dark:focus:ring-yellow-900" (click)="descargarJSON()">
-                                    Exportar JSON
-                                </button>
-                                @if(tienePermisoAnadirJuzgadoMateria){
-                                <button type="button" class="text-white  bg-morado hover:bg-morado_hover focus:outline-none focus:ring-2 focus:ring-violeta/50
-                                          font-medium rounded-full text-sm px-8 py-2.5 text-center
-                                          me-2 mb-0 dark:focus:ring-yellow-900" (click)="abrirModal()">
-                                    Añadir Juzgado - Materia
-                                </button>
-                                }
-
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <thead
-                                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                <tr>
-                                    <th scope="col" class="px-4 py-3">Juzgado</th>
-                                    <th scope="col" class="px-4 py-3">Activo</th>
-                                    <th scope="col" class="px-4 py-3">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (item of listaMatJuz; track item) {
-                                <tr class="border-b dark:border-gray-700">
-                                    <th scope="row"
-                                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {{ item.juzgado }}
-                                    </th>
-                                    <td class="px-4 py-3">
-                                        <img src="assets/icons/palomita.png" alt="Activo" class="icon" />
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        @if(tienePermisoEliminarAsignacion){
-                                        <button type="button" class="text-white bg-red-500 
-                                               hover:bg-red-600 focus:outline-none 
-                                                 focus:ring-4 focus:ring-red-300 font-medium 
-                                                 rounded-full text-sm px-3 py-2.5 text-center 
-                                                 me-2 mb-2 dark:focus:ring-red-900"
-                                            (click)="abrirConfirmacionEliminarJuzgado()">
-                                            Eliminar
-                                        </button>
-                                        }
-                                      
-                                    </td>
-                                </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-</section> -->
 
 <p-drawer header="Relacionar" [(visible)]="visibleDrawer" position="right" styleClass="!w-full sm:!w-[30rem] ">
     <form class="flex flex-col" #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
@@ -304,10 +157,10 @@
             <!-- Municipio -->
             <div class="col-span-6">
                 <label for="municipio" class="block mb-2 text-sm font-medium">Municipio</label>
-                <p-select id="municipio" name="municipioRegion" class="w-full uppercase" [options]="listaMunicipiosRegion"
-                    [(ngModel)]="selectedMunicipioRegion" optionLabel="descripcion" [editable]="true" appendTo="body"
-                    [filter]="true" filterPlaceholder="Buscar municipio..." inputId="municipio-dropdown"
-                    (onChange)="onMunicipioChange($event)" required fluid>
+                <p-select id="municipio" name="municipioRegion" class="w-full uppercase"
+                    [options]="listaMunicipiosRegion" [(ngModel)]="selectedMunicipioRegion" optionLabel="descripcion"
+                    [editable]="true" appendTo="body" [filter]="true" filterPlaceholder="Buscar municipio..."
+                    inputId="municipio-dropdown" (onChange)="onMunicipioChange($event)" required fluid>
                 </p-select>
             </div>
 

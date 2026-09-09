@@ -1,91 +1,101 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
-<!-- BLOQUE FIJO (HEADER + BUSQUEDA) -->
-<div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-950 flex flex-col gap-4">
 
-    <!-- HEADER -->
-        <!-- <app-header></app-header> -->
+<div class="relative mx-auto mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+    <!-- Esquinas decorativas -->
+    <span
+        class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200"></span>
 
+    <span
+        class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200"></span>
 
-    <!-- BUSQUEDA -->
-    <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
+    <span
+        class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200"></span>
 
-        <div class="flex items-start flex-col md:flex-row justify-between">
-            <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-                Búsqueda
-            </label>
+    <span
+        class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200"></span>
 
+    <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="min-w-0">
+            <h1 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+                <span class="pi pi-send text-lg text-primary"></span> Exhortos Enviados
+            </h1>
 
-        </div>
-        <form (ngSubmit)="getListaExhortosEnviados()" (keydown.enter)="getListaExhortosEnviados()">
-
-            <div class="grid grid-cols-12 gap-4 w-full items-end">
-                <!-- Estatus -->
-                <div class="col-span-6 lg:col-span-3 w-full">
-                    <label class="block mb-2 text-sm font-medium">Estatus</label>
-                    <p-select inputId="idEstatus" class="w-full" name="idEstatus"
-                        [options]="[...listadoEstatus, { idEstatus: 0, descripcion: 'Todos' }]"
-                        [(ngModel)]="selectedEstatus" optionLabel="descripcion" appendTo="body" fluid></p-select>
-                </div>
-
-                <!-- Fecha Inicial -->
-                <div class="col-span-6 lg:col-span-2 w-full">
-                    <label class="block mb-2 text-sm font-medium">Fecha Inicial</label>
-                    <p-datepicker ngSkipHydration inputId="fechaInicio" name="fechaInicio" [iconDisplay]="'input'" [showIcon]="true"
-                        [(ngModel)]="fechaInicio" class="w-full" fluid dateFormat="dd/mm/yy"></p-datepicker>
-                </div>
-
-                <!-- Fecha Final -->
-                <div class="col-span-6 lg:col-span-2 w-full">
-                    <label class="block mb-2 text-sm font-medium">Fecha Final</label>
-                    <p-datepicker ngSkipHydration inputId="fechaFin" name="fechaFin" [iconDisplay]="'input'" [showIcon]="true"
-                        [(ngModel)]="fechaFin" class="w-full" fluid dateFormat="dd/mm/yy"></p-datepicker>
-                </div>
-                <!-- Botones Filtrar y Buscar -->
-                <div class="col-span-6 lg:col-span-4 flex gap-4 items-end">
-                    <p-button [outlined]="true" icon="pi pi-filter-slash" (click)="clearFecha()"></p-button>
-                    <p-button type="submit" >
-                        <i pButtonIcon class="pi pi-search"></i>
-                        <span pButtonLabel>Buscar</span>
-                    </p-button>
-                </div>
-
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-
-<!-- CONTENIDO (ya no se mete "debajo" visualmente) -->
-
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
-    <div class="flex items-start flex-col md:justify-between md:flex-row">
-        <div>
-            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Resultado</div>
-            <!-- <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-users text-base! leading-normal!"></i>
-                    <span>332 Registros</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-globe text-base! leading-normal!"></i>
-                    <span>9.402 Sesiones</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-clock text-base! leading-normal!"></i>
-                    <span>2.32m Promedio</span>
-                </div>
-            </div> -->
+            <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+                Consulte el listado de exhortos enviados, filtre por estatus o rango de fechas.
+            </p>
         </div>
     </div>
 
-    <div class="card">
-        <p-table #dt1 [value]="listadosSignal()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+
+
+    <!-- RESULTADOS -->
+    <div class="relative bg-surface-50 sm:p-0 p-4 mt-4 gap-4 transition-colors dark:bg-surface-950/30">
+        <!-- Encabezado de resultados -->
+        <div class="p-4">
+            <h2 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
+                Listado
+            </h2>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+                Filtre los exhortos enviados por estatus o rango de fechas.
+            </p>
+        </div>
+
+        <!-- Separador -->
+        <div class="border-t-[0.5px] border-surface-200 dark:border-surface-800"></div>
+        <div class="p-4">
+            <form (ngSubmit)="getListaExhortosEnviados()" (keydown.enter)="getListaExhortosEnviados()">
+                <div class="grid grid-cols-12 gap-4 w-full items-end">
+                    <!-- Estatus -->
+                    <div class="col-span-6 lg:col-span-3 w-full">
+                        <p-floatlabel variant="on" class="w-full">
+                            <p-select inputId="idEstatus" class="w-full" name="idEstatus"
+                                [options]="[...listadoEstatus, { idEstatus: 0, descripcion: 'Todos' }]"
+                                [(ngModel)]="selectedEstatus" optionLabel="descripcion" appendTo="body"
+                                fluid></p-select>
+                            <label for="idEstatus">Estatus</label>
+                        </p-floatlabel>
+                    </div>
+
+                    <!-- Fecha Inicial -->
+                    <div class="col-span-6 lg:col-span-2 w-full">
+                        <p-floatlabel variant="on" class="w-full">
+                            <p-datepicker ngSkipHydration inputId="fechaInicio" name="fechaInicio"
+                                [iconDisplay]="'input'" [showIcon]="true" [(ngModel)]="fechaInicio" class="w-full"
+                                fluid dateFormat="dd/mm/yy"></p-datepicker>
+                            <label for="fechaInicio">Fecha Inicial</label>
+                        </p-floatlabel>
+                    </div>
+
+                    <!-- Fecha Final -->
+                    <div class="col-span-6 lg:col-span-2 w-full">
+                        <p-floatlabel variant="on" class="w-full">
+                            <p-datepicker ngSkipHydration inputId="fechaFin" name="fechaFin"
+                                [iconDisplay]="'input'" [showIcon]="true" [(ngModel)]="fechaFin" class="w-full" fluid
+                                dateFormat="dd/mm/yy"></p-datepicker>
+                            <label for="fechaFin">Fecha Final</label>
+                        </p-floatlabel>
+                    </div>
+
+                    <!-- Botones Filtrar y Buscar -->
+                    <div class="col-span-6 lg:col-span-4 flex gap-4 items-end">
+                        <p-button [outlined]="true" icon="pi pi-filter-slash" (click)="clearFecha()"></p-button>
+                        <p-button type="submit">
+                            <i pButtonIcon class="pi pi-search"></i>
+                            <span pButtonLabel>Buscar</span>
+                        </p-button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- Separador -->
+        <div class="border-t-[0.5px] border-surface-200 dark:border-surface-800"></div>
+
+        <p-table class="personalizado" #dt1 [value]="listadosSignal()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+            [paginator]="true"
             [globalFilterFields]="['numeroExhorto','estadoDestino','municipioDestino','folioSeguimiento','areaTurnadoNombre']">
             <ng-template #caption>
-                <div class="flex">
+                <div class="flex p-2">
                     <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
                     <p-iconfield iconPosition="left" class="ml-auto">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
@@ -96,60 +106,39 @@
             </ng-template>
 
             <ng-template #header>
-
                 <tr>
-                  <th>
-                        <div class="flex items-center justify-between">Número de exhorto origen</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Estado destino</div>
-                    </th>
-                    
-                    <th>
-                        <div class="flex items-center justify-between">Municipio destino</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Materia</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Folio de Seguimiento</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Area turnado</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Fecha de envío</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Fecha recepción destino</div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-between">Estatus</div>
-                    </th>
-                    <th style="min-width: 5rem">
-                        <div class="flex items-center justify-between">Acciones</div>
-                    </th>
+                    <th class="text-base font-semibold">Número de exhorto origen</th>
+                    <th class="text-base font-semibold">Estado destino</th>
+                    <th class="text-base font-semibold">Municipio destino</th>
+                    <th class="text-base font-semibold">Materia</th>
+                    <th class="text-base font-semibold">Folio de Seguimiento</th>
+                    <th class="text-base font-semibold">Area turnado</th>
+                    <th class="text-base font-semibold">Fecha de envío</th>
+                    <th class="text-base font-semibold">Fecha recepción destino</th>
+                    <th class="text-base font-semibold">Estatus</th>
+                    <th pFrozenColumn alignFrozen="right" class="text-base font-semibold" style="min-width: 5rem">
+                        Acciones</th>
                 </tr>
             </ng-template>
 
             <ng-template #body let-listado>
                 <tr>
-                    <td style="font-size: small;">{{ listado.numeroExhorto }}</td>
-                    <td style="font-size: small;">{{ listado.estadoDestino }}</td>
-                    <td style="font-size: small;">{{ listado.municipioDestino}}</td>
-                    <td style="font-size: small;">{{ listado.materiaNombre }}</td>
-                    <td style="font-size: small;">{{ listado.folioSeguimiento }}</td>
-                    <td style="font-size: small;">{{ listado.areaTurnadoNombre }}</td>
-                    <td style="font-size: small;">{{ listado.fechaOrigen | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                    <td style="font-size: small;">{{ listado.fechaHoraRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                    <td style="font-size: small;">
+                    <td>{{ listado.numeroExhorto }}</td>
+                    <td>{{ listado.estadoDestino }}</td>
+                    <td>{{ listado.municipioDestino}}</td>
+                    <td>{{ listado.materiaNombre }}</td>
+                    <td>{{ listado.folioSeguimiento }}</td>
+                    <td>{{ listado.areaTurnadoNombre }}</td>
+                    <td>{{ listado.fechaOrigen | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                    <td>{{ listado.fechaHoraRecepcion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                    <td>
                         <p-tag [icon]="getTagConfig(listado.estatus).icon"
                             [severity]="getTagConfig(listado.estatus).severity" [value]="listado.estatus" />
                     </td>
-                    <td class="text-center">
-                        <p-button (click)="verDetalleEnviado(listado.idExhortoEnviado)" [rounded]="true"
-                        [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
-                        pTooltip="Ver detalle" tooltipPosition="top" title="Detalle">
+                    <td pFrozenColumn alignFrozen="right" class="text-center">
+                        <p-button (click)="verDetalleEnviado(listado.idExhortoEnviado)" [rounded]="true" [text]="true"
+                            [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
+                            tooltipPosition="top" title="Detalle">
                         </p-button>
                     </td>
                 </tr>
@@ -157,11 +146,13 @@
 
             <ng-template #emptymessage>
                 <tr>
-                    <td colspan="10">Sin exhortos</td>
+                    <td colspan="10" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
+                        Sin exhortos
+                    </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
 </div>
-<p-toast></p-toast>
 
+<p-toast></p-toast>

@@ -70,175 +70,173 @@
       <!-- ORIGEN -->
       <div
         class="relative flex-1 border p-4 border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-950/30 lg:col-start-1 lg:row-start-1">
-      <div class="flex items-start gap-3">
-        <div
-          class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
-          <span class="text-sm font-semibold text-surface-800 dark:text-surface-100"> 01 </span>
+        <div class="flex items-start gap-3">
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+            <span class="text-sm font-semibold text-surface-800 dark:text-surface-100"> 01 </span>
+          </div>
+
+          <div class="min-w-0">
+            <h3 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
+              Origen
+            </h3>
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+              Datos del juzgado y expediente que envía el exhorto.
+            </p>
+          </div>
         </div>
 
-        <div class="min-w-0">
-          <h3 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
-            Origen
-          </h3>
-          <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
-            Datos del juzgado y expediente que envía el exhorto.
-          </p>
-        </div>
-      </div>
+        <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
 
-      <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-end">
+          <!-- Materia origen -->
+          <div class="md:col-span-3">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Juzgado origen<strong>*</strong>
+            </label>
+            <span class="p-inputtext p-component  flex w-full items-center bg-surface-100 dark:bg-surface-800">
+              {{ juzgadoOrigenNombre() }}
+            </span>
+          </div>
+          <div class="md:col-span-3">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Municipio origen<strong>*</strong>
+            </label>
+            <span class="p-inputtext p-component uppercase flex w-full items-center bg-surface-100 dark:bg-surface-800">
+              {{ municipioOrigenNombre() }}
+            </span>
+          </div>
+          <div class="md:col-span-2">
+            <label for="materiaOrigen" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Materia origen<strong>*</strong>
+            </label>
+            <p-select id="materiaOrigen" name="materiaOrigen" inputId="materia-dropdown" formControlName="materiaOrigen"
+              [options]="listaMateria()" optionLabel="descripcion" required appendTo="body" [filter]="true"
+              filterPlaceholder="Buscar materia..." (onChange)="getVias($event.value)" class="w-full" fluid></p-select>
+          </div>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-end">
-        <!-- Materia origen -->
-        <div class="md:col-span-3">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Juzgado origen<strong>*</strong>
-          </label>
-          <span
-            class="p-inputtext p-component  flex w-full items-center bg-surface-100 dark:bg-surface-800">
-            {{ juzgadoOrigenNombre() }}
-          </span>
-        </div>
-        <div class="md:col-span-3">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Municipio origen<strong>*</strong>
-          </label>
-          <span
-            class="p-inputtext p-component uppercase flex w-full items-center bg-surface-100 dark:bg-surface-800">
-            {{ municipioOrigenNombre() }}
-          </span>
-        </div>
-        <div class="md:col-span-2">
-          <label for="materiaOrigen" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Materia origen<strong>*</strong>
-          </label>
-          <p-select id="materiaOrigen" name="materiaOrigen" inputId="materia-dropdown" formControlName="materiaOrigen"
-            [options]="listaMateria()" optionLabel="descripcion" required appendTo="body" [filter]="true"
-            filterPlaceholder="Buscar materia..." (onChange)="getVias($event.value)" class="w-full" fluid></p-select>
-        </div>
+          <!-- Tipo de juicio -->
+          <div class="md:col-span-4">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Tipo de juicio<strong>*</strong>
+            </label>
+            <p-select id="tipojuicio" name="tipojuicio" inputId="juicio-dropdown" formControlName="tipojuicio"
+              [options]="listaTipoVias" optionLabel="descripcion" required appendTo="body" [filter]="true"
+              filterPlaceholder="Buscar vía..." (onChange)="getVias(exhortosForm.value.materiaOrigen ?? null)"
+              class="w-full" fluid></p-select>
+          </div>
+          <!-- Número de expediente -->
+          <div class="md:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Número de expediente<strong>*</strong>
+            </label>
+            <input pInputText type="text" id="noExpediente" formControlName="noExpediente" name="noExpediente"
+              class="w-full" maxlength="50" />
+          </div>
 
-       <!-- Tipo de juicio -->
-        <div class="md:col-span-4">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Tipo de juicio<strong>*</strong>
-          </label>
-          <p-select id="tipojuicio" name="tipojuicio" inputId="juicio-dropdown" formControlName="tipojuicio"
-            [options]="listaTipoVias" optionLabel="descripcion" required appendTo="body" [filter]="true"
-            filterPlaceholder="Buscar vía..." (onChange)="getVias(exhortosForm.value.materiaOrigen ?? null)"
-            class="w-full" fluid></p-select>
-        </div>
-        <!-- Número de expediente -->
-        <div class="md:col-span-2">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Número de expediente<strong>*</strong>
-          </label>
-          <input pInputText type="text" id="noExpediente" formControlName="noExpediente" name="noExpediente"
-            class="w-full" maxlength="50" />
-        </div>
+          <!-- Número de Oficio -->
+          <div class="md:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Número de oficio
+            </label>
+            <input pInputText type="text" id="OficioOrigen" name="OficioOrigen" formControlName="OficioOrigen"
+              class="w-full" maxlength="50" />
+          </div>
 
-        <!-- Número de Oficio -->
-        <div class="md:col-span-2">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Número de oficio
-          </label>
-          <input pInputText type="text" id="OficioOrigen" name="OficioOrigen" formControlName="OficioOrigen"
-            class="w-full" maxlength="50" />
-        </div>
+          <!-- Número de fojas -->
+          <div class="md:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Número de fojas<strong>*</strong>
+            </label>
+            <p-inputnumber inputId="numeroFojas" formControlName="numeroFojas" [showButtons]="true" mode="decimal"
+              [min]="0" [max]="5000" [useGrouping]="false" class="w-full" fluid></p-inputnumber>
+          </div>
 
-     <!-- Número de fojas -->
-        <div class="md:col-span-2">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Número de fojas<strong>*</strong>
-          </label>
-          <p-inputnumber inputId="numeroFojas" formControlName="numeroFojas" [showButtons]="true" mode="decimal"
-            [min]="0" [max]="5000" [useGrouping]="false" class="w-full" fluid></p-inputnumber>
-        </div>
+          <!-- Nombre de juez -->
+          <div class="md:col-span-6">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Nombre de juez
+            </label>
+            <input pInputText type="text" id="nombreJuez" name="nombreJuez" formControlName="nombreJuez" class="w-full"
+              maxlength="100" />
+          </div>
 
-        <!-- Nombre de juez -->
-        <div class="md:col-span-6">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Nombre de juez
-          </label>
-          <input pInputText type="text" id="nombreJuez" name="nombreJuez" formControlName="nombreJuez" class="w-full"
-            maxlength="100" />
-        </div>
 
-    
-      </div>
+        </div>
       </div>
 
       <!-- DESTINO -->
       <div
         class="relative flex-1 border p-4 border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-950/30 lg:col-start-2 lg:row-start-1">
-      <div class="flex items-start gap-3">
-        <div
-          class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
-          <span class="text-sm font-semibold text-surface-800 dark:text-surface-100"> 02 </span>
+        <div class="flex items-start gap-3">
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+            <span class="text-sm font-semibold text-surface-800 dark:text-surface-100"> 02 </span>
+          </div>
+
+          <div class="min-w-0">
+            <h3 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
+              Destino
+            </h3>
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
+              Datos del juzgado exhortado que recibirá el trámite.
+            </p>
+          </div>
         </div>
 
-        <div class="min-w-0">
-          <h3 class="text-base font-semibold leading-5 text-surface-800 dark:text-surface-100">
-            Destino
-          </h3>
-          <p class="mt-1 max-w-2xl text-sm leading-5 text-surface-500 dark:text-surface-400">
-            Datos del juzgado exhortado que recibirá el trámite.
-          </p>
-        </div>
-      </div>
+        <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
 
-      <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-end">
+          <!-- Estado destino -->
+          <div class="md:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Estado exhortado<strong>*</strong>
+            </label>
+            <p-select id="estadoDestino" [options]="listaEstadoDestino()" formControlName="estadoDestino"
+              optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar estado..."
+              inputId="estadoDestino-dropdown" (onChange)="cargarCatalogos($event.value)" fluid></p-select>
+          </div>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-end">
-        <!-- Estado destino -->
-        <div class="md:col-span-2">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Estado exhortado<strong>*</strong>
-          </label>
-          <p-select id="estadoDestino" [options]="listaEstadoDestino()" formControlName="estadoDestino"
-            optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar estado..."
-            inputId="estadoDestino-dropdown" (onChange)="cargarCatalogos($event.value)" fluid></p-select>
-        </div>
+          <!-- Municipio destino -->
+          <div class="md:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Municipio turnado<strong>*</strong>
+            </label>
+            <p-select id="municipio" [options]="listaMunicipioDestino()" optionLabel="descripcion"
+              formControlName="municipioDestino" appendTo="body" filter="true" filterPlaceholder="Buscar municipio..."
+              inputId="municipio-dropdown" class="w-full" fluid></p-select>
+          </div>
 
-        <!-- Municipio destino -->
-        <div class="md:col-span-2">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Municipio turnado<strong>*</strong>
-          </label>
-          <p-select id="municipio" [options]="listaMunicipioDestino()" optionLabel="descripcion"
-            formControlName="municipioDestino" appendTo="body" filter="true" filterPlaceholder="Buscar municipio..."
-            inputId="municipio-dropdown" class="w-full" fluid></p-select>
-        </div>
+          <!-- Materia destino -->
+          <div class="md:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Materia destino<strong>*</strong>
+            </label>
+            <p-select id="materiaEstadoDestino" [options]="listaMateriaEstadoDestino()"
+              formControlName="materiaEstadoDestino" optionLabel="nombre" appendTo="body" filter="true"
+              filterPlaceholder="Buscar materia..." inputId="materiaEstadoDestino-dropdown" class="w-full"
+              fluid></p-select>
+          </div>
 
-        <!-- Materia destino -->
-        <div class="md:col-span-2">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Materia destino<strong>*</strong>
-          </label>
-          <p-select id="materiaEstadoDestino" [options]="listaMateriaEstadoDestino()"
-            formControlName="materiaEstadoDestino" optionLabel="nombre" appendTo="body" filter="true"
-            filterPlaceholder="Buscar materia..." inputId="materiaEstadoDestino-dropdown" class="w-full"
-            fluid></p-select>
-        </div>
+          <!-- Tipo de diligencia -->
+          <div class="md:col-span-3">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Tipo de diligencia<strong>*</strong>
+            </label>
+            <p-select id="tipoDiligencia" [options]="listaTipoDiligencia()" formControlName="TipoDiligencia"
+              optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar tipo de diligencia..."
+              inputId="tipoDiligencia-dropdown" class="w-full" fluid></p-select>
+          </div>
 
-        <!-- Tipo de diligencia -->
-        <div class="md:col-span-3">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Tipo de diligencia<strong>*</strong>
-          </label>
-          <p-select id="tipoDiligencia" [options]="listaTipoDiligencia()" formControlName="TipoDiligencia"
-            optionLabel="descripcion" appendTo="body" filter="true" filterPlaceholder="Buscar tipo de diligencia..."
-            inputId="tipoDiligencia-dropdown" class="w-full" fluid></p-select>
+          <!-- Días para responder -->
+          <div class="md:col-span-3">
+            <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+              Días para responder<strong>*</strong>
+            </label>
+            <p-inputnumber inputId="DiasResponder" formControlName="DiasResponder" [showButtons]="true" mode="decimal"
+              [min]="0" [max]="365" [useGrouping]="false" class="w-full" fluid></p-inputnumber>
+          </div>
         </div>
-
-        <!-- Días para responder -->
-        <div class="md:col-span-3">
-          <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-            Días para responder<strong>*</strong>
-          </label>
-          <p-inputnumber inputId="DiasResponder" formControlName="DiasResponder" [showButtons]="true" mode="decimal"
-            [min]="0" [max]="365" [useGrouping]="false" class="w-full" fluid></p-inputnumber>
-        </div>
-      </div>
       </div>
     </div>
 
@@ -269,8 +267,10 @@
 
   <div class="flex items-start flex-col md:justify-between md:flex-row mb-5">
     <div>
-      <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">Partes</h2>
-      <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+ <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+            <span class="pi pi-users text-lg text-primary"></span> Partes
+        </h2>
+              <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
         Personas o instituciones relacionadas con el trámite.
       </p>
     </div>
@@ -380,7 +380,9 @@
 
   <div class="flex items-start flex-col md:justify-between md:flex-row mb-5">
     <div>
-      <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">Promoventes</h2>
+      <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+        <span class="pi pi-user-plus text-lg text-primary"></span> Promoventes
+      </h2>
       <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
         Personas que promueven el exhorto.
       </p>
@@ -465,9 +467,9 @@
 
 
       </div>
-      
 
-     
+
+
     </div>
 
   </div>
@@ -491,7 +493,9 @@
 
   <div class="flex items-start flex-col md:justify-between md:flex-row mb-5">
     <div>
-      <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">Agregar documentos</h2>
+       <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+            <span class="pi pi-file text-lg text-primary"></span> Agregar documentos
+        </h2>
       <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
         Carga y firma los documentos del exhorto.
       </p>
@@ -595,7 +599,7 @@
                   icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                 </p-button>
 
-                
+
                 <!--VER O DESCARGAR DOCUMENTO-->
                 <p-button (click)="getFile(documento,2)" severity="success" [rounded]="true" icon="pi pi-file-pdf"
                   class="mr-2" title="Descargar PDF"></p-button>
@@ -618,7 +622,7 @@
         </app-pdf-dialog>
         }
       </div>
-      
+
 
 
       <!-- <div class="col-span-6 sm:col-span-1 flex justify-end">

@@ -18,10 +18,11 @@ import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { Toast } from "primeng/toast";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { TokenService } from '../../../core/auth/service/token.service';
+import { TagModule } from "primeng/tag";
 
 @Component({
   selector: 'app-detallesExhortosRecibidos',
-  imports: [Header, IncompetenciaDialog, ButtonModule, ConfirmDialog, CommonModule, TableModule, PdfDialog, Toast, Spinner],
+  imports: [TagModule, IncompetenciaDialog, ButtonModule, ConfirmDialog, CommonModule, TableModule, PdfDialog, Toast, Spinner],
   templateUrl: './detalles-exhorto-recibido.html',
   styleUrl: './detalles-exhorto-recibido.css',
   providers:[MessageService,ConfirmationService]
@@ -455,21 +456,21 @@ export class DetallesExhortoRecibido {
           });
       }
   }
-  selectClass(estatus: string | undefined){
-    if(estatus === "Recibido"){
-      return 'bg-orange-400'
-    }else if(estatus === "Pendiente de recibir"){
-      return 'bg-orange-400'
-    }else if(estatus === "En proceso de diligencia"){
-      return 'bg-violeta'
-    }else if(estatus === "Acordado"){
-      return 'bg-violeta'
-    }else if(estatus === "Respondido"){
-      return 'bg-lime-600'
-    }else{
-      return 'bg-blue-300'
+  getTagConfig(estatus: string): { icon: string; severity: 'success' | 'warn' | 'info' | 'secondary' | 'danger' | 'contrast' } {
+    switch (estatus) {
+      case 'Respondido':
+        return { icon: 'pi pi-reply', severity: 'info' };          // Azul - respondido
+      case 'Acordado':
+        return { icon: 'pi pi-check-circle', severity: 'success' };// Verde - completado
+      case 'Recibido':
+        return { icon: 'pi pi-inbox', severity: 'contrast' };      // Oscuro - recibido (marcado/registrado)
+      case 'Pendiente de recibir':
+        return { icon: 'pi pi-clock', severity: 'warn' };          // Naranja - pendiente
+      case 'En proceso de diligencia':
+        return { icon: 'pi pi-spinner', severity: 'secondary' };   // Gris - en curso
+      default:
+        return { icon: 'pi pi-question-circle', severity: 'secondary' };
     }
-
   }
   pdf(){
     const newObject: DetalleExhortoRecibidoResponseI | null = this.detallesExhortos();
