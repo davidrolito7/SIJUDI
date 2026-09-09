@@ -1,4 +1,5 @@
-import { Component, ElementRef, ViewChild, signal, effect, CreateEffectOptions, inject, Signal, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal, effect, CreateEffectOptions, inject, Signal } from '@angular/core';
+import { finalize } from 'rxjs';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectModule } from 'primeng/select';
@@ -60,15 +61,8 @@ export class CrearExhortoComponent {
     private router: Router,
     public authService: AuthService,
     private sanitizer: DomSanitizer,
-    private cd: ChangeDetectorRef,
   ) {
-    //Detecta si el perfil seleccionado ha cambiado y actualiza las secciones
-    /*this.perfilSeleccionado =  signal(this.perfilSeleccionadoService.perfil_Seleccionado());
-    effect(() => {
-      this.perfilSeleccionado = signal(this.perfilSeleccionadoService.perfil_Seleccionado());
-      this.GetSeccionesUsuario();
-    }, { allowSignalWrites: true } as CreateEffectOptions);
-    */
+
     this.GetSeccionesUsuario();
   }
   exhortosForm = new FormGroup({
@@ -156,7 +150,7 @@ export class CrearExhortoComponent {
 
   band: boolean = false;
   contador_firmas: any = "";
-  isLoading: boolean = false;
+  isLoading = signal(false);
   archivos_firmados: any = "";
   //@ViewChild('modal') modal!: ModalComponent;
   mostrarBotonGuardar: boolean = true;
@@ -175,70 +169,26 @@ export class CrearExhortoComponent {
   urlInfo: string = "";
   @ViewChild(QrGeneratorComponent) qrGenerator!: QrGeneratorComponent;
   @ViewChild('contentToPrint') contentToPrint!: ElementRef;
-  /* ListaTipoDocumento: CatalogoClasificaciónArchivo[] = [];
-   TipoDocumentoSelect: CatalogoClasificaciónArchivo | undefined;
- */
+ 
   @ViewChild('fileUpload') fileUpload!: FileUpload;
 
-  //boleans modal confirmacion
-  //confirmacionGuardarExhorto: boolean = false
-  //confirmacionEnviarGenerales: boolean = false
-  //confirmacionEnviarArchivos: boolean = false
-  //confirmacionAgregarPersona: boolean = false
-  //confirmacionAgregarPromovente: boolean = false
-  //confirmacionEliminarPromovente: boolean = false
-  //confirmacionEliminarDocumento: boolean = false
-  //confirmacionAplicarFirmas:boolean=false;
 
-
-  //listaEstadoDestino: CatalogoEstadoDestino[] = [];
   listaEstadoDestino = signal<CatalogoEstadoDestino[]>([]);
-  //estadoDestinoSelect!: any;
 
-  //listaMunicipioDestino: CatalogoMunicipioDestino[] = [];
   listaMunicipioDestino = signal<CatalogoMunicipioDestino[]>([]);
-  //municipioDestinoSelect!: CatalogoMunicipioDestino;
-
-  // //listaMunicipioOrigen: CatalogoMunicipioOrigen[] = [];
-  // //listaMunicipioOrigen = signal<CatalogoMunicipioOrigen[]>([]);
-  // //municipioOrigenSelect!: CatalogoMunicipioOrigen;
 
   juzgadoOrigenNombre= signal<string>('');
   municipioOrigenNombre= signal<string>('');
-
-  //listaMateriaEstadoDestino : CatalogoMateriasEstadoDestino []=[];
   listaMateriaEstadoDestino = signal<CatalogoMateriasEstadoDestino[]>([]);
-  //materiaEstadoDestinoSelect! : CatalogoMateriasEstadoDestino ;
-
-  // // //listaJuzgadoOrigen: CatalogoJuzgadoOrigen[] = [];
-  // // listaJuzgadoOrigen = signal<CatalogoJuzgadoOrigen[]>([]);
-  // // //JuzgadoOrigenSelect!: CatalogoJuzgadoOrigen;
-
-  //listagenero: CatalogoGenero[] = [];
   listagenero = signal<CatalogoGenero[]>([]);
-
-  //generoSelect!: CatalogoGenero;
   generoPromoSelect!: CatalogoGenero;
-
   idExhortoEditando: number = 0
-  //listaPromoventes: any[] = [];
-
   exhortoYaGuardado: boolean = false;
-
-  //listaTipoParte: CatalogoTipoParte[] = [];
   listaTipoParte = signal<CatalogoTipoParte[]>([]);
-  //tipoParteSelect!: CatalogoTipoParte;
-  //tipoPartePromoSelect!: CatalogoTipoParte;
-
   listaPartes: partesExhortoEnviado[] = [];
   listaPromovetes: ProvomenteExhortoEnviado[] = [];
-
   listaTipoDocumento: CONATRIB_catTipoDocumento[] = [];
-  //tipoDocumentoSelect!: CONATRIB_catTipoDocumento;
-
-  //listaTipoDiligencia: catTipoDiligencia[]=[];
   listaTipoDiligencia = signal<catTipoDiligencia[]>([]);
-  //tipoDiligenciaSelect!: catTipoDiligencia;
 
   url: string = '';
   doc!: archivoRespuesta;
@@ -528,7 +478,10 @@ export class CrearExhortoComponent {
   }
 
   getListadoTipoDocumento(): void {
-    this.ExhortosService.getCatalogoTipoDocumento().subscribe(
+    this.isLoading.set(true);
+    this.ExhortosService.getCatalogoTipoDocumento().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe(
       (responseTipoDocumento: GenericResponse<ListadoCatalogoTipoDocumento[]>) => {
         //console.log(responseTipoDocumento);
         this.listadoTipoDocumento = responseTipoDocumento.data;
@@ -584,7 +537,10 @@ export class CrearExhortoComponent {
   // }
 
   cargarDatosOrigenFijos() {
-    this.ExhortosService.getdetalleArea().subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.getdetalleArea().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.juzgadoOrigenNombre.set(response.data?.nombre ?? '');
@@ -674,9 +630,10 @@ export class CrearExhortoComponent {
       estadoDestinoId: this.exhortosForm.value.estadoDestino?.idEstado ?? 0 //this.estadoDestinoSelect.idEstado
     };
     //console.log('Request a guardar:', request);
-    this.isLoading = true;
-    this.cd.detectChanges();
-    this.ExhortosService.setGuardarExhortoEnviado(request).subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.setGuardarExhortoEnviado(request).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response: any) => {
         if (response.success) { //console.log('Datos recibidos del catálogo:', response);
           this.exhortoGuardado = true;
@@ -696,14 +653,6 @@ export class CrearExhortoComponent {
       },
       error: (e) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error, sticky: true });
-        this.isLoading = false;
-        this.cd.detectChanges();
-      },
-      complete: () => {
-        //console.log('FIN:');
-        //this.router.navigate(['/inicio/exhortos/exhortos']);
-        this.isLoading = false;
-        this.cd.detectChanges();
       }
     });
     //this.confirmacionGuardarExhorto = false
@@ -754,7 +703,10 @@ export class CrearExhortoComponent {
         return;
       }
 
-      this.ExhortosService.getCatalogoMunicipioDestino(estado).subscribe(
+      this.isLoading.set(true);
+      this.ExhortosService.getCatalogoMunicipioDestino(estado).pipe(
+        finalize(() => this.isLoading.set(false))
+      ).subscribe(
         (response: any) => {
           //console.log('📥 Catálogo de municipios recibidos:', response.data);
           this.listaMunicipioDestino.set(response.data);
@@ -771,22 +723,19 @@ export class CrearExhortoComponent {
 
   // Método para cargar el catálogo de órganos de destino
   cargarCatalogoEstadoDestino(): Promise<void> {
-    this.isLoading = true;
-    this.cd.detectChanges();
+    this.isLoading.set(true);
     return new Promise((resolve, reject) => {
-      this.ExhortosService.getCatalogoEstadoDestino().subscribe(
+      this.ExhortosService.getCatalogoEstadoDestino().pipe(
+        finalize(() => this.isLoading.set(false))
+      ).subscribe(
         (response: any) => {
           //console.log('Datos recibidos del catálogo de estado destino:', response);
           this.listaEstadoDestino.set(response.data);
-          this.isLoading = false;
-          this.cd.detectChanges();
           resolve();
         },
         error => {
           //console.error('Error al cargar el catálogo de órganos', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de órganos', sticky: true });
-          this.isLoading = false;
-          this.cd.detectChanges();
           reject(error);
         }
       );
@@ -796,7 +745,10 @@ export class CrearExhortoComponent {
 
   cargaMateriasDestino(estado: CatalogoEstadoDestino): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.ExhortosService.getCatalogoMateriasEstadoDestino(estado).subscribe(
+      this.isLoading.set(true);
+      this.ExhortosService.getCatalogoMateriasEstadoDestino(estado).pipe(
+        finalize(() => this.isLoading.set(false))
+      ).subscribe(
         (response: any) => {
           //console.log('Datos recibidos del catálogo materias destino:', response);
           this.listaMateriaEstadoDestino.set(response.data);
@@ -839,9 +791,10 @@ export class CrearExhortoComponent {
     formData.append('idUsuario', Usuario.idGeneral);
 
     //console.log('Datos enviados al backend:', formData);
-    this.isLoading = true;
-    this.cd.detectChanges();
-    this.ExhortosService.guardarDocumento(formData).subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.guardarDocumento(formData).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response: any) => {
         if (response.success) {
           //console.log('Archivo guardado:', response.data);
@@ -855,12 +808,6 @@ export class CrearExhortoComponent {
       },
       error: (error) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al guardar el documento', sticky: true });
-        this.isLoading = false;
-        this.cd.detectChanges();
-      },
-      complete: () => {
-        this.isLoading = false;
-        this.cd.detectChanges();
       }
     });
   }
@@ -958,9 +905,10 @@ export class CrearExhortoComponent {
 
     //console.log('Datos enviados para actualizar el exhorto:', request);
     //console.log('ID del exhorto editando:', this.idExhortoEditando);
-    this.isLoading = true;
-    this.cd.detectChanges();
-    this.ExhortosService.actualizarExhortoEnviado(request).subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.actualizarExhortoEnviado(request).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Exhorto actualizado correctamente' });
@@ -970,12 +918,6 @@ export class CrearExhortoComponent {
       },
       error: (e) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: e.error, sticky: true });
-        this.isLoading = false;
-        this.cd.detectChanges();
-      },
-      complete: () => {
-        this.isLoading = false;
-        this.cd.detectChanges();
       }
     });
     //this.confirmacionGuardarExhorto = false
@@ -1036,7 +978,10 @@ export class CrearExhortoComponent {
   }
 
   actualizarListadoDocumentos(idExhortoEnviado: number) {
-    this.ExhortosService.getExhortosEnviadosDetalle(idExhortoEnviado).subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.getExhortosEnviadosDetalle(idExhortoEnviado).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response) => {
         if (response.success && response.data.archivos.length > 0) {
           //obtenemos el idUsuario del token
@@ -1155,7 +1100,10 @@ export class CrearExhortoComponent {
   }*/
 
   guardarArchivoRespuesta(formData: FormData) {
-    this.ExhortosService.setDocumento(formData).subscribe(
+    this.isLoading.set(true);
+    this.ExhortosService.setDocumento(formData).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe(
       response => {
         if (response.success) {
           // Actualizar la tabla con el nuevo archivo
@@ -1182,7 +1130,10 @@ export class CrearExhortoComponent {
     this.tipoDocumentoSelect =  null;
   }*/
   catalogoGenero() {
-    this.ExhortosService.getCatalogoGenero().subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.getCatalogoGenero().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response: any) => {
         if (response.success) {
           //console.log('Datos recibidos del catálogo:', response);
@@ -1203,7 +1154,10 @@ export class CrearExhortoComponent {
     });
   }
   catalogoTipoParte() {
-    this.ExhortosService.getCatalogoTipoParte().subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.getCatalogoTipoParte().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response: any) => {
         if (response.success) {
           //console.log('Datos recibidos del catálogo:', response);
@@ -1224,7 +1178,10 @@ export class CrearExhortoComponent {
     });
   }
   catalogoTipoDocumento() {
-    this.ExhortosService.getCatalogoTipoDocumento().subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.getCatalogoTipoDocumento().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response: any) => {
         if (response.success) {
           //console.log('Datos recibidos del catálogo:', response);
@@ -1364,7 +1321,10 @@ export class CrearExhortoComponent {
   }
   cargarDetallesExhortoEnviado(idExhortoEnviado: number) {
     //console.log(idExhortoEnviado)
-    this.ExhortosService.getExhortosEnviadosDetalle(idExhortoEnviado).subscribe(
+    this.isLoading.set(true);
+    this.ExhortosService.getExhortosEnviadosDetalle(idExhortoEnviado).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe(
       (response) => {
         //console.log('Datos recibidos:', response);
         this.detallesExhortos = response.data as detalleExhortosEnviados; // Almacena los datos recibidos en la variable
@@ -1378,7 +1338,10 @@ export class CrearExhortoComponent {
   }
 
   cargarCatalogoTipoDiligencia() {
-    this.ExhortosService.getCatalogoTipoDiligencia().subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.getCatalogoTipoDiligencia().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.listaTipoDiligencia.set(response.data);
@@ -1458,9 +1421,10 @@ export class CrearExhortoComponent {
 
     }
     else { // aqui ya son archivos guardados
-      this.isLoading = true;
-      this.cd.detectChanges();
-      this.ExhortosService.getFile(documento.idArchivo, tipoDocumento).subscribe({
+      this.isLoading.set(true);
+      this.ExhortosService.getFile(documento.idArchivo, tipoDocumento).pipe(
+        finalize(() => this.isLoading.set(false))
+      ).subscribe({
         next: (response: any) => {
 
           if (response.success) {
@@ -1482,15 +1446,7 @@ export class CrearExhortoComponent {
         error: (e) => {
           //console.error('Error al recibir el archivo', e);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
-          this.isLoading = false;
-          this.cd.detectChanges();
-        },
-        complete: () => {
-          //console.log('FIN:');
-          this.isLoading = false;
-          this.cd.detectChanges();
         }
-
       });
     }
   }
@@ -1520,9 +1476,10 @@ export class CrearExhortoComponent {
     }
     else {
       // Llamada al servicio para eliminar el documento
-      this.isLoading = true;
-      this.cd.detectChanges();
-      this.ExhortosService.eliminarArchivo(documento.idArchivo, tipoDocumento).subscribe({
+      this.isLoading.set(true);
+      this.ExhortosService.eliminarArchivo(documento.idArchivo, tipoDocumento).pipe(
+        finalize(() => this.isLoading.set(false))
+      ).subscribe({
         next: (response: any) => {
           //console.log('¿Se eliminó archivo?:', response);
           //console.log('ID archivo:', idArchivo);
@@ -1544,13 +1501,9 @@ export class CrearExhortoComponent {
         error: (error) => {
           //console.error('Error en la petición eliminar:', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
-          this.isLoading = false;
-          this.cd.detectChanges();
         },
         complete: () => {
           this.idArchivo = null;
-          this.isLoading = false;
-          this.cd.detectChanges();
         }
       });
     }
@@ -1574,9 +1527,10 @@ export class CrearExhortoComponent {
   }
   onEnviarGenerales() {
     if (this.idExhorto !== undefined) {
-      this.isLoading = true;
-      this.cd.detectChanges();
-      this.ExhortosService.enviarGeneralesExhortoEnviado(this.idExhorto).subscribe({
+      this.isLoading.set(true);
+      this.ExhortosService.enviarGeneralesExhortoEnviado(this.idExhorto).pipe(
+        finalize(() => this.isLoading.set(false))
+      ).subscribe({
         next: (response: GenericResponse<EnviadoConfirmacionDatosRecibidosResponse>) => {
           if (response.success) {
             this.mostrarBotonGuardar = false;
@@ -1592,13 +1546,6 @@ export class CrearExhortoComponent {
         error: (e) => {
           //console.error('Error en la petición eliminar:', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
-          this.isLoading = false;
-          this.cd.detectChanges();
-        },
-        complete: () => {
-          //console.log('FIN:');
-          this.isLoading = false;
-          this.cd.detectChanges();
         }
       });
     }
@@ -1627,11 +1574,11 @@ export class CrearExhortoComponent {
     });
   }
   onEnviarArchivos() {
-    //this.modalService.open('modal2');
     if (this.idExhorto !== undefined) {
-      this.isLoading = true;
-      this.cd.detectChanges();
-      this.ExhortosService.enviarArchivosExhortosEnviados(this.idExhorto).subscribe({
+      this.isLoading.set(true);
+      this.ExhortosService.enviarArchivosExhortosEnviados(this.idExhorto).pipe(
+        finalize(() => this.isLoading.set(false))
+      ).subscribe({
         next: (response: GenericResponse<EnviadoArchivoRecibidoConAcuseResponse>) => {
           if (response.success) {
             this.mostrarBotonEnviarArchivos = false;
@@ -1639,40 +1586,21 @@ export class CrearExhortoComponent {
             this.urlInfo = 'https://www.tribunaloaxaca.gob.mx/ExhortosElectronicos/Consulta?folioSeguimiento=EX162025TAMA1205';
             this.sendQRData();
             this.messageService.add({ severity: 'success', summary: 'Ok', detail: "Los archivos se enviaron correctamente" });
-            //this.modalconfirmacion.openModal();
-            //this.openModalConfirmacion();
-            //this.openModal2();
-            //this.modalService.open('modal2');
-            this.isLoading = false;
-            //Para pruebas
+
             if (this.archivoRecibidoConAcuse.acuse.urlInfo === null || this.archivoRecibidoConAcuse.acuse.urlInfo === undefined) {
               this.archivoRecibidoConAcuse.acuse.urlInfo = 'https://www.tribunaloaxaca.gob.mx';
             }
 
             this.modalService.open('modal2');
-
           } else {
-            //console.error('Error al eliminar el archivo:', response.message);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
-            this.isLoading = false;
           }
         },
         error: (e) => {
-          //console.error('Error en la petición eliminar:', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
-          this.isLoading = false;
-          this.cd.detectChanges();
-        },
-        complete: () => {
-          //cuando finaliza el proceso, redireccionamos a la busqueda principal
-          // this.router.navigate(['/inicio/exhortos/exhortos-enviados']);
-          //console.log('FIN:');
-          this.isLoading = false;
-          this.cd.detectChanges();
         }
       });
     }
-    //this.confirmacionEnviarArchivos = false
   }
 
   validarContraseñaPFX(password: string): Promise<boolean> {
@@ -1694,14 +1622,14 @@ export class CrearExhortoComponent {
 
           } else {
             this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
-            reject(false); //reject es cuando se desea sali del flujo, ya no requere que se continue.
             this.modalService.close('modal1');
+            resolve(false); //resolve(false) para que el flujo continúe y apague el isLoading
           }
         },
         error: (e) => {
           //console.error('Error al guardar el documento Firmado en el NAS', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
-          reject(false);
+          resolve(false);
         },
         complete: () => {
 
@@ -1711,7 +1639,7 @@ export class CrearExhortoComponent {
   }
 
   async iniciarFirmaDocumentos() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.archivos_firmados = 0;
     if (this.formularioFirma.valid) {
       const esvalido = await this.validarContraseñaPFX(this.formularioFirma.value.password as string);
@@ -1738,16 +1666,14 @@ export class CrearExhortoComponent {
 
       }else{
         //this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Archivo PFX invalido.' });
-        this.isLoading = false;
-        this.cd.detectChanges();
+        this.isLoading.set(false);
       }
     }
     else {
       ValidateForm.validateAllFormFields(this.formularioFirma);
       this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ingrese la contraseña.' });
     }
-    this.isLoading = false;
-    this.cd.detectChanges();
+    this.isLoading.set(false);
   }
   //Nueva funcion para firmar documentos, solo se debe de guardar el id de documento que se va a firmar,
   // y el idGeneral del usuario que firma
@@ -1774,7 +1700,7 @@ export class CrearExhortoComponent {
         },
         error: (e) => {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
-          reject(false);
+          resolve(false);
         },
         complete: () => {
 
@@ -1914,7 +1840,10 @@ export class CrearExhortoComponent {
         return;
       }
 
-      this.ExhortosService.getViasPorMaterias(materia.idCatMateria).subscribe({
+      this.isLoading.set(true);
+      this.ExhortosService.getViasPorMaterias(materia.idCatMateria).pipe(
+        finalize(() => this.isLoading.set(false))
+      ).subscribe({
         next: (response: GenericResponse<tipoVia[]>) => {
           if (response.success) {
             //console.log('✅ Juzgados filtrados:', response.data);
@@ -1993,7 +1922,10 @@ export class CrearExhortoComponent {
     });
   }
   eliminarFirma(idFirmaTmp: number, idArchivo: number) {
-    this.ExhortosService.eliminarUnaFirma(idFirmaTmp).subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.eliminarUnaFirma(idFirmaTmp).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response: any) => {
         if (response.success) {
           // Encuentra el índice del documento que quieres eliminar
@@ -2043,9 +1975,10 @@ export class CrearExhortoComponent {
     });
   }
   onAplicarFirmas(idArchivo: number) {
-    this.isLoading = true;
-    this.cd.detectChanges;
-    this.ExhortosService.aplicarFirmasExhorto(idArchivo).subscribe({
+    this.isLoading.set(true);
+    this.ExhortosService.aplicarFirmasExhorto(idArchivo).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
@@ -2056,13 +1989,6 @@ export class CrearExhortoComponent {
       },
       error: (e) => {
         this.messageService.add({ severity: 'error', summary: 'error', detail: e.message, sticky: true });
-        this.isLoading = false;
-        this.cd.detectChanges;
-      },
-      complete: () => {
-        //this.confirmacionAplicarFirmas=false;
-        this.isLoading = false;
-        this.cd.detectChanges;
       }
     });
   }
