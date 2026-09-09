@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnDestroy, signal } from '@angular/core';
 import { ModalService } from '../../services/modal.service';
 
 @Component({
@@ -9,16 +9,14 @@ import { ModalService } from '../../services/modal.service';
 })
 export class ModalComponent implements OnDestroy {
   @Input() id!: string;
-  isOpen = false;
+  readonly isOpen = signal(false);
 
   @Output() modalClosed = new EventEmitter<void>();
 
-  private readonly cdr = inject(ChangeDetectorRef);
   private afterPrintHandler = () => {
     // Restaurar estado después de imprimir
     document.body.style.overflow = 'hidden'; // el modal sigue abierto
-    this.isOpen = true;
-    this.cdr.detectChanges(); // forzar re-render
+    this.isOpen.set(true);
   };
 
   constructor(private modalService: ModalService) {
@@ -32,12 +30,12 @@ export class ModalComponent implements OnDestroy {
   }
 
   openModal() {
-    this.isOpen = true;
+    this.isOpen.set(true);
     document.body.style.overflow = 'hidden';
   }
 
   closeModal() {
-    this.isOpen = false;
+    this.isOpen.set(false);
     document.body.style.overflow = 'auto';
     this.modalClosed.emit();
   }
