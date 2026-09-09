@@ -1,7 +1,9 @@
-<p-dialog 
-  [(visible)]="visible" 
-  [modal]="true" 
-  [closable]="true" 
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [closable]="true"
+  appendTo="body"
   [style]="{width: '400px'}"
   header="Mi diálogo personalizado">
 

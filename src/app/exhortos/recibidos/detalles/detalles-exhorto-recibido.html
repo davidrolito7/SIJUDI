@@ -26,19 +26,19 @@
                 <div  class="relative">
                     
                   @if (detallesExhortos() !== undefined ? detallesExhortos()?.generales?.estatus=='Recibido': false) {
-                    <p-button
-                      (onClick)="dialogIncomp.open(idExhortoRecibido)"
+                    <button pButton
+                      (click)="dialogIncomp.open(idExhortoRecibido)"
                       >
                       Declarar incompetencia
-                    </p-button>
+                    </button>
                     <app-incompetencia-dialog #dialogIncomp ></app-incompetencia-dialog>
                   }
                 </div>
               }
               <div class="relative">
                 @if(puedeRecibir()){
-                  <p-button type="button" (click)="recibir()">
-                  Recibir</p-button>
+                  <button pButton type="button" (click)="recibir()">
+                  Recibir</button>
 
                 }
               </div>

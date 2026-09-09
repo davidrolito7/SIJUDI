@@ -1,5 +1,5 @@
-import { Component, Input, EventEmitter, Output } from '@angular/core';
-import { Dialog } from "primeng/dialog";
+import { Component, signal } from '@angular/core';
+import { DialogModule } from "primeng/dialog";
 import {ButtonModule} from 'primeng/button';
 import { FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -9,12 +9,12 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-incompetencia-dialog',
-  imports: [Dialog,ButtonModule,ReactiveFormsModule],
+  imports: [DialogModule,ButtonModule,ReactiveFormsModule],
   templateUrl: './incompetencia-dialog.html',
   styleUrl: './incompetencia-dialog.css',
 })
 export class IncompetenciaDialog {
-  visible: boolean = false;
+  visible = signal(false);
   idExhorto: number | undefined;
 
    incompetenciaForm =new FormGroup({
@@ -30,12 +30,12 @@ export class IncompetenciaDialog {
     private router: Router,
   ){}
   open(idexhorto: number | undefined) {
-    this.visible = true;
+    this.visible.set(true);
     this.idExhorto= idexhorto;
   }
 
   close() {
-    this.visible = false;
+    this.visible.set(false);
   }
   GuardarIncompetencia() {
     this.request = {
@@ -48,7 +48,7 @@ export class IncompetenciaDialog {
           if(response.success){
             this.messageService.add({ severity: 'success', summary: 'Ok', detail: 'Operación guardada' })
             //this.aceptar.emit();
-            this.visible=false;
+            this.visible.set(false);
           this.router.navigate(['/exhortos/lista-exhortos-recibidos']);
           }
           else{

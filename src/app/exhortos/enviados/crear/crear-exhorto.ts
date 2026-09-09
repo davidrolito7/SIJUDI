@@ -471,7 +471,7 @@ export class CrearExhortoComponent {
         }
         else {
           this.mostrarBotonGuardar = false;
-          this.mostrarBotonEnviarGenerales = false;
+          this.mostrarBotonEnviarGenerales = false; // idEstatus 10 (y cualquier otro != 1) no debe mostrar este botón
           this.mostrarBotonEnviarArchivos = true;
         }
 
@@ -1055,7 +1055,7 @@ export class CrearExhortoComponent {
             tam: archivo.tamaño
           })));*/
           //console.log(this.listaDocumentos()[0].tipoDocumento);
-          this.mostrarBotonEnviarGenerales = true;
+          this.mostrarBotonEnviarGenerales = this.idEstatus !== 10;
         } else {
           this.listaDocumentos.set([]);
           this.messageService.add({
