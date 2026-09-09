@@ -509,7 +509,7 @@
       </div>
       }
       @if (idEstatus !== 10) {
-      <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload" accept="application/pdf"
+      <p-fileupload mode="basic" [customUpload]="true"  [auto]="true" [multiple]="true" chooseIcon="pi pi-upload" accept="application/pdf"
         (onSelect)="onAnexosSelect($event)" chooseLabel="Agregar documento" />
       }
 
