@@ -25,7 +25,6 @@ import { MenuItem } from 'primeng/api';
 // ============================
 // App - shared
 // ============================
-import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 
 // ============================
@@ -59,7 +58,6 @@ import { ContadoresService } from '../../services/contadores.service';
     MenuModule,
     BadgeModule,
     // Shared components
-    Header,
     Spinner,
     ConfirmDialog
   ], templateUrl: './entrega-recepcion.html',

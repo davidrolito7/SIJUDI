@@ -14,7 +14,6 @@ import { GenericResponse } from '../../../shared/interface/shared.interface';
 import { archivos, CONATRIB_ExhortosRecibidosArchivos, EnviadoRespuestaArchivosResponse, generales, guardaExhortoRespuesta, ListadoCatalogoTipoDiligenciado, ListadoCatalogoTipoDocumento, ListadoExhortosRecibidosI, promocionExhortos, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
-import { Header } from "../../../shared/components/header/header";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { QrService} from '../../../shared/services/qr.service';
 import ValidateForm from '../../../helpers/validateform';
@@ -34,7 +33,7 @@ import { ModalService } from '../../../shared/services/modal.service';
 
 @Component({
   selector: 'app-GenerarAcuerdo',
-  imports: [ConfirmDialog, Header, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent],
+  imports: [ConfirmDialog, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent],
   templateUrl: './generar-acuerdo.html',
   styleUrl: './generar-acuerdo.css',
   providers: [MessageService,ConfirmationService]

@@ -175,7 +175,7 @@
             </p>
 
             <p-button icon="pi pi-file-check" label="Ver documento" styleClass="btn-secondary"
-                (onClick)="openModal(detalleRequerimiento()?.documento_oficio_requerimiento?.idDocumento!)">
+                (onClick)="openModal(detalleRequerimiento()!.documento_oficio_requerimiento.idDocumento)">
             </p-button>
         </div>
 
@@ -202,7 +202,7 @@
             </p>
 
             <button pButton icon="pi pi-inbox" label="Ver documento" styleClass="btn-tertiary"
-                (click)="openModal(detalleRequerimiento()?.documento_acuse?.idDocumento!)">
+                (click)="openModal(detalleRequerimiento()!.documento_acuse.idDocumento)">
             </button>
         </div>
 

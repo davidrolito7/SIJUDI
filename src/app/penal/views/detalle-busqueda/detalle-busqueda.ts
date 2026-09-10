@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Header } from '../../../shared/components/header/header';
 import { DividerModule } from 'primeng/divider';
-import { Table, TableModule } from 'primeng/table';
+import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
 import { Spinner } from '../../../shared/components/spinner/spinner';
-import { CommonModule, formatDate, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   busquedaExpediente,
   DTABusqueda,
@@ -18,7 +17,6 @@ import { CardModule } from 'primeng/card';
   selector: 'app-detalle-busqueda',
   imports: [
     CommonModule,
-    Header,
     DividerModule,
     TableModule,
     FormsModule,

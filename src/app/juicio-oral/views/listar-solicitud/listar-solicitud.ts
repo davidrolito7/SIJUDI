@@ -24,7 +24,6 @@ import { TooltipModule } from 'primeng/tooltip';
 // ============================
 // App – shared
 // ============================
-import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 
 // ============================
@@ -62,7 +61,6 @@ import { FileUploadModule } from 'primeng/fileupload';
     TooltipModule,
     FileUploadModule,
     // Shared
-    Header,
     Spinner,
     PdfDialog
 ],

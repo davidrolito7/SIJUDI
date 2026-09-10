@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
-import { Header } from "../../../shared/components/header/header";
 import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -24,7 +23,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 @Component({
   selector: 'app-crear-audiencia',
-  imports: [DialogModule, ConfirmDialog, CommonModule, ToastModule, ButtonModule, FormsModule, DatePickerModule, ReactiveFormsModule, Spinner, SelectModule, InputTextModule, TextareaModule, Header, TableModule, TagModule, InputGroupModule, InputGroupAddonModule, RadioButtonModule, ToggleSwitchModule  ],
+  imports: [DialogModule, ConfirmDialog, CommonModule, ToastModule, ButtonModule, FormsModule, DatePickerModule, ReactiveFormsModule, Spinner, SelectModule, InputTextModule, TextareaModule, TableModule, TagModule, InputGroupModule, InputGroupAddonModule, RadioButtonModule, ToggleSwitchModule  ],
   templateUrl: './crear-audiencia.html',
   styleUrl: './crear-audiencia.css',
   providers: [ConfirmationService, MessageService]

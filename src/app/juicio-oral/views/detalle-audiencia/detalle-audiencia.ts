@@ -12,7 +12,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { AuthService } from '../../../core/auth/service/auth.service';
-import { Header } from '../../../shared/components/header/header';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { PantallasService } from '../../services/pantallas.service';
@@ -24,7 +23,7 @@ import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm
 import { base64ToFile } from '../../../shared/functions/utils';
 @Component({
   selector: 'app-detalle-audiencia',
-  imports: [CommonModule, Header, ButtonModule, DialogModule, ReactiveFormsModule, TooltipModule, ConfirmDialogModule, TableModule, Spinner, TagModule, FileUploadModule, ToastModule, PasswordModule, PdfDialog, ConfirmDialog],
+  imports: [CommonModule, ButtonModule, DialogModule, ReactiveFormsModule, TooltipModule, ConfirmDialogModule, TableModule, Spinner, TagModule, FileUploadModule, ToastModule, PasswordModule, PdfDialog, ConfirmDialog],
   templateUrl: './detalle-audiencia.html',
   styleUrl: './detalle-audiencia.css',
   providers: [ConfirmationService, MessageService]

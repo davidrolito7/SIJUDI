@@ -3,7 +3,6 @@ import { Toast } from "primeng/toast";
 import { TableModule } from "primeng/table";
 import { EnviarPromocionResponse, PromocionDocumentos, UI_PromocionResponse } from '../../interfaces/amparos.models';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Header } from "../../../shared/components/header/header";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { Router } from '@angular/router';
 import { AmparosService } from '../../services/amparo.service';
@@ -20,7 +19,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
   selector: 'app-RespuestaAmparoRecibido',
   imports: [
     Toast,
-    TableModule, Header,
+    TableModule,
     Spinner,
     Button,
     PdfDialog,

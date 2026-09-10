@@ -11,7 +11,6 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { TerminosService } from '../../service/terminos.service';
-import { Header } from "../../../shared/components/header/header";
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { Spinner } from "../../../shared/components/spinner/spinner";
@@ -30,7 +29,7 @@ import { TooltipModule } from 'primeng/tooltip';
     SelectModule,
     TableModule,
     MessageModule,
-    ToastModule, Header,
+    ToastModule,
     IconFieldModule,
     InputIconModule,
     Spinner,

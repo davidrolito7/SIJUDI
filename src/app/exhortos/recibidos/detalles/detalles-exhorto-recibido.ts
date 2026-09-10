@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, inject, Signal, signal } from '@angular/core';
-import { Header } from "../../../shared/components/header/header";
 import { CONATRIB_ExhortosRecibidosArchivos, DetalleExhortoRecibidoResponseI, promocionExhortos, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';

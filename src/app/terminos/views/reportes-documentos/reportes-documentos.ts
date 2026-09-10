@@ -12,7 +12,6 @@ import { TerminosService } from '../../service/terminos.service';
 import { CatJuzgados, CatSalas } from '../../interface/terminos.model';
 import { ChangeDetectorRef } from '@angular/core';
 import { Spinner } from '../../../shared/components/spinner/spinner';
-import { Header } from "../../../shared/components/header/header";
 import { TableModule } from "primeng/table";
 import { MessageModule } from "primeng/message";
 
@@ -30,7 +29,7 @@ import { MessageModule } from "primeng/message";
     ButtonModule,
     DatePickerModule,
     ToastModule,
-    Spinner, Header,
+    Spinner,
     TableModule,
     MessageModule
 ],

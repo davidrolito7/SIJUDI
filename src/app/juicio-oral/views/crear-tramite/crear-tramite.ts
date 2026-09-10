@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, OnInit, signal, Signal, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -28,7 +28,6 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 // ============================
 // App - shared
 // ============================
-import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
@@ -39,8 +38,6 @@ import { JuicioService } from '../../services/juicioenlinea.service';
 import {
   CatSexos,
   CatTipoPartes,
-  DatosUsuarioResponse,
-  DetalleDemandaResponse,
   DetalleExpedienteResponse,
   ListarExpedientesResponse,
   Partes,
@@ -49,7 +46,6 @@ import {
 } from '../../interfaces/juicioenlinea.model';
 import { PantallasService } from '../../services/pantallas.service';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-crear-tramite',
@@ -75,11 +71,9 @@ import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
     TooltipModule,
     ToggleSwitchModule,
     // Shared
-    Header,
     Spinner,
     ConfirmDialog,
     PdfDialog,
-    Breadcrub
 ],
   templateUrl: './crear-tramite.html',
   styleUrl: './crear-tramite.css',

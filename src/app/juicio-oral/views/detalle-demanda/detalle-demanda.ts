@@ -4,7 +4,6 @@ import { JuicioService } from '../../services/juicioenlinea.service';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TableModule } from 'primeng/table';
-import { Header } from "../../../shared/components/header/header";
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
@@ -19,11 +18,10 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { ContadoresService } from '../../services/contadores.service';
-import { Breadcrub } from "../../../shared/components/breadcrub/breadcrub";
 
 @Component({
   selector: 'app-detalle-demanda',
-  imports: [CommonModule, TableModule, Header, ButtonModule, TagModule, PdfDialog, TooltipModule, Spinner, ConfirmDialog, DialogModule, ɵInternalFormsSharedModule, ReactiveFormsModule, ToastModule, Breadcrub],
+  imports: [CommonModule, TableModule, ButtonModule, TagModule, PdfDialog, TooltipModule, Spinner, ConfirmDialog, DialogModule, ɵInternalFormsSharedModule, ReactiveFormsModule, ToastModule],
   templateUrl: './detalle-demanda.html',
   styleUrl: './detalle-demanda.css',
   providers: [ConfirmationService, MessageService],

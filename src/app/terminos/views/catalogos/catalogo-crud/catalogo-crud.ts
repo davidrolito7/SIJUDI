@@ -16,7 +16,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { Header } from "../../../../shared/components/header/header";
 import { Spinner } from "../../../../shared/components/spinner/spinner";
 
 // =====================================================
@@ -41,7 +40,6 @@ import { Spinner } from "../../../../shared/components/spinner/spinner";
     ConfirmDialog,
     InputIconModule,
     IconFieldModule,
-    Header,
     Spinner
   ],
   providers: [ConfirmationService, MessageService],

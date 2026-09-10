@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { Header } from '../header/header';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { usuario, datosFirma } from '../../interface/shared.interface';
@@ -12,7 +11,6 @@ import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
 import { PasswordModule } from 'primeng/password';
 import { TagModule } from 'primeng/tag';
 import { Spinner } from "../spinner/spinner";
-import { JsonPipe } from '@angular/common';
  import { of } from 'rxjs';
 import { switchMap, finalize } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
@@ -21,7 +19,7 @@ import { UsrProfile } from '../../../core/auth/interface/login.interfaces';
 @Component({
   selector: 'app-perfil-usuario',
 
-  imports: [ DatePipe, ReactiveFormsModule, FormsModule, ToastModule, Header, Button, ButtonModule, FileUploadModule, PasswordModule, TagModule, Spinner],
+  imports: [ DatePipe, ReactiveFormsModule, FormsModule, ToastModule, Button, ButtonModule, FileUploadModule, PasswordModule, TagModule, Spinner],
   templateUrl: './perfil-usuario.html',
   styleUrl: './perfil-usuario.css',
   providers: [MessageService]

@@ -24,7 +24,6 @@ import { forkJoin } from 'rxjs';
 import { AfterViewInit } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
-import { Header } from "../../../shared/components/header/header";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { Base64ToBlob, base64ToFile } from '../../../shared/functions/utils';
 
@@ -53,7 +52,7 @@ type Item = { id: number; nombre: string; cantidad?: number };
     ToastModule,
     FieldsetModule,
     DialogModule,
-    ConfirmDialog, Header,
+    ConfirmDialog,
     Spinner
   ],
   // Inyección de MessageService para mostrar mensajes al usuario

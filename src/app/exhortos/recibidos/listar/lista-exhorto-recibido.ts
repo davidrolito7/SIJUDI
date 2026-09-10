@@ -21,7 +21,6 @@ import { ListadoExhortosRecibidosI, UI_ParamlistadoExhortosRecibidosRequest,List
 import {AuthService} from '../../../core/auth/service/auth.service';
 import {ExhortosService} from '../../services/exhorto.service';
 import { Spinner } from '../../../shared/components/spinner/spinner';
-import { Header } from "../../../shared/components/header/header";
 import { TooltipModule } from 'primeng/tooltip';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 
@@ -29,7 +28,7 @@ import { secciones } from '../../../core/auth/interface/login.interfaces';
   selector: 'app-ListaExhortosRecibidos',
    standalone: true,
   imports: [DatePicker, TableModule, InputTextModule, TagModule, SelectModule, ButtonModule, IconFieldModule, InputIconModule,
-    BreadcrumbModule, AvatarModule, InputMaskModule, FloatLabelModule, ToastModule, CommonModule, FormsModule, Spinner, Header, TooltipModule],
+    BreadcrumbModule, AvatarModule, InputMaskModule, FloatLabelModule, ToastModule, CommonModule, FormsModule, Spinner, TooltipModule],
   templateUrl: './lista-exhorto-recibido.html',
   styleUrl: './lista-exhorto-recibido.css',
   providers:[MessageService]
