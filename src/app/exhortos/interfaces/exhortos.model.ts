@@ -19,6 +19,7 @@ export interface ListadoExhortosRecibidosI{
     fechaHoraRecepcion:string;
     folioSeguimiento:string;
     estatus:string;
+    idEstatus: number;
     respuesta : number;
     numeroExhorto:string;
     municipioOrigen:string;

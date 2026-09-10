@@ -19,9 +19,7 @@
     </div>
 </form>
 
-<ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" text (click)="close()" />
-    <p-button label="Agregar" icon="pi pi-check" (click)="GuardarIncompetencia()" />
-</ng-template>
+    <button pButton  icon="pi pi-times" text (click)="close()">Cancel</button> 
+    <button  pButton  icon="pi pi-check" (click)="GuardarIncompetencia()" >Agregar</button>
 </p-dialog>
 

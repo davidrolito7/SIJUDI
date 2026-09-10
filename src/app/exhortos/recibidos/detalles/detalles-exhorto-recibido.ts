@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, Signal, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, Signal, signal } from '@angular/core';
 import { CONATRIB_ExhortosRecibidosArchivos, DetalleExhortoRecibidoResponseI, promocionExhortos, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -46,6 +46,11 @@ export class DetallesExhortoRecibido {
   
   detallesExhortos = signal<DetalleExhortoRecibidoResponseI | null>(null);
   movimientos = signal<VerMovimientosResponse[]>([]);
+  //Solo se puede declarar incompetencia si el primer movimiento aún no ha sido recibido
+  puedeDeclararIncompetencia = computed(() => {
+    const movs = this.movimientos();
+    return movs.length > 0 && movs[0].fechaRecepcion === null;
+  });
   promociones!: promocionExhortos[];
   respuesta: respuestaExhorto[]=[];
 
@@ -261,7 +266,7 @@ export class DetallesExhortoRecibido {
     const ultimoMovimiento = movimientos[movimientos.length - 1];
     
     // 2. Evaluamos las condiciones base
-    const esDestinatario = ultimoMovimiento.cargoDestino === perfil;
+    const esDestinatario = ultimoMovimiento.cargoDestino?.trim() === perfil?.trim();
     const estaRecibido = ultimoMovimiento.fechaRecepcion !== null;
     this.ultimoMovimiento.set(ultimoMovimiento.idMovimiento);
     // Asignación inicial estándar

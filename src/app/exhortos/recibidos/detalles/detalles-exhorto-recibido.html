@@ -25,20 +25,21 @@
 
         <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
             @if (tienePermisoReasignarExhorto()) {
-            @if (!existeacuerdo() && (detallesExhortos() !== undefined ? detallesExhortos()?.generales?.estatus=='Incompetencia': false)) {
+            @if (!existeacuerdo() && (detallesExhortos() !== undefined ?
+            detallesExhortos()?.generales?.estatus==='Incompetencia': false)) {
             <p-button type="button" (click)="reasignarExhorto()" label="Reasignar Exhorto" icon="pi pi-sync"
                 severity="help"></p-button>
             }
             }
-            @if (tienePermisoRecibir() && tienePermisoDeclararIncompetencia() && detallesExhortos()?.actualizaciones?.length==0) {
-            @if (detallesExhortos() !== undefined ? detallesExhortos()?.generales?.estatus=='Recibido': false) {
+            @if (tienePermisoRecibir() && tienePermisoDeclararIncompetencia() && puedeDeclararIncompetencia() &&
+            detallesExhortos()?.actualizaciones?.length===0 && detallesExhortos()?.generales?.idEstatus !== 9 ) {
             <p-button type="button" (click)="dialogIncomp.open(idExhortoRecibido)" label="Declarar incompetencia"
                 icon="pi pi-ban" severity="danger" [outlined]="true"></p-button>
             <app-incompetencia-dialog #dialogIncomp></app-incompetencia-dialog>
             }
-            }
-            @if(puedeRecibir()){
-            <p-button type="button" (click)="recibir()" label="Recibir" icon="pi pi-check"></p-button>
+            @if (puedeRecibir() && detallesExhortos()?.generales?.idEstatus !== 9) {
+            <p-button type="button" (click)="recibir()" label="Recibir" icon="pi pi-check">
+            </p-button>
             }
             @if(puedeTurnar() && ultimoMovimiento()!=12){
             @if (tienePermisoTurnar()) {
@@ -71,7 +72,8 @@
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <!-- ORIGEN -->
         <div class="border border-surface-200 dark:border-surface-800 overflow-hidden">
-            <div class="px-4 py-3 border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800">
+            <div
+                class="px-4 py-3 border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800">
                 <span class="font-semibold text-sm uppercase tracking-wider text-surface-600 dark:text-surface-200">
                     Información de origen
                 </span>
@@ -139,7 +141,8 @@
 
         <!-- DESTINO -->
         <div class="border border-surface-200 dark:border-surface-800 overflow-hidden">
-            <div class="px-4 py-3 border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800">
+            <div
+                class="px-4 py-3 border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800">
                 <span class="font-semibold text-sm uppercase tracking-wider text-surface-600 dark:text-surface-200">
                     Información destino
                 </span>
@@ -441,8 +444,8 @@
         </p>
     </div>
 
-    <p-table class="personalizado" #dt [value]="promociones" dataKey="idActoReclamado"
-        [expandedRowKeys]="expandedRows" (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
+    <p-table class="personalizado" #dt [value]="promociones" dataKey="idActoReclamado" [expandedRowKeys]="expandedRows"
+        (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
         <ng-template pTemplate="header">
             <tr>
                 <th></th>
@@ -488,8 +491,7 @@
                         </thead>
                         @for (promoventes of item.promoventes; track promoventes) {
                         <tbody>
-                            <tr
-                                class="border-b dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-900">
+                            <tr class="border-b dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-900">
                                 <td class="px-4 py-2">{{ promoventes.nombre}} {{ promoventes.apellidoPaterno}} {{
                                     promoventes.apellidoMaterno}}</td>
                                 <td class="px-4 py-2">{{ promoventes.genero }}</td>
@@ -525,16 +527,14 @@
                         </thead>
                         @for (archivos of item.archivos; track archivos) {
                         <tbody>
-                            <tr
-                                class="border-b dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-900">
+                            <tr class="border-b dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-900">
                                 <td class="px-4 py-2">{{ archivos.nombreArchivo}}</td>
                                 <td class="px-4 py-2">{{ archivos.tipoDocumento.nombre }}</td>
                                 <td class="px-4 py-2">{{ archivos.paginas }}</td>
                                 <td class="px-4 py-2">{{ ((archivos.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
                                 <td class="text-center">
-                                    <p-button (click)="mostrarArchivo(archivos,3)" severity="success"
-                                        [rounded]="true" icon="pi pi-file-pdf" pTooltip="Descargar"
-                                        tooltipPosition="top"></p-button>
+                                    <p-button (click)="mostrarArchivo(archivos,3)" severity="success" [rounded]="true"
+                                        icon="pi pi-file-pdf" pTooltip="Descargar" tooltipPosition="top"></p-button>
                                 </td>
                             </tr>
                         </tbody>
@@ -605,8 +605,8 @@
 </div>
 
 <!--* MODAL DE CONFIRMACION PARA RECIBIR EL EXHORTO -->
-<app-confirm-dialog key="recibirExhorto" title="Confirmación" [message]="mensajeRecibirExhorto()"
-    icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+<app-confirm-dialog key="recibirExhorto" title="Confirmación" [message]="mensajeRecibirExhorto()" icon="pi pi-question"
+    circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA TURNAR UN EXHORTO -->
 <app-confirm-dialog key="turnarExhorto" title="Confirmación" message="¿Está seguro de que desea turnar el exhorto?"
