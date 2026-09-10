@@ -61,7 +61,7 @@ export class CrearTramite implements OnInit {
   mostrarDocumento = false;
   isAnexosDragOver = false;
   isDescargandoAcuse = signal(false);
-
+  tipoNumeroExpediente = signal<string | null>(null);
 
   //* === OTROS  ===
   documentoUrl: SafeResourceUrl | null = null;
@@ -113,6 +113,17 @@ export class CrearTramite implements OnInit {
   //     this.startTutorial();
   //   }, 100);
   // }
+
+  onTipoTramiteChange(idTipoTramite: number | null): void {
+    if(idTipoTramite === 33 || idTipoTramite === 34) {
+      this.tipoNumeroExpediente.set(idTipoTramite === 33 ? 'causa' : 'cuaderno');
+    }else {
+      this.tipoNumeroExpediente.set(null);
+    }
+    if(idTipoTramite !== null) {
+      this.cargarCatalogoJuzgados(idTipoTramite);
+    }
+  }
 
   cargarCatalogoJuzgados(idCatTipoTramite: number | null): void {
     const juzgadoCtrl = this.busquedaForm.get('idJuzgado');

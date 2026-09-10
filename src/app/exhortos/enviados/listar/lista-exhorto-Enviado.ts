@@ -149,8 +149,8 @@ export class ListaExhortosEnviados implements OnInit {
     const obj = {
       fechaIni: fechaIni,
       fechaFin: fechaFin,
-      perfil: perfil,
-     //// estatus : this.selectedEstatus?.idEstatus ?? 0,
+    ////  perfil: perfil,
+      estatus: this.selectedEstatus?.idEstatus ?? 0,
      //// IdAreaAdminAplicaciones : area
     };
 

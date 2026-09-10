@@ -10,8 +10,8 @@ export const environment = {
     },
 
     urlApiEfirma: 'https://api.tribunaloaxaca.gob.mx/efirmaPruebas/api/efirma', //este siempre debe apuntar a produccion porque no existe ambiente de pruebas para efirma
-   urlApiExhortosElectronicos: "https://pruebas.tribunaloaxaca.gob.mx/exhortoselectronicos/api",
-   // urlApiExhortosElectronicos: "https://localhost:7113/api",
+    urlApiExhortosElectronicos: "https://pruebas.tribunaloaxaca.gob.mx/exhortoselectronicos/api",
+    // urlApiExhortosElectronicos: "https://localhost:7113/api",
 
     //urlApiAmparosPJF:'https://localhost:44397/Api',
     urlApiAmparosPJF: 'https://pruebas.tribunaloaxaca.gob.mx/amparosApi/api',
@@ -21,12 +21,12 @@ export const environment = {
 
     //* api demandas y oficialia primera instancia 0.o
     //urlApiJuicioOral: 'http://10.1.10.50:81',
-   // urlApiJuicioOral: 'http://localhost:5041/api',
+    // urlApiJuicioOral: 'http://localhost:5041/api',
     urlApiJuicioOral: 'https://oficialiavirtual.tribunaloaxaca.gob.mx/api',
 
     //* api juicio oral penal 0.o
     urlApiJuicioOralPenal: 'https://pruebas.tribunaloaxaca.gob.mx/ApiJop/api/PromocionesJuicioOral',
-   // urlApiJuicioOralPenal: 'http://localhost:5041/api/PromocionesJuicioOral',
+    //urlApiJuicioOralPenal: 'http://localhost:5041/api/PromocionesJuicioOral',
 
     //* api notificaciones en tiempo real
     // urlApiNotificaciones: 'http://localhost:3000',

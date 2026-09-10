@@ -66,7 +66,7 @@
             </div>
 
             <!-- Separador -->
-            <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
+            <div class="mt-4 mb-3 border-t border-surface-200 dark:border-surface-800"></div>
 
             <!-- Campos -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-end">
@@ -78,7 +78,7 @@
                     </label>
 
                     <p-select class="w-full text-sm" [options]="catTipoTramite" formControlName="idCatTipoTramite"
-                        (onChange)="cargarCatalogoJuzgados($event.value)" optionValue="value" optionLabel="label"
+                        (onChange)="onTipoTramiteChange($event.value)" optionValue="value" optionLabel="label"
                         placeholder="Selecciona un tipo de trámite" [filter]="true" appendTo="body" fluid />
                 </div>
 
@@ -86,7 +86,7 @@
                 <div id="numeroExpediente" class="md:col-span-1">
                     <label for="numeroExpediente"
                         class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-                        Folio<strong>*</strong>
+                        Número@if (tipoNumeroExpediente()) { de {{ tipoNumeroExpediente() }}}<strong>*</strong>
                     </label>
 
                     <p-inputmask fluid formControlName="numeroExpediente" class="text-sm uppercase"
@@ -95,9 +95,12 @@
 
                 <!-- Juzgado -->
                 <div id="juzgado" class="md:col-span-2">
-                    <label for="idJuzgado"
-                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
-                        Juzgado<strong>*</strong>
+                    <label for="idJuzgado" class="mb-1.5 inline-flex items-center rounded-md
+           bg-blue-100 dark:bg-blue-950/80
+           px-2.5 
+           text-sm font-medium text-surface-700 dark:text-surface-300
+          ">
+                        Juzgado origen<strong>*</strong>
                     </label>
 
                     <p-select class="w-full text-sm" [options]="catJuzgados" formControlName="idJuzgado"
@@ -266,7 +269,7 @@
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         @if (message) {
         <div class="flex flex-col bg-surface-0 dark:bg-surface-950 rounded-2xl
-                   w-[92vw] sm:w-[620px] max-h-[85vh] overflow-hidden shadow-xl">
+                   w-[92vw] sm:w-155 max-h-[85vh] overflow-hidden shadow-xl">
 
             <!-- ENCABEZADO FIJO -->
             <div class="shrink-0 flex flex-col items-center
@@ -326,7 +329,7 @@
 
                         <span class="text-sm font-semibold
                                    text-surface-900 dark:text-surface-100
-                                   sm:text-right break-words">
+                                   sm:text-right wrap-break-word">
                             {{ causaValidada?.juzgado || '—' }}
                         </span>
                     </div>
@@ -343,7 +346,7 @@
 
                         <span class="text-sm font-semibold
                                    text-surface-900 dark:text-surface-100
-                                   sm:text-right break-words">
+                                   sm:text-right wrap-break-word">
                             {{ numeroTramiteValor || '—' }}
                         </span>
                     </div>
@@ -359,7 +362,7 @@
 
                         <span class="text-sm font-semibold
                                    text-surface-900 dark:text-surface-100
-                                   sm:text-right break-words">
+                                   sm:text-right wrap-break-word">
                             {{ causaValidada?.numCarpeta || '—' }}
                         </span>
                     </div>
@@ -417,7 +420,7 @@
                             <div class="min-w-0 flex-1">
                                 <span class="block text-sm font-medium
                                            text-surface-900 dark:text-surface-100
-                                           break-words">
+                                           wrap-break-word">
                                     {{ victima.nombre }}
                                 </span>
                             </div>
@@ -486,7 +489,7 @@
                             <div class="min-w-0 flex-1">
                                 <span class="block text-sm font-medium
                                            text-surface-900 dark:text-surface-100
-                                           break-words">
+                                           wrap-break-word">
                                     {{ imputado.nombre }}
                                 </span>
                             </div>
@@ -556,7 +559,7 @@
                             <div class="min-w-0 flex-1">
                                 <span class="block text-sm font-medium leading-relaxed
                                            text-surface-900 dark:text-surface-100
-                                           break-words">
+                                           wrap-break-word">
                                     {{ delito.descripcion }}
                                 </span>
                             </div>
