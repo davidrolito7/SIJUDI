@@ -178,6 +178,20 @@ export class CrearTramite implements OnInit {
     return this.busquedaForm.get('idCatTipoTramite')?.value === 34 ? '000000/0000' : '0000/0000';
   }
 
+  get numeroTramiteLabel(): string {
+    return this.causaValidada?.idCatTipoTramite === 34 ? 'Número de cuaderno' : 'Número de causa';
+  }
+
+  get numeroTramiteValor(): string {
+    const causaValidada = this.causaValidada;
+    if (!causaValidada) {
+      return '—';
+    }
+
+    const valor = causaValidada.idCatTipoTramite === 34 ? causaValidada.numCuaderno : causaValidada.numCausa;
+    return valor || '—';
+  }
+
   private updateNumeroExpedienteValidator(idCatTipoTramite: number | null): void {
     const numeroExpedienteCtrl = this.busquedaForm.get('numeroExpediente');
     const pattern = idCatTipoTramite === 34 ? /^\d{6}\/\d{4}$/ : /^\d{4}\/\d{4}$/;
@@ -196,7 +210,12 @@ export class CrearTramite implements OnInit {
       next: (response: { success: boolean; data: ValidarCausaResponse }) => {
         if (response.success) {
           this.causaValidada = response.data;
-          this.mostrarAddDocumentos.set(true);
+          this.confirmationService.confirm({
+            key: 'confirmarCausa',
+            message: 'true',
+            accept: () => this.mostrarAddDocumentos.set(true),
+            reject: () => { /* empty */ },
+          });
 
         } else {
           this.confirmationService.confirm({
@@ -371,7 +390,6 @@ export class CrearTramite implements OnInit {
     this.documentosAnexados = [];
     this.resetAnexosInput();
     this.causaValidada = null;
-    this.catJuzgados = [];
   }
   descargarAcuse(): void {
     const id = this.tramitesElectronicosRecibidos?.idTramiteElectronicoRecibido;

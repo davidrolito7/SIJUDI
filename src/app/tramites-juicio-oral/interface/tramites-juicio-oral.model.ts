@@ -44,6 +44,7 @@ export interface ValidarCausaResponse {
     idJuzgado: number;
     juzgado: string;
     tipoTramite: string;
+    idCatTipoTramite: number;
     idCausa: number | null;
     numCausa: string | null;
     numCarpeta: string | null;
