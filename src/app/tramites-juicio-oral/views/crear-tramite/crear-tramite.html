@@ -247,8 +247,9 @@
     rejectLabel="Cancelar">
 </app-confirm-dialog>
 
-<app-confirm-dialog key="info" title="No hay conincidencias" message="Revise la información ingresada e intente de nuevo."
-    icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
+<app-confirm-dialog key="info" title="No hay conincidencias"
+    message="Revise la información ingresada e intente de nuevo." icon="pi pi-info" circleClass="bg-blue-500"
+    acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
 </app-confirm-dialog>
 
 <app-confirm-dialog key="archivo-peso" title="Archivo demasiado grande"
@@ -261,52 +262,336 @@
     acceptLabel="Aceptar" acceptStyleClass="btn-info" [showReject]="false">
 </app-confirm-dialog>
 
-
 <p-confirmdialog key="confirmarCausa">
     <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
         @if (message) {
-        <div
-            class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded-2xl w-[90vw] sm:w-auto sm:min-w-105 sm:max-w-130">
-            <!-- Ícono -->
-            <div
-                class="rounded-full bg-primary text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20">
-                <i class="pi pi-info-circle text-5xl!"></i>
+        <div class="flex flex-col bg-surface-0 dark:bg-surface-950 rounded-2xl
+                   w-[92vw] sm:w-[620px] max-h-[85vh] overflow-hidden shadow-xl">
+
+            <!-- ENCABEZADO FIJO -->
+            <div class="shrink-0 flex flex-col items-center
+                       px-6 sm:px-8 pt-6 pb-5
+                       bg-surface-0 dark:bg-surface-950
+                       border-b border-surface-100 dark:border-surface-800">
+
+                <div class="rounded-full bg-primary text-primary-contrast
+                           inline-flex justify-center items-center
+                           h-20 w-20 shadow-md">
+                    <i class="pi pi-info-circle text-4xl!"></i>
+                </div>
+
+                <span class="text-xl font-semibold tracking-tight
+                           text-surface-900 dark:text-surface-0
+                           mt-4 text-center">
+                    Confirmar promoción
+                </span>
+
+                <p class="text-sm text-surface-500 dark:text-surface-400
+                           mt-2 text-center max-w-md leading-relaxed">
+                    Usted está a punto de capturar una promoción para el/la
+                    <span class="font-semibold
+                               text-surface-800 dark:text-surface-100">
+                        {{ causaValidada?.tipoTramite }}
+                    </span>
+                </p>
             </div>
 
-            <span
-                class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0 block mb-2 mt-4 text-center">
-                Usted está a punto de capturar una promoción para el/la {{ causaValidada?.tipoTramite }}
-            </span>
+            <!-- CONTENIDO CON SCROLL -->
+            <div class="flex-1 min-h-0 overflow-y-auto
+                       px-6 sm:px-8 py-5">
 
-            <!-- Datos de la causa/cuaderno -->
-            <div class="flex flex-col gap-1 w-full mt-4 text-sm">
-                <div
-                    class="flex justify-between items-center gap-4 px-3 py-2 bg-surface-100 dark:bg-surface-800">
-                    <span class="font-semibold text-color-secondary shrink-0">Juzgado</span>
-                    <span class="font-medium text-right min-w-0">
-                        {{ causaValidada?.juzgado || '—' }}
-                    </span>
+                <!-- INFORMACIÓN GENERAL -->
+                <div class="rounded-xl border border-surface-200
+                           dark:border-surface-800 overflow-hidden">
+
+                    <div class="px-4 py-3
+                               bg-surface-50 dark:bg-surface-900
+                               border-b border-surface-200 dark:border-surface-800">
+
+                        <span class="text-xs font-semibold uppercase tracking-wide
+                                   text-surface-500 dark:text-surface-400">
+                            Información del asunto
+                        </span>
+                    </div>
+
+                    <!-- JUZGADO -->
+                    <div class="grid grid-cols-1 sm:grid-cols-[150px_1fr]
+                               gap-1 sm:gap-4 px-4 py-3
+                               border-b border-surface-100 dark:border-surface-800">
+
+                        <span class="text-sm font-medium
+                                   text-surface-500 dark:text-surface-400">
+                            Juzgado
+                        </span>
+
+                        <span class="text-sm font-semibold
+                                   text-surface-900 dark:text-surface-100
+                                   sm:text-right break-words">
+                            {{ causaValidada?.juzgado || '—' }}
+                        </span>
+                    </div>
+
+                    <!-- NÚMERO DE TRÁMITE -->
+                    <div class="grid grid-cols-1 sm:grid-cols-[150px_1fr]
+                               gap-1 sm:gap-4 px-4 py-3
+                               border-b border-surface-100 dark:border-surface-800">
+
+                        <span class="text-sm font-medium
+                                   text-surface-500 dark:text-surface-400">
+                            {{ numeroTramiteLabel }}
+                        </span>
+
+                        <span class="text-sm font-semibold
+                                   text-surface-900 dark:text-surface-100
+                                   sm:text-right break-words">
+                            {{ numeroTramiteValor || '—' }}
+                        </span>
+                    </div>
+
+                    <!-- NÚMERO DE CARPETA -->
+                    <div class="grid grid-cols-1 sm:grid-cols-[150px_1fr]
+                               gap-1 sm:gap-4 px-4 py-3">
+
+                        <span class="text-sm font-medium
+                                   text-surface-500 dark:text-surface-400">
+                            Número de carpeta
+                        </span>
+
+                        <span class="text-sm font-semibold
+                                   text-surface-900 dark:text-surface-100
+                                   sm:text-right break-words">
+                            {{ causaValidada?.numCarpeta || '—' }}
+                        </span>
+                    </div>
                 </div>
 
-                <div class="flex justify-between items-center gap-4 px-3 py-2">
-                    <span class="font-semibold text-color-secondary shrink-0">{{ numeroTramiteLabel }}</span>
-                    <span class="font-medium text-right min-w-0">{{ numeroTramiteValor }}</span>
+                <!-- VÍCTIMAS -->
+                <div class="mt-5">
+
+                    <div class="flex items-center gap-2 mb-2">
+
+                        <div class="flex items-center justify-center
+                                   w-7 h-7 rounded-lg
+                                   bg-surface-100 dark:bg-surface-800">
+                            <i class="pi pi-user text-sm
+                                      text-surface-600 dark:text-surface-300">
+                            </i>
+                        </div>
+
+                        <span class="text-sm font-semibold
+                                   text-surface-800 dark:text-surface-100">
+                            Víctimas
+                        </span>
+
+                        @if (causaValidada?.victimas?.length) {
+                        <span class="ml-auto text-xs font-medium
+                                   bg-surface-100 dark:bg-surface-800
+                                   text-surface-500 dark:text-surface-300
+                                   px-2 py-0.5 rounded-full">
+                            {{ causaValidada?.victimas?.length }}
+                        </span>
+                        }
+                    </div>
+
+                    <div class="rounded-xl border border-surface-200
+                               dark:border-surface-800 overflow-hidden">
+
+                        @for (
+                        victima of causaValidada?.victimas;
+                        track victima.idVictima;
+                        let last = $last
+                        ) {
+
+                        <div class="flex items-center gap-3 px-4 py-3" [class.border-b]="!last"
+                            [class.border-surface-100]="!last" [class.dark:border-surface-800]="!last">
+
+                            <div class="w-8 h-8 shrink-0 rounded-full
+                                       bg-surface-100 dark:bg-surface-800
+                                       flex items-center justify-center">
+
+                                <i class="pi pi-user text-xs
+                                          text-surface-500 dark:text-surface-300">
+                                </i>
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                <span class="block text-sm font-medium
+                                           text-surface-900 dark:text-surface-100
+                                           break-words">
+                                    {{ victima.nombre }}
+                                </span>
+                            </div>
+                        </div>
+
+                        } @empty {
+
+                        <div class="px-4 py-4 text-sm text-center
+                                   text-surface-400">
+                            Sin víctimas registradas
+                        </div>
+
+                        }
+                    </div>
                 </div>
 
-                <div
-                    class="flex justify-between items-center gap-4 px-3 py-2 bg-surface-100 dark:bg-surface-800">
-                    <span class="font-semibold text-color-secondary shrink-0">Número de carpeta</span>
-                    <span class="font-medium text-right min-w-0">
-                        {{ causaValidada?.numCarpeta || '—' }}
-                    </span>
+                <!-- IMPUTADOS -->
+                <div class="mt-5">
+
+                    <div class="flex items-center gap-2 mb-2">
+
+                        <div class="flex items-center justify-center
+                                   w-7 h-7 rounded-lg
+                                   bg-surface-100 dark:bg-surface-800">
+                            <i class="pi pi-users text-sm
+                                      text-surface-600 dark:text-surface-300">
+                            </i>
+                        </div>
+
+                        <span class="text-sm font-semibold
+                                   text-surface-800 dark:text-surface-100">
+                            Imputados
+                        </span>
+
+                        @if (causaValidada?.imputados?.length) {
+                        <span class="ml-auto text-xs font-medium
+                                   bg-surface-100 dark:bg-surface-800
+                                   text-surface-500 dark:text-surface-300
+                                   px-2 py-0.5 rounded-full">
+                            {{ causaValidada?.imputados?.length }}
+                        </span>
+                        }
+                    </div>
+
+                    <div class="rounded-xl border border-surface-200
+                               dark:border-surface-800 overflow-hidden">
+
+                        @for (
+                        imputado of causaValidada?.imputados;
+                        track imputado.idImputado;
+                        let last = $last
+                        ) {
+
+                        <div class="flex items-center gap-3 px-4 py-3" [class.border-b]="!last"
+                            [class.border-surface-100]="!last" [class.dark:border-surface-800]="!last">
+
+                            <div class="w-8 h-8 shrink-0 rounded-full
+                                       bg-surface-100 dark:bg-surface-800
+                                       flex items-center justify-center">
+
+                                <i class="pi pi-user text-xs
+                                          text-surface-500 dark:text-surface-300">
+                                </i>
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                <span class="block text-sm font-medium
+                                           text-surface-900 dark:text-surface-100
+                                           break-words">
+                                    {{ imputado.nombre }}
+                                </span>
+                            </div>
+                        </div>
+
+                        } @empty {
+
+                        <div class="px-4 py-4 text-sm text-center
+                                   text-surface-400">
+                            Sin imputados registrados
+                        </div>
+
+                        }
+                    </div>
                 </div>
+
+                <!-- DELITOS -->
+                <div class="mt-5 mb-1">
+
+                    <div class="flex items-center gap-2 mb-2">
+
+                        <div class="flex items-center justify-center
+                                   w-7 h-7 rounded-lg
+                                   bg-surface-100 dark:bg-surface-800">
+
+                            <i class="pi pi-file text-sm
+                                      text-surface-600 dark:text-surface-300">
+                            </i>
+                        </div>
+
+                        <span class="text-sm font-semibold
+                                   text-surface-800 dark:text-surface-100">
+                            Delitos
+                        </span>
+
+                        @if (causaValidada?.delitos?.length) {
+                        <span class="ml-auto text-xs font-medium
+                                   bg-surface-100 dark:bg-surface-800
+                                   text-surface-500 dark:text-surface-300
+                                   px-2 py-0.5 rounded-full">
+                            {{ causaValidada?.delitos?.length }}
+                        </span>
+                        }
+                    </div>
+
+                    <div class="rounded-xl border border-surface-200
+                               dark:border-surface-800 overflow-hidden">
+
+                        @for (
+                        delito of causaValidada?.delitos;
+                        track delito.idDelito;
+                        let last = $last
+                        ) {
+
+                        <div class="flex items-center gap-3 px-4 py-3" [class.border-b]="!last"
+                            [class.border-surface-100]="!last" [class.dark:border-surface-800]="!last">
+
+                            <div class="mt-0.5 w-8 h-8 shrink-0 rounded-full
+                                       bg-surface-100 dark:bg-surface-800
+                                       flex items-center justify-center">
+
+                                <i class="pi pi-file text-xs
+                                          text-surface-500 dark:text-surface-300">
+                                </i>
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                <span class="block text-sm font-medium leading-relaxed
+                                           text-surface-900 dark:text-surface-100
+                                           break-words">
+                                    {{ delito.descripcion }}
+                                </span>
+                            </div>
+                        </div>
+
+                        } @empty {
+
+                        <div class="px-4 py-4 text-sm text-center
+                                   text-surface-400">
+                            Sin delitos registrados
+                        </div>
+
+                        }
+                    </div>
+                </div>
+
             </div>
 
-            <div class="flex justify-end gap-2 mt-6 w-full">
-                <p-button label="Cancelar" [outlined]="true" (onClick)="onReject()" styleClass="min-w-32">
+            <!-- BOTONES FIJOS -->
+            <div class="shrink-0 flex flex-col-reverse sm:flex-row
+                       sm:justify-end gap-2
+                       px-6 sm:px-8 py-4
+                       border-t border-surface-200 dark:border-surface-800
+                       bg-surface-0 dark:bg-surface-950">
+
+                <p-button label="Cancelar" icon="pi pi-times" [outlined]="true" (onClick)="onReject()"
+                    styleClass="w-full sm:w-auto sm:min-w-32">
                 </p-button>
-                <p-button label="Aceptar" (onClick)="onAccept()" styleClass="min-w-32"></p-button>
+
+                <p-button label="Continuar" icon="pi pi-check" (onClick)="onAccept()"
+                    styleClass="w-full sm:w-auto sm:min-w-32">
+                </p-button>
+
             </div>
+
         </div>
         }
     </ng-template>
@@ -329,8 +614,7 @@
 
             <!-- Datos de la respuesta -->
             <div class="flex flex-col gap-1 w-full mt-4 text-sm">
-                <div
-                    class="flex justify-between items-center gap-4 px-3 py-2  bg-surface-100 dark:bg-surface-800">
+                <div class="flex justify-between items-center gap-4 px-3 py-2  bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Folio</span>
                     <span class="font-medium text-right min-w-0">
                         {{ tramitesElectronicosRecibidos?.folio || '—' }}
@@ -344,8 +628,7 @@
                     </span>
                 </div>
 
-                <div
-                    class="flex justify-between items-center gap-4 px-3 py-2  bg-surface-100 dark:bg-surface-800">
+                <div class="flex justify-between items-center gap-4 px-3 py-2  bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Fecha de envío</span>
                     <span class="font-medium text-right min-w-0">
                         {{
@@ -363,8 +646,7 @@
                     </span>
                 </div>
 
-                <div
-                    class="flex justify-between items-center gap-4 px-3 py-2 bg-surface-100 dark:bg-surface-800">
+                <div class="flex justify-between items-center gap-4 px-3 py-2 bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Cantidad de anexos</span>
                     <span class="font-medium text-right min-w-0">
                         {{ tramitesElectronicosRecibidos?.cantidadAnexos ?? '—' }}
