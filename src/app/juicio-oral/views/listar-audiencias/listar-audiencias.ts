@@ -12,7 +12,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { Table, TableModule } from 'primeng/table';
+import { TableModule } from 'primeng/table';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputMaskModule } from 'primeng/inputmask';
@@ -21,7 +21,6 @@ import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-import { Header } from '../../../shared/components/header/header';
 import { MessageService } from 'primeng/api';
 
 
@@ -47,7 +46,6 @@ import { MessageService } from 'primeng/api';
     TooltipModule,
 
     // Shared components
-    Header,
     Spinner
   ],
   templateUrl: './listar-audiencias.html',

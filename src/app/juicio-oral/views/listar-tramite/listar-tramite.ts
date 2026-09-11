@@ -23,7 +23,6 @@ import { TooltipModule } from 'primeng/tooltip';
 // ============================
 // App - shared
 // ============================
-import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 
 // ============================
@@ -55,7 +54,6 @@ import { PantallasService } from '../../services/pantallas.service';
     ToastModule,
     TooltipModule,
     // Shared
-    Header,
     Spinner,
   ],
   templateUrl: './listar-tramite.html',

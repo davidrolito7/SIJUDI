@@ -19,6 +19,7 @@ export interface ListadoExhortosRecibidosI{
     fechaHoraRecepcion:string;
     folioSeguimiento:string;
     estatus:string;
+    idEstatus: number;
     respuesta : number;
     numeroExhorto:string;
     municipioOrigen:string;
@@ -352,9 +353,9 @@ export interface ExhortoEnviadoGuardarGeneralesRequest{
     municipioDestinoId: number,
     materiaClave: string,
     estadoOrigenId: number,
-    municipioOrigenId: number,
-    juzgadoOrigenId: string,
-    juzgadoOrigenNombre: string,
+  ////  municipioOrigenId: number,
+   //// juzgadoOrigenId: string,
+  /////  juzgadoOrigenNombre: string,
     numeroExpedienteOrigen: string,
     numeroOficioOrigen: string,
     idCatTipoVia:number,
@@ -531,8 +532,9 @@ export interface AgregarJuzgado{
 
 export interface CatJuzgado{
     idJuzgado: number;
+    nombre: string;
     clave: string;
-    descripcion: string;
+    //descripcion: string;
     activo: boolean;
 }
 
@@ -572,9 +574,9 @@ export interface ExhortoEnviadoGuardarGeneralesRequest{
     municipioDestinoId: number,
     materiaClave: string,
     estadoOrigenId: number,
-    municipioOrigenId: number,
-    juzgadoOrigenId: string,
-    juzgadoOrigenNombre: string,
+  ////  municipioOrigenId: number,
+  ////  juzgadoOrigenId: string,
+  ////  juzgadoOrigenNombre: string,
     numeroExpedienteOrigen: string,
     numeroOficioOrigen: string,
     idCatTipoVia:number,

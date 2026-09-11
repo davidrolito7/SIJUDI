@@ -10,9 +10,9 @@
   <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
     <div class="flex items-start flex-col md:flex-row justify-between">
       <div>
-        <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
+        <p class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
           Crear acuerdo de exhorto recibido
-        </label>
+        </p>
 
         <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
           <div class="flex items-center gap-2">
@@ -26,7 +26,7 @@
 
             @if (tienePermisoGuardar()) {
                 <div class="relative">
-                    @if ([0, 11].includes(detallesAcuerdo().generales.idEstatus ?? 0)) {
+                    @if ([0, 11].includes(detallesAcuerdo().generales.idEstatus)) {
                     <p-button type="button" (click)="guardarRespuestaExhorto()">
                     Guardar</p-button>
                     }
@@ -272,14 +272,14 @@
   <div [formGroup]="acuerdosForm" class="grid grid-cols-12 gap-4 w-full items-end">
       <!-- Estado destino -->
     <div class="col-span-12 sm:col-span-3">
-      <label class="block mb-2 text-sm font-medium">Tipo de diligencia*</label>
+      <label for="tipoDiligenciado" class="block mb-2 text-sm font-medium">Tipo de diligencia*</label>
       <p-select id="tipoDiligenciado" [options]="listadoTipoDiligenciado()" formControlName="tipoDiligenciado"
         optionLabel="descripcion" appendTo="body"
         inputId="tipoDiligenciado-dropdown" fluid></p-select>
     </div>
     <!-- Observaciones -->
     <div class="col-span-12">
-      <label class="block mb-2 text-sm font-medium">Observaciones</label>
+      <label for="observaciones" class="block mb-2 text-sm font-medium">Observaciones</label>
       <textarea id="observaciones" formControlName="observaciones" rows="4" pInputTextarea class="w-full"
         maxlength="900"></textarea>
 
@@ -294,7 +294,7 @@
           <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
 
           <div class="flex items-center">
-            @if([0, 11].includes(detallesAcuerdo().generales.idEstatus ?? -1 )){
+            @if([0, 11].includes(detallesAcuerdo().generales.idEstatus )){
               @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
                   <div class="relative" style="margin-right: 1rem;">
                     <p-button type="button"
@@ -372,7 +372,7 @@
                                 <table>
                                     @for (firmante of documento.firmantes; track firmante) {
                                       <tr>
-                                        @if(firmante != undefined)
+                                        @if(firmante !== undefined)
                                           {
                                           <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
                                           @if(!documento.firmado && tienePermisoEliminarFirma()){
@@ -460,7 +460,7 @@
 
       <!-- Nombre del promovente -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Contraseña de su firma*</label>
+        <label for="password" class="block mb-2 text-sm font-medium">Contraseña de su firma*</label>
         <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'" formControlName="password" class="w-full" maxlength="20" />
         <p-inputicon class="cursor-pointer text-white/70! hover:text-white!" (click)="togglePasswordVisibility()">
             <i [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>

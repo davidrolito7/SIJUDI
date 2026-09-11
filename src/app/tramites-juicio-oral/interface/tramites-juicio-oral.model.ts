@@ -39,14 +39,33 @@ export interface CatJuzgadoResponse {
     descripcion: string;
 }
 
+export interface ValidarCausaVictima {
+    idVictima: number;
+    nombre: string;
+}
+
+export interface ValidarCausaImputado {
+    idImputado: number;
+    nombre: string;
+}
+
+export interface ValidarCausaDelito {
+    idDelito: number;
+    descripcion: string;
+}
+
 export interface ValidarCausaResponse {
     idCatJuzgado: number;
     idJuzgado: number;
     juzgado: string;
     tipoTramite: string;
+    idCatTipoTramite: number;
     idCausa: number | null;
     numCausa: string | null;
     numCarpeta: string | null;
     idCuaderno: number | null;
     numCuaderno: string | null;
+    victimas: ValidarCausaVictima[];
+    imputados: ValidarCausaImputado[];
+    delitos: ValidarCausaDelito[];
 }

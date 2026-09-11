@@ -17,8 +17,8 @@ export interface ListadoAmparosRecibidosI{
 export interface UI_ParamlistadoAmparosRecibidosRequest{
     fechaIni?:Date;
     fechaFin?:Date;
-    perfil:string;
-    idAreaAdminAplicaciones:number;
+   //// perfil:string;
+  ////  idAreaAdminAplicaciones:number;
 }
 export interface catalogoEstatus{
     idEstatus:number;

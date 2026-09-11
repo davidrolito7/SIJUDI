@@ -20,13 +20,12 @@ import { downloadBase64,base64ToFile } from '../../../shared/functions/utils';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import generateExEnviadosPDF from '../../reportes/rptExhortoEnviado';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
-import { Header } from "../../../shared/components/header/header";
 import { TagModule } from "primeng/tag";
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-DetallesExhortoEnviado',
-  imports: [Spinner, ToastModule, CommonModule, ButtonModule, TableModule, ConfirmDialog, DialogModule, PdfDialog, Header, TagModule],
+  imports: [Spinner, ToastModule, CommonModule, ButtonModule, TableModule, ConfirmDialog, DialogModule, PdfDialog, TagModule],
   templateUrl: './detalles-exhorto-enviado.html',
   styleUrl: './detalles-exhorto-enviado.css',
   providers: [MessageService,ConfirmationService]
@@ -57,7 +56,7 @@ export class DetallesExhortoEnviado {
   movimientos=signal<VerMovimientosEnviadosResponse[]>([]);
   //idPromocionEnviadoSeleccionado: number | null = null;
   //Asignar el id de la pantalla, para poder obtener las secciones(permisos) de esta pantalla
-  idPantalla=14195;
+  idPantalla=11;
   secciones : secciones[] = [] ;
   responseSecciones!: GenericResponse<secciones[]>;
   private perfilSeleccionadoService = inject(AuthService);

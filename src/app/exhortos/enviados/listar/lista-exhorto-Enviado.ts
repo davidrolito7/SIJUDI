@@ -8,25 +8,22 @@ import { IconField } from "primeng/iconfield";
 import { InputIcon } from "primeng/inputicon";
 import { DatePicker } from "primeng/datepicker";
 import { SelectModule  } from "primeng/select";
-import { Avatar } from "primeng/avatar";
-import { Breadcrumb } from "primeng/breadcrumb";
 import { CardModule } from 'primeng/card';
 import { PaginatorModule } from 'primeng/paginator';
 import { InputTextModule } from 'primeng/inputtext';
-import { GenericResponse } from '../../../shared/interface/shared.interface';
 import { ListadoEstatus, ListadoExhortosEnviados } from '../../interfaces/exhortos.model';
 import { ExhortosService } from '../../services/exhorto.service';
 import { AuthService } from '../../../core/auth/service/auth.service';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { ToastModule } from "primeng/toast";
 import { Spinner } from '../../../shared/components/spinner/spinner';
-import { Header } from "../../../shared/components/header/header";
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
+import { FloatLabelModule } from 'primeng/floatlabel';
 @Component({
   selector: 'app-ListaExhortosEnviados',
   imports: [Button, TableModule, IconField, InputIcon, DatePicker, SelectModule,
-    ToastModule, CardModule, PaginatorModule, FormsModule, CommonModule, InputTextModule, Spinner, Header, TagModule, TooltipModule],
+    ToastModule, CardModule, PaginatorModule, FormsModule, CommonModule, InputTextModule, Spinner, TagModule, TooltipModule, FloatLabelModule],
   templateUrl: './lista-exhorto-Enviado.html',
   styleUrl: './lista-exhorto-Enviado.css',
   providers: [MessageService]
@@ -152,9 +149,9 @@ export class ListaExhortosEnviados implements OnInit {
     const obj = {
       fechaIni: fechaIni,
       fechaFin: fechaFin,
-      perfil: perfil,
-      estatus : this.selectedEstatus?.idEstatus ?? 0,
-      IdAreaAdminAplicaciones : area
+    ////  perfil: perfil,
+      estatus: this.selectedEstatus?.idEstatus ?? 0,
+     //// IdAreaAdminAplicaciones : area
     };
 
      this.isLoading=true;

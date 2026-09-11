@@ -19,7 +19,6 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { Header } from "../../../shared/components/header/header";
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { Select } from "primeng/select";
 import { FileSelectEvent, FileUpload } from "primeng/fileupload";
@@ -42,7 +41,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-acuerdo',
   imports: [
     CommonModule,
-    ButtonModule, Header,
+    ButtonModule,
     Spinner,
     Select,
     ReactiveFormsModule,

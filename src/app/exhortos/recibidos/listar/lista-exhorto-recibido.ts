@@ -10,30 +10,29 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { AvatarModule } from 'primeng/avatar';
-import { ConfirmationService, MenuItem,MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { InputMaskModule } from 'primeng/inputmask';
 import { DatePicker } from 'primeng/datepicker';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { Router } from "@angular/router";
 import { ToastModule } from 'primeng/toast';
-import {GenericResponse} from '../../../shared/interface/shared.interface';
-import { ListadoExhortosRecibidosI, UI_ParamlistadoExhortosRecibidosRequest,ListadoEstatus } from "../../interfaces/exhortos.model";
-import {AuthService} from '../../../core/auth/service/auth.service';
-import {ExhortosService} from '../../services/exhorto.service';
+import { GenericResponse } from '../../../shared/interface/shared.interface';
+import { ListadoExhortosRecibidosI, UI_ParamlistadoExhortosRecibidosRequest, ListadoEstatus } from "../../interfaces/exhortos.model";
+import { AuthService } from '../../../core/auth/service/auth.service';
+import { ExhortosService } from '../../services/exhorto.service';
 import { Spinner } from '../../../shared/components/spinner/spinner';
-import { Header } from "../../../shared/components/header/header";
 import { TooltipModule } from 'primeng/tooltip';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 
 @Component({
   selector: 'app-ListaExhortosRecibidos',
-   standalone: true,
+  standalone: true,
   imports: [DatePicker, TableModule, InputTextModule, TagModule, SelectModule, ButtonModule, IconFieldModule, InputIconModule,
-    BreadcrumbModule, AvatarModule, InputMaskModule, FloatLabelModule, ToastModule, CommonModule, FormsModule, Spinner, Header, TooltipModule],
+    BreadcrumbModule, AvatarModule, InputMaskModule, FloatLabelModule, ToastModule, CommonModule, FormsModule, Spinner, TooltipModule],
   templateUrl: './lista-exhorto-recibido.html',
   styleUrl: './lista-exhorto-recibido.css',
-  providers:[MessageService]
-    
+  providers: [MessageService]
+
 })
 export class ListaExhortosRecibidos implements OnInit {
 
@@ -44,25 +43,25 @@ export class ListaExhortosRecibidos implements OnInit {
 
   filter!: UI_ParamlistadoExhortosRecibidosRequest;
   response!: GenericResponse<ListadoExhortosRecibidosI[]>;
-  listadosExhortos= signal<ListadoExhortosRecibidosI[]>([]);
+  listadosExhortos = signal<ListadoExhortosRecibidosI[]>([]);
   tienePermisoVerAcuerdo = signal<boolean>(false);
 
-  fechaInicio : Date | undefined;
-  fechaFin : Date | undefined;
-  fechaMaxima: Date| undefined;
+  fechaInicio: Date | undefined;
+  fechaFin: Date | undefined;
+  fechaMaxima: Date | undefined;
 
   formSubmitted: boolean = false;
-   // Fechas predeterminadas
-   defaultDateIni: string | undefined;
-   defaultDateFin: string | undefined;
+  // Fechas predeterminadas
+  defaultDateIni: string | undefined;
+  defaultDateFin: string | undefined;
 
 
   //@ViewChild('dt1') dt1: any;
 
   //Asignamos el id pantalla
-   idPantalla=14157;
-   //Obtenemos las secciones de la pantalla actual
-   secciones : secciones[] = [] ;
+  idPantalla = 14157;
+  //Obtenemos las secciones de la pantalla actual
+  secciones: secciones[] = [];
   listadoEstatus: ListadoEstatus[] = [];
   //selectedEstatus : number=5; ///se ponme en 5 por que es el valor del estatus "recibidos"
   selectedEstatus: ListadoEstatus | undefined;
@@ -74,7 +73,7 @@ export class ListaExhortosRecibidos implements OnInit {
     public router: Router,
     private messageService: MessageService,
     private cd: ChangeDetectorRef
-  ) { 
+  ) {
 
   }
   items: MenuItem[] = [{ label: 'Components' }, { label: 'Form' }, { label: 'InputText', routerLink: '/inputtext' }];
@@ -83,7 +82,7 @@ export class ListaExhortosRecibidos implements OnInit {
   ngOnInit() {
 
     this.catalogoEstatus();
-   
+
     //const today = new Date();
 
     //this.fechaMaxima = new Date(today);
@@ -96,7 +95,7 @@ export class ListaExhortosRecibidos implements OnInit {
 
   }
 
-  
+
   // Método para navegar al componente de detalle-notificacion
   verDetalleNotificacion(idExhortoRecibido: number) {
     //console.log('Naavegando a detalle-exhorto con idExhortoRecibido:', idExhortoRecibido);
@@ -110,67 +109,67 @@ export class ListaExhortosRecibidos implements OnInit {
 
   }
 
-  async ListaExhortos(){
+  async ListaExhortos() {
     await this.getListado();
   }
 
-  getListado(): Promise<void>{
-    this.isLoading=true;
+  getListado(): Promise<void> {
+    this.isLoading = true;
 
-    return new Promise((resolve,reject) =>{
-    this.formSubmitted = true;
-    // Utilizar fechas predeterminadas si date1 o date2 no están definidas
-    let fechaIni = this.fechaInicio;
-    let fechaFin = this.fechaFin;
-    [fechaIni, fechaFin] = [this.fechaInicio, this.fechaFin];
+    return new Promise((resolve, reject) => {
+      this.formSubmitted = true;
+      // Utilizar fechas predeterminadas si date1 o date2 no están definidas
+      let fechaIni = this.fechaInicio;
+      let fechaFin = this.fechaFin;
+      [fechaIni, fechaFin] = [this.fechaInicio, this.fechaFin];
 
-    if(fechaIni===null){
+      if (fechaIni === null) {
 
-      fechaIni=undefined;
-    }
-    if(fechaFin===null){
-      fechaFin=undefined;
-    }
-
-    
-    const perfil = this.authService.getRoleNameUsuario(); // Obtener perfil del servicio
-    const area = this.authService.getAreaUsuario();
-
-    const obj = {
-      fechaIni: fechaIni,
-      fechaFin: fechaFin,
-      perfil: perfil,
-      estatus : this.selectedEstatus?.idEstatus,
-      IdAreaAdminAplicaciones : area 
-    };
-    console.log(this.selectedEstatus?.idEstatus);
-
-    this.cd.detectChanges();
-
-    this.exhortoService.getExhortosRecibidosListado(obj).subscribe({
-      next: (res => {
-        this.response = res as any;
-        if (this.response.success) {
-          //console.log("Respuesta del servidor:", this.response);
-          this.listadosExhortos.set(this.response.data);
-
-        } else {
-          // Manejo de errores
-          this.messageService.add({severity: 'error', summary: this.response.message, detail: this.response.errors[0]})
-        }
-        //this.loading = false;
-      }),
-      error: (err => {
-        // Manejo de errores
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el listado de exhortos' });
-        this.isLoading=false;
-        this.cd.detectChanges();
-      }),
-      complete:()=>{
-        this.isLoading=false;
-        this.cd.detectChanges();
+        fechaIni = undefined;
       }
-    });
+      if (fechaFin === null) {
+        fechaFin = undefined;
+      }
+
+
+      const perfil = this.authService.getRoleNameUsuario(); // Obtener perfil del servicio
+      const area = this.authService.getAreaUsuario();
+
+      const obj = {
+        fechaIni: fechaIni,
+        fechaFin: fechaFin,
+      ////  perfil: perfil,
+        estatus: this.selectedEstatus?.idEstatus,
+        ////   IdAreaAdminAplicaciones : area 
+      };
+      console.log(this.selectedEstatus?.idEstatus);
+
+      this.cd.detectChanges();
+
+      this.exhortoService.getExhortosRecibidosListado(obj).subscribe({
+        next: (res => {
+          this.response = res as any;
+          if (this.response.success) {
+            //console.log("Respuesta del servidor:", this.response);
+            this.listadosExhortos.set(this.response.data);
+
+          } else {
+            // Manejo de errores
+            this.messageService.add({ severity: 'error', summary: this.response.message, detail: this.response.errors[0] })
+          }
+          //this.loading = false;
+        }),
+        error: (err => {
+          // Manejo de errores
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el listado de exhortos' });
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }),
+        complete: () => {
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }
+      });
     });
   }
 
@@ -254,83 +253,80 @@ export class ListaExhortosRecibidos implements OnInit {
         return { icon: 'pi pi-question-circle', severity: 'secondary' };
     }
   }
-  
-  async catalogoEstatus(){
+
+  async catalogoEstatus() {
     await this.getlistadoEstatus();
-    
+
   }
 
-  getlistadoEstatus(): Promise<void>{
-    return new Promise((resolve,reject) =>{
-        this.exhortoService.getListadoEstatus(1).subscribe({
-          next: (response:any) => {
-            if(response.success)
-            {
-              //console.log('Datos recibidos del catálogo:', response);
-              this.listadoEstatus = response.data;
-              //var todos = { "idEstatus": 0, "descripcion": "Todos", "Activo":true, "idTipoTramite":1 };
-              //this.listadoEstatus.push(todos);
-              const perfil = this.authService.getRoleNameUsuario(); // Obtener perfil del servicio
-              console.log(perfil);
-              if(['Oficialia','Secretario'].includes(perfil)){
-                this.selectedEstatus=this.listadoEstatus.find(f=>f.idEstatus==5); // por default que carhue estatus Recibido
-              }else{
-                this.selectedEstatus=this.listadoEstatus.find(f=>f.idEstatus==7); // por default que cargue estatus Acordado
-              }
+  getlistadoEstatus(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.exhortoService.getListadoEstatus(1).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            //console.log('Datos recibidos del catálogo:', response);
+            this.listadoEstatus = response.data;
+            //var todos = { "idEstatus": 0, "descripcion": "Todos", "Activo":true, "idTipoTramite":1 };
+            //this.listadoEstatus.push(todos);
+            const perfil = this.authService.getRoleNameUsuario(); // Obtener perfil del servicio
+            console.log(perfil);
+            if (['Oficialia', 'Secretario'].includes(perfil)) {
+              this.selectedEstatus = this.listadoEstatus.find(f => f.idEstatus == 5); // por default que carhue estatus Recibido
+            } else {
+              this.selectedEstatus = this.listadoEstatus.find(f => f.idEstatus == 7); // por default que cargue estatus Acordado
+            }
 
-              this.ListaExhortos();
-              //console.log(this.listadoEstatus);
-            }
-            else
-            {
-              this.messageService.add({severity: 'error', summary: response.message, detail:response.errors})
-            }
-          },
-          error:(e)=>
-          {
-            //console.error('Error al cargar el catálogo de Materia', e);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
-          },
-        });
+            this.ListaExhortos();
+            //console.log(this.listadoEstatus);
+          }
+          else {
+            this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors })
+          }
+        },
+        error: (e) => {
+          //console.error('Error al cargar el catálogo de Materia', e);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el catálogo de materias' });
+        },
+      });
     });
   }
-  
-   clear(table: Table) {
+
+  clear(table: Table) {
     // this.fechaInicial = undefined;
     // this.fechaFinal = undefined;
     table.clear();
   }
-  GetSeccionesUsuario(): Promise<void>{
+  GetSeccionesUsuario(): Promise<void> {
     return new Promise((resolve, reject) => {
       const idAreaSistemaUsuario = this.authService.getAreaSistemaUsuario(); // Obtener perfil del servicio
       const perfilSeleccionado = this.authService.getPerfilSeleccionado();
       //const perfilSeleccionado = localStorage.getItem('perfilSeleccionado');
       //const idAreaSistemaUsuario = localStorage.getItem('idAreaSistemaUsuario');
-    this.isLoading=true;
-    this.cd.detectChanges();
-    this.authService.GetSeccionesUsuario(idAreaSistemaUsuario,this.idPantalla.toString(),perfilSeleccionado)
-      .subscribe({
-        next: (res) => {
-          if (res.success) {
-            this.secciones = res.data;
-            this.tienePermisoVerAcuerdo.set(this.secciones.some(s => s.descripcion === 'VerAcuerdo'));
-                             
+      this.isLoading = true;
+      this.cd.detectChanges();
+      this.authService.GetSeccionesUsuario(idAreaSistemaUsuario, this.idPantalla.toString(), perfilSeleccionado)
+        .subscribe({
+          next: (res) => {
+            if (res.success) {
+              this.secciones = res.data;
+              this.tienePermisoVerAcuerdo.set(this.secciones.some(s => s.descripcion === 'VerAcuerdo'));
 
-          } else {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor." });
+
+            } else {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor." });
+            }
+          },
+          error: (err) => {
+
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+            this.isLoading = false;
+            this.cd.detectChanges();
+          },
+          complete: () => {
+            this.isLoading = false;
+            this.cd.detectChanges();
           }
-        },
-        error: (err) => {
-          
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
-          this.isLoading=false;
-          this.cd.detectChanges();
-        },
-        complete:()=>{
-          this.isLoading=false;
-          this.cd.detectChanges();
-        }
-      });
+        });
     });
   }
 }

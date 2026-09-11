@@ -1,5 +1,5 @@
 <div>
-  @if(isOpen){
+  @if(isOpen()){
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-primary/40! ">
     <div class="bg-surface-0 dark:bg-surface-950 border border-surface rounded-2xl shadow-lg w-full max-w-lg mx-4 overflow-hidden flex flex-col"
       style="max-height: 90vh;">
@@ -7,7 +7,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between px-4 py-3 border-b border-surface shrink-0">
         <span class="font-semibold text-sm uppercase tracking-wider text-surface-600 dark:text-surface-200">
-          <ng-content select="[modal-title]"></ng-content>
+          <ng-content select="[modal-title]">Datos del acuse</ng-content>
         </span>
         <button type="button" (click)="closeModal()"
           class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-emphasis transition-all text-muted-color"

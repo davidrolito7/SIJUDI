@@ -17,7 +17,6 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 
 // Shared
-import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 
 // Feature
@@ -42,7 +41,7 @@ import { ListadoAcuerdosResponse } from '../../interfaces/juicioenlinea.model';
     ToastModule,
     TooltipModule,
     // Shared
-    Header,
+
     Spinner,
   ],
   templateUrl: './listar-acuerdo.html',

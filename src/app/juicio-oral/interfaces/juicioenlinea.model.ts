@@ -690,7 +690,7 @@ export interface Area {
     idMunicipio: string;
     Nombre: string;
     Dirección?: string;
-    'Activo '?: string;
+    Activo: boolean;
 }
 
 export interface Remitente {

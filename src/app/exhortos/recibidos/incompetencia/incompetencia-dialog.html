@@ -1,7 +1,9 @@
-<p-dialog 
-  [(visible)]="visible" 
-  [modal]="true" 
-  [closable]="true" 
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [closable]="true"
+  appendTo="body"
   [style]="{width: '400px'}"
   header="Mi diálogo personalizado">
 
@@ -17,9 +19,7 @@
     </div>
 </form>
 
-<ng-template pTemplate="footer">
-    <p-button label="Cancel" icon="pi pi-times" text (click)="close()" />
-    <p-button label="Agregar" icon="pi pi-check" (click)="GuardarIncompetencia()" />
-</ng-template>
+    <button pButton  icon="pi pi-times" text (click)="close()">Cancel</button> 
+    <button  pButton  icon="pi pi-check" (click)="GuardarIncompetencia()" >Agregar</button>
 </p-dialog>
 

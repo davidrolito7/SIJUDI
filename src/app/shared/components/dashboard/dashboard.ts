@@ -8,7 +8,6 @@ import { TokenService } from '../../../core/auth/service/token.service';
 import { ContadoresService } from '../../../juicio-oral/services/contadores.service';
 import { datosFirma } from '../../interface/shared.interface';
 import { PerfilUsuarioService } from '../../service/PerfilUsuarioService';
-import { Header } from '../header/header';
 import { DashboardEstadisticas } from './components/dashboard-estadisticas/dashboard-estadisticas';
 import { DashboardExhortos } from './components/dashboard-exhortos/dashboard-exhortos';
 import { DashboardOficialia } from './components/dashboard-oficialia/dashboard-oficialia';
@@ -27,7 +26,6 @@ interface DashboardTab {
   standalone: true,
   imports: [
     CommonModule,
-    Header,
     ToastModule,
     DashboardOficialia,
     DashboardExhortos,

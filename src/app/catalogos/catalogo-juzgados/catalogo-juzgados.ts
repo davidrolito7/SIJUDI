@@ -14,12 +14,11 @@ import { TagModule } from 'primeng/tag';
 import { DrawerModule } from 'primeng/drawer';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
-import { Header } from "../../shared/components/header/header";
 
 @Component({
   standalone: true,
   selector: 'app-catalogo-juzgados',
-  imports: [ToastModule, TableModule, ButtonModule, InputIconModule, IconFieldModule, Spinner, InputTextModule, TagModule, DrawerModule, ReactiveFormsModule, ConfirmDialog, Header],
+  imports: [ToastModule, TableModule, ButtonModule, InputIconModule, IconFieldModule, Spinner, InputTextModule, TagModule, DrawerModule, ReactiveFormsModule, ConfirmDialog],
   templateUrl: './catalogo-juzgados.html',
   styleUrl: './catalogo-juzgados.css',
   providers: [MessageService, ConfirmationService]

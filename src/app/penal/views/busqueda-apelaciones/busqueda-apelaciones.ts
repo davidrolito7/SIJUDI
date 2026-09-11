@@ -9,7 +9,7 @@ import { FieldsetModule } from 'primeng/fieldset';
 import { Select } from 'primeng/select';
 import { OverlayModule } from 'primeng/overlay';
 import { AccordionModule } from 'primeng/accordion';
-import { Drawer, DrawerModule } from 'primeng/drawer';
+import { DrawerModule } from 'primeng/drawer';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SplitterModule } from 'primeng/splitter';
 import { CatApelaciones, CatSalas, Nomenclatura } from '../../interface/salas.interface';
@@ -24,7 +24,6 @@ import {
 import { InputMaskModule } from 'primeng/inputmask';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { Header } from '../../../shared/components/header/header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { AuthService } from '../../../core/auth/service/auth.service';
 
@@ -48,7 +47,6 @@ import { AuthService } from '../../../core/auth/service/auth.service';
     InputMaskModule,
     IconFieldModule,
     InputIconModule,
-    Header,
     Spinner,
   ],
   templateUrl: './busqueda-apelaciones.html',
