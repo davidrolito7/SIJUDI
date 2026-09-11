@@ -1,3 +1,4 @@
+import { TokenService } from './../../../core/auth/service/token.service';
 import { ChangeDetectorRef, Component, inject, signal, Signal, computed } from '@angular/core';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { TableModule } from "primeng/table";
@@ -16,10 +17,11 @@ import { Spinner } from "../../../shared/components/spinner/spinner";
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { Dialog } from "primeng/dialog";
 import { Toast } from "primeng/toast";
-
+import { ButtonModule } from 'primeng/button';
+import { FilePdf } from '@primeicons/angular/file-pdf';
 @Component({
   selector: 'app-respuestaExhortoRecibido',
-  imports: [PdfDialog, TableModule, Button, CommonModule, Spinner, ConfirmDialog, Dialog, Toast],
+  imports: [PdfDialog, TableModule, ButtonModule, CommonModule, Spinner, ConfirmDialog, Dialog, Toast],
   templateUrl: './respuesta-exhorto-recibido.html',
   styleUrl: './respuesta-exhorto-recibido.css',
   providers: [MessageService,ConfirmationService]
@@ -45,7 +47,7 @@ export class RespuestaExhortoRecibido {
   base64String!:String;
 
   //Asignamos el id pantalla
-  idPantalla=14216;
+  idPantalla=16;
   //Obtenemos las secciones de la pantalla actual
   secciones : secciones[] = [] ;
   responseSecciones!: GenericResponse<secciones[]>;
@@ -55,8 +57,19 @@ export class RespuestaExhortoRecibido {
   tienePermisoEnviarGenerales = signal<boolean>(false);
   tienePermisoEnviarArchivos= signal<boolean>(false);
   tienePermisoEliminarArchivo =signal<boolean>(false);
-  puedeEnviarGenerales= signal<boolean>(false);
   movimientos = signal<VerMovimientosResponse[]>([]);
+  //true cuando el documento de tipo acuerdo ya tiene las dos firmas (secretario y juez)
+  tieneDosFirmas = signal<boolean>(false);
+  //se recalcula automaticamente cuando cambian movimientos() o tieneDosFirmas(), sin depender del orden
+  //en que resuelvan las llamadas async de cargarDetallesPromocion() y obtenerMovimientos()
+  puedeEnviarGenerales = computed(() => {
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return false;
+    }
+    const maxId = Math.max(...lista.map(m => m.idMovimiento));
+    return this.tieneDosFirmas() && maxId > 9;
+  });
   private perfilSeleccionadoService = inject(AuthService);
   perfilSeleccionado! : Signal<string>;
   enviadoRespuestaArchivosResponse! : EnviadoRespuestaArchivosResponse ;
@@ -66,6 +79,7 @@ export class RespuestaExhortoRecibido {
   mostrarDocumento = signal<boolean>(false);
   dialogData: any = {}; // Para almacenar la información del archivo del diálogo
 
+  private tokenService = inject(TokenService);
   constructor(
       private messageService: MessageService,
       private exhortosService: ExhortosService,
@@ -213,7 +227,9 @@ export class RespuestaExhortoRecibido {
             // se puede empezar enviar la respuesta con la condicion de que:
             // se debe tener un documento de tipo=2 Acuerdo
             // el documento de tipo 2 debe tener al menos dos firmas: del secretario y del juez
-            this.puedeEnviarGenerales.set(tieneDosFirmas);
+            this.tieneDosFirmas.set(tieneDosFirmas);
+          } else {
+            this.tieneDosFirmas.set(false);
           }
           this.cd.detectChanges();
           //console.log(this.detallesAcuerdo);
@@ -359,10 +375,6 @@ export class RespuestaExhortoRecibido {
         next:(response => {
             //console.log('Datos recibidos:', response);
             this.movimientos.set(response.data); // Almacena los datos recibidos en la variable
-            const maxId = Math.max(...this.movimientos().map(m => m.idMovimiento));
-
-
-            this.puedeEnviarGenerales.set(maxId>9 ? true:false);
           }),
         error:(error) => {
             //console.error('Error al cargar los movimientos del exhorto', error);
@@ -383,7 +395,7 @@ puedeEditarSegunFlujo = computed(() => {
     const ultimoMovimiento = lista[lista.length - 1];
     
     // Obtenemos el perfil del LocalStorage
-    const perfilActual = localStorage.getItem('perfilSeleccionadoDesc');
+    const perfilActual = this.tokenService.getPerfilNombre();
 
     // Regla 1: El documento debe "radicar" en mi perfil actual
     const radicaConmigo = ultimoMovimiento.radica === perfilActual;
@@ -397,6 +409,10 @@ puedeEditarSegunFlujo = computed(() => {
 
     // El botón de editar se muestra SI:
   // Radica conmigo Y NO lo he enviado Y ADEMÁS ya lo recibí formalmente
+  console.log('radica:', JSON.stringify(ultimoMovimiento.radica));
+console.log('perfilActual:', JSON.stringify(perfilActual));
+console.log('cargoTurna:', JSON.stringify(ultimoMovimiento.cargoTurna));
+console.log({ radicaConmigo, yaLoEnvie, yaFueRecibido });
   return radicaConmigo && !yaLoEnvie && yaFueRecibido;
   });
 

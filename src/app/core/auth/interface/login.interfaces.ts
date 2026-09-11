@@ -17,6 +17,7 @@ export interface areasResponse {
 export interface secciones {
   IdSeccion: number;
   descripcion: string;
+  nombre: string;
   //Pantallas : boton[];
 }
 export interface boton {

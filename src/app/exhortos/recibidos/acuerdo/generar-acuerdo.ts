@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, Signal, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, Signal, signal } from '@angular/core';
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,11 +29,13 @@ import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { ToastModule } from "primeng/toast";
 import { ModalComponent } from "../../../shared/components/modal-component/modal-component";
 import { ModalService } from '../../../shared/services/modal.service';
+import { ButtonModule } from 'primeng/button';
+
 
 
 @Component({
   selector: 'app-GenerarAcuerdo',
-  imports: [ConfirmDialog, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent],
+  imports: [ConfirmDialog,ButtonModule, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent],
   templateUrl: './generar-acuerdo.html',
   styleUrl: './generar-acuerdo.css',
   providers: [MessageService,ConfirmationService]
@@ -57,8 +59,33 @@ export class GenerarAcuerdo {
   datosExhortoRecibido: ListadoExhortosRecibidosI | null = null;
   acuseEnviarAcuerdoArchivos! : EnviadoRespuestaArchivosResponse;
   detallesAcuerdo =signal<respuestaExhorto>(<respuestaExhorto>{});
-  puedeEnviarGenerales = signal<boolean>(false);
-  //acuerdo!: generales; 
+  //true cuando el documento de tipo acuerdo ya tiene las dos firmas (secretario y juez)
+  tieneDosFirmas = signal<boolean>(false);
+
+  //true desde que el secretario turno el acuerdo al juez (idMovimiento 9) en adelante; oculta Guardar y eliminar archivo
+  yaTurnadoAJuez = computed(() => {
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return false;
+    }
+    const maxId = Math.max(...lista.map(m => m.idMovimiento));
+    return maxId >= 9;
+  });
+  //solo secretario (mientras no haya turnado al juez, idMovimiento 9) y notificador (mientras no haya turnado de
+  //vuelta al secretario, idMovimiento 12) pueden cargar documentos
+  puedeCargarDocumento = computed(() => {
+    const perfil = this.tokenService.getPerfilNombre();
+    const lista = this.movimientos();
+    const maxId = lista && lista.length > 0 ? Math.max(...lista.map(m => m.idMovimiento)) : 0;
+    if (perfil === 'Secretario') {
+      return maxId < 9;
+    }
+    if (perfil === 'Notificador') {
+      return maxId < 12;
+    }
+    return false;
+  });
+  //acuerdo!: generales;
   //responseRespuestaExhortos!: GenericResponse<respuestaExhorto>;
 
   private perfilSeleccionadoService = inject(AuthService);
@@ -70,7 +97,7 @@ export class GenerarAcuerdo {
   //Se declaran las variables para la visualizacion de las secciones
   secciones : secciones[] = [] ;
   //Asignar el id de la pantalla, para poder obtener las secciones(permisos) de esta pantalla
-  idPantalla=14158;
+  idPantalla=10;
   isLoading: boolean = false;
   firmaDialog: boolean=false;
    dialogData: any = {}; // Para almacenar la información del archivo del diálogo
@@ -129,7 +156,7 @@ export class GenerarAcuerdo {
       }
 
       this.idExhortoRecibido = idExhorto;
-     
+
 
       // Cargar datos
       this.getListadoTipoDiligenciado().then(()=>{
@@ -245,16 +272,10 @@ export class GenerarAcuerdo {
               // se puede empezar enviar la respuesta con la condicion de que:
               // se debe tener un documento de tipo=2 Acuerdo
               // el documento de tipo 2 debe tener al menos dos firmas: del secretario y del juez
-              //this.puedeEnviarGenerales.set(tieneDosFirmas);
-                //this.puedeEnviarGenerales.set(this.listaDocumentos().some(doc => doc.idTipoDocumento==2));
-                /*this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
-                  ...archivo
-                })));*/
-              const maxId = Math.max(...this.movimientos().map(m => m.idMovimiento));
-              this.puedeEnviarGenerales.set(tieneDosFirmas && maxId>9 ? true:false);
-              
+              this.tieneDosFirmas.set(tieneDosFirmas);
+
             } else {
-              this.puedeEnviarGenerales.set(false);
+              this.tieneDosFirmas.set(false);
               this.listaDocumentos.set([]);
               this.messageService.add({
                 severity: 'warn',
@@ -530,8 +551,8 @@ export class GenerarAcuerdo {
                 this.tienePermisoCargarArchivo.set(this.secciones.some(s => s.descripcion === 'CargarArchivo'));
                 this.tienePermisoFirmarArchivo.set(this.secciones.some(s => s.descripcion === 'FirmarArchivo'));
                 this.tienePermisoEliminarArchivo.set(this.secciones.some(s => s.descripcion === 'EliminarArchivo'));
-                this.tienePermisoEliminarFirma.set(this.secciones.some(s => s.descripcion === 'EliminarFirma'));
-                this.tienePermisoAplicarFirma.set(this.secciones.some(s => s.descripcion === 'AplicarFirma'));
+                this.tienePermisoEliminarFirma.set(this.secciones.some(s => s.nombre === 'EliminarFirma'));
+                this.tienePermisoAplicarFirma.set(this.secciones.some(s => s.nombre === 'AplicarFirma'));
               }
             } else {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor.", sticky: true });
