@@ -595,9 +595,11 @@
                 </p-button>
                 }
                 <!--APLICAR FIRMAS-->
+                @if(!documento.firmado){
                 <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
                   icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                 </p-button>
+                }
 
 
                 <!--VER O DESCARGAR DOCUMENTO-->

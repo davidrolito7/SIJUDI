@@ -35,14 +35,14 @@
 
       @if (tienePermisoEnviarGenerales()) {
       <!--si el estatus del acuerdo es 11 puede enviar los datos generales-->
-      @if (detallesAcuerdo().generales.idEstatus === 11) {
+      @if (detallesAcuerdo().generales?.idEstatus === 11) {
       <button pButton (click)="enviarAcuerdoGenerales(this.idExhortoRecibido)" 
         icon="pi pi-send">Enviar generales</button>
       }
       
       }
       @if (tienePermisoEnviarArchvios()) {
-      @if (detallesAcuerdo().generales.idEstatus === 12) {
+      @if (detallesAcuerdo().generales?.idEstatus === 12) {
       <button pButton (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"
         icon="pi pi-file">Enviar archivos</button>
       }
