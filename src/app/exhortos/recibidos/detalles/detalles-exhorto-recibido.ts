@@ -133,9 +133,10 @@ export class DetallesExhortoRecibido {
   verAcuerdos() {
     //console.log('Naavegando a detalle-promocion con idPromocion:', idExhortoRecibido);
     const idExhortoRecibido= this.idExhortoRecibido;
-    this.router.navigate(['/exhortos/respuesta-exhorto-recibido'], { state: { idExhortoRecibido } });
+    this.router.navigate(['/exhortos/generar-acuerdo'], { state: { idExhortoRecibido } });
 
   }
+
   //personalizar el mensaje cuando Oficialia recibe.
   mensajeRecibirExhorto(): string
   {
@@ -276,12 +277,29 @@ export class DetallesExhortoRecibido {
     // 3. Casos especiales por Perfil / idMovimiento
     if (ultimoMovimiento.idMovimiento === 8 && perfil === 'Secretario') {
       this.habilitarparaacordar.set(estaRecibido && !this.existeacuerdo());
-      this.puedeTurnar.set(this.existeacuerdo());
-    } 
+
+      const userData = this.tokenService.getUserFromToken();
+      let idUsuario = 0;
+
+      if (userData !== null) {
+        idUsuario = userData.idGeneral;
+      }
+
+      // Validar si el secretario ya firmó el archivo tipo 2 (acuerdo)
+      const yaFirmoEnTipo2 = this.respuesta.some(r =>
+        r.archivos.some(a =>
+          a.idTipoDocumento === 2 &&
+          a.firmantes.some(f => f.idUsuario === idUsuario)
+        )
+      );
+
+      // Solo puede turnar al notificador una vez que exista el acuerdo con el archivo tipo 2 ya firmado
+      this.puedeTurnar.set(this.existeacuerdo() && yaFirmoEnTipo2);
+    }
     else if (ultimoMovimiento.idMovimiento === 9 && perfil === 'Juez') {
       const userData = this.tokenService.getUserFromToken();
       let idUsuario = 0;
-      
+
       if (userData !== null) {
         idUsuario = userData.idGeneral;
       }
@@ -293,14 +311,34 @@ export class DetallesExhortoRecibido {
           a.firmantes.some(f => f.idUsuario === idUsuario)
         )
       );
-       
+
       // CORRECCIÓN: Para poder turnar, debe ser el destinatario, estar recibido Y haber firmado
       this.puedeTurnar.set(esDestinatario && estaRecibido && yaFirmoEnTipo2);
       this.cd.detectChanges();
-    } 
+    }
+    else if (perfil === 'Secretario' && ultimoMovimiento.cargoOrigen?.trim() === 'Notificador') {
+      // El secretario ya recibió de vuelta lo que le envió el notificador (archivo tipo 1); solo puede
+      // turnar una vez que ese archivo tipo 1 ya tenga las firmas aplicadas.
+      // No se usa un idMovimiento fijo (a diferencia de los casos de arriba) porque el numero de movimiento
+      // varia segun cuantos pasos previos tuvo cada exhorto (p.ej. si paso o no por el juez); lo estable es
+      // el origen/destino del ultimo movimiento.
+      const archivoTipo1Firmado = this.respuesta.some(r =>
+        r.archivos.some(a => a.idTipoDocumento === 1 && a.firmado === true)
+      );
+      this.puedeTurnar.set(esDestinatario && estaRecibido && archivoTipo1Firmado);
+    }
+    else if (perfil === 'Secretario' && ultimoMovimiento.cargoOrigen?.trim() === 'Juez') {
+      // El secretario ya recibió de vuelta el acuerdo del juez; solo puede turnar (al notificador) una vez
+      // que el archivo tipo 2 (acuerdo) ya tenga las firmas aplicadas (no solo seleccionadas como firmante,
+      // sino ya "aplicadas" al PDF final)
+      const archivoTipo2Firmado = this.respuesta.some(r =>
+        r.archivos.some(a => a.idTipoDocumento === 2 && a.firmado === true)
+      );
+      this.puedeTurnar.set(esDestinatario && estaRecibido && archivoTipo2Firmado);
+    }
     else {
       this.habilitarparaacordar.set((ultimoMovimiento.idMovimiento > 8) && (!this.existeacuerdo()));
-    } 
+    }
   }
 
   // Validación para revocar

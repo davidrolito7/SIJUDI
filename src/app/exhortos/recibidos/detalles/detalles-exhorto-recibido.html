@@ -41,7 +41,7 @@
             <p-button type="button" (click)="recibir()" label="Recibir" icon="pi pi-check">
             </p-button>
             }
-            @if(puedeTurnar() && ultimoMovimiento()!=12){
+            @if(puedeTurnar()){
             @if (tienePermisoTurnar()) {
             <p-button type="button" (click)="turnar()" label="Turnar" icon="pi pi-send"></p-button>
             }

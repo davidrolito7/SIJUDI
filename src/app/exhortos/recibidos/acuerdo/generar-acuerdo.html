@@ -16,7 +16,7 @@
     class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200">
   </span>
 
-  <div class="mb-5 flex flex-col md:flex-row justify-between gap-4">
+  <div class="flex flex-col md:flex-row justify-between gap-4">
     <div>
       <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
         <span class="pi pi-file-edit text-lg text-primary"></span> Crear acuerdo de exhorto recibido
@@ -27,24 +27,32 @@
     </div>
 
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
-      @if (tienePermisoGuardar() && !yaTurnadoAJuez()) {
+      @if (tienePermisoGuardar() && !yaTurnadoAJuez() && !esNotificador()) {
       @if ([0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0)) {
       <button pButton (click)="guardarRespuestaExhorto()" icon="pi pi-check">Guardar</button>
       }
       }
-
-      @if (tienePermisoEnviarGenerales()) {
-      <!--si el estatus del acuerdo es 11 puede enviar los datos generales-->
-      @if (detallesAcuerdo().generales?.idEstatus === 11) {
-      <button pButton (click)="enviarAcuerdoGenerales(this.idExhortoRecibido)" 
-        icon="pi pi-send">Enviar generales</button>
+      @if (tienePermisoEnviarGenerales() && esSecretario()) {
+      <!--enviar generales solo lo puede hacer el secretario; si el estatus del acuerdo es 11 puede enviar
+      los datos generales, siempre que ya exista al menos un documento tipo 1 (oficio) y el tipo 2
+      (acuerdo) ya firmado-->
+      @if (detallesAcuerdo().generales?.idEstatus === 11 && puedeEnviarGenerales()) {
+      <button pButton (click)="enviarAcuerdoGenerales(this.idExhortoRecibido)"
+       ><svg data-p-icon="send"></svg>Enviar generales</button>
       }
-      
+
       }
       @if (tienePermisoEnviarArchvios()) {
       @if (detallesAcuerdo().generales?.idEstatus === 12) {
       <button pButton (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"
         icon="pi pi-file">Enviar archivos</button>
+      }
+      }
+      <!--turnar: el juez (idMovimiento 9) una vez que firmo el tipo 2, el notificador una vez que cargo el
+      tipo 1, o el secretario (al recibir de vuelta del notificador) una vez que ese tipo 1 ya este firmado-->
+      @if(puedeTurnar()){
+      @if (tienePermisoTurnar()) {
+      <p-button type="button" (click)="turnar()" label="Turnar" icon="pi pi-send"></p-button>
       }
       }
     </div>
@@ -122,7 +130,7 @@
 
     <div class="flex flex-col gap-1">
       <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Oficio</span>
-      <span class="text-sm text-surface-900 dark:text-surface-50">{{ datosExhortoRecibido.numeroOficioOrigen }}</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50 font-mono">{{ datosExhortoRecibido.numeroOficioOrigen }}</span>
     </div>
 
     <div class="flex flex-col gap-1">
@@ -374,6 +382,9 @@
     </div>
 
     <div class="mt-4 md:mt-0 flex items-center gap-2">
+      DEBUG tienePermisoFirmarArchivo(): {{tienePermisoFirmarArchivo()}} <br>
+      DEBUG seleccionadosParaFirma(): {{seleccionadosParaFirma()}} <br>
+      DEBUG esNotificador(): {{esNotificador()}} <br>
       @if([0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0)){
       @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
       <p-button (click)="openNewFirma()" severity="warn" icon="pi pi-pen-to-square" label="Firmar con FIREL">
@@ -409,9 +420,9 @@
           </ng-template>
           <ng-template #body let-documento let-i="rowIndex">
             <tr>
-              <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo ){
-                <input (change)="archivo_seleccionado(documento)" [id]="documento.selecParaFirma" type="checkbox"
-                  [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma" />
+              <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo && !notificadorYaTurno()){
+                <p-checkbox (change)="archivo_seleccionado(documento)" [id]="documento.selecParaFirma" type="checkbox"
+                  checked="documento.selecParaFirma" [value]="documento.selecParaFirma" />
                 }
               </td>
               <td style="font-size: small;">{{ documento.nombreArchivo }}</td>
@@ -439,7 +450,7 @@
                     @if(firmante !== undefined)
                     {
                     <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
-                    @if(!documento.firmado && tienePermisoEliminarFirma()){
+                    @if(!documento.firmado && tienePermisoEliminarFirma() && !esNotificador()){
                     <td class="px-4">
                       <p-button (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true"
                         icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>
@@ -459,8 +470,7 @@
                 </p-button>
                 }
                 <!--APLICAR FIRMAS-->
-                tengo permiso para aplicar firma {{ tienePermisoAplicarFirma() ? 'Sí' : 'No' }}
-                @if(!documento.firmado && documento.firmantes.length>0 && tienePermisoAplicarFirma() ){
+                @if(!documento.firmado && documento.firmantes.length>0 && tienePermisoAplicarFirma() && !esNotificador() ){
                 <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
                   icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                 </p-button>
@@ -471,7 +481,7 @@
 
                 <!--ELIMINAR DOCUMENTO-->
                 @if([0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0) && !yaTurnadoAJuez()){ <!--//Pendiente de enviar-->
-                @if(tienePermisoEliminarArchivo() && !documento.firmado){
+                @if(tienePermisoEliminarArchivo() && !documento.firmado && !esNotificador()){
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                   (click)="eliminarDocumento(documento,1,i)"></p-button>
                 }
@@ -511,6 +521,10 @@
 <app-confirm-dialog key="enviarArchivos" title="Confirmación"
   message="¿Está seguro que desea enviar los datos generales del acuerdo?" icon="pi pi-question"
   circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA TURNAR EL EXHORTO -->
+<app-confirm-dialog key="turnarExhorto" title="Confirmación" message="¿Está seguro de que desea turnar el exhorto?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!-- MODAL DE CONFIRMACION PARA ELIMINAR UN ARCHIVO -->
 <app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro que desea eliminar el archivo?"
