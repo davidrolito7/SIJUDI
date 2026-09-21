@@ -13,6 +13,9 @@
         </div>
     </div>
 </div>
+tiene permisos editar -> {{ tienePermisoEditar() }} 
+puede editar segun flujo-> {{ puedeEditarSegunFlujo() }} 
+
 <!-- Start coding here -->
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
@@ -34,7 +37,7 @@
                             class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
                              [expandedRowKeys]="expandedRows"
                             (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
-                            <ng-template pTemplate="header">
+                            <ng-template #header>
                                 <tr class="uppercase text-xs">
                                 <th ></th>
                                 <th >Folio</th>
@@ -46,7 +49,7 @@
                                 <!--<th class="px-2 py-2">Acciones</th>-->
                                 </tr>
                             </ng-template>
-                            <ng-template pTemplate="body"     let-Acuerdo let-expanded="expanded">
+                            <ng-template #body let-Acuerdo let-expanded="expanded">
                                 <tr class="uppercase text-xs">
                                     <td class="px-3 py-2">
                                         <button type="button"
@@ -63,37 +66,27 @@
                                     <td style="font-size: small;">{{ Acuerdo.generales.observaciones }}</td>
                                     <td class="text-center">
                                         <div class="flex justify-center gap-3">
-
-                                            @if(tienePermisoEditar() && puedeEditarSegunFlujo()){
-                                                @if(!generalesEnviado){
+                                                <div class="relative">
+                                                    <button pButton (click)="generarAcuerdo(idNotificacion, Acuerdo.generales.idRespuesta)" severity="warn"
+                                                    icon="">Editar</button>
+                                                </div>
+                                            
+                                            @if (tienePermisoEnviarGenerales()) {
+                                                <!--si el estatus del acuerdo es 11 puede enviar los datos generales-->
+                                                @if (Acuerdo.generales.idEstatus === 11) {
                                                     <div class="relative">
-                                                        <p-button (click)="generarAcuerdo(idNotificacion, Acuerdo.generales.idRespuesta)" severity="warn"
-                                                        icon="">Editar</p-button>
+                                                        <button pButton (click)="enviarAcuerdoGenerales(this.idNotificacion)"
+                                                        ><i class="bi bi-send"></i> Enviar generales</button>
                                                     </div>
                                                 }
                                             }
-                                            @if(!generalesEnviado){
-                                                <!--si el estatus de la promocion es diferente a: 3=Promoción enviada, 4=Finalizado puede seguir editando la promocion-->
-                                                @if (tienePermisoEnviarGenerales()) {
-                                                    @if(puedeEnviarGenerales()){
-                                                        <div class="relative">
-                                                            <p-button (click)="enviarAcuerdoGenerales(this.idNotificacion)"
-                                                            ><i class="bi bi-send"></i> Enviar generales</p-button>
-                                                        </div>
-                                                    }
-                                                }
-
-                                            }
-                                            @else{
-                                                @if(!archivosEnviado)   {
-                                                    @if (tienePermisoEnviarArchivos()) {
-                                                        <div class="relative">
-                                                            <p-button type="button" (click)="enviarAcuerdoArchivos(this.idNotificacion)"
-                                                                class=""><i class="bi bi-send"></i> Enviar archivos
-                                                            </p-button>
-                                                        </div>
-                                                    }
-
+                                            @if (tienePermisoEnviarArchivos()) {
+                                                @if (Acuerdo.generales.idEstatus === 12) {
+                                                    <div class="relative">
+                                                        <button pButton type="button" (click)="enviarAcuerdoArchivos(this.idNotificacion)"
+                                                            class=""><i class="bi bi-send"></i>Enviar archivos
+                                                        </button>
+                                                    </div>
                                                 }
                                             }
                                         </div>
@@ -107,7 +100,7 @@
                                         @if (Acuerdo.generales) {
                                         <p-table [value]="Acuerdo.archivos" dataKey="idDetalleActo"
                                             class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                            <ng-template pTemplate="header">
+                                            <ng-template #header>
                                             <tr class="uppercase text-xs">
                                                 <th >Nombre del documento</th>
                                                 <th >Tipo de documento</th>
@@ -116,7 +109,7 @@
                                                 <th style="min-width: 10rem" class="text-center">Acciones</th>
                                             </tr>
                                             </ng-template>
-                                            <ng-template pTemplate="body" let-Archivos>
+                                            <ng-template #body let-Archivos>
                                             <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
                                                 <td style="font-size: small;">{{ Archivos.nombreArchivo }}</td>
                                                 <td style="font-size: small;">{{ Archivos.tipoDocumento.nombre }}</td>
@@ -132,19 +125,19 @@
                                                 {{ Archivos.fechaFirmado | date:'yyyy-MM-dd HH:mm:ss'}}
                                             </td>
                                             <td class="text-center">
-                                                <p-button (onClick)="mostrarArchivo(Archivos,1)" severity="success" [rounded]="true"
+                                                <p-button (click)="mostrarArchivo(Archivos,1)" severity="success" [rounded]="true"
                                                     icon="pi pi-file-pdf" class="mr-2" title="descargar">
                                                 </p-button>
-                                                @if(!generalesEnviado)
+                                                @if(!generalesEnviado && !Archivos.firmado)
                                                     {
-                                                    <p-button (onClick)="eliminarDocumento(Archivos.idArchivo)" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true">
+                                                    <p-button (click)="eliminarDocumento(Archivos.idArchivo)" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true">
                                                     </p-button>
 
                                                     }
                                                 </td>
                                                 </tr>
                                             </ng-template>
-                                            <ng-template pTemplate="emptymessage">
+                                            <ng-template #emptymessage>
                                                 <tr>
                                                 <td colspan="5" class="px-4 py-2 text-gray-500 dark:text-gray-400">No hay
                                                 detalles disponibles para esta promoción.</td>

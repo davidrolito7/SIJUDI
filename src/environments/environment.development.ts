@@ -11,7 +11,7 @@ export const environment = {
 
     urlApiEfirma: 'https://api.tribunaloaxaca.gob.mx/efirmaPruebas/api/efirma', //este siempre debe apuntar a produccion porque no existe ambiente de pruebas para efirma
     urlApiExhortosElectronicos: "https://pruebas.tribunaloaxaca.gob.mx/exhortoselectronicos/api",
-    // urlApiExhortosElectronicos: "https://localhost:7113/api",
+    //urlApiExhortosElectronicos: "https://localhost:7113/api",
 
     //urlApiAmparosPJF:'https://localhost:44397/Api',
     urlApiAmparosPJF: 'https://pruebas.tribunaloaxaca.gob.mx/amparosApi/api',

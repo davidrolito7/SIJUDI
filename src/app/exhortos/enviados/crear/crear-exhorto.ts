@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, signal, effect, CreateEffectOptions, inject, Signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal, computed, effect, CreateEffectOptions, inject, Signal } from '@angular/core';
 import { finalize } from 'rxjs';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -153,8 +153,31 @@ export class CrearExhortoComponent {
   archivos_firmados: any = "";
   //@ViewChild('modal') modal!: ModalComponent;
   mostrarBotonGuardar: boolean = true;
-  mostrarBotonEnviarGenerales: boolean = false;
+  //fase del exhorto: ya existe en BD y aun no se envian los datos generales
+  generalesPendientesEnvio: boolean = false;
+  //idTipoDocumento 2 = oficio del exhorto, es el documento obligatorio que debe estar cargado y firmado
+  //antes de poder enviar los datos generales
+  readonly ID_TIPO_DOCUMENTO_OFICIO = 2;
+  //true cuando el usuario presiono Guardar teniendo ya el oficio firmado, o cuando el exhorto llega
+  //desde el detalle cumpliendo ya esa condicion (ahi no hay un Guardar previo que la marque)
+  guardadoConOficioFirmado = signal<boolean>(false);
+  //se consume en la primera carga de documentos cuando se entra redirigido desde el detalle del exhorto
+  private cargaInicialDesdeDetalle: boolean = false;
+  //existe el oficio (idTipoDocumento 2) cargado y firmado
+  tieneOficioFirmado = computed<boolean>(() =>
+    this.listaDocumentos().some(doc =>
+      Number(doc.idTipoDocumento) === this.ID_TIPO_DOCUMENTO_OFICIO && doc.firmado && doc.activo !== false)
+  );
+  //"Enviar generales" y "Editar" solo aparecen cuando ya se cargo y firmo el oficio y despues se guardo;
+  //mientras eso no ocurra se mantiene visible "Guardar" y el formulario de generales sigue habilitado
+  get mostrarBotonEnviarGenerales(): boolean {
+    return this.generalesPendientesEnvio && this.tieneOficioFirmado() && this.guardadoConOficioFirmado();
+  }
   mostrarBotonEnviarArchivos: boolean = false;
+  //cuando ya esta listo para enviar generales, se ocultan los botones de agregar/eliminar parte, promovente y
+  //documento para no confundir al usuario; se reactivan solo si el usuario pulsa "Editar" y se vuelven a ocultar
+  //hasta que guarde de nuevo
+  modoEdicion = signal<boolean>(false);
   partesDialog: boolean = false;
   promoDialog: boolean = false;
   firmaDialog: boolean = false;
@@ -350,6 +373,9 @@ export class CrearExhortoComponent {
                   this.exhortosForm.get('materiaEstadoDestino')?.enable();
                   this.exhortosForm.patchValue({ materiaEstadoDestino: materiaObj });
                 }
+                //re-aplicamos el bloqueo al terminar esta cadena asíncrona, ya que pudo resolver después
+                //de que actualizarListadoDocumentos calculara mostrarBotonEnviarGenerales
+                this.actualizarEstadoFormExhorto();
               });
             }
           });
@@ -401,6 +427,8 @@ export class CrearExhortoComponent {
               this.exhortosForm.get('tipojuicio')?.enable();
               this.exhortosForm.patchValue({ tipojuicio: itemVia });
             }
+            //re-aplicamos el bloqueo al terminar esta cadena asíncrona
+            this.actualizarEstadoFormExhorto();
           });
 
         }
@@ -415,14 +443,15 @@ export class CrearExhortoComponent {
 
         if (this.idEstatus == 1) { //estatus 1 es pendientes de enviar
           this.mostrarBotonGuardar = true;
-         // this.mostrarBotonEnviarGenerales = true;
+         // this.generalesPendientesEnvio = true;
           this.mostrarBotonEnviarArchivos = false;
         }
         else {
           this.mostrarBotonGuardar = false;
-          this.mostrarBotonEnviarGenerales = false; // idEstatus 10 (y cualquier otro != 1) no debe mostrar este botón
+          this.generalesPendientesEnvio = false; // idEstatus 10 (y cualquier otro != 1) no debe mostrar este botón
           this.mostrarBotonEnviarArchivos = true;
         }
+        this.actualizarEstadoFormExhorto();
 
         this.listaPartes = state.datosExhorto.partes || [];
         this.listaPromovetes = state.datosExhorto.promoventes || [];
@@ -432,6 +461,9 @@ export class CrearExhortoComponent {
         this.exhortoGuardado = true;
         this.exhortoYaGuardado = true;
 
+        //viene redirigido desde el detalle: si el oficio ya esta cargado y firmado, la condicion para
+        //mostrar "Enviar generales"/"Editar" ya se cumple sin necesidad de un Guardar previo
+        this.cargaInicialDesdeDetalle = true;
         this.actualizarListadoDocumentos(this.idExhorto);
 
       }, 800); // Delay pequeño para asegurar que catálogos ya estén inicializados
@@ -635,6 +667,11 @@ export class CrearExhortoComponent {
     ).subscribe({
       next: (response: any) => {
         if (response.success) { //console.log('Datos recibidos del catálogo:', response);
+          this.modoEdicion.set(false);
+          //al guardar se evalua si ya existe el oficio firmado; ese es el momento en el que se habilitan
+          //"Enviar generales"/"Editar"
+          this.guardadoConOficioFirmado.set(this.tieneOficioFirmado());
+          this.actualizarEstadoFormExhorto();
           this.exhortoGuardado = true;
           this.exhortoYaGuardado = true;
           this.ExhortoEnviadoGenerales = response.data.generales as generalesExhortoEnviado;
@@ -820,6 +857,29 @@ export class CrearExhortoComponent {
     this.confirmacionGuardarExhorto = true
   }*/
 
+  habilitarEdicion() {
+    this.modoEdicion.set(true);
+    this.actualizarEstadoFormExhorto();
+  }
+  //deshabilita el form de origen/destino cuando ya esta listo para enviar generales, y lo reactiva
+  //solo mientras se esta en modo edicion (o antes del primer guardado)
+  actualizarEstadoFormExhorto() {
+    //una vez que se entra a la fase de archivos (mostrarBotonEnviarArchivos) los datos generales ya
+    //quedan bloqueados definitivamente, sin importar el estado de mostrarBotonEnviarGenerales/modoEdicion
+    const puedeEditar = !this.mostrarBotonEnviarArchivos && (!this.mostrarBotonEnviarGenerales || this.modoEdicion());
+    //emitEvent:false evita que enable()/disable() disparen los valueChanges de materiaOrigen/estadoDestino/
+    //municipioDestino, que re-habilitarían sus campos dependientes (tipojuicio, municipioDestino, materiaEstadoDestino)
+    //y borrarían su valor con el setValue(null) de esas suscripciones
+    if (puedeEditar) {
+      this.exhortosForm.enable({ emitEvent: false });
+      //reaplicamos las reglas de cascada que se pierden al habilitar todo el formGroup de una vez
+      if (!this.exhortosForm.value.materiaOrigen) this.exhortosForm.get('tipojuicio')?.disable({ emitEvent: false });
+      if (!this.exhortosForm.value.estadoDestino) this.exhortosForm.get('municipioDestino')?.disable({ emitEvent: false });
+      if (!this.exhortosForm.value.municipioDestino) this.exhortosForm.get('materiaEstadoDestino')?.disable({ emitEvent: false });
+    } else {
+      this.exhortosForm.disable({ emitEvent: false });
+    }
+  }
   guardarOActualizarExhorto() {
     this.confirmationService.confirm({
       key: 'guardarExhorto',
@@ -910,6 +970,11 @@ export class CrearExhortoComponent {
     ).subscribe({
       next: (response: any) => {
         if (response.success) {
+          this.modoEdicion.set(false);
+          //igual que al guardar por primera vez: el Guardar posterior a la firma del oficio es el que
+          //habilita "Enviar generales"/"Editar"
+          this.guardadoConOficioFirmado.set(this.tieneOficioFirmado());
+          this.actualizarEstadoFormExhorto();
           this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Exhorto actualizado correctamente' });
         } else {
           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors,  sticky: true });
@@ -982,31 +1047,61 @@ export class CrearExhortoComponent {
       finalize(() => this.isLoading.set(false))
     ).subscribe({
       next: (response) => {
-        if (response.success && response.data.archivos.length > 0) {
-          //obtenemos el idUsuario del token
+        if (response.success) {
+          //idEstatus se refresca siempre desde el servidor (fuente de verdad); el idEstatus que llega por
+          //navegación queda obsoleto en cuanto se envían generales/archivos, y no se actualiza solo, por lo
+          //que si no se refresca aquí, al recargar la página (F5) se recalculan los botones con datos viejos.
+          //idEstatus NO cambia al enviar generales/archivos (se mantiene en 1 durante todo ese proceso), asi
+          //que la fase real se determina con fechaHora/fechaHoraRecepcion, igual que en respuesta-exhorto-recibido
+          if (response.data.generales) {
+            this.idEstatus = response.data.generales.idEstatus;
+            const generalesEnviado = response.data.generales.fechaHora != null;
+            const archivosEnviado = response.data.generales.fechaHoraRecepcion != null;
+            if (!generalesEnviado) {
+              this.mostrarBotonGuardar = true;
+              this.generalesPendientesEnvio = true;
+              this.mostrarBotonEnviarArchivos = false;
+            } else {
+              this.mostrarBotonGuardar = false;
+              this.generalesPendientesEnvio = false;
+              this.mostrarBotonEnviarArchivos = !archivosEnviado;
+            }
+          }
+          this.actualizarEstadoFormExhorto();
+
+          if (response.data.archivos.length > 0) {
+            //obtenemos el idUsuario del token
             const userData = this.tokenService.getUserFromToken();
             var idUsuario=0;
             if(userData !== null){
               idUsuario = userData.idGeneral;
             }
-          const documentosValidados = validarFirmasUsuarioExEnviado(response.data.archivos,idUsuario);
-          this.listaDocumentos.set(documentosValidados.map((archivo:any)=>({
-            ...archivo,
-            tam:archivo.tamaño
-          })));
-          /*this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
-            ...archivo,
-            tam: archivo.tamaño
-          })));*/
-          //console.log(this.listaDocumentos()[0].tipoDocumento);
-          this.mostrarBotonEnviarGenerales = this.idEstatus !== 10;
-        } else {
-          this.listaDocumentos.set([]);
-          this.messageService.add({
-            severity: 'warn',
-            summary: 'Advertencia',
-            detail: 'No se encontraron documentos asociados al exhorto.',life:10000
-          });
+            const documentosValidados = validarFirmasUsuarioExEnviado(response.data.archivos,idUsuario);
+            this.listaDocumentos.set(documentosValidados.map((archivo:any)=>({
+              ...archivo,
+              tam:archivo.tamaño
+            })));
+            /*this.listaDocumentos.set(response.data.archivos.map((archivo: any) => ({
+              ...archivo,
+              tam: archivo.tamaño
+            })));*/
+          } else {
+            this.listaDocumentos.set([]);
+            this.messageService.add({
+              severity: 'warn',
+              summary: 'Advertencia',
+              detail: 'No se encontraron documentos asociados al exhorto.',life:10000
+            });
+          }
+
+          //solo en la primera carga tras llegar del detalle: si ya trae el oficio firmado se da por
+          //cumplida la condicion del Guardar; despues de eso firmar un documento nuevo vuelve a exigirlo
+          if (this.cargaInicialDesdeDetalle) {
+            this.cargaInicialDesdeDetalle = false;
+            this.guardadoConOficioFirmado.set(this.tieneOficioFirmado());
+          }
+          //el bloqueo del formulario depende de mostrarBotonEnviarGenerales, que ya considera los documentos
+          this.actualizarEstadoFormExhorto();
         }
       },
       error: (error) => {
@@ -1533,8 +1628,9 @@ export class CrearExhortoComponent {
         next: (response: GenericResponse<EnviadoConfirmacionDatosRecibidosResponse>) => {
           if (response.success) {
             this.mostrarBotonGuardar = false;
-            this.mostrarBotonEnviarGenerales = false;
+            this.generalesPendientesEnvio = false;
             this.mostrarBotonEnviarArchivos = true;
+            this.actualizarEstadoFormExhorto();
             this.messageService.add({ severity: 'success', summary: 'Ok', detail: "Los datos generales se enviaron correctamente" });
 
           } else {

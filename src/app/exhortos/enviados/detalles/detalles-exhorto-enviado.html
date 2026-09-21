@@ -39,7 +39,7 @@
             @if(tienePermisoEditarExhorto()){
             @if (detallesExhortos()?.generales?.estatus === 'Pendiente de enviar' ||
             detallesExhortos()?.generales?.estatus === 'En proceso de envío') {
-            <p-button (click)="editarExhorto()" label="Editar" icon="pi pi-pencil"></p-button>
+            <p-button (click)="editarExhorto()" label="Ver" icon="pi pi-eye"></p-button>
             }
             }
             <p-button (click)="pdf()" severity="secondary" [outlined]="true" icon="pi pi-file-pdf" pTooltip="Descargar PDF"
@@ -425,8 +425,8 @@
         </p>
     </div>
 
-    <p-table class="personalizado" #dt [value]="detallesExhortosPromocion()" dataKey="idActoReclamado">
-        <ng-template pTemplate="header">
+    <p-table class="personalizado" #dt [value]="detallesExhortosPromocion()" dataKey="idPromocionEnviado">
+        <ng-template #header>
             <tr>
                 <th></th>
                 <th class="text-base font-semibold">Folio origen</th>
@@ -439,7 +439,7 @@
             </tr>
         </ng-template>
 
-        <ng-template pTemplate="body" let-item let-expanded="expanded">
+        <ng-template #body let-item let-expanded="expanded">
             <tr>
                 <td>
                     <p-button type="button"

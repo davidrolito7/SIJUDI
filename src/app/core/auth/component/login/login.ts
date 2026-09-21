@@ -30,7 +30,7 @@ const SUBAREA_ID = 1007;
 const PERFIL_POR_TIPO_PERSONA: Record<number, number> = {
   1: 10,
   6: 1011,
-  7: 1012,
+  7: 1011,
 };
 
 @Component({

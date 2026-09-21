@@ -29,15 +29,20 @@
 
 
       @if(tienePermisoGuardar()){
-      @if (mostrarBotonGuardar) {
-      <p-button (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-check">
+      @if (mostrarBotonGuardar && (!mostrarBotonEnviarGenerales || modoEdicion())) {
+      <p-button (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-save">
       </p-button>
       }
       }
 
-      @if (mostrarBotonEnviarGenerales) {
+      @if (mostrarBotonEnviarGenerales && !modoEdicion()) {
       @if(tienePermisoEnviarGenerales()){
       <p-button (onClick)="enviarGenerales()" label="Enviar generales" icon="pi pi-send">
+      </p-button>
+      }
+      @if(tienePermisoGuardar()){
+      <p-button (onClick)="habilitarEdicion()" label="Editar" icon="pi pi-pencil" severity="secondary"
+        [outlined]="true">
       </p-button>
       }
       }
@@ -93,17 +98,13 @@
             <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
               Juzgado origen<strong>*</strong>
             </label>
-            <span class="p-inputtext p-component  flex w-full items-center bg-surface-100 dark:bg-surface-800">
-              {{ juzgadoOrigenNombre() }}
-            </span>
+            <input pInputText type="text" [value]="juzgadoOrigenNombre()" disabled class="w-full" />
           </div>
           <div class="md:col-span-3">
             <label class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
               Municipio origen<strong>*</strong>
             </label>
-            <span class="p-inputtext p-component uppercase flex w-full items-center bg-surface-100 dark:bg-surface-800">
-              {{ municipioOrigenNombre() }}
-            </span>
+            <input pInputText type="text" [value]="municipioOrigenNombre()" disabled class="w-full uppercase" />
           </div>
           <div class="md:col-span-2">
             <label for="materiaOrigen" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
@@ -266,10 +267,10 @@
 
   <div class="flex items-start flex-col md:justify-between md:flex-row mb-5">
     <div>
- <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
-            <span class="pi pi-users text-lg text-primary"></span> Partes
-        </h2>
-              <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+      <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+        <span class="pi pi-users text-lg text-primary"></span> Partes
+      </h2>
+      <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
         Personas o instituciones relacionadas con el trámite.
       </p>
     </div>
@@ -280,7 +281,7 @@
                 <i pButtonIcon class="pi pi-user-plus"></i>
                 <span pButtonLabel>Agregar</span>
             </p-button> -->
-      @if (idEstatus !== 10) {
+      @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
       <p-button class="whitespace-nowrap" (onClick)="openNewParte()">
         <i pButtonIcon class="pi pi-plus"></i>
         <span pButtonLabel>Agregar parte </span>
@@ -305,7 +306,7 @@
               <th>Tipo parte</th>
               <th>correo</th>
               <th>Teléfono</th>
-              @if(idEstatus == 1) {
+              @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
               <th>Acciones</th>
               }
             </tr>
@@ -336,7 +337,7 @@
               <td style="font-size: small;">
                 {{ promo.telefono }}
               </td>
-              @if(idEstatus <= 1) { <td class="px-6 py-3">
+              @if(idEstatus <= 1 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) { <td class="px-6 py-3">
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                   (click)="eliminarParte(promo)"></p-button>
                 </td>
@@ -393,7 +394,7 @@
                 <i pButtonIcon class="pi pi-user-plus"></i>
                 <span pButtonLabel>Agregar</span>
             </p-button> -->
-      @if (idEstatus !== 10) {
+      @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
       <p-button class="whitespace-nowrap" (onClick)="openNewPromovente()">
         <i pButtonIcon class="pi pi-plus"></i>
         <span pButtonLabel>Agregar Promovente </span>
@@ -417,7 +418,7 @@
               <th>Tipo parte</th>
               <th>Correo</th>
               <th>Teléfono</th>
-              @if(idEstatus == 1) {
+              @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
               <th>Acciones</th>
               }
             </tr>
@@ -448,7 +449,7 @@
               <td style="font-size: small;">
                 {{ promo.telefono }}
               </td>
-              @if(idEstatus <= 1) { <td class="px-6 py-3">
+              @if(idEstatus <= 1 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) { <td class="px-6 py-3">
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                   (click)="eliminarPromovente(promo)"></p-button>
                 </td>
@@ -492,9 +493,9 @@
 
   <div class="flex items-start flex-col md:justify-between md:flex-row mb-5">
     <div>
-       <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
-            <span class="pi pi-file text-lg text-primary"></span> Agregar documentos
-        </h2>
+      <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+        <span class="pi pi-file text-lg text-primary"></span> Agregar documentos
+      </h2>
       <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
         Carga y firma los documentos del exhorto.
       </p>
@@ -507,9 +508,9 @@
         </p-button>
       </div>
       }
-      @if (idEstatus !== 10) {
-      <p-fileupload mode="basic" [customUpload]="true"  [auto]="true" [multiple]="true" chooseIcon="pi pi-upload" accept="application/pdf"
-        (onSelect)="onAnexosSelect($event)" chooseLabel="Agregar documento" />
+      @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
+      <p-fileupload mode="basic" [customUpload]="true" [auto]="true" [multiple]="true" chooseIcon="pi pi-upload"
+        accept="application/pdf" (onSelect)="onAnexosSelect($event)" chooseLabel="Agregar documento" />
       }
 
       <!-- <p-button routerLink="/form" [outlined]="true" class="mr-3">
@@ -594,9 +595,11 @@
                 </p-button>
                 }
                 <!--APLICAR FIRMAS-->
+                @if(!documento.firmado){
                 <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
                   icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                 </p-button>
+                }
 
 
                 <!--VER O DESCARGAR DOCUMENTO-->
@@ -604,7 +607,8 @@
                   class="mr-2" title="Descargar PDF"></p-button>
 
                 <!--ELIMINAR DOCUMENTO-->
-                @if(idEstatus == 1 || idEstatus==0 ){ <!--//Pendiente de enviar-->
+                @if((idEstatus == 1 || idEstatus==0) && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())){
+                <!--//Pendiente de enviar-->
                 @if(tienePermisoEliminarArchivo()){
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                   (click)="eliminarDocumento(documento,2,i)"></p-button>
@@ -615,7 +619,7 @@
               </td>
             </tr>
           </ng-template>
-              <ng-template #emptymessage>
+          <ng-template #emptymessage>
             <tr>
               <td colspan="8" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
                 No se han agregado documentos.

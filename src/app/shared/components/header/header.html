@@ -26,7 +26,8 @@
              focus-visible:ring-2 focus-visible:ring-[#b2915b]/60
              lg:hidden
              dark:border-slate-700 dark:bg-slate-800
-             dark:text-slate-200 dark:hover:bg-[#b2915b]/20" (click)="visibleMenuDrawer.set(true)" aria-label="Abrir menú">
+             dark:text-slate-200 dark:hover:bg-[#b2915b]/20" (click)="visibleMenuDrawer.set(true)"
+        aria-label="Abrir menú">
         <i class="pi pi-bars text-sm"></i>
       </button>
 
@@ -44,34 +45,40 @@
         ESTADO DE OAXACA
       </p> -->
       <img src="logo-footer.png" alt="Logo Poder Judicial del Estado de Oaxaca"
-        class="hidden h-11 w-auto shrink-0 sm:block " />
+        class="relative z-10 hidden h-11 w-auto shrink-0 sm:block" />
     </div>
 
     <div class="mr-1 flex shrink-0 items-center gap-2">
 
-      <div class="hidden flex-col text-right md:flex">
+      <div class="relative hidden h-11 flex-col justify-center text-right md:flex">
         <span class="text-sm font-semibold leading-tight text-white">
-          {{ abogadoNombre }}
+          {{ abogadoNombre | uppercase }}
         </span>
 
-        <span class="mt-0.5 text-xs text-white/65">
-          {{ areaNombre ? areaNombre : '' }}
-          {{ areaNombre && perfilNombre ? ' · ' : '' }}
-          {{ perfilNombre ? perfilNombre : '' }}
+        <span class="mt-0.5 block overflow-visible whitespace-nowrap text-xs text-white/65 lg:hidden"
+          [title]="[perfilNombre, subAreaNombre].filter(v => !!v).join(' · ')">
+          {{ (perfilNombre ? perfilNombre : '') | uppercase }}
           {{ perfilNombre && subAreaNombre ? ' · ' : '' }}
-          {{ subAreaNombre ? subAreaNombre : '' }}
+          {{ (subAreaNombre ? subAreaNombre : '') | uppercase }}
+        </span>
+
+        <span class="mt-0.5 hidden overflow-visible whitespace-nowrap text-xs text-white/65 lg:block">
+          {{ (areaNombre ? areaNombre : '') | uppercase }}
+          {{ areaNombre && perfilNombre ? ' · ' : '' }}
+          {{ (perfilNombre ? perfilNombre : '') | uppercase }}
+          {{ perfilNombre && subAreaNombre ? ' · ' : '' }}
+          {{ (subAreaNombre ? subAreaNombre : '') | uppercase }}
         </span>
       </div>
-
 
 
       <p-avatar [image]="abogadoFotoUrl" (click)="visibleDrawer.set(true); drawerMobileTab = 'perfil'" shape="circle"
         class="cursor-pointer
          border border-white/15
          transition-all
-         hover:border-[#b2915b]
+         hover:border-secondary-500
          hover:shadow-md
-         !h-11 !w-11">
+         h-11! w-11!">
       </p-avatar>
 
       <button type="button" class="relative hidden h-11 w-11 items-center justify-center
@@ -145,8 +152,7 @@
               leaveToClass="hidden" leaveActiveClass="animate-slideup"
               class="px-4 py-3 flex items-center justify-between cursor-pointer transition-colors text-surface-600 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-900 p-ripple">
               <div class="flex items-center gap-2 min-w-0">
-                <img class="w-5 h-5 object-contain shrink-0" [src]="svgSrcForModulo(mod)" alt=""
-                  aria-hidden="true" />
+                <img class="w-5 h-5 object-contain shrink-0" [src]="svgSrcForModulo(mod)" alt="" aria-hidden="true" />
 
                 <span class="font-semibold text-xs uppercase tracking-wide truncate">
                   {{ mod.nombre }}
@@ -164,8 +170,7 @@
                 <a pRipple
                   class="flex items-center gap-2 cursor-pointer px-5 py-2.5 rounded-lg text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-900 duration-150 transition-colors p-ripple"
                   [routerLink]="[p.descripcion]" routerLinkActive="bg-emphasis">
-                  <img class="w-4 h-4 object-contain shrink-0" [src]="svgSrcForPantalla(p)" alt=""
-                    aria-hidden="true" />
+                  <img class="w-4 h-4 object-contain shrink-0" [src]="svgSrcForPantalla(p)" alt="" aria-hidden="true" />
 
                   <span class="font-medium text-xs uppercase tracking-wide truncate">
                     {{ p.nombre }}
