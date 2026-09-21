@@ -444,7 +444,7 @@
         </p>
     </div>
 
-    <p-table class="personalizado" #dt [value]="promociones" dataKey="idActoReclamado" [expandedRowKeys]="expandedRows"
+    <p-table class="personalizado" #dt [value]="promociones" dataKey="idPromocionRecibida" [expandedRowKeys]="expandedRows"
         (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
         <ng-template pTemplate="header">
             <tr>
@@ -458,7 +458,7 @@
             </tr>
         </ng-template>
 
-        <ng-template pTemplate="body" let-item let-expanded="expanded">
+        <ng-template #body let-item let-expanded="expanded">
             <tr>
                 <td>
                     <p-button type="button"
