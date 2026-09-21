@@ -316,6 +316,14 @@ export class DetallesExhortoRecibido {
       this.puedeTurnar.set(esDestinatario && estaRecibido && yaFirmoEnTipo2);
       this.cd.detectChanges();
     }
+    else if (perfil === 'Notificador') {
+      // El notificador solo puede turnar una vez que ya agrego un documento tipo 1 (oficio);
+      // firmarlo es opcional para el notificador.
+      const existeDocumentoTipo1 = this.respuesta.some(r =>
+        r.archivos.some(a => a.idTipoDocumento === 1)
+      );
+      this.puedeTurnar.set(esDestinatario && estaRecibido && existeDocumentoTipo1);
+    }
     else if (perfil === 'Secretario' && ultimoMovimiento.cargoOrigen?.trim() === 'Notificador') {
       // El secretario ya recibió de vuelta lo que le envió el notificador (archivo tipo 1); solo puede
       // turnar una vez que ese archivo tipo 1 ya tenga las firmas aplicadas.
@@ -344,9 +352,17 @@ export class DetallesExhortoRecibido {
   // Validación para revocar
   if (movimientos.length > 1) {
     this.puedeRevocar.set(this.puedeRecibir());
-  }  
+  }
 }
-  
+
+  // Métodos auxiliares solo para depuración desde el template
+  debugPerfilActual(): string {
+    return this.authService.getRoleNameUsuario();
+  }
+  debugExisteDocumentoTipo1(): boolean {
+    return this.respuesta.some(r => r.archivos.some(a => a.idTipoDocumento === 1));
+  }
+
   enviarActualizacion(idActualizacion: number) {
     this.confirmationService.confirm({
       key: 'enviarActualizacion',

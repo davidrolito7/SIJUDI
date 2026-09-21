@@ -16,6 +16,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputMaskModule } from 'primeng/inputmask';
 import { ToastModule } from 'primeng/toast';
 import { InputIconModule } from 'primeng/inputicon';
+import { IconFieldModule } from 'primeng/iconfield';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileUploadEvent, FileProgressEvent, FileRemoveEvent, FileUploadModule, FileUpload, FileSelectEvent } from 'primeng/fileupload';
 import { CatalogoMateria, CatalogoEstadoDestino, CatalogoMunicipioDestino, CatalogoMateriasEstadoDestino, tipoVia, catTipoDiligencia, partesExhortoEnviado, ProvomenteExhortoEnviado, partesExhortoEnviadoRequest, generalesExhortoEnviado, ExhortoEnviadoGuardarGeneralesRequest, EnviadoConfirmacionDatosRecibidosResponse, EnviadoArchivoRecibidoConAcuseResponse, CatalogoGenero, CONATRIB_catTipoDocumento, ListadoCatalogoTipoDocumento, archivoExhortoEnviado, CatalogoTipoParte, archivoRespuesta, detalleExhortosEnviados } from '../../interfaces/exhortos.model';
@@ -37,13 +38,14 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { validarFirmasUsuarioExEnviado } from '../../functions/firmas';
+import { Signature } from '@primeicons/angular/signature';
 interface FileUploadSelectEvent {
   files: File[];
 }
 
 @Component({
   selector: 'app-crear',
-  imports: [FloatLabelModule, TableModule, CheckboxModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule, ConfirmDialogModule, InputMaskModule, ToastModule, MessageModule, FileUploadModule, PdfDialog, InputIconModule, Spinner],
+  imports: [FloatLabelModule,Signature, TableModule, CheckboxModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule, ConfirmDialogModule, InputMaskModule, ToastModule, MessageModule, FileUploadModule, PdfDialog, InputIconModule, IconFieldModule, Spinner],
   templateUrl: './crear-exhorto.html',
   styleUrl: './crear-exhorto.css',
   providers: [MessageService, ConfirmationService]
@@ -96,7 +98,7 @@ export class CrearExhortoComponent {
     //tipoParte: new FormControl('', Validators.required),
     tipoParte: new FormControl<number | null>(null, Validators.required),
     //correoElectronico: new FormControl(''),
-    correoElectronico: new FormControl('', [Validators.maxLength(50)]),
+    correoElectronico: new FormControl('', [Validators.email, Validators.maxLength(50)]),
     //telefono: new FormControl('')
     telefono: new FormControl('', [Validators.pattern(/^\d{10}$/)])
   });
@@ -113,7 +115,7 @@ export class CrearExhortoComponent {
     //tipoPartePromo: new FormControl('', Validators.required),
     tipoPartePromo: new FormControl<number | null>(null, Validators.required),
     //correoElectronicoPromo: new FormControl(''),
-    correoElectronicoPromo: new FormControl('', [Validators.maxLength(50)]),
+    correoElectronicoPromo: new FormControl('', [Validators.email, Validators.maxLength(50)]),
     //telefonoPromo: new FormControl('')
     telefonoPromo: new FormControl('', [Validators.pattern(/^\d{10}$/)])
 
@@ -279,6 +281,7 @@ export class CrearExhortoComponent {
       controls.forEach(campo => {
         const control = this.partesForm.get(campo);
         if (esMoral) {
+          control?.reset('');
           control?.disable();
         } else {
           control?.enable();
@@ -300,6 +303,7 @@ export class CrearExhortoComponent {
       campos.forEach(campo => {
         const control = this.promoventesForm.get(campo);
         if (esMoral === true) {
+          control?.reset('');
           control?.disable();
         } else {
           control?.enable();
@@ -1307,13 +1311,6 @@ export class CrearExhortoComponent {
     }
   }*/
   agregarParte() {
-    this.confirmationService.confirm({
-      key: 'agregarParte',
-      accept: () => this.onAgregarParte(),
-      reject: () => { }
-    });
-  }
-  onAgregarParte() {
     if (!this.partesForm.valid) {
       ValidateForm.validateAllFormFields(this.partesForm);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
@@ -1365,16 +1362,10 @@ export class CrearExhortoComponent {
       }
   }*/
   agregarPromovente() {
-    this.confirmationService.confirm({
-      key: 'agregarPromovente',
-      accept: () => this.onAgregarPromovente(),
-      reject: () => { }
-    });
-  }
-  onAgregarPromovente() {
     if (!this.promoventesForm.valid) {
       ValidateForm.validateAllFormFields(this.promoventesForm);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
+      return;
     }
     this.formSubmittedPromovente = true;
 
@@ -2089,17 +2080,6 @@ export class CrearExhortoComponent {
   }
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
-  }
-  validarTelefono() {
-    if (!this.partesForm.value.telefono || this.partesForm.value.telefono.length !== 10) { //
-      this.partesForm.get('telefono')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });
-    }
-  }
-  validarTelefonoPromo() {
-    if (!this.promoventesForm.value.telefonoPromo || this.promoventesForm.value.telefonoPromo.length !== 10) { //
-      this.promoventesForm.get('telefonoPromo')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });
-    }
-
   }
   openNewParte() {
     this.formSubmittedPartes = false;

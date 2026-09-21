@@ -27,10 +27,16 @@
     </div>
 
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
-      @if (tienePermisoGuardar() && !yaTurnadoAJuez() && !esNotificador()) {
+      <!--formulario del acuerdo (tipoDiligenciado/observaciones): mientras sea el turno del perfil actual y
+      aun no este listo para turnar (o si presiono "Editar") se muestra el boton Guardar; una vez listo para
+      turnar se muestra en modo lectura con los botones Turnar / Editar-->
+      @if (tienePermisoGuardar() && !esNotificador() && mostrarFormularioEditable()) {
       @if ([0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0)) {
       <button pButton (click)="guardarRespuestaExhorto()" icon="pi pi-check">Guardar</button>
       }
+      }
+      @if (tienePermisoGuardar() && !esNotificador() && puedeTurnar() && !mostrarFormularioEditable()) {
+      <p-button type="button" (click)="activarEdicion()" label="Editar" icon="pi pi-pencil" severity="secondary"></p-button>
       }
       @if (tienePermisoEnviarGenerales() && esSecretario()) {
       <!--enviar generales solo lo puede hacer el secretario; si el estatus del acuerdo es 11 puede enviar
@@ -420,9 +426,18 @@
           </ng-template>
           <ng-template #body let-documento let-i="rowIndex">
             <tr>
-              <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo && !notificadorYaTurno()){
-                <p-checkbox (change)="archivo_seleccionado(documento)" [id]="documento.selecParaFirma" type="checkbox"
-                  checked="documento.selecParaFirma" [value]="documento.selecParaFirma" />
+              <td>
+                <div style="font-size: 0.65rem; color: #999; line-height: 1.1;">
+                  firmado: {{ documento.firmado }}<br>
+                  idArchivo: {{ documento.idArchivo }}<br>
+                  idTipoDocumento: {{ documento.idTipoDocumento }}<br>
+                  usrYaFirmo: {{ documento.usrYaFirmo }}<br>
+                  notificadorYaTurno: {{ notificadorYaTurno() }}<br>
+                  esDestinatarioActual: {{ esDestinatarioActual() }}
+                </div>
+                @if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo && !notificadorYaTurno() && (!esNotificador() || documento.idTipoDocumento === 1) && (!esJuez() || esDestinatarioActual())){
+                <p-checkbox [binary]="true" [(ngModel)]="documento.selecParaFirma"
+                  (onChange)="archivo_seleccionado(documento)" />
                 }
               </td>
               <td style="font-size: small;">{{ documento.nombreArchivo }}</td>
@@ -470,7 +485,7 @@
                 </p-button>
                 }
                 <!--APLICAR FIRMAS-->
-                @if(!documento.firmado && documento.firmantes.length>0 && tienePermisoAplicarFirma() && !esNotificador() ){
+                @if(!documento.firmado && documento.firmantes.length>0 && tienePermisoAplicarFirma() && !esNotificador() && puedeAplicarFirmasDocumento(documento) ){
                 <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
                   icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                 </p-button>
@@ -479,12 +494,15 @@
                 <p-button (click)="getFile(documento,1)" severity="success" [rounded]="true" icon="pi pi-file-pdf"
                   class="mr-2" title="Descargar PDF"></p-button>
 
-                <!--ELIMINAR DOCUMENTO-->
-                @if([0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0) && !yaTurnadoAJuez()){ <!--//Pendiente de enviar-->
-                @if(tienePermisoEliminarArchivo() && !documento.firmado && !esNotificador()){
+                <!--ELIMINAR DOCUMENTO: el secretario solo mientras el acuerdo esta pendiente de enviar y no
+                se ha turnado al juez; el notificador unicamente su propio documento tipo 1 (oficio), y solo
+                mientras no haya turnado de vuelta al secretario-->
+                @if(tienePermisoEliminarArchivo() && !documento.firmado && (
+                  (!esNotificador() && [0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0) && !yaTurnadoAJuez())
+                  || (esNotificador() && documento.idTipoDocumento === 1 && !notificadorYaTurno())
+                )){
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                   (click)="eliminarDocumento(documento,1,i)"></p-button>
-                }
                 }
               </td>
             </tr>
