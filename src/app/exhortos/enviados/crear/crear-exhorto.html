@@ -30,7 +30,7 @@
 
       @if(tienePermisoGuardar()){
       @if (mostrarBotonGuardar && (!mostrarBotonEnviarGenerales || modoEdicion())) {
-      <p-button (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-check">
+      <p-button (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-save">
       </p-button>
       }
       }
@@ -504,8 +504,8 @@
     <div class="mt-4 md:mt-0 flex items-center">
       @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
       <div class="relative" style="margin-right: 1rem;">
-        <p-button (click)="openNewFirma()" severity="warn" icon="pi pi-pen-to-square" label="Firmar con FIREL">
-        </p-button>
+        <button pButton (click)="openNewFirma()" severity="warn" > <svg data-p-icon="signature" [size]="16"></svg> Firmar con FIREL
+        </button>
       </div>
       }
       @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
@@ -664,14 +664,6 @@
 <app-confirm-dialog key="eliminarPromovente" title="Confirmación" message="¿Está seguro de eliminar el promovente?"
   icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
 </app-confirm-dialog>
-<!--* MODAL DE CONFIRMACION PARA AGREGAR PARTES -->
-<app-confirm-dialog key="agregarParte" title="Confirmación" message="¿Está seguro de agregar la parte?"
-  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
-</app-confirm-dialog>
-<!--* MODAL DE CONFIRMACION PARA AGREGAR PROMOVENTES -->
-<app-confirm-dialog key="agregarPromovente" title="Confirmación" message="¿Está seguro de agregar el promovente?"
-  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
-</app-confirm-dialog>
 <!--MODAL PARA CONFIRMACION DE APLICAR FIRMAS-->
 <app-confirm-dialog key="aplicarFirmas" title="Confirmación"
   message="¿Está seguro que desea aplicar las firmas en el archivo?" icon="pi pi-question" circleClass="bg-primary"
@@ -812,7 +804,7 @@
     <div class="grid grid-cols-6 gap-4 w-full items-end">
       <!-- Nombre -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Nombre de la parte*</label>
+        <label class="block mb-2 text-sm font-medium">Nombre*</label>
         <input id="nombre" pInputText type="text" formControlName="nombre" class="w-full" maxlength="500" />
       </div>
 
@@ -861,17 +853,14 @@
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Teléfono</label>
         <input id="telefono" pInputText type="text" formControlName="telefono" placeholder="9999999999" maxlength="10"
-          class="w-full" (onBlur)="validarTelefono()" />
-        <div *ngIf="partesForm.get('telefono')?.hasError('pattern')" class="error-text">
-          Debe capturar exactamente 10 dígitos
-        </div>
+          class="w-full" />
       </div>
     </div>
   </form>
 
   <ng-template #footer>
     <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogParte()" />
-    <p-button label="Agregar" icon="pi pi-check" (click)="agregarParte()" />
+    <p-button label="Agregar" icon="pi pi-check" [disabled]="!partesForm.valid" (click)="agregarParte()" />
   </ng-template>
 </p-dialog>
 
@@ -931,40 +920,56 @@
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Teléfono</label>
         <input id="telefonoPromo" pInputText type="text" formControlName="telefonoPromo" class="w-full" maxlength="10"
-          (onBlur)="validarTelefonoPromo()" placeholder="9999999999" />
-        <div *ngIf="promoventesForm.get('telefonoPromo')?.hasError('pattern')" class="error-text">
-          Debe capturar exactamente 10 dígitos
-        </div>
+          placeholder="9999999999" />
       </div>
     </div>
   </form>
 
   <ng-template #footer>
     <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogPromovente()" />
-    <p-button label="Agregar" icon="pi pi-check" (click)="agregarPromovente()" />
+    <p-button label="Agregar" icon="pi pi-check" [disabled]="!promoventesForm.valid" (click)="agregarPromovente()" />
   </ng-template>
 </p-dialog>
 
 <!--*DIALOG PARA FIRMAR-->
-<p-dialog [(visible)]="firmaDialog" [style]="{ width: '600px' }" header="Firmado de documento" [modal]="true">
-  <form [formGroup]="formularioFirma">
-    <div class="grid grid-cols-6 gap-4 w-full items-end">
-
-      <!-- Nombre del promovente -->
-      <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Contraseña de su firma*</label>
-        <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'"
-          formControlName="password" class="w-full" maxlength="20" />
-        <p-inputicon class="cursor-pointer text-white/70! hover:text-white!" (click)="togglePasswordVisibility()">
-          <i [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
-        </p-inputicon>
+<p-dialog [(visible)]="firmaDialog" [style]="{ width: '450px' }" [modal]="true">
+  <ng-template #header>
+    <div class="flex items-center gap-3">
+      <div
+        class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+        <i class="text-surface-800 dark:text-surface-100"><svg data-p-icon="signature" [size]="16"></svg></i>
       </div>
+      <div>
+        <span class="block text-base font-semibold leading-5 text-surface-900 dark:text-surface-0">
+          Firmado de documento
+        </span>
+      </div>
+    </div>
+  </ng-template>
+
+  <p class="mb-4 text-sm leading-5 text-surface-500 dark:text-surface-400">
+    Ingresa la contraseña de tu firma electrónica para firmar el documento seleccionado.
+  </p>
+
+  <form [formGroup]="formularioFirma">
+    <div class="w-full">
+      <label for="password" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+        Contraseña de su firma<strong>*</strong>
+      </label>
+      <p-iconfield icon-position="right" class="w-full">
+        <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'"
+          formControlName="password" class="w-full" maxlength="20" placeholder="Contraseña" />
+        <p-inputicon class="cursor-pointer pi pi-{{ showPassword ? 'eye-slash' : 'eye' }}"
+          (click)="togglePasswordVisibility()">
+        </p-inputicon>
+      </p-iconfield>
     </div>
   </form>
 
   <ng-template #footer>
-    <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogFirma()" />
-    <p-button label="Firmar" icon="pi pi-check" (click)="iniciarFirmaDocumentos()" />
+    <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialogFirma()" />
+    <p-button label="Firmar" icon="pi pi-check" [disabled]="!formularioFirma.valid"
+      (click)="iniciarFirmaDocumentos()" />
   </ng-template>
 </p-dialog>
 <p-confirmdialog [style]="{ width: '600px' }" />

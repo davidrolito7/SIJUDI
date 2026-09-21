@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, inject, Signal, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, Signal, signal } from '@angular/core';
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -31,14 +31,17 @@ import { ModalComponent } from "../../../shared/components/modal-component/modal
 import { ModalService } from '../../../shared/services/modal.service';
 import { ButtonModule } from 'primeng/button';
 
-
+import { Send } from '@primeicons/angular/send';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-GenerarAcuerdo',
-  imports: [ConfirmDialog,ButtonModule, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent],
+  imports: [ConfirmDialog,CheckboxModule,ButtonModule, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent, Send],
   templateUrl: './generar-acuerdo.html',
   styleUrl: './generar-acuerdo.css',
-  providers: [MessageService,ConfirmationService]
+  providers: [MessageService,ConfirmationService],
+  
+
 })
 export class GenerarAcuerdo {
   tienePermisoActualizar  = signal<boolean>(false);
@@ -52,6 +55,7 @@ export class GenerarAcuerdo {
   movimientos = signal<VerMovimientosResponse[]>([]);
   tienePermisoEliminarFirma = signal<boolean>(false);
   tienePermisoAplicarFirma = signal<boolean>(false);
+  tienePermisoTurnar = signal<boolean>(false);
 
   listadoTipoDiligenciado = signal<ListadoCatalogoTipoDiligenciado[]>([]);
   listadoTipoDocumento = signal<ListadoCatalogoTipoDocumento[]>([]);
@@ -59,8 +63,60 @@ export class GenerarAcuerdo {
   datosExhortoRecibido: ListadoExhortosRecibidosI | null = null;
   acuseEnviarAcuerdoArchivos! : EnviadoRespuestaArchivosResponse;
   detallesAcuerdo =signal<respuestaExhorto>(<respuestaExhorto>{});
-  //true cuando el documento de tipo acuerdo ya tiene las dos firmas (secretario y juez)
+  //true cuando el documento de tipo acuerdo ya tiene las dos firmas (secretario y juez); solo aplica cuando
+  //el exhorto pasa por el juez, no se usa para habilitar Enviar generales (ver puedeEnviarGenerales)
   tieneDosFirmas = signal<boolean>(false);
+  //existe al menos un documento tipo 1 (oficio); "activo" no sirve como filtro aqui, el backend lo regresa
+  //en false incluso para documentos vigentes (p.ej. el tipo 2 ya firmado), asi que solo se valida el tipo
+  existeDocumentoTipo1 = computed(() => this.listaDocumentos().some(a => a.idTipoDocumento === 1));
+  //el documento tipo 2 (acuerdo) ya esta firmado; no se exige un numero fijo de firmantes porque no todos
+  //los exhortos pasan por el juez (p.ej. el flujo Secretario->Notificador->Secretario solo lleva su firma)
+  existeDocumentoTipo2Firmado = computed(() => this.listaDocumentos().some(a => a.idTipoDocumento === 2 && a.firmado === true));
+  //el documento tipo 1 (el que carga el notificador) ya tiene las firmas aplicadas
+  existeDocumentoTipo1Firmado = computed(() => this.listaDocumentos().some(a => a.idTipoDocumento === 1 && a.firmado === true));
+  //el secretario ya recibio de vuelta lo que le turno el notificador (ultimo movimiento Notificador -> Secretario,
+  //ya recibido). Antes de eso el secretario no puede enviar generales, aunque los documentos ya esten listos
+  secretarioYaRecibioDeNotificador = computed(() => {
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return false;
+    }
+    const ultimoMovimiento = lista[lista.length - 1];
+    const vieneDeNotificador = ultimoMovimiento.cargoOrigen?.trim() === 'Notificador';
+    const vaASecretario = ultimoMovimiento.cargoDestino?.trim() === 'Secretario';
+    const estaRecibido = ultimoMovimiento.fechaRecepcion !== null;
+    return vieneDeNotificador && vaASecretario && estaRecibido;
+  });
+  //true una vez que el juez turno de vuelta el acuerdo al secretario (idMovimiento posterior al 9) y el
+  //secretario ya lo recibio. Antes de eso el secretario no puede aplicar las firmas del documento tipo 2
+  secretarioYaRecibioDeJuez = computed(() => {
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return false;
+    }
+    const ultimoMovimiento = lista[lista.length - 1];
+    const vieneDeJuez = ultimoMovimiento.cargoOrigen?.trim() === 'Juez';
+    const vaASecretario = ultimoMovimiento.cargoDestino?.trim() === 'Secretario';
+    const estaRecibido = ultimoMovimiento.fechaRecepcion !== null;
+    return vieneDeJuez && vaASecretario && estaRecibido;
+  });
+  //el secretario solo puede aplicar firmas segun el tipo de documento y el paso del flujo en que se encuentre:
+  //tipo 1 (oficio) una vez que recibio de vuelta del notificador; tipo 2 (acuerdo) una vez que recibio de
+  //vuelta del juez
+  puedeAplicarFirmasDocumento(documento: any): boolean {
+    if (documento.idTipoDocumento === 2) {
+      return this.secretarioYaRecibioDeJuez();
+    }
+    if (documento.idTipoDocumento === 1) {
+      return this.secretarioYaRecibioDeNotificador();
+    }
+    return false;
+  }
+  //Enviar generales requiere al menos un documento tipo 1 (oficio), el tipo 2 (acuerdo) ya firmado, y que
+  //el secretario ya haya recibido de vuelta lo que le turno el notificador
+  puedeEnviarGenerales = computed(() =>
+    this.existeDocumentoTipo1() && this.existeDocumentoTipo2Firmado() && this.secretarioYaRecibioDeNotificador()
+  );
 
   //true desde que el secretario turno el acuerdo al juez (idMovimiento 9) en adelante; oculta Guardar y eliminar archivo
   yaTurnadoAJuez = computed(() => {
@@ -71,8 +127,14 @@ export class GenerarAcuerdo {
     const maxId = Math.max(...lista.map(m => m.idMovimiento));
     return maxId >= 9;
   });
+  //true cuando el perfil actualmente seleccionado es Notificador
+  esNotificador = computed(() => this.tokenService.getPerfilNombre() === 'Notificador');
+  //true cuando el perfil actualmente seleccionado es Secretario; solo el secretario puede enviar generales
+  esSecretario = computed(() => this.tokenService.getPerfilNombre() === 'Secretario');
+  //true cuando el perfil actualmente seleccionado es Juez
+  esJuez = computed(() => this.tokenService.getPerfilNombre() === 'Juez');
   //solo secretario (mientras no haya turnado al juez, idMovimiento 9) y notificador (mientras no haya turnado de
-  //vuelta al secretario, idMovimiento 12) pueden cargar documentos
+  //vuelta al secretario, idMovimiento 12, y solo una vez que ya recibio su turno) pueden cargar documentos
   puedeCargarDocumento = computed(() => {
     const perfil = this.tokenService.getPerfilNombre();
     const lista = this.movimientos();
@@ -81,9 +143,112 @@ export class GenerarAcuerdo {
       return maxId < 9;
     }
     if (perfil === 'Notificador') {
-      return maxId < 12;
+      if (maxId >= 12) {
+        return false;
+      }
+      //antes de recibir su turno el notificador no puede cargar documentos
+      const ultimoMovimiento = lista.length > 0 ? lista[lista.length - 1] : null;
+      const esDestinatario = ultimoMovimiento?.cargoDestino?.trim() === perfil?.trim();
+      const estaRecibido = ultimoMovimiento?.fechaRecepcion !== null && ultimoMovimiento?.fechaRecepcion !== undefined;
+      return esDestinatario && estaRecibido;
     }
     return false;
+  });
+  //el juez ya firmo el archivo tipo 2 (acuerdo); igual que "yaFirmoEnTipo2" en detalles-exhorto-recibido
+  yaFirmoTipo2ComoJuez = computed(() => {
+    const userData = this.tokenService.getUserFromToken();
+    const idUsuario = userData !== null ? userData.idGeneral : 0;
+    return this.listaDocumentos().some(a =>
+      a.idTipoDocumento === 2 &&
+      a.firmantes?.some(f => f.idUsuario === idUsuario)
+    );
+  });
+  //el secretario ya se agrego como firmante en el archivo tipo 2 (acuerdo); no significa que la firma ya
+  //este aplicada al pdf (eso es "existeDocumentoTipo2Firmado"), solo que ya la firmo con FIREL
+  secretarioYaFirmoTipo2 = computed(() => {
+    const userData = this.tokenService.getUserFromToken();
+    const idUsuario = userData !== null ? userData.idGeneral : 0;
+    return this.listaDocumentos().some(a =>
+      a.idTipoDocumento === 2 &&
+      a.firmantes?.some(f => f.idUsuario === idUsuario)
+    );
+  });
+  //puedeTurnar cubre cinco casos, igual que en detalles-exhorto-recibido:
+  //- Secretario en idMovimiento 8 (primer paso, aun no ha turnado a nadie): solo puede turnar al juez una
+  //  vez que el ya se firmo como firmante en el archivo tipo 2 (acuerdo)
+  //- Juez en idMovimiento 9: solo puede turnar una vez que el ya firmo el archivo tipo 2 (acuerdo)
+  //- Notificador: solo puede turnar de vuelta al secretario una vez que ya cargo un documento tipo 1
+  //  (distinto del tipo 2/acuerdo)
+  //- Secretario, cuando el ultimo movimiento viene del notificador: solo puede turnar una vez que ese
+  //  archivo tipo 1 ya tenga las firmas aplicadas.
+  //- Secretario, cuando el ultimo movimiento viene del juez: solo puede turnar una vez que el archivo
+  //  tipo 2 (acuerdo) ya tenga las firmas aplicadas (no solo seleccionadas como firmante, sino ya
+  //  "aplicadas" al PDF final)
+  //Estos ultimos dos casos no usan un idMovimiento fijo (a diferencia del caso del Juez) porque el numero
+  //de movimiento varia segun cuantos pasos previos tuvo cada exhorto (p.ej. si paso o no por el juez);
+  //lo estable es el origen/destino del ultimo movimiento.
+  puedeTurnar = computed(() => {
+    const perfil = this.tokenService.getPerfilNombre();
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return false;
+    }
+    const ultimoMovimiento = lista[lista.length - 1];
+    const esDestinatario = ultimoMovimiento.cargoDestino?.trim() === perfil?.trim();
+    const estaRecibido = ultimoMovimiento.fechaRecepcion !== null;
+    if (perfil === 'Secretario' && ultimoMovimiento.idMovimiento === 8) {
+      return esDestinatario && estaRecibido && this.secretarioYaFirmoTipo2();
+    }
+    if (perfil === 'Juez' && ultimoMovimiento.idMovimiento === 9) {
+      return esDestinatario && estaRecibido && this.yaFirmoTipo2ComoJuez();
+    }
+    if (perfil === 'Notificador') {
+      return esDestinatario && estaRecibido && this.existeDocumentoTipo1();
+    }
+    if (perfil === 'Secretario' && ultimoMovimiento.cargoOrigen?.trim() === 'Notificador') {
+      return esDestinatario && estaRecibido && this.existeDocumentoTipo1Firmado();
+    }
+    if (perfil === 'Secretario' && ultimoMovimiento.cargoOrigen?.trim() === 'Juez') {
+      return esDestinatario && estaRecibido && this.existeDocumentoTipo2Firmado();
+    }
+    return false;
+  });
+  //true si el perfil actual es el destinatario del ultimo movimiento y ya lo recibio; se usa junto con
+  //puedeTurnar() para decidir si el formulario del acuerdo (acuerdosForm) se muestra editable (Guardar) o
+  //en modo solo lectura (Turnar / Editar)
+  esDestinatarioActual = computed(() => {
+    const perfil = this.tokenService.getPerfilNombre();
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return false;
+    }
+    const ultimoMovimiento = lista[lista.length - 1];
+    const esDestinatario = ultimoMovimiento.cargoDestino?.trim() === perfil?.trim();
+    const estaRecibido = ultimoMovimiento.fechaRecepcion !== null;
+    return esDestinatario && estaRecibido;
+  });
+  //true mientras el usuario presiono el boton "Editar" para volver a habilitar el formulario del acuerdo
+  //(acuerdosForm) aun cuando ya esta listo para turnar
+  modoEdicion = signal<boolean>(false);
+  //el formulario del acuerdo se muestra editable (con el boton Guardar) mientras sea el turno del perfil
+  //actual y aun no este listo para turnar (p.ej. falta firmar el tipo 2, o falta aplicar las firmas), o
+  //bien si el usuario presiono "Editar". Una vez que ya esta listo para turnar se muestra en modo lectura
+  //con los botones Turnar / Editar
+  mostrarFormularioEditable = computed(() =>
+    !this.esNotificador() && ((this.esDestinatarioActual() && !this.puedeTurnar()) || this.modoEdicion())
+  );
+  //idMovimiento del ultimo movimiento registrado, igual que en detalles-exhorto-recibido
+  ultimoMovimiento = computed<number | null>(() => {
+    const lista = this.movimientos();
+    return lista && lista.length > 0 ? lista[lista.length - 1].idMovimiento : null;
+  });
+  //una vez que el notificador ya turno de vuelta al secretario (idMovimiento 12) ya nadie puede seleccionar
+  //documentos para firmar en esta pantalla; no depende del perfil de quien esta viendo, sino de que ese
+  //movimiento ya haya ocurrido
+  notificadorYaTurno = computed(() => {
+    const lista = this.movimientos();
+    const maxId = lista && lista.length > 0 ? Math.max(...lista.map(m => m.idMovimiento)) : 0;
+    return maxId >= 12;
   });
   //acuerdo!: generales;
   //responseRespuestaExhortos!: GenericResponse<respuestaExhorto>;
@@ -143,7 +308,22 @@ export class GenerarAcuerdo {
     private confirmationService: ConfirmationService,
     private cd: ChangeDetectorRef,
 
-  ) {}
+  ) {
+    //habilita/deshabilita el formulario del acuerdo (tipoDiligenciado/observaciones) segun corresponda:
+    //editable mientras sea el turno del perfil actual y aun no este listo para turnar, o si presiono
+    //"Editar"; en modo solo lectura cuando ya esta listo para turnar (se muestran los botones Turnar/Editar)
+    effect(() => {
+      if (this.mostrarFormularioEditable()) {
+        this.acuerdosForm.enable({ emitEvent: false });
+      } else {
+        this.acuerdosForm.disable({ emitEvent: false });
+      }
+    });
+  }
+  //habilita nuevamente el formulario del acuerdo aunque ya este listo para turnar
+  activarEdicion() {
+    this.modoEdicion.set(true);
+  }
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(params => {
       const paramId = params.get('idExhortoRecibido');
@@ -361,6 +541,7 @@ export class GenerarAcuerdo {
               observaciones: this.detallesAcuerdo().generales.observaciones || ''
             });
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Respuesta guardada.' });
+            this.modoEdicion.set(false);
             this.cd.detectChanges();
           }else{
             //console.log("No se pudo guardar la respuesta.", response.message);
@@ -393,6 +574,7 @@ export class GenerarAcuerdo {
             //console.log("Datos actulizados: ",response);
             this.verRespuestaExhortoRecibido(this.idExhortoRecibido);
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Respuesta actualizada.' });
+            this.modoEdicion.set(false);
           }
         },
         error:(e)=>{
@@ -541,6 +723,7 @@ export class GenerarAcuerdo {
                 this.tienePermisoEliminarArchivo.set(false);
                 this.tienePermisoEliminarFirma.set(false);
                 this.tienePermisoAplicarFirma.set(false);
+                this.tienePermisoTurnar.set(false);
 
               }
               else if (this.secciones.length > 0) {
@@ -553,6 +736,7 @@ export class GenerarAcuerdo {
                 this.tienePermisoEliminarArchivo.set(this.secciones.some(s => s.descripcion === 'EliminarArchivo'));
                 this.tienePermisoEliminarFirma.set(this.secciones.some(s => s.nombre === 'EliminarFirma'));
                 this.tienePermisoAplicarFirma.set(this.secciones.some(s => s.nombre === 'AplicarFirma'));
+                this.tienePermisoTurnar.set(this.secciones.some(s => s.nombre === 'Turnar'));
               }
             } else {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor.", sticky: true });
@@ -607,7 +791,7 @@ export class GenerarAcuerdo {
     }
   }
   archivo_seleccionado(item: any) {
-    item.selecParaFirma = !item.selecParaFirma;
+    //el [(ngModel)] del p-checkbox ya actualiza item.selecParaFirma; aqui solo recalculamos la señal
 
     //ponemos un señal para saber cuando se haya seleccionado al menos una fila para firmar
     //Verifica si al menos un archivo está seleccionado
@@ -842,13 +1026,10 @@ export class GenerarAcuerdo {
           //console.log('ID archivo:', idArchivo);
           //console.log('Tipo documento:', tipoDocumento);
           if (response.success) {
-            // Encuentra el índice del documento que quieres eliminar
-            const index = this.listaDocumentos().findIndex(doc => doc.idArchivo === documento.idArchivo);
-            if (index !== -1) {
-              // Elimina el elemento del arreglo
-              this.listaDocumentos().splice(index, 1);
-              this.cd.detectChanges(); // Asegura que la vista se actualice después de modificar el arreglo
-            }
+            // Se usa .update() (en vez de mutar el arreglo con splice) para que los computed que dependen
+            // de listaDocumentos (p.ej. existeDocumentoTipo1, usado por puedeTurnar) se vuelvan a evaluar
+            this.listaDocumentos.update(docs => docs.filter(doc => doc.idArchivo !== documento.idArchivo));
+            this.cd.detectChanges(); // Asegura que la vista se actualice después de modificar el arreglo
             //console.log("Documento eliminado");
             this.messageService.add({ severity: 'success', summary: 'Ok', detail: 'Documento eliminado' });
           } else {
@@ -990,6 +1171,44 @@ export class GenerarAcuerdo {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
         }
     });
+  }
+  //Turnar el exhorto (misma logica/servicio que en detalles-exhorto-recibido): el notificador la usa para
+  //regresarlo al secretario una vez que ya cargo el documento tipo 1
+  turnar() {
+    this.confirmationService.confirm({
+      key: 'turnarExhorto',
+      accept: () => this.onTurnar(),
+      reject: () => { }
+    });
+  }
+  onTurnar() {
+    if (this.idExhortoRecibido !== undefined) {
+      const idE = this.idExhortoRecibido;
+      const perfil = this.authService.getRoleNameUsuario();
+      this.isLoading = true;
+      this.cd.detectChanges();
+      this.exhortosService.Turnar(this.idExhortoRecibido, perfil).subscribe({
+        next: (response => {
+          if (response.success) {
+            if (response.data.resultado) {
+              this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.data.msg, icon: 'pi pi-check-circle' });
+              this.obtenerMovimientos(idE);
+            } else {
+              this.messageService.add({ severity: 'warn', summary: 'Ok', detail: response.data.msg });
+            }
+          }
+        }),
+        error: (err => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, sticky: true });
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }),
+        complete: () => {
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }
+      });
+    }
   }
   modalClosed(id: number) {
     //cuando se cierra la modal de confirmacion de envio de archivos, redireccionamos a la busqueda principal

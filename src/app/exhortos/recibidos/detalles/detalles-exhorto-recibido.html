@@ -41,7 +41,14 @@
             <p-button type="button" (click)="recibir()" label="Recibir" icon="pi pi-check">
             </p-button>
             }
-            @if(puedeTurnar() && ultimoMovimiento()!=12){
+            <div style="font-size: 0.65rem; color: #999; line-height: 1.1;">
+              perfil: {{ debugPerfilActual() }}<br>
+              existeDocumentoTipo1: {{ debugExisteDocumentoTipo1() }}<br>
+              puedeTurnar: {{ puedeTurnar() }}<br>
+              tienePermisoTurnar: {{ tienePermisoTurnar() }}<br>
+              ultimoMovimiento: {{ ultimoMovimiento() }}
+            </div>
+            @if(puedeTurnar()){
             @if (tienePermisoTurnar()) {
             <p-button type="button" (click)="turnar()" label="Turnar" icon="pi pi-send"></p-button>
             }

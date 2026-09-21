@@ -13,6 +13,9 @@
         </div>
     </div>
 </div>
+tiene permisos editar -> {{ tienePermisoEditar() }} 
+puede editar segun flujo-> {{ puedeEditarSegunFlujo() }} 
+
 <!-- Start coding here -->
 <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
     <div class="flex items-start flex-col md:justify-between md:flex-row">
@@ -63,13 +66,11 @@
                                     <td style="font-size: small;">{{ Acuerdo.generales.observaciones }}</td>
                                     <td class="text-center">
                                         <div class="flex justify-center gap-3">
-
-                                            @if(tienePermisoEditar() && puedeEditarSegunFlujo() && [0, 11].includes(Acuerdo.generales.idEstatus ?? 0)){
                                                 <div class="relative">
                                                     <button pButton (click)="generarAcuerdo(idNotificacion, Acuerdo.generales.idRespuesta)" severity="warn"
                                                     icon="">Editar</button>
                                                 </div>
-                                            }
+                                            
                                             @if (tienePermisoEnviarGenerales()) {
                                                 <!--si el estatus del acuerdo es 11 puede enviar los datos generales-->
                                                 @if (Acuerdo.generales.idEstatus === 11) {

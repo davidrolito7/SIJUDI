@@ -1,46 +1,23 @@
-<p-confirmdialog [key]="key" [appendTo]="'body'" [baseZIndex]="100" maskStyleClass="bg-primary/40!"
- >
-  <ng-template #headless let-onAccept="onAccept" let-onReject="onReject">
-    <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-950 rounded">
-      <div class="rounded-full inline-flex justify-center items-center h-24 w-24 -mt-20" [ngClass]="circleClass">
-        <i class="pi text-5xl! text-surface-0" [ngClass]="icon"></i>
-      </div>
-
-      <p class="text-2xl font-medium mt-2.5">{{ title }}</p>
-      <p class="font-medium mb-0">{{ message }}</p>
-
-      <div class="flex items-center gap-2 mt-6">
-         @if (showReject) {
-        <p-button [label]="rejectLabel" [outlined]="true" (onClick)="onReject()" styleClass="min-w-32"></p-button>
-        }
-        @if (showAccept) {
-        <p-button [label]="acceptLabel" (onClick)="onAccept()" [styleClass]="acceptStyleClass + ' min-w-32'">
-        </p-button> }
-       
-      </div>
+<p-dialog [visible]="visible()" (visibleChange)="visible.set($event)" [modal]="true" [showHeader]="false" [closable]="false" [dismissableMask]="false"
+  [draggable]="false" [resizable]="false" appendTo="body" styleClass="confirm-dialog-panel"
+  [style]="{ width: '26rem' }" (onHide)="onReject()">
+  <div class="flex flex-col items-center text-center px-2 pt-6 pb-2">
+    <div class="rounded-full inline-flex justify-center items-center h-20 w-20 shadow-md" [ngClass]="circleClass">
+      <i class="pi text-4xl! text-surface-0" [ngClass]="icon"></i>
     </div>
-  </ng-template>
-</p-confirmdialog>
 
-<!-- VERDE (ejemplo) -->
-<!-- <app-confirm-dialog
-  key="anexo"
-  title="Confirmación"
-  message="¿Desea continuar?"
-  icon="pi pi-check"
-  circleClass="bg-primary"
-  acceptLabel="Aceptar"
-  acceptStyleClass="bg-primary">
-</app-confirm-dialog> -->
+    <p class="text-xl font-semibold mt-4 mb-1 text-surface-900 dark:text-surface-0">{{ title }}</p>
+    <p class="text-surface-600 dark:text-surface-300 mb-0 leading-relaxed">{{ message }}</p>
 
-<!-- ROJO (eliminar) -->
-<!-- <app-confirm-dialog
-  key="anexo"
-  title="Confirmación"
-  message="¿Está seguro de eliminar el documento?"
-  icon="pi pi-question"
-  circleClass="bg-red-500"
-  acceptLabel="Eliminar"
-  acceptStyleClass="btn-rojo"
-   [showReject]="false">
-</app-confirm-dialog> -->
+    <div class="flex items-center justify-center gap-3 mt-6 w-full">
+      @if (showReject) {
+      <p-button [label]="rejectLabel" [outlined]="true" (onClick)="onReject()" styleClass="min-w-32 flex-1">
+      </p-button>
+      }
+      @if (showAccept) {
+      <p-button [label]="acceptLabel" (onClick)="onAccept()" [styleClass]="acceptStyleClass + ' min-w-32 flex-1'">
+      </p-button>
+      }
+    </div>
+  </div>
+</p-dialog>

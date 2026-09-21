@@ -117,8 +117,8 @@ export class Header implements OnInit, OnDestroy {
       }
     });
 
-    this.notificacionesService.conectarSocket();
-    this.cargarNotificaciones();
+   // this.notificacionesService.conectarSocket();
+  //  this.cargarNotificaciones();
 
     this.navigationSub = this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
