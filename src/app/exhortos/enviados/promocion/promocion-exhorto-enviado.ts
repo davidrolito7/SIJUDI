@@ -148,7 +148,8 @@ export class PromocionExhortoEnviadoComponent {
   })
 
   //Asignar el id de la pantalla, para poder obtener las secciones(permisos) de esta pantalla
-  idPantalla=14196;
+  //idPantalla=14196;
+  idPantalla=1007;
   
   secciones : secciones[] = [] ;
   responseSecciones!: GenericResponse<secciones[]>;
