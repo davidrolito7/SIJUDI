@@ -116,7 +116,12 @@ export interface ListadoCatalogoTipoDiligenciado{
     idTipoDiligenciado: number;
     descripcion: string;
 }
-
+//Interfaz para el catálogo de tipo de procedimiento
+export interface ListadoCatalogoTipoProcedimiento{
+    idCatTipoProcedimiento: number;
+    descripcion: string;
+    activo: boolean;
+}
 //Interfaz para el catálogo de tipo de documentos
 export interface ListadoCatalogoTipoDocumento{
     idTipoDocumento: number;
@@ -182,6 +187,8 @@ export interface generales{
     folio: string;
     tipoDiligencia: string;
     idTipoDiligenciado: number;
+    tipoProcedimiento: string;
+    idCatTipoProcedimiento: number;
     fechaHoraRecepcion:string;
     fechaHora:string;
     fechaEnvio:string;
