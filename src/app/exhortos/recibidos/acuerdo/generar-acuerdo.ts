@@ -71,6 +71,8 @@ export class GenerarAcuerdo {
   readonly TIPOS_DOCUMENTO_NOTIFICADOR = [1, 3];
   //opciones del select de tipo de documento: al notificador solo se le muestran TIPOS_DOCUMENTO_NOTIFICADOR;
   //el resto de perfiles ve el catalogo completo
+  //true mientras se esta subiendo un documento (guardarDocumento); evita subir el mismo archivo dos veces
+  subiendoDocumento = false;
   opcionesTipoDocumento = computed(() =>
     this.esNotificador()
       ? this.listadoTipoDocumento().filter(t => this.TIPOS_DOCUMENTO_NOTIFICADOR.includes(Number(t.idTipoDocumento)))
@@ -908,6 +910,9 @@ export class GenerarAcuerdo {
     });
   }
   onUpload(file: File) {
+    if (this.subiendoDocumento) {
+      return;
+    }
     if (this.doctosForm.valid) {
 
       // for (let file of event.files) {
@@ -926,6 +931,10 @@ export class GenerarAcuerdo {
   }
   //Guardar Documento seleccionado
   guardarDocumento(file: File) {
+    //ya hay una subida en curso (doble clic): se ignora para no guardar el archivo dos veces
+    if (this.subiendoDocumento) {
+      return;
+    }
     const tipoDocId = Number(this.doctosForm.value.tipoDocumento?.idTipoDocumento);
 
     if (!tipoDocId || tipoDocId === 0) {
@@ -960,7 +969,18 @@ export class GenerarAcuerdo {
 
     //console.log('Datos enviados al backend:', formData);
 
-    this.exhortosService.setDocumento(formData).subscribe({
+    //se muestra el spinner (bloquea la pantalla) y se marca la subida en curso para evitar que un doble clic
+    //en el boton de subir guarde el mismo archivo dos veces
+    this.subiendoDocumento = true;
+    this.isLoading = true;
+    this.cd.detectChanges();
+    this.exhortosService.setDocumento(formData).pipe(
+      finalize(() => {
+        this.subiendoDocumento = false;
+        this.isLoading = false;
+        this.cd.detectChanges();
+      })
+    ).subscribe({
       next: (response: any) => {
         if (response.success) {
           //console.log('Archivo guardado:', response.data);
@@ -985,7 +1005,7 @@ export class GenerarAcuerdo {
   }
   onAplicarFirmas(idArchivo: number) {
     this.isLoading = true;
-    this.cd.detectChanges;
+    this.cd.detectChanges();
     this.exhortosService.aplicarFirmasAcuerdo(idArchivo).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -998,12 +1018,12 @@ export class GenerarAcuerdo {
       error: (e) => {
         this.messageService.add({ severity: 'error', summary: 'error', detail: e.message, sticky: true });
         this.isLoading = false;
-        this.cd.detectChanges;
+        this.cd.detectChanges();
       },
       complete: () => {
         //this.confirmacionAplicarFirmas=false;
         this.isLoading = false;
-        this.cd.detectChanges;
+        this.cd.detectChanges();
       }
     });
   }
