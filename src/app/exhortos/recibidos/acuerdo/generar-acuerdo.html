@@ -488,7 +488,7 @@
                 @if(documento.idArchivo === 0){
                 <form [formGroup]="doctosForm">
                   <p-select id="tipoDocumento" inputId="tipoDocumento-dropdown" formControlName="tipoDocumento"
-                    [options]="(listadoTipoDocumento())" optionLabel="nombre" placeholder="seleccione" appendTo="body"
+                    [options]="opcionesTipoDocumento()" optionLabel="nombre" placeholder="seleccione" appendTo="body"
                     filterPlaceholder="Buscar tipo..." class="w-full md:w-56" fluid>
                   </p-select>
                 </form>
@@ -540,12 +540,12 @@
                   class="mr-2" title="Descargar PDF"></p-button>
 
                 <!--ELIMINAR DOCUMENTO: el secretario solo mientras el acuerdo esta pendiente de enviar y no
-                se ha turnado al juez; el notificador unicamente su propio documento tipo 1 (oficio), y solo
-                mientras no haya turnado de vuelta al secretario-->
+                se ha turnado al juez; el notificador unicamente sus documentos tipo 1 o 3, solo si ya
+                se le turno y mientras no haya turnado de vuelta al secretario-->
                 @if(tienePermisoEliminarArchivo() && !documento.firmado && (
                 (esSecretario() && [0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0) &&
                 !yaTurnadoAJuez() && !bloqueadoPorFirmaSecretario())
-                || (esNotificador() && documento.idTipoDocumento === 1 && !notificadorYaTurno())
+                || puedeEliminarDocumentoNotificador(documento)
                 )){
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                   (click)="eliminarDocumento(documento,1,i)"></p-button>

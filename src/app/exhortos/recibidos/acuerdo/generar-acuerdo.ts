@@ -67,6 +67,15 @@ export class GenerarAcuerdo {
   listadoTipoProcedimiento = signal<ListadoCatalogoTipoProcedimiento[]>([]);
 
   listadoTipoDocumento = signal<ListadoCatalogoTipoDocumento[]>([]);
+  //tipos de documento que el notificador puede cargar/eliminar (nunca el tipo 2/acuerdo)
+  readonly TIPOS_DOCUMENTO_NOTIFICADOR = [1, 3];
+  //opciones del select de tipo de documento: al notificador solo se le muestran TIPOS_DOCUMENTO_NOTIFICADOR;
+  //el resto de perfiles ve el catalogo completo
+  opcionesTipoDocumento = computed(() =>
+    this.esNotificador()
+      ? this.listadoTipoDocumento().filter(t => this.TIPOS_DOCUMENTO_NOTIFICADOR.includes(Number(t.idTipoDocumento)))
+      : this.listadoTipoDocumento()
+  );
   listaDocumentos = signal<archivos[]>([]);
   datosExhortoRecibido: ListadoExhortosRecibidosI | null = null;
   acuseEnviarAcuerdoArchivos!: EnviadoRespuestaArchivosResponse;
@@ -330,6 +339,15 @@ export class GenerarAcuerdo {
       return !this.yaTurnadoAJuez() || (this.esDestinatarioActual() && this.modoEdicion());
     }
     return false;
+  }
+  //el notificador puede eliminar los documentos que el carga (TIPOS_DOCUMENTO_NOTIFICADOR: 1 o 3) solo si ya
+  //se le turno (es el destinatario actual y ya recibio) y mientras aun no lo turne de vuelta al secretario
+  //(idMovimiento 12). Tambien puede quitar de la lista un archivo seleccionado que aun no se ha subido (idArchivo 0)
+  puedeEliminarDocumentoNotificador(documento: archivos): boolean {
+    if (!this.esNotificador() || !this.esDestinatarioActual() || this.notificadorYaTurno()) {
+      return false;
+    }
+    return documento.idArchivo === 0 || this.TIPOS_DOCUMENTO_NOTIFICADOR.includes(Number(documento.idTipoDocumento));
   }
   puedeSeleccionarParaFirma = computed(() =>
     this.esNotificador() || ((this.esSecretario() || this.esJuez()) && this.esDestinatarioActual())
@@ -918,6 +936,12 @@ export class GenerarAcuerdo {
     const tipoSeleccionado = this.listadoTipoDocumento().find(doc => doc.idTipoDocumento === tipoDocId);
     if (!tipoSeleccionado) {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Tipo de documento inválido' });
+      return;
+    }
+    //el notificador unicamente puede cargar TIPOS_DOCUMENTO_NOTIFICADOR (nunca el tipo 2/acuerdo)
+    if (this.esNotificador() && !this.TIPOS_DOCUMENTO_NOTIFICADOR.includes(tipoDocId)) {
+      const permitidos = this.opcionesTipoDocumento().map(t => `"${t.nombre}"`).join(' o ');
+      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: `Solo puede cargar documentos de tipo ${permitidos}.` });
       return;
     }
 
