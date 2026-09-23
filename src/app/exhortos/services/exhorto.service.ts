@@ -229,6 +229,12 @@ export class ExhortosService {
     const url = `${this.exhortoEnviar}EntregarArchivosPromocion?idPromocionEnviada=${idPromocionEnviado}`;
     return this.http.post<GenericResponse<ArchivoRecibidoPromocionConAcuse>>(url, null, { context: checkToken() });
   }
+
+  //Obtiene las promociones recibidas (Trabajando.....)
+  getPromocionesRecibidasListado(param: UI_ParamlistadoExhortosRecibidosRequest): Observable<GenericResponse<ListadoExhortosRecibidosI>> {
+    return this.http.post<GenericResponse<ListadoExhortosRecibidosI>>(this.baseUrl + "ListadoExhortosRecibidos", param, { context: checkToken() });
+  }
+
   //obtiene la lista de actualizaciones de un exhorto enviado
   getActualizacionesExhortoEnviado(idExhortoEnviado: number): Observable<GenericResponse<actualizacionesExhortoEnviado[]>> {
     return this.http.get<GenericResponse<actualizacionesExhortoEnviado[]>>(this.exhortoEnviar + "verActualizacionesRecibidas?idExhortoEnviado=" + idExhortoEnviado, { context: checkToken() });
