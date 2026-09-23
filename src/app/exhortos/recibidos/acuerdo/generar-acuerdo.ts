@@ -298,9 +298,6 @@ export class GenerarAcuerdo {
   //solo Secretario y Juez pueden seleccionar documentos para firmar, y unicamente cuando ya recibieron el
   //acuerdo (son el destinatario del ultimo movimiento y ya lo recibieron). El Notificador conserva su regla
   //propia (solo documentos tipo 1, validada en el template). Cualquier otro perfil (p.ej. Oficialia) no puede
-  //perfiles que intervienen en el acuerdo (ademas del Notificador); se usa para no mostrar acciones sobre
-  //documentos/firmas a perfiles ajenos como Oficialia
-  esSecretarioOJuez = computed(() => this.esSecretario() || this.esJuez());
   //una vez que el secretario ya cargo su firma en el acuerdo (tipo 2) se ocultan Agregar documento, Eliminar
   //archivo y Eliminar firma; vuelven a aparecer solo si presiona "Editar" (y se ocultan de nuevo al guardar)
   bloqueadoPorFirmaSecretario = computed(() =>
