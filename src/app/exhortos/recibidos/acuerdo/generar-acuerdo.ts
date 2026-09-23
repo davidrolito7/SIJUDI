@@ -11,7 +11,7 @@ import { ExhortosService } from '../../services/exhorto.service';
 import { TokenService } from '../../../core/auth/service/token.service';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
-import { archivos, CONATRIB_ExhortosRecibidosArchivos, EnviadoRespuestaArchivosResponse, generales, guardaExhortoRespuesta, ListadoCatalogoTipoDiligenciado, ListadoCatalogoTipoDocumento, ListadoCatalogoTipoProcedimiento, ListadoExhortosRecibidosI, promocionExhortos, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
+import { archivos, CONATRIB_ExhortosRecibidosArchivos, EnviadoRespuestaArchivosResponse, Firmantes, generales, guardaExhortoRespuesta, ListadoCatalogoTipoDiligenciado, ListadoCatalogoTipoDocumento, ListadoCatalogoTipoProcedimiento, ListadoExhortosRecibidosI, promocionExhortos, respuestaExhorto, VerMovimientosResponse } from '../../interfaces/exhortos.model';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfirmDialog } from "../../../shared/components/confirm-dialog/confirm-dialog";
 import { Spinner } from "../../../shared/components/spinner/spinner";
@@ -30,14 +30,17 @@ import { ToastModule } from "primeng/toast";
 import { ModalComponent } from "../../../shared/components/modal-component/modal-component";
 import { ModalService } from '../../../shared/services/modal.service';
 import { ButtonModule } from 'primeng/button';
-
+import { IconFieldModule } from 'primeng/iconfield';
 import { Send } from '@primeicons/angular/send';
 import { CheckboxModule } from 'primeng/checkbox';
 import { finalize } from 'rxjs';
+import { Paperclip } from '@primeicons/angular/paperclip';
+import { Save } from '@primeicons/angular/save';
+import { Signature } from '@primeicons/angular/signature';
 
 @Component({
   selector: 'app-GenerarAcuerdo',
-  imports: [ConfirmDialog, CheckboxModule, ButtonModule, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent, Send],
+  imports: [ConfirmDialog, CheckboxModule,Signature, IconFieldModule,Paperclip,Save, ButtonModule, Spinner, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, TextareaModule, PdfDialog, Button, FileUpload, TableModule, DialogModule, InputIconModule, ConfirmDialogModule, ToastModule, InputTextModule, ModalComponent, Send],
   templateUrl: './generar-acuerdo.html',
   styleUrl: './generar-acuerdo.css',
   providers: [MessageService, ConfirmationService],
@@ -57,6 +60,8 @@ export class GenerarAcuerdo {
   tienePermisoEliminarFirma = signal<boolean>(false);
   tienePermisoAplicarFirma = signal<boolean>(false);
   tienePermisoTurnar = signal<boolean>(false);
+  tienePermisoRecibir = signal<boolean>(false);
+  tienePermisoRevocar = signal<boolean>(false);
 
   listadoTipoDiligenciado = signal<ListadoCatalogoTipoDiligenciado[]>([]);
   listadoTipoProcedimiento = signal<ListadoCatalogoTipoProcedimiento[]>([]);
@@ -192,6 +197,24 @@ export class GenerarAcuerdo {
       a.firmantes?.some(f => f.idUsuario === idUsuario)
     );
   });
+  //true cuando el perfil actual es el destinatario del ultimo movimiento y aun no lo ha recibido; controla
+  //el boton "Recibir" de esta pantalla. Los movimientos propios del acuerdo (Secretario->Juez, Juez->Secretario,
+  //Secretario->Notificador, Notificador->Secretario) se reciben aqui y no en el detalle del exhorto, para
+  //centralizar Recibir/Turnar del acuerdo en una sola pantalla
+  puedeRecibir = computed(() => {
+    const perfil = this.tokenService.getPerfilNombre();
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return false;
+    }
+    const ultimoMovimiento = lista[lista.length - 1];
+    const esDestinatario = ultimoMovimiento.cargoDestino?.trim() === perfil?.trim();
+    const estaRecibido = ultimoMovimiento.fechaRecepcion !== null;
+    return esDestinatario && !estaRecibido;
+  });
+  //misma regla que en detalles-exhorto-recibido: el destinatario puede revocar el turno mientras aun no lo
+  //recibe; el primer movimiento (juzgado exhortante -> oficialia) nunca se puede revocar
+  puedeRevocar = computed(() => this.movimientos().length > 1 && this.puedeRecibir());
   //puedeTurnar cubre cinco casos, igual que en detalles-exhorto-recibido:
   //- Secretario en idMovimiento 8 (primer paso, aun no ha turnado a nadie): solo puede turnar al juez una
   //  vez que el ya se firmo como firmante en el archivo tipo 2 (acuerdo)
@@ -272,6 +295,48 @@ export class GenerarAcuerdo {
     const maxId = lista && lista.length > 0 ? Math.max(...lista.map(m => m.idMovimiento)) : 0;
     return maxId >= 12;
   });
+  //solo Secretario y Juez pueden seleccionar documentos para firmar, y unicamente cuando ya recibieron el
+  //acuerdo (son el destinatario del ultimo movimiento y ya lo recibieron). El Notificador conserva su regla
+  //propia (solo documentos tipo 1, validada en el template). Cualquier otro perfil (p.ej. Oficialia) no puede
+  //perfiles que intervienen en el acuerdo (ademas del Notificador); se usa para no mostrar acciones sobre
+  //documentos/firmas a perfiles ajenos como Oficialia
+  esSecretarioOJuez = computed(() => this.esSecretario() || this.esJuez());
+  //una vez que el secretario ya cargo su firma en el acuerdo (tipo 2) se ocultan Agregar documento, Eliminar
+  //archivo y Eliminar firma; vuelven a aparecer solo si presiona "Editar" (y se ocultan de nuevo al guardar)
+  bloqueadoPorFirmaSecretario = computed(() =>
+    this.esSecretario() && this.secretarioYaFirmoTipo2() && !this.modoEdicion()
+  );
+  //reglas para eliminar una firma (aun no aplicada) de un documento:
+  // - cada usuario solo puede eliminar su propia firma, nunca la de otro (p.ej. el juez no puede quitar la del secretario)
+  // - Juez: solo mientras sea su turno (es el destinatario actual y ya recibio) y, si ya cargo su firma en el tipo 2,
+  //   solo despues de presionar "Editar"; una vez que turna al secretario ya no
+  // - Secretario: mientras no haya turnado al juez (idMovimiento 9); despues de turnar ya no puede, hasta que
+  //   vuelva a recibir el acuerdo y presione "Editar"
+  puedeEliminarFirma(firmante: Firmantes): boolean {
+    const userData = this.tokenService.getUserFromToken();
+    const idUsuario = userData !== null ? userData.idGeneral : 0;
+    if (firmante.idUsuario !== idUsuario) {
+      return false;
+    }
+    if (this.esJuez()) {
+      //igual que el secretario: una vez que el juez cargo su firma en el acuerdo (tipo 2) solo puede eliminarla
+      //despues de presionar "Editar"
+      if (this.yaFirmoTipo2ComoJuez() && !this.modoEdicion()) {
+        return false;
+      }
+      return this.esDestinatarioActual();
+    }
+    if (this.esSecretario()) {
+      if (this.bloqueadoPorFirmaSecretario()) {
+        return false;
+      }
+      return !this.yaTurnadoAJuez() || (this.esDestinatarioActual() && this.modoEdicion());
+    }
+    return false;
+  }
+  puedeSeleccionarParaFirma = computed(() =>
+    this.esNotificador() || ((this.esSecretario() || this.esJuez()) && this.esDestinatarioActual())
+  );
   //acuerdo!: generales;
   //responseRespuestaExhortos!: GenericResponse<respuestaExhorto>;
 
@@ -496,11 +561,11 @@ export class GenerarAcuerdo {
             } else {
               this.tieneDosFirmas.set(false);
               this.listaDocumentos.set([]);
-              this.messageService.add({
-                severity: 'warn',
-                summary: 'Advertencia',
-                detail: 'No se encontraron documentos asociados al exhorto.'
-              });
+              // this.messageService.add({
+              //   severity: 'warn',
+              //   summary: 'Advertencia',
+              //   detail: 'No se encontraron documentos asociados al exhorto.'
+              // });
             }
           } else {
             //console.warn('La respuesta no contiene datos.');
@@ -714,6 +779,8 @@ export class GenerarAcuerdo {
                 this.tienePermisoEliminarFirma.set(false);
                 this.tienePermisoAplicarFirma.set(false);
                 this.tienePermisoTurnar.set(false);
+                this.tienePermisoRecibir.set(false);
+                this.tienePermisoRevocar.set(false);
 
               }
               else if (this.secciones.length > 0) {
@@ -727,6 +794,8 @@ export class GenerarAcuerdo {
                 this.tienePermisoEliminarFirma.set(this.secciones.some(s => s.nombre === 'EliminarFirma'));
                 this.tienePermisoAplicarFirma.set(this.secciones.some(s => s.nombre === 'AplicarFirma'));
                 this.tienePermisoTurnar.set(this.secciones.some(s => s.nombre === 'Turnar'));
+                this.tienePermisoRecibir.set(this.secciones.some(s => s.nombre === 'Recibir' || s.descripcion === 'Recibir'));
+                this.tienePermisoRevocar.set(this.secciones.some(s => s.nombre === 'Revocar' || s.descripcion === 'Revocar'));
               }
             } else {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: "Error en la respuesta del servidor.", sticky: true });
@@ -1037,36 +1106,45 @@ export class GenerarAcuerdo {
   }
   async iniciarFirmaDocumentos() {
     this.isLoading = true;
-    if (this.formularioFirma.valid) {
-      const esvalido = await this.validarContraseñaPFX(this.formularioFirma.value.password as string);
-      if (esvalido) {
-        //if(this.archivo_pfx_valido){
-        var userData = this.tokenService.getUserFromToken();
-        const seleccionado = this.listaDocumentos().filter(item => item.selecParaFirma);
-        if (seleccionado.length > 0) {
-          for (let i = 0; i < seleccionado.length; i++) {
-            seleccionado[i].idArchivo;
-            //this.FirmarDocumentos(seleccionado[i].idArchivo);
-            await this.FirmarDocumentos(userData.idGeneral, seleccionado[i].idArchivo, 2, this.formularioFirma.value.password as string);
+    this.cd.detectChanges();
+    //validarContraseñaPFX/FirmarDocumentos hacen reject cuando la contraseña es incorrecta o falla la firma; el
+    //await lanza la excepcion (el mensaje ya se mostro dentro de esas funciones) y el finally asegura quitar el spinner
+    try {
+      if (this.formularioFirma.valid) {
+        const esvalido = await this.validarContraseñaPFX(this.formularioFirma.value.password as string);
+        if (esvalido) {
+          //if(this.archivo_pfx_valido){
+          var userData = this.tokenService.getUserFromToken();
+          const seleccionado = this.listaDocumentos().filter(item => item.selecParaFirma);
+          if (seleccionado.length > 0) {
+            for (let i = 0; i < seleccionado.length; i++) {
+              seleccionado[i].idArchivo;
+              //this.FirmarDocumentos(seleccionado[i].idArchivo);
+              await this.FirmarDocumentos(userData.idGeneral, seleccionado[i].idArchivo, 2, this.formularioFirma.value.password as string);
+            }
+            this.seleccionadosParaFirma.set(false); //apagamos la señal para ocultar el boton firmar
+            this.verRespuestaExhortoRecibido(this.idExhortoRecibido);
+            //this.modalService.close('modal1');
+            this.firmaDialog = false;
           }
-          this.seleccionadosParaFirma.set(false); //apagamos la señal para ocultar el boton firmar
-          this.verRespuestaExhortoRecibido(this.idExhortoRecibido);
-          //this.modalService.close('modal1');
-          this.firmaDialog = false;
-        }
-        else {
-          this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Selecciona el o los archivos que deseas firmar.', sticky: true });
-        }
-
-      }/*else{
-        this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Archivo PFX invalido.' });
-      }*/
+          else {
+            this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Selecciona el o los archivos que deseas firmar.', sticky: true });
+          }
+  
+        }/*else{
+          this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Archivo PFX invalido.' });
+        }*/
+      }
+      else {
+        ValidateForm.validateAllFormFields(this.formularioFirma);
+        this.messageService.add({ severity: 'info', summary: 'Error', detail: 'Ingrese la contraseña.', sticky: true });
+      }
+    } catch {
+      //el error ya fue notificado con messageService en validarContraseñaPFX/FirmarDocumentos
+    } finally {
+      this.isLoading = false;
+      this.cd.detectChanges();
     }
-    else {
-      ValidateForm.validateAllFormFields(this.formularioFirma);
-      this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ingrese la contraseña.', sticky: true });
-    }
-    this.isLoading = false;
   }
   validarContraseñaPFX(password: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -1086,7 +1164,7 @@ export class GenerarAcuerdo {
             resolve(true); //resolve cuando se requiere que el flujo continue
 
           } else {
-            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
+            this.messageService.add({ severity: 'info', summary: 'Lo sentimos', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
             reject(false); //reject es cuando se desea sali del flujo, ya no requere que se continue.
 
           }
@@ -1095,10 +1173,8 @@ export class GenerarAcuerdo {
           //console.error('Error al guardar el documento Firmado en el NAS', error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: e.message, sticky: true });
           reject(false);
-        },
-        complete: () => {
-
         }
+        
       });
     });
   }
@@ -1121,7 +1197,7 @@ export class GenerarAcuerdo {
             resolve(true);
           }
           else {
-            this.messageService.add({ severity: 'warn', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}`, sticky: true });
+            this.messageService.add({ severity: 'info', summary: 'Error', detail: `${response.message}\n${response.errors == undefined ? "" : response.errors.join(", ")}` });
             resolve(false);
           }
         },
@@ -1158,6 +1234,82 @@ export class GenerarAcuerdo {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
       }
     });
+  }
+  //Recibir el exhorto (misma logica/servicio que en detalles-exhorto-recibido): se usa aqui para los
+  //movimientos propios del acuerdo (Secretario->Juez, Juez->Secretario, Secretario->Notificador,
+  //Notificador->Secretario), en vez del boton "Recibir" del detalle del exhorto, para no duplicar el flujo
+  //en dos pantallas
+  recibir() {
+    this.confirmationService.confirm({
+      key: 'recibirExhorto',
+      accept: () => this.onRecibir(),
+      reject: () => { }
+    });
+  }
+  onRecibir() {
+    if (this.idExhortoRecibido !== undefined) {
+      const idE = this.idExhortoRecibido;
+      const perfil = this.authService.getRoleNameUsuario();
+      this.isLoading = true;
+      this.cd.detectChanges();
+      this.exhortosService.recibir(this.idExhortoRecibido, perfil).subscribe({
+        next: (response => {
+          if (response.success) {
+            if (response.data.resultado) {
+              this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.data.msg, icon: 'pi pi-check-circle' });
+              this.obtenerMovimientos(idE);
+            } else {
+              this.messageService.add({ severity: 'warn', summary: 'Ok', detail: response.data.msg });
+            }
+          }
+        }),
+        error: (err => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, sticky: true });
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }),
+        complete: () => {
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }
+      });
+    }
+  }
+  //Revocar el turno (misma logica/servicio que en detalles-exhorto-recibido), para los movimientos del acuerdo
+  revocar() {
+    this.confirmationService.confirm({
+      key: 'revocarTurno',
+      accept: () => this.onRevocar(),
+      reject: () => { }
+    });
+  }
+  onRevocar() {
+    if (this.idExhortoRecibido !== undefined) {
+      const idE = this.idExhortoRecibido;
+      this.isLoading = true;
+      this.cd.detectChanges();
+      this.exhortosService.revocar(this.idExhortoRecibido).subscribe({
+        next: (response => {
+          if (response.success) {
+            if (response.data.resultado) {
+              this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.data.msg, icon: 'pi pi-check-circle' });
+              this.obtenerMovimientos(idE);
+            } else {
+              this.messageService.add({ severity: 'warn', summary: 'Ok', detail: response.data.msg });
+            }
+          }
+        }),
+        error: (err => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, sticky: true });
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }),
+        complete: () => {
+          this.isLoading = false;
+          this.cd.detectChanges();
+        }
+      });
+    }
   }
   //Turnar el exhorto (misma logica/servicio que en detalles-exhorto-recibido): el notificador la usa para
   //regresarlo al secretario una vez que ya cargo el documento tipo 1

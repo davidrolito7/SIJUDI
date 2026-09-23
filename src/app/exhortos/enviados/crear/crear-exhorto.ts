@@ -39,13 +39,15 @@ import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { validarFirmasUsuarioExEnviado } from '../../functions/firmas';
 import { Signature } from '@primeicons/angular/signature';
+import { Paperclip } from '@primeicons/angular/paperclip';
+
 interface FileUploadSelectEvent {
   files: File[];
 }
 
 @Component({
   selector: 'app-crear',
-  imports: [FloatLabelModule,Signature, TableModule, CheckboxModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule, ConfirmDialogModule, InputMaskModule, ToastModule, MessageModule, FileUploadModule, PdfDialog, InputIconModule, IconFieldModule, Spinner],
+  imports: [FloatLabelModule, Signature, Paperclip, TableModule, CheckboxModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule, ConfirmDialogModule, InputMaskModule, ToastModule, MessageModule, FileUploadModule, PdfDialog, InputIconModule, IconFieldModule, Spinner],
   templateUrl: './crear-exhorto.html',
   styleUrl: './crear-exhorto.css',
   providers: [MessageService, ConfirmationService]
@@ -195,6 +197,8 @@ export class CrearExhortoComponent {
   @ViewChild('contentToPrint') contentToPrint!: ElementRef;
  
   @ViewChild('fileUpload') fileUpload!: FileUpload;
+  @ViewChild('seccionDocumentos') seccionDocumentos?: ElementRef<HTMLElement>;
+  resaltarDocumentos = signal(false);
 
 
   listaEstadoDestino = signal<CatalogoEstadoDestino[]>([]);
@@ -686,6 +690,7 @@ export class CrearExhortoComponent {
           this.listaPromovetes = response.data.promoventes ?? [];
           //console.log('Respuesta de guardar exhorto:', response);
           this.messageService.add({ severity: 'success', summary: 'ok', detail: "Los datos fueron guardados correctamente" });
+          this.irASeccionDocumentos();
         }
         else {
           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
@@ -696,6 +701,17 @@ export class CrearExhortoComponent {
       }
     });
     //this.confirmacionGuardarExhorto = false
+  }
+
+  //lleva al usuario a la seccion de documentos que aparece despues de guardar y la resalta brevemente
+  irASeccionDocumentos() {
+    //se espera al siguiente ciclo para que el @if(exhortoGuardado) ya haya renderizado la seccion
+    setTimeout(() => {
+      this.seccionDocumentos?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.resaltarDocumentos.set(true);
+      //debe coincidir con la duracion total de la animacion resaltar-documentos (3 pulsos x 1.4s)
+      setTimeout(() => this.resaltarDocumentos.set(false), 4200);
+    }, 100);
   }
 
   cargarCatalogos(estado: CatalogoEstadoDestino) {
@@ -1603,7 +1619,27 @@ export class CrearExhortoComponent {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: "No se ha guardado el Exhorto" });
     }
   }*/
+  //valida los generales aunque el formulario este deshabilitado (en ese estado exhortosForm.valid siempre es false),
+  //ejecutando directamente los validadores de cada control
+  get generalesValidos(): boolean {
+    return Object.values(this.exhortosForm.controls).every(c => !c.validator || c.validator(c) === null);
+  }
+  get puedeEnviarGenerales(): boolean {
+    return this.generalesValidos && this.listaPartes.length > 0 && this.listaPromovetes.length > 0;
+  }
+  //texto que se muestra al pasar el cursor sobre "Enviar generales" cuando esta deshabilitado
+  get motivoEnviarGeneralesDeshabilitado(): string {
+    const faltantes: string[] = [];
+    if (!this.generalesValidos) faltantes.push('completar los datos generales');
+    if (this.listaPartes.length === 0) faltantes.push('agregar al menos una parte');
+    if (this.listaPromovetes.length === 0) faltantes.push('agregar al menos un promovente');
+    return faltantes.length ? `Para enviar debe: ${faltantes.join(', ')}` : '';
+  }
   enviarGenerales() {
+    if (!this.puedeEnviarGenerales) {
+      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: this.motivoEnviarGeneralesDeshabilitado });
+      return;
+    }
     this.confirmationService.confirm({
       key: 'enviarGenerales',
       accept: () => this.onEnviarGenerales(),

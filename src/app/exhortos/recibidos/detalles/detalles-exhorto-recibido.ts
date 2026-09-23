@@ -51,7 +51,21 @@ export class DetallesExhortoRecibido {
     const movs = this.movimientos();
     return movs.length > 0 && movs[0].fechaRecepcion === null;
   });
-  promociones!: promocionExhortos[];
+  //true una vez que el ultimo movimiento ya forma parte del flujo del acuerdo (Secretario->Juez,
+  //Juez->Secretario, Secretario->Notificador, Notificador->Secretario). A partir de aqui, Recibir y Turnar
+  //se hacen desde generar-acuerdo.html (no en esta pantalla), para no duplicar el flujo en dos lugares.
+  //El primer "Recibir" del secretario en idMovimiento 8 (el que habilita "Generar acuerdo") sigue siendo
+  //parte del exhorto en si y se mantiene aqui
+  esMovimientoAcuerdo = computed(() => {
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return false;
+    }
+    const ultimoMovimiento = lista[lista.length - 1];
+    const estaRecibido = ultimoMovimiento.fechaRecepcion !== null;
+    return ultimoMovimiento.idMovimiento > 8 || (ultimoMovimiento.idMovimiento === 8 && estaRecibido);
+  });
+  promociones: promocionExhortos[] = [];
   respuesta: respuestaExhorto[]=[];
 
   idExhortoRecibido: number | undefined;

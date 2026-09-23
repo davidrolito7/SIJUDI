@@ -26,19 +26,19 @@
       </p>
     </div>
     <div class="mt-6 md:mt-0 flex items-center gap-2">
-
-
       @if(tienePermisoGuardar()){
       @if (mostrarBotonGuardar && (!mostrarBotonEnviarGenerales || modoEdicion())) {
       <p-button (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-save">
       </p-button>
       }
       }
-
       @if (mostrarBotonEnviarGenerales && !modoEdicion()) {
       @if(tienePermisoEnviarGenerales()){
-      <p-button (onClick)="enviarGenerales()" label="Enviar generales" icon="pi pi-send">
-      </p-button>
+      <span [title]="motivoEnviarGeneralesDeshabilitado">
+        <p-button (onClick)="enviarGenerales()" label="Enviar generales" icon="pi pi-send"
+          [disabled]="!puedeEnviarGenerales">
+        </p-button>
+      </span>
       }
       @if(tienePermisoGuardar()){
       <p-button (onClick)="habilitarEdicion()" label="Editar" icon="pi pi-pencil" severity="secondary"
@@ -48,8 +48,8 @@
       }
       @if (mostrarBotonEnviarArchivos) {
       @if(tienePermisoEnviarArchvios()){
-      <p-button (onClick)="enviarArchivos()" label="Enviar archivos" icon="pi pi-file">
-      </p-button>
+      <button pButton (click)="enviarArchivos()" ><svg data-p-icon="paperclip"></svg>Enviar archivos
+      </button>
 
       }
       }
@@ -61,11 +61,6 @@
     <div class="relative flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:gap-12">
       <!-- Conector curveado punteado (solo escritorio) -->
       <div class="pointer-events-none absolute inset-y-0 left-1/2 z-10 hidden w-12 -translate-x-1/2 lg:block">
-        <!-- <svg class="h-full w-full text-surface-300 dark:text-surface-700" viewBox="0 0 48 100" fill="none"
-          preserveAspectRatio="none">
-          <path d="M36 0 C 10 28, 10 72, 36 100" stroke="currentColor" stroke-width="2" stroke-dasharray="5 6"
-            stroke-linecap="round" vector-effect="non-scaling-stroke" />
-        </svg> -->
         <div
           class="absolute left-1/2 top-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center border border-surface-300 bg-white text-surface-500 dark:border-surface-700 dark:bg-surface-900 dark:text-surface-400">
           <i class="pi pi-arrow-right text-xs"></i>
@@ -347,19 +342,14 @@
 
           <ng-template #emptymessage>
             <tr>
-              <td colspan="8" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
+              <td colspan="9" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
                 No se han agregado partes.
               </td>
             </tr>
           </ng-template>
         </p-table>
-
-
       </div>
-
-
     </div>
-
   </div>
 </div>
 <!--LISTA PROMOVENTES-->
@@ -458,7 +448,7 @@
           </ng-template>
           <ng-template #emptymessage>
             <tr>
-              <td colspan="8" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
+              <td colspan="9" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
                 No se han agregado promoventes.
               </td>
             </tr>
@@ -476,7 +466,7 @@
 </div>
 @if(exhortoGuardado)
 {
-<div class="relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
+<div #seccionDocumentos [class.resaltar-seccion]="resaltarDocumentos()" class="seccion-documentos relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
   <!-- Esquinas decorativas -->
   <span
     class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
@@ -653,8 +643,8 @@
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA ENVIAR LOS ARCHIVOS DEL EXHORTO AL JUZGADO EXHORTADO -->
 <app-confirm-dialog key="enviarArchivos" title="Confirmación"
-  message="¿Está seguro de enviar los archivos al juzgado exhortado?" icon="pi pi-question" circleClass="bg-blue-500"
-  acceptLabel="Aceptar" acceptStyleClass="bg-blue-500">
+  message="¿Está seguro de enviar los archivos al juzgado exhortado?" icon="pi pi-question" circleClass="bg-primary"
+  acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA ELIMINAR PARTES -->
 <app-confirm-dialog key="eliminarParte" title="Confirmación" message="¿Está seguro de eliminar la parte?"
@@ -675,18 +665,6 @@
 </app-confirm-dialog>
 
 
-<!--* RESPONSE ENVIAR PROMOCION -->
-<!--<app-confirm-dialog key="success" title="Confirmación"
-    [message]="'Promoción enviada correctamente al ' + (tramitesElectronicosRecibidos?.juzgado ?? '')"
-    icon="pi pi-check" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary"  [showReject]="false">
-</app-confirm-dialog>-->
-
-<!--<app-confirm-dialog key="info" title="No hay conincidencias"
-   message="La causa o el juzgado es incorrecto."
-    icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info"  [showReject]="false">
-</app-confirm-dialog>-->
-
-<!--modal de la confirmacion al enviar los archivos-->
 
 <div class="z-50">
   <app-modal-component id="modal2" (modalClosed)="modalClosed(idExhorto)">
