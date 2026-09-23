@@ -545,8 +545,8 @@
           <ng-template #body let-documento let-i="rowIndex">
             <tr>
               <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo){
-                <input (change)="archivo_seleccionado(documento)" [id]="documento.selecParaFirma" type="checkbox"
-                  [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma" />
+                <p-checkbox [binary]="true" [(ngModel)]="documento.selecParaFirma"
+                  [ngModelOptions]="{ standalone: true }" (onChange)="archivo_seleccionado(documento)" />
                 }
               </td>
               <td style="font-size: small;">{{ documento.nombreArchivo }}</td>

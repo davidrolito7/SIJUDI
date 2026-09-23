@@ -1486,7 +1486,7 @@ export class CrearExhortoComponent {
  }*/
 
   archivo_seleccionado(item: any) {
-    item.selecParaFirma = !item.selecParaFirma;
+    //el [(ngModel)] del p-checkbox ya actualiza item.selecParaFirma; aqui solo recalculamos la señal
 
     //ponemos un señal para saber cuando se haya seleccionado al menos una fila para firmar
     //Verifica si al menos un archivo está seleccionado
