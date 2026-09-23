@@ -30,6 +30,7 @@ import { ListadoExhortosRecibidosI, UI_ParamlistadoExhortosRecibidosRequest, Lis
     BreadcrumbModule, AvatarModule, InputMaskModule, FloatLabelModule, ToastModule, CommonModule, FormsModule, Spinner, TooltipModule],
   templateUrl: './listado-promociones.html',
   styleUrl: './listado-promociones.css',
+  providers: [MessageService]
 })
 export class ListadoPromociones {
   //Declaramos variables
@@ -59,6 +60,9 @@ export class ListadoPromociones {
     private messageService: MessageService,
     private cd: ChangeDetectorRef
   ) {
+
+  }
+  ngOnInit(): void {
 
   }
 
