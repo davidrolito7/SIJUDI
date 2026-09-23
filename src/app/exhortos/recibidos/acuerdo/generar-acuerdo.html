@@ -543,7 +543,7 @@
                 se ha turnado al juez; el notificador unicamente su propio documento tipo 1 (oficio), y solo
                 mientras no haya turnado de vuelta al secretario-->
                 @if(tienePermisoEliminarArchivo() && !documento.firmado && (
-                (esSecretarioOJuez() && [0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0) &&
+                (esSecretario() && [0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0) &&
                 !yaTurnadoAJuez() && !bloqueadoPorFirmaSecretario())
                 || (esNotificador() && documento.idTipoDocumento === 1 && !notificadorYaTurno())
                 )){
