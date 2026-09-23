@@ -24,20 +24,28 @@
       <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
         Captura del acuerdo del exhorto recibido.
       </p>
-    </div>
 
+    </div>
+    <div style="font-size: 0.65rem; color: #999; line-height: 1.1;">
+      tiene permisos recibir: {{tienePermisoRecibir()}}<br>
+      puede recibir: {{puedeRecibir()}}<br>
+
+    </div>
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
       <!--formulario del acuerdo (tipoDiligenciado/observaciones/tipoProcedimiento): mientras sea el turno del
       perfil actual y aun no este listo para turnar/enviar generales (o si presiono "Editar") se muestra
       unicamente el boton Guardar; una vez listo se muestra en modo lectura con los botones Editar + Turnar
       o Editar + Enviar generales, segun corresponda. Mientras se esta editando (mostrarFormularioEditable)
-      se ocultan Turnar y Enviar generales para no mostrarlos junto con Guardar-->
+      se ocultan Turnar y Enviar generales para no mostrarlos junto con Guardar. Editar solo tiene sentido
+      mientras el estatus siga en 11 (generales aun no enviados); una vez enviados (idEstatus 12/13) ya no
+      se puede volver a editar el tipoProcedimiento/tipoDiligenciado, solo Enviar archivos-->
       @if (tienePermisoGuardar() && !esNotificador() && mostrarFormularioEditable()) {
       @if ([0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0)) {
-      <button pButton (click)="guardarRespuestaExhorto()" icon="pi pi-check">Guardar</button>
+      <button pButton (click)="guardarRespuestaExhorto()"><svg data-p-icon="save"></svg>Guardar</button>
       }
       }
-      @if (tienePermisoGuardar() && !esNotificador() && (puedeTurnar() || puedeEnviarGenerales()) && !mostrarFormularioEditable()) {
+      @if (tienePermisoGuardar() && !esNotificador() && detallesAcuerdo().generales?.idEstatus === 11 && (puedeTurnar()
+      || puedeEnviarGenerales()) && !mostrarFormularioEditable()) {
       <p-button type="button" (click)="activarEdicion()" label="Editar" icon="pi pi-pencil"
         severity="secondary"></p-button>
       }
@@ -55,8 +63,18 @@
       }
       @if (tienePermisoEnviarArchvios()) {
       @if (detallesAcuerdo().generales?.idEstatus === 12) {
-      <button pButton (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)" icon="pi pi-file">Enviar archivos</button>
+      <button pButton (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"><svg data-p-icon="paperclip"></svg>Enviar
+        archivos</button>
       }
+      }
+
+      <!--recibir: los movimientos propios del acuerdo (Secretario->Juez, Juez->Secretario,
+      Secretario->Notificador, Notificador->Secretario) se reciben aqui y no en el detalle del exhorto-->
+      @if (tienePermisoRecibir() && puedeRecibir()) {
+      <p-button type="button" (click)="recibir()" label="Recibir" icon="pi pi-check"></p-button>
+      }
+      @if (tienePermisoRevocar() && puedeRevocar()) {
+      <p-button type="button" (click)="revocar()" label="Revocar" icon="pi pi-replay" severity="secondary"></p-button>
       }
       <!--turnar: el juez (idMovimiento 9) una vez que firmo el tipo 2, el notificador una vez que cargo el
       tipo 1, el secretario (al recibir de vuelta del notificador) una vez que ese tipo 1 ya este firmado, o
@@ -414,11 +432,13 @@
       DEBUG esNotificador(): {{esNotificador()}} <br>
       @if([0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0)){
       @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
-      <p-button (click)="openNewFirma()" severity="warn" icon="pi pi-pen-to-square" label="Firmar con FIREL">
-      </p-button>
+
+      <button pButton (click)="openNewFirma()" severity="warn"> <svg data-p-icon="signature" [size]="16"></svg> Firmar
+        con FIREL
+      </button>
       }
       }
-      @if(tienePermisoCargarArchivo() && puedeCargarDocumento()){
+      @if(tienePermisoCargarArchivo() && puedeCargarDocumento() && !bloqueadoPorFirmaSecretario()){
       @if(idRespuesta !==0){
       <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload" accept="application/pdf"
         maxFileSize="1000000" (onSelect)="onAnexosSelect($event)" [auto]="true" chooseLabel="Agregar documento" />
@@ -429,7 +449,7 @@
 
   <div class="w-full">
     <div class="grid grid-cols-6 gap-4 w-full items-end">
-      @if (listaDocumentos().length > 0) {
+
       <div class="col-span-6 sm:col-span-6 ">
 
         <p-table [value]="listaDocumentos()" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
@@ -445,6 +465,7 @@
               <th style="min-width: 10rem">Acciones</th>
             </tr>
           </ng-template>
+          @if (listaDocumentos().length > 0) {
           <ng-template #body let-documento let-i="rowIndex">
             <tr>
               <td>
@@ -457,7 +478,7 @@
                   esDestinatarioActual: {{ esDestinatarioActual() }}
                 </div>
                 @if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo && !notificadorYaTurno() &&
-                (!esNotificador() || documento.idTipoDocumento === 1) && (!esJuez() || esDestinatarioActual())){
+                puedeSeleccionarParaFirma() && (!esNotificador() || documento.idTipoDocumento === 1)){
                 <p-checkbox [binary]="true" [(ngModel)]="documento.selecParaFirma"
                   (onChange)="archivo_seleccionado(documento)" />
                 }
@@ -487,7 +508,7 @@
                     @if(firmante !== undefined)
                     {
                     <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
-                    @if(!documento.firmado && tienePermisoEliminarFirma() && !esNotificador()){
+                    @if(!documento.firmado && tienePermisoEliminarFirma() && puedeEliminarFirma(firmante)){
                     <td class="px-4">
                       <p-button (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true"
                         icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>
@@ -507,7 +528,8 @@
                 </p-button>
                 }
                 <!--APLICAR FIRMAS-->
-                @if(!documento.firmado && documento.firmantes.length>0 && tienePermisoAplicarFirma() && !esNotificador()
+                @if(!documento.firmado && documento.firmantes.length>0 && tienePermisoAplicarFirma() &&
+                esSecretarioOJuez()
                 && puedeAplicarFirmasDocumento(documento) ){
                 <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
                   icon="pi pi-key" class="mr-2" title="Aplicar firmas">
@@ -521,7 +543,8 @@
                 se ha turnado al juez; el notificador unicamente su propio documento tipo 1 (oficio), y solo
                 mientras no haya turnado de vuelta al secretario-->
                 @if(tienePermisoEliminarArchivo() && !documento.firmado && (
-                (!esNotificador() && [0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0) && !yaTurnadoAJuez())
+                (esSecretarioOJuez() && [0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0) &&
+                !yaTurnadoAJuez() && !bloqueadoPorFirmaSecretario())
                 || (esNotificador() && documento.idTipoDocumento === 1 && !notificadorYaTurno())
                 )){
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
@@ -530,6 +553,7 @@
               </td>
             </tr>
           </ng-template>
+          }
           <ng-template #emptymessage>
             <tr>
               <td colspan="8" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
@@ -539,7 +563,7 @@
           </ng-template>
         </p-table>
       </div>
-      }
+
     </div>
   </div>
 </div>
@@ -563,6 +587,14 @@
   message="¿Está seguro que desea enviar los datos generales del acuerdo?" icon="pi pi-question"
   circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA RECIBIR EL EXHORTO -->
+<app-confirm-dialog key="recibirExhorto" title="Confirmación" message="¿Está seguro de que desea recibir el exhorto?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA REVOCAR UN TURNO -->
+<app-confirm-dialog key="revocarTurno" title="Confirmación" message="¿Está seguro de que desea revocar el turno?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA TURNAR EL EXHORTO -->
 <app-confirm-dialog key="turnarExhorto" title="Confirmación" message="¿Está seguro de que desea turnar el exhorto?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
@@ -577,27 +609,47 @@
 </app-confirm-dialog>
 
 <!--*DIALOG PARA FIRMAR-->
-<p-dialog [(visible)]="firmaDialog" [style]="{ width: '600px' }" header="Firmado de documento" [modal]="true">
-  <form [formGroup]="formularioFirma">
-    <div class="grid grid-cols-6 gap-4 w-full items-end">
-
-      <!-- Contraseña de firma -->
-      <div class="col-span-6 sm:col-span-3 w-full">
-        <label for="password" class="block mb-2 text-sm font-medium">Contraseña de su firma*</label>
-        <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'"
-          formControlName="password" class="w-full" maxlength="20" />
-        <p-inputicon class="cursor-pointer text-white/70! hover:text-white!" (click)="togglePasswordVisibility()">
-          <i [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
-        </p-inputicon>
+<p-dialog [(visible)]="firmaDialog" [style]="{ width: '450px' }" [modal]="true">
+  <ng-template #header>
+    <div class="flex items-center gap-3">
+      <div
+        class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+        <i class="text-surface-800 dark:text-surface-100"><svg data-p-icon="signature" [size]="16"></svg></i>
       </div>
+      <div>
+        <span class="block text-base font-semibold leading-5 text-surface-900 dark:text-surface-0">
+          Firmado de documento
+        </span>
+      </div>
+    </div>
+  </ng-template>
+
+  <p class="mb-4 text-sm leading-5 text-surface-500 dark:text-surface-400">
+    Ingresa la contraseña de tu firma electrónica para firmar el documento seleccionado.
+  </p>
+
+  <form [formGroup]="formularioFirma">
+    <div class="w-full">
+      <label for="password" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+        Contraseña de su firma<strong>*</strong>
+      </label>
+      <p-iconfield icon-position="right" class="w-full">
+        <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'"
+          formControlName="password" class="w-full" maxlength="20" placeholder="Contraseña" />
+        <p-inputicon class="cursor-pointer pi pi-{{ showPassword ? 'eye-slash' : 'eye' }}"
+          (click)="togglePasswordVisibility()">
+        </p-inputicon>
+      </p-iconfield>
     </div>
   </form>
 
   <ng-template #footer>
-    <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogFirma()" />
-    <p-button label="Firmar" icon="pi pi-check" (click)="iniciarFirmaDocumentos()" />
+    <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialogFirma()" />
+    <p-button label="Firmar" icon="pi pi-check" [disabled]="!formularioFirma.valid"
+      (click)="iniciarFirmaDocumentos()" />
   </ng-template>
 </p-dialog>
+
 <p-confirmdialog [style]="{ width: '600px' }" />
 <p-toast></p-toast>
 
