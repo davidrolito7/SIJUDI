@@ -5,6 +5,7 @@ export const EXHORTOS_ROUTES: Routes = [
   { path: 'lista-exhortos-enviados', loadComponent: () => import('../exhortos/enviados/listar/lista-exhorto-Enviado').then(m => m.ListaExhortosEnviados), title: 'Exhortos enviados'/*, canActivate: [RedirectGuard]*/ },
   { path: 'detalles-exhorto-recibido', loadComponent: () => import('../exhortos/recibidos/detalles/detalles-exhorto-recibido').then(m => m.DetallesExhortoRecibido), title: 'Detalles exhortos recibidos'/*, canActivate: [RedirectGuard] */ },
   { path: 'generar-acuerdo', loadComponent: () => import('../exhortos/recibidos/acuerdo/generar-acuerdo').then(m => m.GenerarAcuerdo), title: 'Generar respuesta'/*, canActivate: [RedirectGuard]*/ },
+  { path: 'listado-promociones', loadComponent: () => import('../exhortos/recibidos/listado-promociones/listado-promociones').then(m => m.ListadoPromociones), title: 'Listado de promociones'/*, canActivate: [RedirectGuard]*/ },
 
   // se oculta esta vista ya que es redundante con la vista de detalles exhorto recibido, se deja el código comentado por si se requiere en un futuro
   //  { path: 'respuesta-exhorto-recibido',loadComponent:()=> import('../exhortos/recibidos/respuesta/respuesta-exhorto-recibido').then(m=>m.RespuestaExhortoRecibido), title: 'Acuerdos Exhortos' },
