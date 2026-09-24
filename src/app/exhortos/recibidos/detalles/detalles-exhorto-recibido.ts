@@ -51,7 +51,21 @@ export class DetallesExhortoRecibido {
     const movs = this.movimientos();
     return movs.length > 0 && movs[0].fechaRecepcion === null;
   });
-  promociones!: promocionExhortos[];
+  //true una vez que el ultimo movimiento ya forma parte del flujo del acuerdo (Secretario->Juez,
+  //Juez->Secretario, Secretario->Notificador, Notificador->Secretario). A partir de aqui, Recibir y Turnar
+  //se hacen desde generar-acuerdo.html (no en esta pantalla), para no duplicar el flujo en dos lugares.
+  //El primer "Recibir" del secretario en idMovimiento 8 (el que habilita "Generar acuerdo") sigue siendo
+  //parte del exhorto en si y se mantiene aqui
+  esMovimientoAcuerdo = computed(() => {
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return false;
+    }
+    const ultimoMovimiento = lista[lista.length - 1];
+    const estaRecibido = ultimoMovimiento.fechaRecepcion !== null;
+    return ultimoMovimiento.idMovimiento > 8 || (ultimoMovimiento.idMovimiento === 8 && estaRecibido);
+  });
+  promociones: promocionExhortos[] = [];
   respuesta: respuestaExhorto[]=[];
 
   idExhortoRecibido: number | undefined;
@@ -316,6 +330,14 @@ export class DetallesExhortoRecibido {
       this.puedeTurnar.set(esDestinatario && estaRecibido && yaFirmoEnTipo2);
       this.cd.detectChanges();
     }
+    else if (perfil === 'Notificador') {
+      // El notificador solo puede turnar una vez que ya agrego un documento tipo 1 (oficio);
+      // firmarlo es opcional para el notificador.
+      const existeDocumentoTipo1 = this.respuesta.some(r =>
+        r.archivos.some(a => a.idTipoDocumento === 1)
+      );
+      this.puedeTurnar.set(esDestinatario && estaRecibido && existeDocumentoTipo1);
+    }
     else if (perfil === 'Secretario' && ultimoMovimiento.cargoOrigen?.trim() === 'Notificador') {
       // El secretario ya recibió de vuelta lo que le envió el notificador (archivo tipo 1); solo puede
       // turnar una vez que ese archivo tipo 1 ya tenga las firmas aplicadas.
@@ -344,9 +366,17 @@ export class DetallesExhortoRecibido {
   // Validación para revocar
   if (movimientos.length > 1) {
     this.puedeRevocar.set(this.puedeRecibir());
-  }  
+  }
 }
-  
+
+  // Métodos auxiliares solo para depuración desde el template
+  debugPerfilActual(): string {
+    return this.authService.getRoleNameUsuario();
+  }
+  debugExisteDocumentoTipo1(): boolean {
+    return this.respuesta.some(r => r.archivos.some(a => a.idTipoDocumento === 1));
+  }
+
   enviarActualizacion(idActualizacion: number) {
     this.confirmationService.confirm({
       key: 'enviarActualizacion',

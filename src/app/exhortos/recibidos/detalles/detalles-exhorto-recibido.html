@@ -37,17 +37,29 @@
                 icon="pi pi-ban" severity="danger" [outlined]="true"></p-button>
             <app-incompetencia-dialog #dialogIncomp></app-incompetencia-dialog>
             }
-            @if (puedeRecibir() && detallesExhortos()?.generales?.idEstatus !== 9) {
+            <!--Recibir y Turnar aqui son solo para el exhorto en si (antes de que el secretario reciba el
+            idMovimiento 8 para generar el acuerdo). Una vez que el flujo entra al acuerdo (Secretario->Juez,
+            Juez->Secretario, Secretario->Notificador, Notificador->Secretario) se ocultan: Recibir y Turnar
+            se hacen desde generar-acuerdo.html para no duplicar el flujo en dos pantallas-->
+            @if (puedeRecibir() && detallesExhortos()?.generales?.idEstatus !== 9 && !esMovimientoAcuerdo()) {
             <p-button type="button" (click)="recibir()" label="Recibir" icon="pi pi-check">
             </p-button>
             }
-            @if(puedeTurnar()){
+            <div style="font-size: 0.65rem; color: #999; line-height: 1.1;">
+              perfil: {{ debugPerfilActual() }}<br>
+              existeDocumentoTipo1: {{ debugExisteDocumentoTipo1() }}<br>
+              puedeTurnar: {{ puedeTurnar() }}<br>
+              tienePermisoTurnar: {{ tienePermisoTurnar() }}<br>
+              ultimoMovimiento: {{ ultimoMovimiento() }}
+            </div>
+            @if(puedeTurnar() && !esMovimientoAcuerdo()){
             @if (tienePermisoTurnar()) {
             <p-button type="button" (click)="turnar()" label="Turnar" icon="pi pi-send"></p-button>
             }
             }
             @if (tienePermisoRevocar()) {
-            @if (puedeRevocar()) {
+            <!--igual que Recibir/Turnar: los movimientos del acuerdo se revocan desde generar-acuerdo.html-->
+            @if (puedeRevocar() && !esMovimientoAcuerdo()) {
             <p-button type="button" (click)="revocar()" label="Revocar" icon="pi pi-replay"
                 severity="secondary"></p-button>
             }
@@ -444,9 +456,9 @@
         </p>
     </div>
 
-    <p-table class="personalizado" #dt [value]="promociones" dataKey="idActoReclamado" [expandedRowKeys]="expandedRows"
+    <p-table class="personalizado" #dt [value]="promociones" dataKey="idPromocionRecibida" [expandedRowKeys]="expandedRows"
         (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
-        <ng-template pTemplate="header">
+        <ng-template #header>
             <tr>
                 <th></th>
                 <th class="text-base font-semibold">Folio origen</th>
@@ -458,7 +470,7 @@
             </tr>
         </ng-template>
 
-        <ng-template pTemplate="body" let-item let-expanded="expanded">
+        <ng-template #body let-item let-expanded="expanded">
             <tr>
                 <td>
                     <p-button type="button"
@@ -544,10 +556,9 @@
             </tr>
             }
         </ng-template>
-
-        <ng-template pTemplate="emptymessage">
+        <ng-template #emptymessage>
             <tr>
-                <td colspan="8" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">Sin
+                <td colspan="7" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">Sin
                     promociones</td>
             </tr>
         </ng-template>

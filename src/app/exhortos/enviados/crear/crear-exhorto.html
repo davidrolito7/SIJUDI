@@ -26,19 +26,19 @@
       </p>
     </div>
     <div class="mt-6 md:mt-0 flex items-center gap-2">
-
-
       @if(tienePermisoGuardar()){
       @if (mostrarBotonGuardar && (!mostrarBotonEnviarGenerales || modoEdicion())) {
       <p-button (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-save">
       </p-button>
       }
       }
-
       @if (mostrarBotonEnviarGenerales && !modoEdicion()) {
       @if(tienePermisoEnviarGenerales()){
-      <p-button (onClick)="enviarGenerales()" label="Enviar generales" icon="pi pi-send">
-      </p-button>
+      <span [title]="motivoEnviarGeneralesDeshabilitado">
+        <p-button (onClick)="enviarGenerales()" label="Enviar generales" icon="pi pi-send"
+          [disabled]="!puedeEnviarGenerales">
+        </p-button>
+      </span>
       }
       @if(tienePermisoGuardar()){
       <p-button (onClick)="habilitarEdicion()" label="Editar" icon="pi pi-pencil" severity="secondary"
@@ -48,8 +48,8 @@
       }
       @if (mostrarBotonEnviarArchivos) {
       @if(tienePermisoEnviarArchvios()){
-      <p-button (onClick)="enviarArchivos()" label="Enviar archivos" icon="pi pi-file">
-      </p-button>
+      <button pButton (click)="enviarArchivos()" ><svg data-p-icon="paperclip"></svg>Enviar archivos
+      </button>
 
       }
       }
@@ -61,11 +61,6 @@
     <div class="relative flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:gap-12">
       <!-- Conector curveado punteado (solo escritorio) -->
       <div class="pointer-events-none absolute inset-y-0 left-1/2 z-10 hidden w-12 -translate-x-1/2 lg:block">
-        <!-- <svg class="h-full w-full text-surface-300 dark:text-surface-700" viewBox="0 0 48 100" fill="none"
-          preserveAspectRatio="none">
-          <path d="M36 0 C 10 28, 10 72, 36 100" stroke="currentColor" stroke-width="2" stroke-dasharray="5 6"
-            stroke-linecap="round" vector-effect="non-scaling-stroke" />
-        </svg> -->
         <div
           class="absolute left-1/2 top-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center border border-surface-300 bg-white text-surface-500 dark:border-surface-700 dark:bg-surface-900 dark:text-surface-400">
           <i class="pi pi-arrow-right text-xs"></i>
@@ -347,19 +342,14 @@
 
           <ng-template #emptymessage>
             <tr>
-              <td colspan="8" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
+              <td colspan="9" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
                 No se han agregado partes.
               </td>
             </tr>
           </ng-template>
         </p-table>
-
-
       </div>
-
-
     </div>
-
   </div>
 </div>
 <!--LISTA PROMOVENTES-->
@@ -458,7 +448,7 @@
           </ng-template>
           <ng-template #emptymessage>
             <tr>
-              <td colspan="8" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
+              <td colspan="9" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
                 No se han agregado promoventes.
               </td>
             </tr>
@@ -476,7 +466,7 @@
 </div>
 @if(exhortoGuardado)
 {
-<div class="relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
+<div #seccionDocumentos [class.resaltar-seccion]="resaltarDocumentos()" class="seccion-documentos relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
   <!-- Esquinas decorativas -->
   <span
     class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
@@ -504,8 +494,8 @@
     <div class="mt-4 md:mt-0 flex items-center">
       @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
       <div class="relative" style="margin-right: 1rem;">
-        <p-button (click)="openNewFirma()" severity="warn" icon="pi pi-pen-to-square" label="Firmar con FIREL">
-        </p-button>
+        <button pButton (click)="openNewFirma()" severity="warn" > <svg data-p-icon="signature" [size]="16"></svg> Firmar con FIREL
+        </button>
       </div>
       }
       @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
@@ -545,8 +535,8 @@
           <ng-template #body let-documento let-i="rowIndex">
             <tr>
               <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo){
-                <input (change)="archivo_seleccionado(documento)" [id]="documento.selecParaFirma" type="checkbox"
-                  [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma" />
+                <p-checkbox [binary]="true" [(ngModel)]="documento.selecParaFirma"
+                  [ngModelOptions]="{ standalone: true }" (onChange)="archivo_seleccionado(documento)" />
                 }
               </td>
               <td style="font-size: small;">{{ documento.nombreArchivo }}</td>
@@ -653,8 +643,8 @@
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA ENVIAR LOS ARCHIVOS DEL EXHORTO AL JUZGADO EXHORTADO -->
 <app-confirm-dialog key="enviarArchivos" title="Confirmación"
-  message="¿Está seguro de enviar los archivos al juzgado exhortado?" icon="pi pi-question" circleClass="bg-blue-500"
-  acceptLabel="Aceptar" acceptStyleClass="bg-blue-500">
+  message="¿Está seguro de enviar los archivos al juzgado exhortado?" icon="pi pi-question" circleClass="bg-primary"
+  acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA ELIMINAR PARTES -->
 <app-confirm-dialog key="eliminarParte" title="Confirmación" message="¿Está seguro de eliminar la parte?"
@@ -663,14 +653,6 @@
 <!--* MODAL DE CONFIRMACION PARA ELIMINAR PROMOVENTES -->
 <app-confirm-dialog key="eliminarPromovente" title="Confirmación" message="¿Está seguro de eliminar el promovente?"
   icon="pi pi-question" circleClass="bg-red-500" acceptLabel="Aceptar" acceptStyleClass="bg-red-500">
-</app-confirm-dialog>
-<!--* MODAL DE CONFIRMACION PARA AGREGAR PARTES -->
-<app-confirm-dialog key="agregarParte" title="Confirmación" message="¿Está seguro de agregar la parte?"
-  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
-</app-confirm-dialog>
-<!--* MODAL DE CONFIRMACION PARA AGREGAR PROMOVENTES -->
-<app-confirm-dialog key="agregarPromovente" title="Confirmación" message="¿Está seguro de agregar el promovente?"
-  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!--MODAL PARA CONFIRMACION DE APLICAR FIRMAS-->
 <app-confirm-dialog key="aplicarFirmas" title="Confirmación"
@@ -683,18 +665,6 @@
 </app-confirm-dialog>
 
 
-<!--* RESPONSE ENVIAR PROMOCION -->
-<!--<app-confirm-dialog key="success" title="Confirmación"
-    [message]="'Promoción enviada correctamente al ' + (tramitesElectronicosRecibidos?.juzgado ?? '')"
-    icon="pi pi-check" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary"  [showReject]="false">
-</app-confirm-dialog>-->
-
-<!--<app-confirm-dialog key="info" title="No hay conincidencias"
-   message="La causa o el juzgado es incorrecto."
-    icon="pi pi-info" circleClass="bg-blue-500" acceptLabel="Aceptar" acceptStyleClass="btn-info"  [showReject]="false">
-</app-confirm-dialog>-->
-
-<!--modal de la confirmacion al enviar los archivos-->
 
 <div class="z-50">
   <app-modal-component id="modal2" (modalClosed)="modalClosed(idExhorto)">
@@ -812,7 +782,7 @@
     <div class="grid grid-cols-6 gap-4 w-full items-end">
       <!-- Nombre -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Nombre de la parte*</label>
+        <label class="block mb-2 text-sm font-medium">Nombre*</label>
         <input id="nombre" pInputText type="text" formControlName="nombre" class="w-full" maxlength="500" />
       </div>
 
@@ -861,17 +831,14 @@
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Teléfono</label>
         <input id="telefono" pInputText type="text" formControlName="telefono" placeholder="9999999999" maxlength="10"
-          class="w-full" (onBlur)="validarTelefono()" />
-        <div *ngIf="partesForm.get('telefono')?.hasError('pattern')" class="error-text">
-          Debe capturar exactamente 10 dígitos
-        </div>
+          class="w-full" />
       </div>
     </div>
   </form>
 
   <ng-template #footer>
     <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogParte()" />
-    <p-button label="Agregar" icon="pi pi-check" (click)="agregarParte()" />
+    <p-button label="Agregar" icon="pi pi-check" [disabled]="!partesForm.valid" (click)="agregarParte()" />
   </ng-template>
 </p-dialog>
 
@@ -931,40 +898,56 @@
       <div class="col-span-6 sm:col-span-3 w-full">
         <label class="block mb-2 text-sm font-medium">Teléfono</label>
         <input id="telefonoPromo" pInputText type="text" formControlName="telefonoPromo" class="w-full" maxlength="10"
-          (onBlur)="validarTelefonoPromo()" placeholder="9999999999" />
-        <div *ngIf="promoventesForm.get('telefonoPromo')?.hasError('pattern')" class="error-text">
-          Debe capturar exactamente 10 dígitos
-        </div>
+          placeholder="9999999999" />
       </div>
     </div>
   </form>
 
   <ng-template #footer>
     <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogPromovente()" />
-    <p-button label="Agregar" icon="pi pi-check" (click)="agregarPromovente()" />
+    <p-button label="Agregar" icon="pi pi-check" [disabled]="!promoventesForm.valid" (click)="agregarPromovente()" />
   </ng-template>
 </p-dialog>
 
 <!--*DIALOG PARA FIRMAR-->
-<p-dialog [(visible)]="firmaDialog" [style]="{ width: '600px' }" header="Firmado de documento" [modal]="true">
-  <form [formGroup]="formularioFirma">
-    <div class="grid grid-cols-6 gap-4 w-full items-end">
-
-      <!-- Nombre del promovente -->
-      <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Contraseña de su firma*</label>
-        <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'"
-          formControlName="password" class="w-full" maxlength="20" />
-        <p-inputicon class="cursor-pointer text-white/70! hover:text-white!" (click)="togglePasswordVisibility()">
-          <i [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
-        </p-inputicon>
+<p-dialog [(visible)]="firmaDialog" [style]="{ width: '450px' }" [modal]="true">
+  <ng-template #header>
+    <div class="flex items-center gap-3">
+      <div
+        class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+        <i class="text-surface-800 dark:text-surface-100"><svg data-p-icon="signature" [size]="16"></svg></i>
       </div>
+      <div>
+        <span class="block text-base font-semibold leading-5 text-surface-900 dark:text-surface-0">
+          Firmado de documento
+        </span>
+      </div>
+    </div>
+  </ng-template>
+
+  <p class="mb-4 text-sm leading-5 text-surface-500 dark:text-surface-400">
+    Ingresa la contraseña de tu firma electrónica para firmar el documento seleccionado.
+  </p>
+
+  <form [formGroup]="formularioFirma">
+    <div class="w-full">
+      <label for="password" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+        Contraseña de su firma<strong>*</strong>
+      </label>
+      <p-iconfield icon-position="right" class="w-full">
+        <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'"
+          formControlName="password" class="w-full" maxlength="20" placeholder="Contraseña" />
+        <p-inputicon class="cursor-pointer pi pi-{{ showPassword ? 'eye-slash' : 'eye' }}"
+          (click)="togglePasswordVisibility()">
+        </p-inputicon>
+      </p-iconfield>
     </div>
   </form>
 
   <ng-template #footer>
-    <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogFirma()" />
-    <p-button label="Firmar" icon="pi pi-check" (click)="iniciarFirmaDocumentos()" />
+    <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialogFirma()" />
+    <p-button label="Firmar" icon="pi pi-check" [disabled]="!formularioFirma.valid"
+      (click)="iniciarFirmaDocumentos()" />
   </ng-template>
 </p-dialog>
 <p-confirmdialog [style]="{ width: '600px' }" />

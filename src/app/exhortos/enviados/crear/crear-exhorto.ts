@@ -16,6 +16,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputMaskModule } from 'primeng/inputmask';
 import { ToastModule } from 'primeng/toast';
 import { InputIconModule } from 'primeng/inputicon';
+import { IconFieldModule } from 'primeng/iconfield';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileUploadEvent, FileProgressEvent, FileRemoveEvent, FileUploadModule, FileUpload, FileSelectEvent } from 'primeng/fileupload';
 import { CatalogoMateria, CatalogoEstadoDestino, CatalogoMunicipioDestino, CatalogoMateriasEstadoDestino, tipoVia, catTipoDiligencia, partesExhortoEnviado, ProvomenteExhortoEnviado, partesExhortoEnviadoRequest, generalesExhortoEnviado, ExhortoEnviadoGuardarGeneralesRequest, EnviadoConfirmacionDatosRecibidosResponse, EnviadoArchivoRecibidoConAcuseResponse, CatalogoGenero, CONATRIB_catTipoDocumento, ListadoCatalogoTipoDocumento, archivoExhortoEnviado, CatalogoTipoParte, archivoRespuesta, detalleExhortosEnviados } from '../../interfaces/exhortos.model';
@@ -37,13 +38,16 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { validarFirmasUsuarioExEnviado } from '../../functions/firmas';
+import { Signature } from '@primeicons/angular/signature';
+import { Paperclip } from '@primeicons/angular/paperclip';
+
 interface FileUploadSelectEvent {
   files: File[];
 }
 
 @Component({
   selector: 'app-crear',
-  imports: [FloatLabelModule, TableModule, CheckboxModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule, ConfirmDialogModule, InputMaskModule, ToastModule, MessageModule, FileUploadModule, PdfDialog, InputIconModule, Spinner],
+  imports: [FloatLabelModule, Signature, Paperclip, TableModule, CheckboxModule, SelectModule, ConfirmDialog, ModalComponent, CommonModule, FormsModule, ReactiveFormsModule, InputNumberModule, QrGeneratorComponent, InputTextModule, TextareaModule, ButtonModule, ToolbarModule, DialogModule, ConfirmDialogModule, InputMaskModule, ToastModule, MessageModule, FileUploadModule, PdfDialog, InputIconModule, IconFieldModule, Spinner],
   templateUrl: './crear-exhorto.html',
   styleUrl: './crear-exhorto.css',
   providers: [MessageService, ConfirmationService]
@@ -96,7 +100,7 @@ export class CrearExhortoComponent {
     //tipoParte: new FormControl('', Validators.required),
     tipoParte: new FormControl<number | null>(null, Validators.required),
     //correoElectronico: new FormControl(''),
-    correoElectronico: new FormControl('', [Validators.maxLength(50)]),
+    correoElectronico: new FormControl('', [Validators.email, Validators.maxLength(50)]),
     //telefono: new FormControl('')
     telefono: new FormControl('', [Validators.pattern(/^\d{10}$/)])
   });
@@ -113,7 +117,7 @@ export class CrearExhortoComponent {
     //tipoPartePromo: new FormControl('', Validators.required),
     tipoPartePromo: new FormControl<number | null>(null, Validators.required),
     //correoElectronicoPromo: new FormControl(''),
-    correoElectronicoPromo: new FormControl('', [Validators.maxLength(50)]),
+    correoElectronicoPromo: new FormControl('', [Validators.email, Validators.maxLength(50)]),
     //telefonoPromo: new FormControl('')
     telefonoPromo: new FormControl('', [Validators.pattern(/^\d{10}$/)])
 
@@ -193,6 +197,8 @@ export class CrearExhortoComponent {
   @ViewChild('contentToPrint') contentToPrint!: ElementRef;
  
   @ViewChild('fileUpload') fileUpload!: FileUpload;
+  @ViewChild('seccionDocumentos') seccionDocumentos?: ElementRef<HTMLElement>;
+  resaltarDocumentos = signal(false);
 
 
   listaEstadoDestino = signal<CatalogoEstadoDestino[]>([]);
@@ -279,6 +285,7 @@ export class CrearExhortoComponent {
       controls.forEach(campo => {
         const control = this.partesForm.get(campo);
         if (esMoral) {
+          control?.reset('');
           control?.disable();
         } else {
           control?.enable();
@@ -300,6 +307,7 @@ export class CrearExhortoComponent {
       campos.forEach(campo => {
         const control = this.promoventesForm.get(campo);
         if (esMoral === true) {
+          control?.reset('');
           control?.disable();
         } else {
           control?.enable();
@@ -682,6 +690,7 @@ export class CrearExhortoComponent {
           this.listaPromovetes = response.data.promoventes ?? [];
           //console.log('Respuesta de guardar exhorto:', response);
           this.messageService.add({ severity: 'success', summary: 'ok', detail: "Los datos fueron guardados correctamente" });
+          this.irASeccionDocumentos();
         }
         else {
           this.messageService.add({ severity: 'error', summary: response.message, detail: response.errors, sticky: true })
@@ -692,6 +701,17 @@ export class CrearExhortoComponent {
       }
     });
     //this.confirmacionGuardarExhorto = false
+  }
+
+  //lleva al usuario a la seccion de documentos que aparece despues de guardar y la resalta brevemente
+  irASeccionDocumentos() {
+    //se espera al siguiente ciclo para que el @if(exhortoGuardado) ya haya renderizado la seccion
+    setTimeout(() => {
+      this.seccionDocumentos?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.resaltarDocumentos.set(true);
+      //debe coincidir con la duracion total de la animacion resaltar-documentos (3 pulsos x 1.4s)
+      setTimeout(() => this.resaltarDocumentos.set(false), 4200);
+    }, 100);
   }
 
   cargarCatalogos(estado: CatalogoEstadoDestino) {
@@ -1307,13 +1327,6 @@ export class CrearExhortoComponent {
     }
   }*/
   agregarParte() {
-    this.confirmationService.confirm({
-      key: 'agregarParte',
-      accept: () => this.onAgregarParte(),
-      reject: () => { }
-    });
-  }
-  onAgregarParte() {
     if (!this.partesForm.valid) {
       ValidateForm.validateAllFormFields(this.partesForm);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
@@ -1365,16 +1378,10 @@ export class CrearExhortoComponent {
       }
   }*/
   agregarPromovente() {
-    this.confirmationService.confirm({
-      key: 'agregarPromovente',
-      accept: () => this.onAgregarPromovente(),
-      reject: () => { }
-    });
-  }
-  onAgregarPromovente() {
     if (!this.promoventesForm.valid) {
       ValidateForm.validateAllFormFields(this.promoventesForm);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Algunos campos no son válidos' })
+      return;
     }
     this.formSubmittedPromovente = true;
 
@@ -1495,7 +1502,7 @@ export class CrearExhortoComponent {
  }*/
 
   archivo_seleccionado(item: any) {
-    item.selecParaFirma = !item.selecParaFirma;
+    //el [(ngModel)] del p-checkbox ya actualiza item.selecParaFirma; aqui solo recalculamos la señal
 
     //ponemos un señal para saber cuando se haya seleccionado al menos una fila para firmar
     //Verifica si al menos un archivo está seleccionado
@@ -1612,7 +1619,27 @@ export class CrearExhortoComponent {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: "No se ha guardado el Exhorto" });
     }
   }*/
+  //valida los generales aunque el formulario este deshabilitado (en ese estado exhortosForm.valid siempre es false),
+  //ejecutando directamente los validadores de cada control
+  get generalesValidos(): boolean {
+    return Object.values(this.exhortosForm.controls).every(c => !c.validator || c.validator(c) === null);
+  }
+  get puedeEnviarGenerales(): boolean {
+    return this.generalesValidos && this.listaPartes.length > 0 && this.listaPromovetes.length > 0;
+  }
+  //texto que se muestra al pasar el cursor sobre "Enviar generales" cuando esta deshabilitado
+  get motivoEnviarGeneralesDeshabilitado(): string {
+    const faltantes: string[] = [];
+    if (!this.generalesValidos) faltantes.push('completar los datos generales');
+    if (this.listaPartes.length === 0) faltantes.push('agregar al menos una parte');
+    if (this.listaPromovetes.length === 0) faltantes.push('agregar al menos un promovente');
+    return faltantes.length ? `Para enviar debe: ${faltantes.join(', ')}` : '';
+  }
   enviarGenerales() {
+    if (!this.puedeEnviarGenerales) {
+      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: this.motivoEnviarGeneralesDeshabilitado });
+      return;
+    }
     this.confirmationService.confirm({
       key: 'enviarGenerales',
       accept: () => this.onEnviarGenerales(),
@@ -2089,17 +2116,6 @@ export class CrearExhortoComponent {
   }
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
-  }
-  validarTelefono() {
-    if (!this.partesForm.value.telefono || this.partesForm.value.telefono.length !== 10) { //
-      this.partesForm.get('telefono')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });
-    }
-  }
-  validarTelefonoPromo() {
-    if (!this.promoventesForm.value.telefonoPromo || this.promoventesForm.value.telefonoPromo.length !== 10) { //
-      this.promoventesForm.get('telefonoPromo')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });
-    }
-
   }
   openNewParte() {
     this.formSubmittedPartes = false;
