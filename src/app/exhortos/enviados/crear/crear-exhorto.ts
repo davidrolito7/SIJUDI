@@ -19,7 +19,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileUploadEvent, FileProgressEvent, FileRemoveEvent, FileUploadModule, FileUpload, FileSelectEvent } from 'primeng/fileupload';
-import { CatalogoMateria, CatalogoEstadoDestino, CatalogoMunicipioDestino, CatalogoMateriasEstadoDestino, tipoVia, catTipoDiligencia, partesExhortoEnviado, ProvomenteExhortoEnviado, partesExhortoEnviadoRequest, generalesExhortoEnviado, ExhortoEnviadoGuardarGeneralesRequest, EnviadoConfirmacionDatosRecibidosResponse, EnviadoArchivoRecibidoConAcuseResponse, CatalogoGenero, CONATRIB_catTipoDocumento, ListadoCatalogoTipoDocumento, archivoExhortoEnviado, CatalogoTipoParte, archivoRespuesta, detalleExhortosEnviados } from '../../interfaces/exhortos.model';
+import { CatalogoMateria, CatalogoEstadoDestino, CatalogoMunicipioDestino, CatalogoMateriasEstadoDestino, tipoVia, catTipoDiligencia, partesExhortoEnviado, ProvomenteExhortoEnviado, partesExhortoEnviadoRequest, generalesExhortoEnviado, ExhortoEnviadoGuardarGeneralesRequest, EnviadoConfirmacionDatosRecibidosResponse, EnviadoArchivoRecibidoConAcuseResponse, CatalogoGenero, CONATRIB_catTipoDocumento, ListadoCatalogoTipoDocumento, archivoExhortoEnviado, Firmantes, CatalogoTipoParte, archivoRespuesta, detalleExhortosEnviados } from '../../interfaces/exhortos.model';
 import ValidateForm from '../../../helpers/validateform';
 import { ExhortosService } from '../../services/exhorto.service';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog'
@@ -38,6 +38,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { PdfDialog } from '../../../shared/components/pdf-dialog/pdf-dialog';
 import { Spinner } from "../../../shared/components/spinner/spinner";
 import { validarFirmasUsuarioExEnviado } from '../../functions/firmas';
+import { construirDatosEdicionExhorto } from '../../functions/edicion-exhorto-enviado';
 import { Signature } from '@primeicons/angular/signature';
 import { Paperclip } from '@primeicons/angular/paperclip';
 
@@ -162,6 +163,27 @@ export class CrearExhortoComponent {
   //idTipoDocumento 2 = oficio del exhorto, es el documento obligatorio que debe estar cargado y firmado
   //antes de poder enviar los datos generales
   readonly ID_TIPO_DOCUMENTO_OFICIO = 2;
+  //firmas que debe tener un documento (juez y abogado) antes de poder aplicarlas al pdf
+  readonly FIRMAS_REQUERIDAS_APLICAR = 2;
+  //el boton "Aplicar firmas" solo aparece cuando el documento ya tiene cargadas las firmas del juez y del
+  //abogado. El API no indica el cargo de cada firmante, por eso se valida que existan al menos
+  //FIRMAS_REQUERIDAS_APLICAR firmantes distintos (por idUsuario)
+  //perfil actualmente seleccionado
+  esSecretario = computed(() => this.tokenService.getPerfilNombre() === 'Secretario');
+  esJuez = computed(() => this.tokenService.getPerfilNombre() === 'Juez');
+  //solo el Secretario y el Juez pueden eliminar una firma, y cada uno unicamente la suya
+  puedeEliminarFirma(firmante: Firmantes): boolean {
+    if (!this.esSecretario() && !this.esJuez()) {
+      return false;
+    }
+    const userData = this.tokenService.getUserFromToken();
+    const idUsuario = userData !== null ? userData.idGeneral : 0;
+    return firmante.idUsuario === idUsuario;
+  }
+  tieneFirmasCompletas(documento: archivoExhortoEnviado): boolean {
+    const firmantesDistintos = new Set((documento.firmantes ?? []).filter(f => f).map(f => f.idUsuario));
+    return firmantesDistintos.size >= this.FIRMAS_REQUERIDAS_APLICAR;
+  }
   //true cuando el usuario presiono Guardar teniendo ya el oficio firmado, o cuando el exhorto llega
   //desde el detalle cumpliendo ya esa condicion (ahi no hay un Guardar previo que la marque)
   guardadoConOficioFirmado = signal<boolean>(false);
@@ -316,14 +338,19 @@ export class CrearExhortoComponent {
     });
 
     // 1. Lógica general inicial
-    this.cargarCatalogoEstadoDestino();
+    //se guardan las promesas de los catalogos que se usan para preseleccionar los select (estado destino,
+    //materia origen y tipo de diligencia); la carga del exhorto (edicion o refresco) espera a que terminen
+    //en lugar de usar un setTimeout fijo, que en conexiones lentas dejaba los select sin valor
+    const catalogosListos = Promise.all([
+      this.cargarCatalogoEstadoDestino().catch(() => undefined),
+      this.cargarDatosOrigenFijos(),
+      this.cargarCatalogoTipoDiligencia(),
+    ]);
    //// this.cargarCatalogoMunicipioOrigen();
    //// this.cargarCatalogoJuzgadoOrigen();
-    this.cargarDatosOrigenFijos();
     this.catalogoGenero();
     this.catalogoTipoParte();
     this.catalogoTipoDocumento();
-    this.cargarCatalogoTipoDiligencia();
     this.getListadoTipoDocumento();
 
     this.exhortosForm.get('municipioDestino')?.disable();
@@ -349,132 +376,19 @@ export class CrearExhortoComponent {
 
     // Reglas para partes y promoventes (omitidas aquí por brevedad, asumes que ya están bien implementadas)
 
-    const state = window.history.state as { datosExhorto?: any, modoEdicion?: boolean };
+    const state = window.history.state as { datosExhorto?: any, modoEdicion?: boolean, idExhortoEnviado?: number };
     //console.log('State recibido en crear-exhorto:', state);
     this.ExhortoEnviadoGenerales = state.datosExhorto;
     if (state?.modoEdicion && state?.datosExhorto) {
-      setTimeout(() => {
-        // Estado
-        const estadoDescripcion = state.datosExhorto.estadoDestinoId; // es el nombre del estado
-        const estadoObj = this.listaEstadoDestino().find(e => e.descripcion === estadoDescripcion);
-
-        if (estadoObj) {
-          //this.estadoDestinoSelect = estadoObj;
-          this.exhortosForm.patchValue({ estadoDestino: estadoObj });
-
-          this.cargarCatalogoMunicipioDestino(estadoObj).then(() => {
-            const municipioNombre = state.datosExhorto.municipioDestinoId; // ← es nombre
-            const municipioObj = this.listaMunicipioDestino().find(m => m.descripcion === municipioNombre);
-
-            if (municipioObj) {
-              //this.municipioDestinoSelect = municipioObj;
-              this.exhortosForm.get('municipioDestino')?.enable();
-              this.exhortosForm.patchValue({ municipioDestino: municipioObj });
-
-              this.cargaMateriasDestino(estadoObj).then(() => {
-                const materiaNombre = state.datosExhorto.materiaNombre;
-                const materiaObj = this.listaMateriaEstadoDestino().find(m => m.nombre === materiaNombre);
-                //console.log('¿Existe materia nombre?:', materiaNombre);
-                if (materiaObj) {
-                  //console.log('materiaObj de modo edición:', materiaObj);
-                  //this.materiaEstadoDestinoSelect = materiaObj;
-                  this.exhortosForm.get('materiaEstadoDestino')?.enable();
-                  this.exhortosForm.patchValue({ materiaEstadoDestino: materiaObj });
-                }
-                //re-aplicamos el bloqueo al terminar esta cadena asíncrona, ya que pudo resolver después
-                //de que actualizarListadoDocumentos calculara mostrarBotonEnviarGenerales
-                this.actualizarEstadoFormExhorto();
-              });
-            }
-          });
-        }
-
-        // Resto de campos generales
-        this.exhortosForm.patchValue({
-          materiaOrigen: state.datosExhorto.idCatMateria,
-          //municipioDestino: state.datosExhorto.municipioDestinoId,
-          //materiaEstadoDestino: state.datosExhorto.materiaNombre,
-          noExpediente: state.datosExhorto.numeroExpedienteOrigen,
-          OficioOrigen: state.datosExhorto.numeroOficioOrigen,
-          tipojuicio: state.datosExhorto.tipoJuicioAsuntoDelitos,
-          nombreJuez: state.datosExhorto.juezExhortante,
-          numeroFojas: state.datosExhorto.fojas,
-          DiasResponder: state.datosExhorto.diasResponder,
-          //TipoDiligencia: state.datosExhorto.tipoDiligenciacionNombre,
-          observaciones: state.datosExhorto.observaciones
-        });
-
-        const materiaOrigenObj = this.listaMateria().find(m => m.idCatMateria === state.datosExhorto.materiaOrigenId);
-        const tipoDiligenciaObj = this.listaTipoDiligencia().find(t => t.descripcion === state.datosExhorto.tipoDiligenciacionNombre);
-        const materiaEstadoDestinoObj = this.listaMateriaEstadoDestino().find(m => m.nombre === state.datosExhorto.materiaNombre);
-
-        //console.log('materiaOrigenObj:', materiaOrigenObj);
-        //console.log('listaMateria:', this.listaMateria);
-
-        if (materiaEstadoDestinoObj) {
-          //this.materiaEstadoDestinoSelect = materiaEstadoDestinoObj;
-          this.exhortosForm.get('materiaEstadoDestino')?.enable();
-          this.exhortosForm.patchValue({ materiaEstadoDestino: materiaEstadoDestinoObj });
-        }
-
-        if (tipoDiligenciaObj) {
-          //this.tipoDiligenciaSelect = tipoDiligenciaObj;
-          this.exhortosForm.get('TipoDiligencia')?.enable();
-          this.exhortosForm.patchValue({ TipoDiligencia: tipoDiligenciaObj });
-        }
-
-        if (materiaOrigenObj) {
-          //this.materiaSelect = materiaOrigenObj;
-          this.exhortosForm.get('materiaOrigen')?.enable();
-          this.exhortosForm.patchValue({ materiaOrigen: materiaOrigenObj });
-          this.getVias(materiaOrigenObj).then(() => {
-            const idVia = state.datosExhorto.idCatTipoVia;
-            const itemVia = this.listaTipoVias.find(m => m.idCatTipoVia === idVia);
-            if (itemVia) {
-              //this.tipoViaSelect = itemVia;
-              this.exhortosForm.get('tipojuicio')?.enable();
-              this.exhortosForm.patchValue({ tipojuicio: itemVia });
-            }
-            //re-aplicamos el bloqueo al terminar esta cadena asíncrona
-            this.actualizarEstadoFormExhorto();
-          });
-
-        }
-
-        this.idExhortoEditando = state.datosExhorto.idExhortoEnviado;
-        this.numeroExhorto = state.datosExhorto.numeroExhorto;
-
-        //cuando trae fechaHora significa que ya se enviaron los datos generales
-        //cuando trae fechaHoraRecepcion significa que se envio todo completo incluyendo los archivos.
-        //const estatus = state.datosExhorto.fechaHora || state.datosExhorto.fechaHoraRecepcion;
-        this.idEstatus = state.datosExhorto.idEstatus;
-
-        if (this.idEstatus == 1) { //estatus 1 es pendientes de enviar
-          this.mostrarBotonGuardar = true;
-         // this.generalesPendientesEnvio = true;
-          this.mostrarBotonEnviarArchivos = false;
-        }
-        else {
-          this.mostrarBotonGuardar = false;
-          this.generalesPendientesEnvio = false; // idEstatus 10 (y cualquier otro != 1) no debe mostrar este botón
-          this.mostrarBotonEnviarArchivos = true;
-        }
-        this.actualizarEstadoFormExhorto();
-
-        this.listaPartes = state.datosExhorto.partes || [];
-        this.listaPromovetes = state.datosExhorto.promoventes || [];
-
-        this.idExhorto = state.datosExhorto.idExhortoEnviado;
-
-        this.exhortoGuardado = true;
-        this.exhortoYaGuardado = true;
-
-        //viene redirigido desde el detalle: si el oficio ya esta cargado y firmado, la condicion para
-        //mostrar "Enviar generales"/"Editar" ya se cumple sin necesidad de un Guardar previo
-        this.cargaInicialDesdeDetalle = true;
-        this.actualizarListadoDocumentos(this.idExhorto);
-
-      }, 800); // Delay pequeño para asegurar que catálogos ya estén inicializados
+      //viene del boton Editar del detalle
+      catalogosListos.then(() => this.cargarExhortoEnEdicion(state.datosExhorto));
+    } else if (state?.idExhortoEnviado) {
+      //se refresco la pagina despues de guardar: se vuelve a consultar el exhorto para no perder la informacion
+      catalogosListos.then(() => this.recargarExhortoGuardado(state.idExhortoEnviado as number));
+    } else {
+      //exhorto nuevo: estado destino preseleccionado. Solo aqui, para que en edicion no se sobrescriba el
+      //estado/municipios del exhorto con los del estado por defecto
+      catalogosListos.then(() => this.preseleccionarEstadoDestino(20));
     }
 
     this.GetSeccionesUsuario();
@@ -482,11 +396,165 @@ export class CrearExhortoComponent {
 
     
     
-    // 1. Lógica general inicial
-    this.cargarCatalogoEstadoDestino().then(() => {
-      this.preseleccionarEstadoDestino(20);
+
+  }
+
+  //carga en el formulario un exhorto ya guardado (modo edicion); se llama una vez que los catalogos estan listos
+  cargarExhortoEnEdicion(datos: any) {
+    // Estado
+    const estadoDescripcion = datos.estadoDestinoId; // es el nombre del estado
+    const estadoObj = this.listaEstadoDestino().find(e => e.descripcion === estadoDescripcion);
+
+    if (estadoObj) {
+      //this.estadoDestinoSelect = estadoObj;
+      this.exhortosForm.patchValue({ estadoDestino: estadoObj });
+
+      this.cargarCatalogoMunicipioDestino(estadoObj).then(() => {
+        const municipioNombre = datos.municipioDestinoId; // ← es nombre
+        const municipioObj = this.listaMunicipioDestino().find(m => m.descripcion === municipioNombre);
+
+        if (municipioObj) {
+          //this.municipioDestinoSelect = municipioObj;
+          this.exhortosForm.get('municipioDestino')?.enable();
+          this.exhortosForm.patchValue({ municipioDestino: municipioObj });
+
+          this.cargaMateriasDestino(estadoObj).then(() => {
+            const materiaNombre = datos.materiaNombre;
+            const materiaObj = this.listaMateriaEstadoDestino().find(m => m.nombre === materiaNombre);
+            //console.log('¿Existe materia nombre?:', materiaNombre);
+            if (materiaObj) {
+              //console.log('materiaObj de modo edición:', materiaObj);
+              //this.materiaEstadoDestinoSelect = materiaObj;
+              this.exhortosForm.get('materiaEstadoDestino')?.enable();
+              this.exhortosForm.patchValue({ materiaEstadoDestino: materiaObj });
+            }
+            //re-aplicamos el bloqueo al terminar esta cadena asíncrona, ya que pudo resolver después
+            //de que actualizarListadoDocumentos calculara mostrarBotonEnviarGenerales
+            this.actualizarEstadoFormExhorto();
+          });
+        }
+      });
+    }
+
+    // Resto de campos generales
+    this.exhortosForm.patchValue({
+      materiaOrigen: datos.idCatMateria,
+      //municipioDestino: datos.municipioDestinoId,
+      //materiaEstadoDestino: datos.materiaNombre,
+      noExpediente: datos.numeroExpedienteOrigen,
+      OficioOrigen: datos.numeroOficioOrigen,
+      tipojuicio: datos.tipoJuicioAsuntoDelitos,
+      nombreJuez: datos.juezExhortante,
+      numeroFojas: datos.fojas,
+      DiasResponder: datos.diasResponder,
+      //TipoDiligencia: datos.tipoDiligenciacionNombre,
+      observaciones: datos.observaciones
     });
 
+    const materiaOrigenObj = this.listaMateria().find(m => m.idCatMateria === datos.materiaOrigenId);
+    //se busca primero por id y, si no viene, por descripcion normalizada (mayusculas/espacios), para que el
+    //select no quede vacio por diferencias de formato en el texto
+    const normalizar = (v: unknown) => String(v ?? '').trim().toUpperCase();
+    const tipoDiligenciaObj =
+      this.listaTipoDiligencia().find(t => datos.tipoDiligenciaId != null && String(t.id) === String(datos.tipoDiligenciaId)) ??
+      this.listaTipoDiligencia().find(t => normalizar(t.descripcion) === normalizar(datos.tipoDiligenciacionNombre));
+    const materiaEstadoDestinoObj = this.listaMateriaEstadoDestino().find(m => m.nombre === datos.materiaNombre);
+
+    //console.log('materiaOrigenObj:', materiaOrigenObj);
+    //console.log('listaMateria:', this.listaMateria);
+
+    if (materiaEstadoDestinoObj) {
+      //this.materiaEstadoDestinoSelect = materiaEstadoDestinoObj;
+      this.exhortosForm.get('materiaEstadoDestino')?.enable();
+      this.exhortosForm.patchValue({ materiaEstadoDestino: materiaEstadoDestinoObj });
+    }
+
+    if (tipoDiligenciaObj) {
+      //this.tipoDiligenciaSelect = tipoDiligenciaObj;
+      this.exhortosForm.get('TipoDiligencia')?.enable();
+      this.exhortosForm.patchValue({ TipoDiligencia: tipoDiligenciaObj });
+    }
+
+    if (materiaOrigenObj) {
+      //this.materiaSelect = materiaOrigenObj;
+      this.exhortosForm.get('materiaOrigen')?.enable();
+      this.exhortosForm.patchValue({ materiaOrigen: materiaOrigenObj });
+      this.getVias(materiaOrigenObj).then(() => {
+        const idVia = datos.idCatTipoVia;
+        const itemVia = this.listaTipoVias.find(m => m.idCatTipoVia === idVia);
+        if (itemVia) {
+          //this.tipoViaSelect = itemVia;
+          this.exhortosForm.get('tipojuicio')?.enable();
+          this.exhortosForm.patchValue({ tipojuicio: itemVia });
+        }
+        //re-aplicamos el bloqueo al terminar esta cadena asíncrona
+        this.actualizarEstadoFormExhorto();
+      });
+
+    }
+
+    this.idExhortoEditando = datos.idExhortoEnviado;
+    this.numeroExhorto = datos.numeroExhorto;
+
+    //cuando trae fechaHora significa que ya se enviaron los datos generales
+    //cuando trae fechaHoraRecepcion significa que se envio todo completo incluyendo los archivos.
+    //const estatus = datos.fechaHora || datos.fechaHoraRecepcion;
+    this.idEstatus = datos.idEstatus;
+
+    if (this.idEstatus == 1) { //estatus 1 es pendientes de enviar
+      this.mostrarBotonGuardar = true;
+     // this.generalesPendientesEnvio = true;
+      this.mostrarBotonEnviarArchivos = false;
+    }
+    else {
+      this.mostrarBotonGuardar = false;
+      this.generalesPendientesEnvio = false; // idEstatus 10 (y cualquier otro != 1) no debe mostrar este botón
+      this.mostrarBotonEnviarArchivos = true;
+    }
+    this.actualizarEstadoFormExhorto();
+
+    this.listaPartes = datos.partes || [];
+    this.listaPromovetes = datos.promoventes || [];
+
+    this.idExhorto = datos.idExhortoEnviado;
+
+    this.exhortoGuardado = true;
+    this.exhortoYaGuardado = true;
+
+    //viene redirigido desde el detalle: si el oficio ya esta cargado y firmado, la condicion para
+    //mostrar "Enviar generales"/"Editar" ya se cumple sin necesidad de un Guardar previo
+    this.cargaInicialDesdeDetalle = true;
+    this.actualizarListadoDocumentos(this.idExhorto);
+
+  }
+
+  //al refrescar despues de guardar ya no existe datosExhorto en el state (o estaria desactualizado), solo el
+  //idExhortoEnviado: se consulta el detalle al API y se arma el mismo objeto que manda el boton Editar del detalle
+  recargarExhortoGuardado(idExhortoEnviado: number) {
+    this.isLoading.set(true);
+    this.ExhortosService.getExhortosEnviadosDetalle(idExhortoEnviado).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          const datos = construirDatosEdicionExhorto(response.data);
+          this.ExhortoEnviadoGenerales = datos as any;
+          this.cargarExhortoEnEdicion(datos);
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo recuperar el exhorto guardado', sticky: true });
+        }
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo recuperar el exhorto guardado', sticky: true });
+      }
+    });
+  }
+
+  //guarda en el historial del navegador solo el id del exhorto guardado para que, si el usuario refresca,
+  //se vuelva a consultar desde el API (se quita datosExhorto porque despues de guardar ya no esta vigente)
+  recordarExhortoGuardado(idExhortoEnviado: number) {
+    const { datosExhorto, ...resto } = (window.history.state ?? {}) as { datosExhorto?: any };
+    window.history.replaceState({ ...resto, modoEdicion: true, idExhortoEnviado }, '');
   }
 
     // Busca el estado con el idEstado indicado dentro del catálogo ya cargado
@@ -575,10 +643,12 @@ export class CrearExhortoComponent {
   //   });
   // }
 
-  cargarDatosOrigenFijos() {
+  //regresa una promesa que se resuelve al terminar (con o sin error); la carga en modo edicion la espera
+  //porque de aqui sale el catalogo de materias de origen (listaMateria)
+  cargarDatosOrigenFijos(): Promise<void> {
     this.isLoading.set(true);
-    this.ExhortosService.getdetalleArea().pipe(
-      finalize(() => this.isLoading.set(false))
+    return new Promise(resolve => this.ExhortosService.getdetalleArea().pipe(
+      finalize(() => { this.isLoading.set(false); resolve(); })
     ).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -592,7 +662,7 @@ export class CrearExhortoComponent {
       error: () => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar el juzgado y municipio de origen', sticky: true });
       },
-    });
+    }));
   }
 
   onSelect(event: FileUploadSelectEvent) {
@@ -685,6 +755,7 @@ export class CrearExhortoComponent {
           this.ExhortoEnviadoGenerales = response.data.generales as generalesExhortoEnviado;
           this.idExhorto = this.ExhortoEnviadoGenerales.idExhortoEnviado;
           this.idExhortoEditando = this.idExhorto;
+          this.recordarExhortoGuardado(this.idExhorto);
           this.numeroExhorto = this.ExhortoEnviadoGenerales.numeroExhorto;
           this.listaPartes = response.data.partes ?? [];
           this.listaPromovetes = response.data.promoventes ?? [];
@@ -1438,10 +1509,12 @@ export class CrearExhortoComponent {
     )
   }
 
-  cargarCatalogoTipoDiligencia() {
+  //regresa una promesa que se resuelve al terminar (con o sin error) para que la carga en modo edicion
+  //pueda esperar a que el catalogo este listo antes de preseleccionar el tipo de diligencia
+  cargarCatalogoTipoDiligencia(): Promise<void> {
     this.isLoading.set(true);
-    this.ExhortosService.getCatalogoTipoDiligencia().pipe(
-      finalize(() => this.isLoading.set(false))
+    return new Promise(resolve => this.ExhortosService.getCatalogoTipoDiligencia().pipe(
+      finalize(() => { this.isLoading.set(false); resolve(); })
     ).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -1461,7 +1534,7 @@ export class CrearExhortoComponent {
            detail: 'Error al cargar el catálogo de tipo de diligencia'
          });*/
       }
-    });
+    }));
   }
   openModal() {
     //console.log('Modal abierto');
@@ -2043,7 +2116,15 @@ export class CrearExhortoComponent {
         });
     });
   }
+  //pide confirmacion antes de eliminar la firma (misma mecanica que eliminar documento)
   eliminarFirma(idFirmaTmp: number, idArchivo: number) {
+    this.confirmationService.confirm({
+      key: 'eliminarFirma',
+      accept: () => this.onEliminarFirma(idFirmaTmp, idArchivo),
+    ////  reject: () => { }
+    });
+  }
+  onEliminarFirma(idFirmaTmp: number, idArchivo: number) {
     this.isLoading.set(true);
     this.ExhortosService.eliminarUnaFirma(idFirmaTmp).pipe(
       finalize(() => this.isLoading.set(false))
