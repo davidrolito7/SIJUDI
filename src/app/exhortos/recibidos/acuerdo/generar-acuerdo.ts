@@ -351,8 +351,14 @@ export class GenerarAcuerdo {
     }
     return documento.idArchivo === 0 || this.TIPOS_DOCUMENTO_NOTIFICADOR.includes(Number(documento.idTipoDocumento));
   }
+  //true mientras el secretario aun no envia los generales (idEstatus 0/11); al enviarlos pasa a 12/13
+  generalesPendientesEnvio = computed(() =>
+    [0, 11].includes(this.detallesAcuerdo().generales?.idEstatus ?? 0)
+  );
+  //una vez enviados los generales ya nadie puede seleccionar documentos para firma, sin importar el tipo
   puedeSeleccionarParaFirma = computed(() =>
-    this.esNotificador() || ((this.esSecretario() || this.esJuez()) && this.esDestinatarioActual())
+    this.generalesPendientesEnvio() &&
+    (this.esNotificador() || ((this.esSecretario() || this.esJuez()) && this.esDestinatarioActual()))
   );
   //acuerdo!: generales;
   //responseRespuestaExhortos!: GenericResponse<respuestaExhorto>;
