@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, signal, computed, effect, CreateEffectOptions, inject, Signal } from '@angular/core';
-import { finalize } from 'rxjs';
+import { finalize, Observable } from 'rxjs';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectModule } from 'primeng/select';
@@ -19,7 +19,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileUploadEvent, FileProgressEvent, FileRemoveEvent, FileUploadModule, FileUpload, FileSelectEvent } from 'primeng/fileupload';
-import { CatalogoMateria, CatalogoEstadoDestino, CatalogoMunicipioDestino, CatalogoMateriasEstadoDestino, tipoVia, catTipoDiligencia, partesExhortoEnviado, ProvomenteExhortoEnviado, partesExhortoEnviadoRequest, generalesExhortoEnviado, ExhortoEnviadoGuardarGeneralesRequest, EnviadoConfirmacionDatosRecibidosResponse, EnviadoArchivoRecibidoConAcuseResponse, CatalogoGenero, CONATRIB_catTipoDocumento, ListadoCatalogoTipoDocumento, archivoExhortoEnviado, Firmantes, CatalogoTipoParte, archivoRespuesta, detalleExhortosEnviados } from '../../interfaces/exhortos.model';
+import { CatalogoMateria, CatalogoEstadoDestino, CatalogoMunicipioDestino, CatalogoMateriasEstadoDestino, tipoVia, catTipoDiligencia, partesExhortoEnviado, ProvomenteExhortoEnviado, partesExhortoEnviadoRequest, generalesExhortoEnviado, ExhortoEnviadoGuardarGeneralesRequest, EnviadoConfirmacionDatosRecibidosResponse, EnviadoArchivoRecibidoConAcuseResponse, CatalogoGenero, CONATRIB_catTipoDocumento, ListadoCatalogoTipoDocumento, archivoExhortoEnviado, Firmantes, CatalogoTipoParte, archivoRespuesta, detalleExhortosEnviados, VerMovimientosEnviadosResponse } from '../../interfaces/exhortos.model';
 import ValidateForm from '../../../helpers/validateform';
 import { ExhortosService } from '../../services/exhorto.service';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog'
@@ -171,9 +171,140 @@ export class CrearExhortoComponent {
   //perfil actualmente seleccionado
   esSecretario = computed(() => this.tokenService.getPerfilNombre() === 'Secretario');
   esJuez = computed(() => this.tokenService.getPerfilNombre() === 'Juez');
-  //solo el Secretario y el Juez pueden eliminar una firma, y cada uno unicamente la suya
+
+  //---- TURNADO DEL EXHORTO ANTES DE ENVIAR GENERALES ----
+  //idMovimiento 16: Secretario -> Juez (revisa y firma el exhorto)
+  //idMovimiento 17: Juez -> Secretario (envia el exhorto al juzgado exhortado)
+  readonly ID_MOV_SECRETARIO_JUEZ = 16;
+  readonly ID_MOV_JUEZ_SECRETARIO = 17;
+  movimientos = signal<VerMovimientosEnviadosResponse[]>([]);
+  tienePermisoTurnar = signal<boolean>(false);
+  tienePermisoRecibir = signal<boolean>(false);
+  tienePermisoRevocar = signal<boolean>(false);
+  //fase del turnado segun el ultimo movimiento:
+  //- sinTurnar: el secretario captura, carga documentos y firma; aun no turna al juez
+  //- turnadoAJuez / juezRecibio: movimiento 16 pendiente de recibir / ya recibido por el juez
+  //- turnadoASecretario / secretarioRecibio: movimiento 17 pendiente de recibir / ya recibido por el secretario
+  //Revocar elimina el ultimo movimiento, por eso la fase se calcula siempre con el ultimo de la lista
+  faseTurnado = computed<'sinTurnar' | 'turnadoAJuez' | 'juezRecibio' | 'turnadoASecretario' | 'secretarioRecibio'>(() => {
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return 'sinTurnar';
+    }
+    const ultimo = lista[lista.length - 1];
+    const recibido = ultimo.fechaRecepcion != null;
+    if (ultimo.idMovimiento === this.ID_MOV_SECRETARIO_JUEZ) {
+      return recibido ? 'juezRecibio' : 'turnadoAJuez';
+    }
+    if (ultimo.idMovimiento === this.ID_MOV_JUEZ_SECRETARIO) {
+      return recibido ? 'secretarioRecibio' : 'turnadoASecretario';
+    }
+    //movimientos posteriores al 17 (ya se enviaron generales) cuentan como si el secretario ya recibio
+    return lista.some(m => m.idMovimiento >= this.ID_MOV_JUEZ_SECRETARIO) ? 'secretarioRecibio' : 'sinTurnar';
+  });
+  //mientras el exhorto esta con el juez (o en transito) nadie edita los generales, partes ni promoventes; una
+  //vez que el secretario lo recibe de vuelta solo el secretario puede editarlos
+  //el juez no edita nada hasta que recibe el exhorto (movimiento 16 recibido); a partir de ahi edita los
+  //generales, partes y promoventes igual que el secretario
+  formularioBloqueadoPorTurno = computed(() => {
+    const fase = this.faseTurnado();
+    if (fase === 'sinTurnar') {
+      return this.esJuez() || this.bloqueadoListoParaTurnar();
+    }
+    if (fase === 'juezRecibio') {
+      return !this.esJuez() || this.bloqueadoListoParaTurnar();
+    }
+    if (fase === 'secretarioRecibio') {
+      return !this.esSecretario();
+    }
+    return true;
+  });
+  //solo el secretario agrega/elimina documentos, y unicamente antes de turnar al juez (y fuera del modo
+  //solo lectura de "listo para turnar"); el juez unicamente firma
+  documentosBloqueadosPorTurno = computed(() =>
+    this.faseTurnado() !== 'sinTurnar' || this.esJuez() || this.bloqueadoListoParaTurnar()
+  );
+  //el juez normalmente no tiene la seccion "Guardar" en esta pantalla, pero una vez que recibio el exhorto
+  //puede editarlo y guardarlo
+  puedeGuardar = computed(() =>
+    this.tienePermisoGuardar() || (this.esJuez() && this.faseTurnado() === 'juezRecibio')
+  );
+  //cargo destino del ultimo movimiento (16 -> Juez, 17 -> Secretario)
+  private cargoDestinoUltimoMovimiento(): string | null {
+    const lista = this.movimientos();
+    const ultimo = lista && lista.length > 0 ? lista[lista.length - 1] : null;
+    if (ultimo?.idMovimiento === this.ID_MOV_SECRETARIO_JUEZ) return 'Juez';
+    if (ultimo?.idMovimiento === this.ID_MOV_JUEZ_SECRETARIO) return 'Secretario';
+    return null;
+  }
+  //el destinatario del ultimo movimiento (16 o 17) puede recibirlo o revocarlo mientras aun no lo recibe
+  puedeRecibir = computed(() => {
+    const fase = this.faseTurnado();
+    if (fase !== 'turnadoAJuez' && fase !== 'turnadoASecretario') {
+      return false;
+    }
+    return this.cargoDestinoUltimoMovimiento() === this.tokenService.getPerfilNombre()?.trim();
+  });
+  puedeRevocar = computed(() => this.puedeRecibir());
+  //true si el usuario actual ya cargo su firma en el oficio (idTipoDocumento 2). El tipo puede venir en
+  //idTipoDocumento o solo dentro de tipoDocumento, segun el endpoint que haya llenado la lista
+  usuarioFirmoOficio = computed(() => {
+    const userData = this.tokenService.getUserFromToken();
+    const idUsuario = userData !== null ? Number(userData.idGeneral) : 0;
+    return this.listaDocumentos().some(doc =>
+      Number(doc.idTipoDocumento ?? doc.tipoDocumento?.idTipoDocumento) === this.ID_TIPO_DOCUMENTO_OFICIO &&
+      doc.activo !== false &&
+      (doc.firmantes ?? []).some(f => f && Number(f.idUsuario) === idUsuario));
+  });
+  //true cuando el secretario presiono Guardar teniendo ya su firma en el oficio (o el exhorto llega desde el
+  //detalle cumpliendo ya esa condicion); a partir de ahi aparece "Turnar a juez"
+  guardadoConFirmaParaTurnar = signal<boolean>(false);
+  //- Secretario (sinTurnar): turna al juez una vez que firmo el oficio y guardo el exhorto
+  //- Juez (juezRecibio): turna de vuelta al secretario una vez que ya firmo el oficio
+  puedeTurnar = computed(() => {
+    const fase = this.faseTurnado();
+    if (fase === 'sinTurnar' && this.esSecretario()) {
+      return this.usuarioFirmoOficio() && this.guardadoConFirmaParaTurnar();
+    }
+    if (fase === 'juezRecibio' && this.esJuez()) {
+      return this.usuarioFirmoOficio() && this.guardadoConFirmaParaTurnar();
+    }
+    return false;
+  });
+  //quien tiene el turno (secretario antes de turnar, juez una vez que recibio) ya firmo el oficio y guardo:
+  //el formulario queda en solo lectura con los botones Turnar + Editar; al presionar "Editar" se vuelven a
+  //habilitar el formulario, agregar (lo que le corresponda) y eliminar su firma, hasta que guarde de nuevo
+  bloqueadoListoParaTurnar = computed(() => this.puedeTurnar() && !this.modoEdicion());
+  //el secretario selecciona documentos para firmar antes de turnar y despues de recibir de vuelta; el juez
+  //solo mientras tiene el exhorto recibido
+  puedeSeleccionarParaFirma = computed(() => {
+    const fase = this.faseTurnado();
+    if (fase === 'juezRecibio') return this.esJuez();
+    if (fase === 'sinTurnar' || fase === 'secretarioRecibio') return !this.esJuez();
+    return false;
+  });
+  //solo el secretario, una vez que recibio de vuelta del juez, aplica las firmas
+  puedeAplicarFirmas(documento: archivoExhortoEnviado): boolean {
+    return !documento.firmado && this.esSecretario() && this.faseTurnado() === 'secretarioRecibio' &&
+      this.tieneFirmasCompletas(documento);
+  }
+  //texto informativo del estado del turnado para el encabezado
+  mensajeTurnado = computed(() => {
+    switch (this.faseTurnado()) {
+      case 'turnadoAJuez': return 'Turnado al juez, pendiente de recibir';
+      case 'juezRecibio': return 'En revisión y firma del juez';
+      case 'turnadoASecretario': return 'Devuelto al secretario, pendiente de recibir';
+      default: return '';
+    }
+  });
+
+  //solo el Secretario y el Juez pueden eliminar una firma, y cada uno unicamente la suya: el secretario antes
+  //de turnar al juez, y el juez mientras tiene el exhorto recibido
   puedeEliminarFirma(firmante: Firmantes): boolean {
-    if (!this.esSecretario() && !this.esJuez()) {
+    const fase = this.faseTurnado();
+    const puedeEnFase = !this.bloqueadoListoParaTurnar() &&
+      ((this.esSecretario() && fase === 'sinTurnar') || (this.esJuez() && fase === 'juezRecibio'));
+    if (!puedeEnFase) {
       return false;
     }
     const userData = this.tokenService.getUserFromToken();
@@ -195,9 +326,18 @@ export class CrearExhortoComponent {
       Number(doc.idTipoDocumento) === this.ID_TIPO_DOCUMENTO_OFICIO && doc.firmado && doc.activo !== false)
   );
   //"Enviar generales" y "Editar" solo aparecen cuando ya se cargo y firmo el oficio y despues se guardo;
-  //mientras eso no ocurra se mantiene visible "Guardar" y el formulario de generales sigue habilitado
+  //mientras eso no ocurra se mantiene visible "Guardar" y el formulario de generales sigue habilitado.
+  //Con el turnado, aparecen en cuanto el secretario ya recibio de vuelta del juez y aplico las firmas del oficio
+  //(sin necesidad de Guardar); la condicion con guardadoConOficioFirmado se conserva para exhortos previos al turnado
   get mostrarBotonEnviarGenerales(): boolean {
-    return this.generalesPendientesEnvio && this.tieneOficioFirmado() && this.guardadoConOficioFirmado();
+    if (!this.generalesPendientesEnvio || !this.tieneOficioFirmado()) {
+      return false;
+    }
+    const fase = this.faseTurnado();
+    if (fase === 'secretarioRecibio') {
+      return this.esSecretario();
+    }
+    return fase === 'sinTurnar' && this.guardadoConOficioFirmado();
   }
   mostrarBotonEnviarArchivos: boolean = false;
   //cuando ya esta listo para enviar generales, se ocultan los botones de agregar/eliminar parte, promovente y
@@ -525,6 +665,7 @@ export class CrearExhortoComponent {
     //mostrar "Enviar generales"/"Editar" ya se cumple sin necesidad de un Guardar previo
     this.cargaInicialDesdeDetalle = true;
     this.actualizarListadoDocumentos(this.idExhorto);
+    this.obtenerMovimientos(this.idExhorto);
 
   }
 
@@ -749,6 +890,7 @@ export class CrearExhortoComponent {
           //al guardar se evalua si ya existe el oficio firmado; ese es el momento en el que se habilitan
           //"Enviar generales"/"Editar"
           this.guardadoConOficioFirmado.set(this.tieneOficioFirmado());
+          this.guardadoConFirmaParaTurnar.set(this.usuarioFirmoOficio());
           this.actualizarEstadoFormExhorto();
           this.exhortoGuardado = true;
           this.exhortoYaGuardado = true;
@@ -957,7 +1099,9 @@ export class CrearExhortoComponent {
   actualizarEstadoFormExhorto() {
     //una vez que se entra a la fase de archivos (mostrarBotonEnviarArchivos) los datos generales ya
     //quedan bloqueados definitivamente, sin importar el estado de mostrarBotonEnviarGenerales/modoEdicion
-    const puedeEditar = !this.mostrarBotonEnviarArchivos && (!this.mostrarBotonEnviarGenerales || this.modoEdicion());
+    //mientras el exhorto este turnado al juez (o el perfil actual no sea quien lo tiene) tampoco se puede editar
+    const puedeEditar = !this.mostrarBotonEnviarArchivos && !this.formularioBloqueadoPorTurno() &&
+      (!this.mostrarBotonEnviarGenerales || this.modoEdicion());
     //emitEvent:false evita que enable()/disable() disparen los valueChanges de materiaOrigen/estadoDestino/
     //municipioDestino, que re-habilitarían sus campos dependientes (tipojuicio, municipioDestino, materiaEstadoDestino)
     //y borrarían su valor con el setValue(null) de esas suscripciones
@@ -1065,6 +1209,7 @@ export class CrearExhortoComponent {
           //igual que al guardar por primera vez: el Guardar posterior a la firma del oficio es el que
           //habilita "Enviar generales"/"Editar"
           this.guardadoConOficioFirmado.set(this.tieneOficioFirmado());
+          this.guardadoConFirmaParaTurnar.set(this.usuarioFirmoOficio());
           this.actualizarEstadoFormExhorto();
           this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Exhorto actualizado correctamente' });
         } else {
@@ -1190,6 +1335,7 @@ export class CrearExhortoComponent {
           if (this.cargaInicialDesdeDetalle) {
             this.cargaInicialDesdeDetalle = false;
             this.guardadoConOficioFirmado.set(this.tieneOficioFirmado());
+            this.guardadoConFirmaParaTurnar.set(this.usuarioFirmoOficio());
           }
           //el bloqueo del formulario depende de mostrarBotonEnviarGenerales, que ya considera los documentos
           this.actualizarEstadoFormExhorto();
@@ -1708,6 +1854,74 @@ export class CrearExhortoComponent {
     if (this.listaPromovetes.length === 0) faltantes.push('agregar al menos un promovente');
     return faltantes.length ? `Para enviar debe: ${faltantes.join(', ')}` : '';
   }
+  //movimientos del exhorto enviado; determinan la fase del turnado (Secretario <-> Juez)
+  obtenerMovimientos(idExhortoEnviado: number) {
+    if (!idExhortoEnviado) {
+      return;
+    }
+    this.ExhortosService.getMovimientosExhortoEnviado(idExhortoEnviado).subscribe({
+      next: (response) => {
+        this.movimientos.set(response.data ?? []);
+        //la fase del turnado cambia que perfil puede editar el formulario
+        this.actualizarEstadoFormExhorto();
+      },
+      error: (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
+      }
+    });
+  }
+  //al terminar turnar/recibir/revocar se recargan movimientos y documentos, y se limpia la seleccion para firma
+  private refrescarDespuesDeTurno() {
+    this.modoEdicion.set(false);
+    this.seleccionadosParaFirma.set(false);
+    this.obtenerMovimientos(this.idExhorto);
+    this.actualizarListadoDocumentos(this.idExhorto);
+  }
+  //maneja la respuesta comun de TurnarEnviados / RecibirEnviados / RevocarEnviados
+  private procesarRespuestaTurno(peticion: Observable<any>) {
+    this.isLoading.set(true);
+    peticion.pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
+      next: (response) => {
+        if (response.success && response.data?.resultado) {
+          this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.data.msg, icon: 'pi pi-check-circle' });
+          this.refrescarDespuesDeTurno();
+        } else if (response.success) {
+          this.messageService.add({ severity: 'warn', summary: 'Atención', detail: response.data?.msg });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
+        }
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, sticky: true });
+      }
+    });
+  }
+  //Secretario -> Juez (idMovimiento 16) o Juez -> Secretario (idMovimiento 17)
+  turnar() {
+    this.confirmationService.confirm({
+      key: 'turnarExhorto',
+      accept: () => this.procesarRespuestaTurno(
+        this.ExhortosService.turnarEnviado(this.idExhorto, this.authService.getRoleNameUsuario())),
+      reject: () => { }
+    });
+  }
+  recibir() {
+    this.confirmationService.confirm({
+      key: 'recibirExhorto',
+      accept: () => this.procesarRespuestaTurno(
+        this.ExhortosService.recibirEnviado(this.idExhorto, this.authService.getRoleNameUsuario())),
+      reject: () => { }
+    });
+  }
+  revocar() {
+    this.confirmationService.confirm({
+      key: 'revocarTurno',
+      accept: () => this.procesarRespuestaTurno(this.ExhortosService.revocarEnviado(this.idExhorto)),
+      reject: () => { }
+    });
+  }
   enviarGenerales() {
     if (!this.puedeEnviarGenerales) {
       this.messageService.add({ severity: 'warn', summary: 'Atención', detail: this.motivoEnviarGeneralesDeshabilitado });
@@ -2026,6 +2240,13 @@ export class CrearExhortoComponent {
   printDivContent(): void {
     window.print();
   }
+  //abre en otra pestaña la pagina de consulta del exhorto que regresa el acuse (urlInfo)
+  abrirConsultaAcuse(): void {
+    const url = this.archivoRecibidoConAcuse?.acuse?.urlInfo;
+    if (url) {
+      window.open(url, '_blank', 'noopener');
+    }
+  }
 
   getVias(materia: CatalogoMateria | null): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -2092,6 +2313,9 @@ export class CrearExhortoComponent {
                 this.tienePermisoCargarArchivo.set(false);
                 this.tienePermisoFirmarArchivo.set(false);
                 this.tienePermisoEliminarArchivo.set(false);
+                this.tienePermisoTurnar.set(false);
+                this.tienePermisoRecibir.set(false);
+                this.tienePermisoRevocar.set(false);
 
               }
               else if (this.secciones.length > 0) {
@@ -2102,6 +2326,9 @@ export class CrearExhortoComponent {
                 this.tienePermisoCargarArchivo.set(this.secciones.some(s => s.descripcion === 'CargarArchivo'));
                 this.tienePermisoFirmarArchivo.set(this.secciones.some(s => s.descripcion === 'FirmarArchivo'));
                 this.tienePermisoEliminarArchivo.set(this.secciones.some(s => s.descripcion === 'EliminarArchivo'));
+                this.tienePermisoTurnar.set(this.secciones.some(s => s.nombre === 'Turnar' || s.descripcion === 'Turnar'));
+                this.tienePermisoRecibir.set(this.secciones.some(s => s.nombre === 'Recibir' || s.descripcion === 'Recibir'));
+                this.tienePermisoRevocar.set(this.secciones.some(s => s.nombre === 'Revocar' || s.descripcion === 'Revocar'));
 
               }
             } else {
