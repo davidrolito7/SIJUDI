@@ -283,6 +283,18 @@ export class ExhortosService {
     const url = `${this.turnos}/verMovimientosRecibidos?idExhortoRecibido=${idExhortoRecibido}`;
     return this.http.get<GenericResponse<VerMovimientosResponse[]>>(url, { context: checkToken() });
   }
+  turnarEnviado(idExhortoEnviado: number, perfil: string): Observable<GenericResponse<turnosResponse>> {
+    const url = this.turnos + "/TurnarEnviados?idExhortoEnviado=" + idExhortoEnviado + "&cargo=" + perfil;
+    return this.http.post<GenericResponse<turnosResponse>>(url, null, { context: checkToken() });
+  }
+  recibirEnviado(idExhortoEnviado: number, perfil: string): Observable<any> {
+    const url = this.turnos + "/RecibirEnviados?idExhortoEnviado=" + idExhortoEnviado + "&cargo=" + perfil;
+    return this.http.post(url, null, { context: checkToken() });
+  }
+  revocarEnviado(idNot: number): Observable<any> {
+    const url = `${this.turnos}/RevocarEnviados?idExhortoEnviado=${idNot}`;
+    return this.http.post(url, null, { context: checkToken() });
+  }
   enviarActualizacion(idActualizacion: number): Observable<any> {
     const url = `${this.apiAcuerdo}EntregarActualizacionExhortoRec?idActualizacion=${idActualizacion}`;
     return this.http.post(url, null, { context: checkToken() });
