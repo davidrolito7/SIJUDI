@@ -282,6 +282,18 @@ export class ExhortosService {
     const url = `${this.turnos}/verMovimientosRecibidos?idExhortoRecibido=${idExhortoRecibido}`;
     return this.http.get<GenericResponse<VerMovimientosResponse[]>>(url, { context: checkToken() });
   }
+  turnarEnviado(idExhortoEnviado: number, perfil: string): Observable<GenericResponse<turnosResponse>> {
+    const url = this.turnos + "/TurnarEnviados?idExhortoEnviado=" + idExhortoEnviado + "&cargo=" + perfil;
+    return this.http.post<GenericResponse<turnosResponse>>(url, null, { context: checkToken() });
+  }
+  recibirEnviado(idExhortoEnviado: number, perfil: string): Observable<any> {
+    const url = this.turnos + "/RecibirEnviados?idExhortoEnviado=" + idExhortoEnviado + "&cargo=" + perfil;
+    return this.http.post(url, null, { context: checkToken() });
+  }
+  revocarEnviado(idNot: number): Observable<any> {
+    const url = `${this.turnos}/RevocarEnviados?idExhortoEnviado=${idNot}`;
+    return this.http.post(url, null, { context: checkToken() });
+  }
   enviarActualizacion(idActualizacion: number): Observable<any> {
     const url = `${this.apiAcuerdo}EntregarActualizacionExhortoRec?idActualizacion=${idActualizacion}`;
     return this.http.post(url, null, { context: checkToken() });
@@ -325,7 +337,7 @@ export class ExhortosService {
     return this.http.get<GenericResponse<ListadoCatalogoTipoProcedimiento[]>>(this.cat + "TipoProcedimiento", { context: checkToken() });
   }
   //Guardar respuesta de exhorto recibido
-  setRespuestaExhorto(idUsuario: number, idExhortoRecibido: number, tipoDiligenciado: number, observaciones: string | null, idCatTipoProcedimiento: number ) {
+  setRespuestaExhorto(idUsuario: number, idExhortoRecibido: number, tipoDiligenciado: number, observaciones: string | null, idCatTipoProcedimiento: number) {
     //const headers = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.post<GenericResponse<generales>>(`${this.apiAcuerdo}GuardarRespuestaExhortoRecibido`, { idUsuario, idExhortoRecibido, tipoDiligenciado, observaciones, idCatTipoProcedimiento }, { context: checkToken() });
   }

@@ -77,8 +77,7 @@
       <p-button type="button" (click)="revocar()" label="Revocar" icon="pi pi-replay" severity="secondary"></p-button>
       }
       <!--turnar: el juez (idMovimiento 9) una vez que firmo el tipo 2, el notificador una vez que cargo el
-      tipo 1, el secretario (al recibir de vuelta del notificador) una vez que ese tipo 1 ya este firmado, o
-      el secretario (al recibir de vuelta del juez) una vez que el tipo 2 ya este firmado, solo si el tipo
+      tipo 1, o el secretario (al recibir de vuelta del juez) una vez que el tipo 2 ya este firmado, solo si el tipo
       de procedimiento seleccionado es 1 "NOTIFICAR Y CUMPLIR" (si es 2 "SOLO CUMPLIR" se envian
       generales+documento directo, sin notificador). Se oculta mientras se esta editando-->
       @if(puedeTurnar() && !mostrarFormularioEditable()){
@@ -401,7 +400,7 @@
 
 <!-- AGREGAR DOCUMENTOS -->
 @if((detallesAcuerdo().generales?.idRespuesta ?? 0) !== 0) {
-<div class="relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
+<div #seccionDocumentos [class.resaltar-seccion]="resaltarDocumentos()" class="seccion-documentos relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
   <!-- Esquinas decorativas -->
   <span
     class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
@@ -501,23 +500,40 @@
               </td>
               <td style="font-size: small;">{{ documento.firmado ? 'Sí' : 'No' }}</td>
               <td style="font-size: small;">{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
-              <td>
-                <table>
-                  @for (firmante of documento.firmantes; track firmante) {
-                  <tr>
-                    @if(firmante !== undefined)
-                    {
-                    <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
-                    @if(!documento.firmado && tienePermisoEliminarFirma() && puedeEliminarFirma(firmante)){
-                    <td class="px-4">
-                      <p-button (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true"
-                        icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>
-                    </td>
+              <td class="align-middle">
+                <!--firmantes como chips: inicial del nombre, nombre (recortado si es largo) y, solo para la firma
+                propia (segun puedeEliminarFirma) mientras no se apliquen las firmas, el boton para eliminarla-->
+                <div class="flex flex-col items-start gap-1.5">
+                  @for (firmante of documento.firmantes; track firmante.idFirmaTmp) {
+                  @if (firmante) {
+                  <div class="group inline-flex max-w-56 items-center gap-2 rounded-full border py-0.5 pl-0.5 pr-2
+                    border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-800">
+                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[0.6rem] font-semibold uppercase
+                      bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-200">
+                      {{ firmante.nombre?.charAt(0) }}
+                    </span>
+                    <span class="truncate text-xs text-surface-700 dark:text-surface-200" [title]="firmante.nombre">
+                      {{ firmante.nombre }}
+                    </span>
+                    @if (documento.firmado) {
+                    <i class="pi pi-check-circle shrink-0 text-xs text-green-600 dark:text-green-400" title="Firma aplicada"></i>
                     }
+                    @else if (tienePermisoEliminarFirma() && puedeEliminarFirma(firmante)) {
+                    <button type="button" (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)"
+                      class="-mr-1 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-surface-400
+                        transition-colors hover:bg-red-100 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-red-500
+                        dark:hover:bg-red-950/40 dark:hover:text-red-400"
+                      title="Eliminar mi firma" aria-label="Eliminar mi firma">
+                      <i class="pi pi-times" style="font-size: 0.6rem;"></i>
+                    </button>
                     }
-                  </tr>
+                  </div>
                   }
-                </table>
+                  }
+                  @empty {
+                  <span class="text-xs italic text-surface-400 dark:text-surface-500">Sin firmas</span>
+                  }
+                </div>
               </td>
               <td style="font-size: small;">{{ ((documento.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
 
@@ -527,10 +543,10 @@
                   class="mr-2" title="cargar documento">
                 </p-button>
                 }
-                <!--APLICAR FIRMAS-->
+                <!--APLICAR FIRMAS: el secretario (segun puedeAplicarFirmasDocumento) o el notificador sobre el
+                documento que el cargo y ya firmo, mientras aun no lo regrese al secretario-->
                 @if(!documento.firmado && documento.firmantes.length>0 && tienePermisoAplicarFirma() &&
-                esSecretario()
-                && puedeAplicarFirmasDocumento(documento) ){
+                ((esSecretario() && puedeAplicarFirmasDocumento(documento)) || puedeAplicarFirmasNotificador(documento))){
                 <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
                   icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                 </p-button>
@@ -601,6 +617,11 @@
 </app-confirm-dialog>
 <!-- MODAL DE CONFIRMACION PARA ELIMINAR UN ARCHIVO -->
 <app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro que desea eliminar el archivo?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!-- MODAL DE CONFIRMACION PARA ELIMINAR UNA FIRMA -->
+<app-confirm-dialog key="eliminarFirma" title="Confirmación"
+  message="¿Está seguro de eliminar su firma? Tendrá que volver a firmar el documento con FIREL."
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!-- MODAL DE CONFIRMACION PARA APLICAR FIRMA -->
