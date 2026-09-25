@@ -16,7 +16,8 @@ import {
   DetalleExhortoRecibidoResponseI, respuestaExhorto, promocionExhortos, EnviadoRespuestaGeneralesResponse,
   EnviadoRespuestaArchivosResponse, ListadoCatalogoTipoDiligenciado,
   generales,
-  ListadoCatalogoTipoProcedimiento
+  ListadoCatalogoTipoProcedimiento,
+  ListadoPromocionRecibidasI
 } from '../interfaces/exhortos.model';
 
 @Injectable({
@@ -231,8 +232,8 @@ export class ExhortosService {
   }
 
   //Obtiene las promociones recibidas (Trabajando.....)
-  getPromocionesRecibidasListado(param: UI_ParamlistadoExhortosRecibidosRequest): Observable<GenericResponse<ListadoExhortosRecibidosI>> {
-    return this.http.post<GenericResponse<ListadoExhortosRecibidosI>>(this.baseUrl + "ListadoExhortosRecibidos", param, { context: checkToken() });
+  getPromocionesRecibidasListado(param: UI_ParamlistadoExhortosRecibidosRequest): Observable<GenericResponse<ListadoPromocionRecibidasI>> {
+    return this.http.post<GenericResponse<ListadoPromocionRecibidasI>>(this.baseUrl + "ListadoPromocionesRecibidas", param, { context: checkToken() });
   }
 
   //obtiene la lista de actualizaciones de un exhorto enviado
@@ -325,7 +326,7 @@ export class ExhortosService {
     return this.http.get<GenericResponse<ListadoCatalogoTipoProcedimiento[]>>(this.cat + "TipoProcedimiento", { context: checkToken() });
   }
   //Guardar respuesta de exhorto recibido
-  setRespuestaExhorto(idUsuario: number, idExhortoRecibido: number, tipoDiligenciado: number, observaciones: string | null, idCatTipoProcedimiento: number ) {
+  setRespuestaExhorto(idUsuario: number, idExhortoRecibido: number, tipoDiligenciado: number, observaciones: string | null, idCatTipoProcedimiento: number) {
     //const headers = new HttpHeaders({'X-Api-Key': this.APIKEY});
     return this.http.post<GenericResponse<generales>>(`${this.apiAcuerdo}GuardarRespuestaExhortoRecibido`, { idUsuario, idExhortoRecibido, tipoDiligenciado, observaciones, idCatTipoProcedimiento }, { context: checkToken() });
   }

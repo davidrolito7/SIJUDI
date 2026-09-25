@@ -8,36 +8,36 @@ import { BlobOptions } from "node:buffer";
     data:T;
 }*/
 //Esta interfaz es la estructura que recibimos de la api cuando consultamos el listado de exhortos recibidos
-export interface ListadoExhortosRecibidosI{
-    idExhortoRecibido:number;
-    estadoOrigen:string;
-    juzgadoOrigenNombre:string;
-    municipioDestino:string;
-    materiaNombre:string;
-    numeroExpedienteOrigen:string;
-    numeroOficioOrigen:string;
-    fechaHoraRecepcion:string;
-    folioSeguimiento:string;
-    estatus:string;
+export interface ListadoExhortosRecibidosI {
+    idExhortoRecibido: number;
+    estadoOrigen: string;
+    juzgadoOrigenNombre: string;
+    municipioDestino: string;
+    materiaNombre: string;
+    numeroExpedienteOrigen: string;
+    numeroOficioOrigen: string;
+    fechaHoraRecepcion: string;
+    folioSeguimiento: string;
+    estatus: string;
     idEstatus: number;
-    respuesta : number;
-    numeroExhorto:string;
-    municipioOrigen:string;
-    url:string;
-    fechaOrigen:string;
-    observaciones:string;
-    tipoJuicioAsuntoDelitos:string;
-    0:number;
-    fojas:number;
-    juezExhortante:string;
-    tipoDiligenciacionNombre:string;
-    juzgadoDestino:string;
+    respuesta: number;
+    numeroExhorto: string;
+    municipioOrigen: string;
+    url: string;
+    fechaOrigen: string;
+    observaciones: string;
+    tipoJuicioAsuntoDelitos: string;
+    0: number;
+    fojas: number;
+    juezExhortante: string;
+    tipoDiligenciacionNombre: string;
+    juzgadoDestino: string;
 }
 // esta interfaz es la estructura del request que se le envia como parametro a la API para consultar el listado de exhortos recibidos
-export interface UI_ParamlistadoExhortosRecibidosRequest{
-    fechaIni?:Date;
-    fechaFin?:Date;
-    estatus?:number;
+export interface UI_ParamlistadoExhortosRecibidosRequest {
+    fechaIni?: Date;
+    fechaFin?: Date;
+    estatus?: number;
     perfil?: string;
 }
 
@@ -66,8 +66,8 @@ export interface CONATRIB_ExhortosRecibidosArchivos {
     recibido: boolean | null;
     idClasificacionArchivo: number;
     activo: boolean;
-    firmado:boolean;
-    fechaFirmado:Date;
+    firmado: boolean;
+    fechaFirmado: Date;
 }
 
 export interface CONATRIB_ExhortosRecibidosPartes {
@@ -80,8 +80,8 @@ export interface CONATRIB_ExhortosRecibidosPartes {
     esPersonaMoral: boolean | null;
     tipoParte: CatalogoTipoParte;
     tipoParteNombre: string | null;
-    correoElectronico:string;
-    telefono:string;
+    correoElectronico: string;
+    telefono: string;
     activo: boolean;
 }
 
@@ -95,7 +95,7 @@ export interface DetallesExhortosRecibidasResponse {
     //actosReclamados: ActosReclamados[];
     partes: Partes[];
     //solicitud: Solicitud[];
-   // documentos: Documentos[];
+    // documentos: Documentos[];
 }
 
 export interface Partes {
@@ -112,25 +112,25 @@ export interface Partes {
 }
 
 //Interfaz para el catálogo de tipo de diligenciado
-export interface ListadoCatalogoTipoDiligenciado{
+export interface ListadoCatalogoTipoDiligenciado {
     idTipoDiligenciado: number;
     descripcion: string;
 }
 //Interfaz para el catálogo de tipo de procedimiento
-export interface ListadoCatalogoTipoProcedimiento{
+export interface ListadoCatalogoTipoProcedimiento {
     idCatTipoProcedimiento: number;
     descripcion: string;
     activo: boolean;
 }
 //Interfaz para el catálogo de tipo de documentos
-export interface ListadoCatalogoTipoDocumento{
+export interface ListadoCatalogoTipoDocumento {
     idTipoDocumento: number;
     nombre: string;
     activo: boolean;
 }
 
 //Interfaz para el archivo de respuesta
-export interface archivoRespuesta{
+export interface archivoRespuesta {
     idArchivo: number;
     idExhortoRecibido: number;
     nombreArchivo: string;
@@ -149,53 +149,53 @@ export interface archivoRespuesta{
     ruta: string;
     activo: boolean;
     tam: number;
-    firmado : boolean;
+    firmado: boolean;
     fechaFirmado: string;
     selecParaFirma: boolean;
-    firmantes:Firmantes[];
+    firmantes: Firmantes[];
 
 }
-export interface Firmantes{
-    idFirmaTmp:number;
-    idUsuario:number;
-    nombre:string;
+export interface Firmantes {
+    idFirmaTmp: number;
+    idUsuario: number;
+    nombre: string;
 }
 
 //Interfaz para respuesta de exhortos
-export interface respuestaExhorto{
+export interface respuestaExhorto {
     generales: generales;
     archivos: archivos[];
 }
 //Interfaz para respuesta de exhortos
 
-export interface UI_respuestaExhortoResponse{
+export interface UI_respuestaExhortoResponse {
     idRespuesta: number;
     observaciones: string;
     fechaRespuesta: string;
     folio: string;
     tipoDiligencia: string;
     idTipoDiligenciado: number;
-    fechaHoraRecibe:string;
+    fechaHoraRecibe: string;
     archivos: archivos[];
 }
 //interface de "generales" de respuesta exhortos
-export interface generales{
+export interface generales {
     idRespuesta: number;
     observaciones: string;
     fechaRespuesta: string;
-    fechaRegistro : string;
+    fechaRegistro: string;
     folio: string;
     tipoDiligencia: string;
     idTipoDiligenciado: number;
     tipoProcedimiento: string;
     idCatTipoProcedimiento: number;
-    fechaHoraRecepcion:string;
-    fechaHora:string;
-    fechaEnvio:string;
+    fechaHoraRecepcion: string;
+    fechaHora: string;
+    fechaEnvio: string;
     idEstatus: number;
 }
 //interface de "archivos" de respuesta exhortos
-export interface archivos{
+export interface archivos {
     //length: number; //número de elementos (archivos)
     //forEach(arg0: (archivo: any) => void): unknown; //permite iterar sobre cada elemento de un array.
     idArchivo: number;
@@ -215,23 +215,23 @@ export interface archivos{
     idClasificacionArchivo: number;
     ruta: string;
     activo: boolean;
-    firmado : boolean;
+    firmado: boolean;
     fechaFirmado: string;
     selecParaFirma: boolean;
-    firmantes:Firmantes[];
+    firmantes: Firmantes[];
     file: File;
-    usrYaFirmo:boolean;
+    usrYaFirmo: boolean;
 }
 
 //Interfaz de las promociones de exhortos recibidos
-export interface promocionExhortos{
+export interface promocionExhortos {
     promo: promo;
     archivos: archivoPromocion[];
-    promoventes:promoventes[];
+    promoventes: promoventes[];
 }
 
 //Interfaz promo
-export interface promo{
+export interface promo {
     idPromocionRecibida: number;
     idExhortoRecibido: number;
     folioOrigenPromocion: number;
@@ -243,8 +243,8 @@ export interface promo{
     idEstatus: number;
 }
 
-export interface promoventes{
-    idPromovente:number;
+export interface promoventes {
+    idPromovente: number;
     idPromocionRecibida: number;
     nombre: string;
     apellidoPaterno: string;
@@ -253,13 +253,13 @@ export interface promoventes{
     esPersonaMoral: boolean;
     tipoParte: CatalogoTipoParte;
     tipoParteNombre: string;
-    correoElectronico:string;
-    telefono:string;
+    correoElectronico: string;
+    telefono: string;
     activo: boolean;
 }
 
 //interfaz de los archivos de la promocion de exhortos
-export interface archivoPromocion{
+export interface archivoPromocion {
     idArchivo: number;
     idPromocionRecibida: number;
     nombreArchivo: string;
@@ -267,9 +267,9 @@ export interface archivoPromocion{
     hashSha256: string;
     idTipoDocumento: number;
     tipoDocumento: {
-      idTipoDocumento: number,
-      nombre: string;
-      activo: boolean;
+        idTipoDocumento: number,
+        nombre: string;
+        activo: boolean;
     },
     tamanio: number;
     paginas: number;
@@ -280,7 +280,7 @@ export interface archivoPromocion{
 }
 
 //Listado de exhortos enviados
-export interface ListadoExhortosEnviados{
+export interface ListadoExhortosEnviados {
     idExhortoEnviado: number;
     exhortoOrigenId: string;
     municipioDestino: string;
@@ -306,20 +306,20 @@ export interface ListadoExhortosEnviados{
 }
 
 //Detalle de los exhortos enviados
-export interface detalleExhortosEnviados{
+export interface detalleExhortosEnviados {
     generales: generalesExhortoEnviado;
     archivos: archivoExhortoEnviado[];
     partes: partesExhortoEnviado[];
-    promoventes:ProvomenteExhortoEnviado[];
-    promociones : PromocionExhortoEnviado[];
+    promoventes: ProvomenteExhortoEnviado[];
+    promociones: PromocionExhortoEnviado[];
 }
 
 //Generales del exhorto enviado
-export interface generalesExhortoEnviado{
+export interface generalesExhortoEnviado {
     //generales_:{
     idExhortoEnviado: number;
-    numeroExhorto:string;
-    exhortoOrigenId:string;
+    numeroExhorto: string;
+    exhortoOrigenId: string;
     municipioDestino: string;
     estadoDestino: string;
     materiaNombre: string;
@@ -340,37 +340,37 @@ export interface generalesExhortoEnviado{
     municipioTurnado: string;
     areaTurnadoNombre: string;
     urlInfo: string;
-    fechaHora:string;
-    idEstatus:number;
-    idMateriaOrigen:number;
-    estadoOrigenId:number;
-    idMunicipioOrigen:number;
-    juzgadoOrigenId:number;
-    idCatTipoVia:number;
-    tipoDiligenciaId:string;
-    idUsuario:number;
-    materiaNombreOrigen:string;
-    
+    fechaHora: string;
+    idEstatus: number;
+    idMateriaOrigen: number;
+    estadoOrigenId: number;
+    idMunicipioOrigen: number;
+    juzgadoOrigenId: number;
+    idCatTipoVia: number;
+    tipoDiligenciaId: string;
+    idUsuario: number;
+    materiaNombreOrigen: string;
+
     //}
 }
 /*Clase para guardar datos generales de un exhorto envido en el endpoint
     /api/ExhortosEnviar/GuardarGenerales
 */
-export interface ExhortoEnviadoGuardarGeneralesRequest{
+export interface ExhortoEnviadoGuardarGeneralesRequest {
     municipioDestinoId: number,
     materiaClave: string,
     estadoOrigenId: number,
-  ////  municipioOrigenId: number,
-   //// juzgadoOrigenId: string,
-  /////  juzgadoOrigenNombre: string,
+    ////  municipioOrigenId: number,
+    //// juzgadoOrigenId: string,
+    /////  juzgadoOrigenNombre: string,
     numeroExpedienteOrigen: string,
     numeroOficioOrigen: string,
-    idCatTipoVia:number,
+    idCatTipoVia: number,
     tipoJuicioAsuntoDelitos: string,
     juezExhortante: string,
     fojas: number,
     diasResponder: number,
-    tipoDiligenciaId:string;
+    tipoDiligenciaId: string;
     tipoDiligenciacionNombre: string,
     observaciones: string,
     partes: partesExhortoEnviadoRequest[] | null,
@@ -378,11 +378,11 @@ export interface ExhortoEnviadoGuardarGeneralesRequest{
     idUsuario: number,
     materiaNombre: string,
     estadoDestinoId: number,
-    idCatMateria:number,
+    idCatMateria: number,
 
 }
 //Partes exhortos enviar
-export interface partesExhortoEnviado{
+export interface partesExhortoEnviado {
     idParteExhortoEnviado: number;
     idExhortoEnviado: number;
     nombre: string;
@@ -392,101 +392,101 @@ export interface partesExhortoEnviado{
     esPersonaMoral: boolean;
     idTipoParte: number;
     tipoParteNombre: string;
-    correoElectronico :string | null;
+    correoElectronico: string | null;
     telefono: string | null;
     activo: boolean;
 }
 
 //Interfaz de la respuesta del exhorto enviado
-export interface respuestExhortoEnviado{
+export interface respuestExhortoEnviado {
     generales: generalesRespuestaExhortoEnviado;
     archivos: archivoExhortoEnviado[];
     videos: videosExhortosEnviadosrespuesta[];
 }
 //generales de respuesta del exhorto enviado
-export interface generalesRespuestaExhortoEnviado{
+export interface generalesRespuestaExhortoEnviado {
     idRespuesta: number;
     idExhortoEnviado: number;
     respuestaOrigenId: string;
     municipioTurnado: {
-      idMunicipio: number;
-      clave: number;
-      descripcion: string;
-      idEstado: number;
+        idMunicipio: number;
+        clave: number;
+        descripcion: string;
+        idEstado: number;
     },
     areaTurnadoId: string;
     areaTurnadoNombre: string;
     numeroExhorto: string;
     tipoDiligenciado: {
-      idTipoDiligenciado: number;
-      descripcion: string;
+        idTipoDiligenciado: number;
+        descripcion: string;
     },
     observaciones: string;
     fechaRespuesta: string;
     activo: boolean;
-    fechaHoraRecepcion:string;
+    fechaHoraRecepcion: string;
 }
 
 //Verificar si se utiliza
-export interface CatalogoClasificaciónArchivo{
+export interface CatalogoClasificaciónArchivo {
     idClasificacionArchivo: number;
     descripcion: string;
 }
 
-export interface CatalogoEstadoDestino{
-    idEstado : number;
+export interface CatalogoEstadoDestino {
+    idEstado: number;
     descripcion: string;
 }
 
-export interface CatalogoMunicipioDestino{
-    idMunicipio : number;
-    clave : number;
+export interface CatalogoMunicipioDestino {
+    idMunicipio: number;
+    clave: number;
     descripcion: string;
-    idEstado : number;
+    idEstado: number;
 }
 
-export interface CatalogoMateriasEstadoDestino{
+export interface CatalogoMateriasEstadoDestino {
     idCatMateria: number;
-    clave : string;
-    nombre : string;
+    clave: string;
+    nombre: string;
     descripcion?: string;
 }
 
-export interface CatalogoMunicipioOrigen{
-    idMunicipio : number;
-    clave : number;
+export interface CatalogoMunicipioOrigen {
+    idMunicipio: number;
+    clave: number;
     descripcion: string;
-    idEstado : number;
+    idEstado: number;
 }
 
-export interface EstadoSeleccionado{
-    idEstado : number ;
+export interface EstadoSeleccionado {
+    idEstado: number;
 }
-export interface CatalogoJuzgadoOrigen{
-    idJuzgado:number;
-    clave:string;
-   // descripcion:string;
-    juzgado:string;
+export interface CatalogoJuzgadoOrigen {
+    idJuzgado: number;
+    clave: string;
+    // descripcion:string;
+    juzgado: string;
 }
-export interface CatalogoGenero{
-    idGenero:number;
-    clave:string;
-    descripcion:string;
+export interface CatalogoGenero {
+    idGenero: number;
+    clave: string;
+    descripcion: string;
 }
-export interface CatalogoTipoParte{
-    idTipoParte:number;
-    descripcion:string;
-    Activo:boolean;
+export interface CatalogoTipoParte {
+    idTipoParte: number;
+    descripcion: string;
+    Activo: boolean;
 }
 
-export interface CatalogoMateria{
+export interface CatalogoMateria {
     clave: number;
     idCatMateria: number;
     nombre: string;
-    descripcion:string;
+    descripcion: string;
 }
 
-export interface ConfigMateriaJuzgado{
+export interface ConfigMateriaJuzgado {
     idMunicipio: number;
     municipio: string;
     idJuzgado: number;
@@ -494,16 +494,16 @@ export interface ConfigMateriaJuzgado{
     idMateria: number;
     materia: string;
     idConfiguracion: number;
-    region:string;
+    region: string;
 }
 
-export interface CatalogoRegion{
+export interface CatalogoRegion {
     idRegion: number;
     descripcion: string;
     activo: boolean;
 }
 //Archivos de exhortos enviados
-export interface archivoExhortoEnviado{
+export interface archivoExhortoEnviado {
     idArchivo: number;
     idExhortoEnviado: number;
     nombreArchivo: string;
@@ -511,25 +511,25 @@ export interface archivoExhortoEnviado{
     hashSha256: string;
     idTipoDocumento: number;
     tipoDocumento: {
-      idTipoDocumento: number;
-      nombre: string;
-      activo: boolean;
+        idTipoDocumento: number;
+        nombre: string;
+        activo: boolean;
     },
     tamanio: number;
     paginas: number;
     recibido: boolean;
     idClasificacionArchivo: number;
     ruta: string;
-    firmado:boolean;
-    fechaFirmado:Date;
+    firmado: boolean;
+    fechaFirmado: Date;
     activo: boolean;
     selecParaFirma: boolean;
-    firmantes:Firmantes[];
-    file:File;
-    usrYaFirmo:boolean;
+    firmantes: Firmantes[];
+    file: File;
+    usrYaFirmo: boolean;
 }
 
-export interface AgregarJuzgado{
+export interface AgregarJuzgado {
     idCatJuzgado: number;
     cveJuzgado: string;
     descripcion: string;
@@ -537,7 +537,7 @@ export interface AgregarJuzgado{
     activo: boolean;
 }
 
-export interface CatJuzgado{
+export interface CatJuzgado {
     idJuzgado: number;
     nombre: string;
     clave: string;
@@ -545,7 +545,7 @@ export interface CatJuzgado{
     activo: boolean;
 }
 
-export interface ReasignarJuzgado{
+export interface ReasignarJuzgado {
     idExhortoRecibido: number;
     idMunicipio: number;
     idCatJuzgado: number;
@@ -553,13 +553,13 @@ export interface ReasignarJuzgado{
     observaciones: string;
 }
 
-export interface ConfirmacionActualizacion{
+export interface ConfirmacionActualizacion {
     exhortoId: string;
     actualizacionOrigenId: string;
     fechaHora: string;
 }
 
-export interface ProvomenteExhortoEnviado{
+export interface ProvomenteExhortoEnviado {
     idPromoventeExhortoEnviado: number;
     idPromocionEnviado: number;
     nombre: string;
@@ -569,29 +569,29 @@ export interface ProvomenteExhortoEnviado{
     esPersonaMoral: boolean;
     idTipoParte: number;
     tipoParteNombre: string;
-    correoElectronico:string | null;
-    telefono:string | null;
+    correoElectronico: string | null;
+    telefono: string | null;
     activo: boolean;
 }
 
 /*Clase para guardar datos generales de un exhorto envido en el endpoint
     /api/ExhortosEnviar/GuardarGenerales
 */
-export interface ExhortoEnviadoGuardarGeneralesRequest{
+export interface ExhortoEnviadoGuardarGeneralesRequest {
     municipioDestinoId: number,
     materiaClave: string,
     estadoOrigenId: number,
-  ////  municipioOrigenId: number,
-  ////  juzgadoOrigenId: string,
-  ////  juzgadoOrigenNombre: string,
+    ////  municipioOrigenId: number,
+    ////  juzgadoOrigenId: string,
+    ////  juzgadoOrigenNombre: string,
     numeroExpedienteOrigen: string,
     numeroOficioOrigen: string,
-    idCatTipoVia:number,
+    idCatTipoVia: number,
     tipoJuicioAsuntoDelitos: string,
     juezExhortante: string,
     fojas: number,
     diasResponder: number,
-    tipoDiligenciaId:string;
+    tipoDiligenciaId: string;
     tipoDiligenciacionNombre: string,
     observaciones: string,
     partes: partesExhortoEnviadoRequest[] | null,
@@ -599,11 +599,10 @@ export interface ExhortoEnviadoGuardarGeneralesRequest{
     idUsuario: number,
     materiaNombre: string,
     estadoDestinoId: number,
-    idCatMateria:number,
+    idCatMateria: number,
 
 }
-export interface partesExhortoEnviadoRequest
-{
+export interface partesExhortoEnviadoRequest {
     nombre: string,
     apellidoPaterno: string,
     apellidoMaterno: string,
@@ -612,15 +611,15 @@ export interface partesExhortoEnviadoRequest
     idTipoParte: 0,
     tipoParteNombre: string
 }
-export interface turnosResponse{
+export interface turnosResponse {
     resultado: boolean;
-    msg:string;
+    msg: string;
 }
 export interface VerMovimientosResponse {
-    idExhortoRecibido:number;
-    cargoTurna:string,
-    idUsuarioTurna:number,
-    nombreUsuarioTurna:string,
+    idExhortoRecibido: number;
+    cargoTurna: string,
+    idUsuarioTurna: number,
+    nombreUsuarioTurna: string,
     fechaTurnado: Date;
     idUsuarioRecibe: number;
     nombreUsuarioRecibe: string;
@@ -631,10 +630,10 @@ export interface VerMovimientosResponse {
     cargoDestino: string;
 }
 export interface VerMovimientosEnviadosResponse {
-    idExhortoEnviado:number;
-    cargoTurna:string,
-    idUsuarioTurna:number,
-    nombreUsuarioTurna:string,
+    idExhortoEnviado: number;
+    cargoTurna: string,
+    idUsuarioTurna: number,
+    nombreUsuarioTurna: string,
     fechaTurnado: Date;
     idUsuarioRecibe: number;
     nombreUsuarioRecibe: string;
@@ -643,66 +642,64 @@ export interface VerMovimientosEnviadosResponse {
     movimiento: string;
 }
 //objeto que la api retorna cuando se envia los datos generales de la respuesta de un exhorto al estado exhortante
-export interface EnviadoRespuestaGeneralesResponse
-{
-    exhortoId:string;
-    respuestaOrigenId:string;
-    fechaHora:string;
+export interface EnviadoRespuestaGeneralesResponse {
+    exhortoId: string;
+    respuestaOrigenId: string;
+    fechaHora: string;
 }
 //objetos que la api retorna cuando se envian los archivos del exhorto al estado exhortante
 //******************************************* */
-export interface EnviadoRespuestaArchivosResponse
-{
+export interface EnviadoRespuestaArchivosResponse {
     archivo: ArchivoRecibidoResponse;
     acuse: AcuseRespuestaExhortoRecibido;
     restantes: ArchivosRestantesResponse[];
 }
-export interface ArchivoRecibidoResponse{
-    nombreArchivo:string;
-    tamaño:number;
+export interface ArchivoRecibidoResponse {
+    nombreArchivo: string;
+    tamaño: number;
 }
-export interface AcuseRespuestaExhortoRecibido{
-    exhortoId:string;
-    respuestaOrigenId:string;
-    fechaHoraRecepcion:string;
+export interface AcuseRespuestaExhortoRecibido {
+    exhortoId: string;
+    respuestaOrigenId: string;
+    fechaHoraRecepcion: string;
 }
-export interface ArchivosRestantesResponse{
-    nombreArchivo:string;
-    hashSha1:string;
-    hashSha256:string;
-    tipoDocumento:number;
+export interface ArchivosRestantesResponse {
+    nombreArchivo: string;
+    hashSha1: string;
+    hashSha256: string;
+    tipoDocumento: number;
 }
 
 export interface guardaExhortoRespuesta {
-    idRespuesta : number;
+    idRespuesta: number;
 }
 //***************************************** */
 //***************************************** */
-export interface catTipoDiligencia{
-    id:string;
-    descripcion:string;
-    activo:boolean;
+export interface catTipoDiligencia {
+    id: string;
+    descripcion: string;
+    activo: boolean;
 }
 //Objeto retornado por la api cuando se inserta los datos generales y los promoventes en una promocion del exhorto enviado
 //******************************************* */
-export interface folioPromocionExhortoEnviado{
+export interface folioPromocionExhortoEnviado {
     folioOrigenPromocion: string;
     idPromocionEnviada: number
 }
 //***************************************** */
 
 export interface PromocionExhortoEnviado {
-    idPromocionEnviado:number;
+    idPromocionEnviado: number;
     idExhortoEnviado: number;
-    folioOrigenPromocion:string;
+    folioOrigenPromocion: string;
     fojas: number;
-    fechaOrigen:string;
+    fechaOrigen: string;
     observaciones: string
-    fechaHora : string
-    fechaRecepcion : string;
-    folioPromocionRecibida:string;
+    fechaHora: string
+    fechaRecepcion: string;
+    folioPromocionRecibida: string;
     promoventes: ProvomenteExhortoEnviado[]
-    archivos : archivoPromocionExhortoEnviado[]
+    archivos: archivoPromocionExhortoEnviado[]
 }
 
 
@@ -720,7 +717,7 @@ export interface IdArchivoPromcionesEnviada {
 }
 
 
-export interface archivoPromocionExhortoEnviado{
+export interface archivoPromocionExhortoEnviado {
     idArchivo: number
     idPromocionEnviada: number
     nombreArchivo: string
@@ -728,9 +725,9 @@ export interface archivoPromocionExhortoEnviado{
     hashSha256: string
     idTipoDocumento: number
     tipoDocumento: {
-      idTipoDocumento: number;
-      nombre: string;
-      activo: boolean;
+        idTipoDocumento: number;
+        nombre: string;
+        activo: boolean;
     },
     tamanio: number
     paginas: number
@@ -741,125 +738,116 @@ export interface archivoPromocionExhortoEnviado{
     fechaFirmado: string
     activo: boolean
     selecParaFirma: boolean
-    firmantes:Firmantes[],
-    file:File,
-    usrYaFirmo:boolean
+    firmantes: Firmantes[],
+    file: File,
+    usrYaFirmo: boolean
 }
-export interface videosExhortosEnviadosrespuesta
-{
-    titulo:string;
-    descripcion:string;
-    fecha:string;
-    urlAcceso:string;
+export interface videosExhortosEnviadosrespuesta {
+    titulo: string;
+    descripcion: string;
+    fecha: string;
+    urlAcceso: string;
 }
 //objeto que se recibe como respuesta cuando se envia los datos generales de un exhorto enviado
-export interface EnviadoConfirmacionDatosRecibidosResponse
-{
-    exhortoOrigenId:string;
-    fechaHora:string;
+export interface EnviadoConfirmacionDatosRecibidosResponse {
+    exhortoOrigenId: string;
+    fechaHora: string;
 }
 //objeto que se recibe como respuesta cuando se envia los archivos del exhorto enviado
-export interface EnviadoArchivoRecibidoConAcuseResponse
-{
+export interface EnviadoArchivoRecibidoConAcuseResponse {
     archivo: ArchivoRecibidoResponse;
     acuse: acuseExhortoRecibido;
     restantes: ArchivosRestantesResponse[];
 }
-export interface acuseExhortoRecibido
-{
-    exhortoOrigenId:string;
-    folioSeguimiento:string;
-    fechaHoraRecepcion:string;
-    municipioAreaRecibeId:number;
-    areaRecibeId:string;
-    areaRecibeNombre:string;
-    urlInfo:string;
-    municipioAreaRecibeNombre:string;
+export interface acuseExhortoRecibido {
+    exhortoOrigenId: string;
+    folioSeguimiento: string;
+    fechaHoraRecepcion: string;
+    municipioAreaRecibeId: number;
+    areaRecibeId: string;
+    areaRecibeNombre: string;
+    urlInfo: string;
+    municipioAreaRecibeNombre: string;
 }
-export interface actualizacionesExhortoEnviado{
-    actualizacionOrigenId:string;
-    idTipoActualizacion:number;
-    tipoActualizacionNombre:string;
-    fechaHora:string;
-    fechaHoraRecibido:string;
-    descripcion:string;
+export interface actualizacionesExhortoEnviado {
+    actualizacionOrigenId: string;
+    idTipoActualizacion: number;
+    tipoActualizacionNombre: string;
+    fechaHora: string;
+    fechaHoraRecibido: string;
+    descripcion: string;
 }
-export interface actualizacionesExhortoRecibido{
-    idActualizacion:number;
-    fechaActualizacion:string;
-    tipoActualizacion:string;
-    descripcion:string;
-    nombreUsuarioActualizo:string;
-    enviado:string;
+export interface actualizacionesExhortoRecibido {
+    idActualizacion: number;
+    fechaActualizacion: string;
+    tipoActualizacion: string;
+    descripcion: string;
+    nombreUsuarioActualizo: string;
+    enviado: string;
 }
-export interface ConfirmacionDatosPromocionRecibida
-{
-    folioOrigenPromocion:string;
-    fechaHora:string;
+export interface ConfirmacionDatosPromocionRecibida {
+    folioOrigenPromocion: string;
+    fechaHora: string;
 }
-export interface ArchivoRecibidoPromocionConAcuse{
+export interface ArchivoRecibidoPromocionConAcuse {
     archivo: ArchivoRecibidoResponse;
     acuse: AcusePromocionRecibida;
     restantes: ArchivosRestantesResponse[];
 }
-export interface AcusePromocionRecibida
-{
-    folioOrigenPromocion:string;
-    folioPromocionRecibida:string;
-    fechaHoraRecepcion:string;
+export interface AcusePromocionRecibida {
+    folioOrigenPromocion: string;
+    folioPromocionRecibida: string;
+    fechaHoraRecepcion: string;
 
 }
-export interface CONATRIB_ExhortoRecibidoPromoventes
-{
-    idPromoventeExhortoRecibido:number;
-    idExhortoRecibido:number;
-    nombre:string;
-    apellidoPaterno:string;
-    apellidoMaterno:string;
-    genero:string;
-    esPersonaMoral:boolean;
-    tipoParte:CatalogoTipoParte;
-    tipoParteNombre:string;
-    correoElectronico:string;
-    telefono:string;
-    activo:boolean;
+export interface CONATRIB_ExhortoRecibidoPromoventes {
+    idPromoventeExhortoRecibido: number;
+    idExhortoRecibido: number;
+    nombre: string;
+    apellidoPaterno: string;
+    apellidoMaterno: string;
+    genero: string;
+    esPersonaMoral: boolean;
+    tipoParte: CatalogoTipoParte;
+    tipoParteNombre: string;
+    correoElectronico: string;
+    telefono: string;
+    activo: boolean;
 }
 //Catalogo de vias
- export interface tipoVia
- {
-     idCatTipoVia:number;
-     descripcion:string;
-     modelo:number;
-     activo:boolean;
- }
- export interface cat_Materias
-{
-    idCatMateria:number;
-    descripcion:string;
-    claveMateria:string;
-    activo:boolean;
+export interface tipoVia {
+    idCatTipoVia: number;
+    descripcion: string;
+    modelo: number;
+    activo: boolean;
 }
- export interface ListadoEstatus{
-   idEstatus : number;
-   descripcion : string;
-   Activo : boolean;
-   idTipoTramite : number;
- }
- export interface IncompetenciaRequest{
-  idExhortoRecibido: number;
-  justificacion: string;
- }
- export interface validaFirmaRequest{
-    idUsuario:number;
-    password:string;
- }
- export interface guardaFirmaTmpRequest{
-  idUsuario: number;
-  idArchivo: number;
-  idClasificacionArchivo: number;
-  passwordFirma: string;
- }
- export interface AgregarJuzgadoMat{
+export interface cat_Materias {
+    idCatMateria: number;
+    descripcion: string;
+    claveMateria: string;
+    activo: boolean;
+}
+export interface ListadoEstatus {
+    idEstatus: number;
+    descripcion: string;
+    Activo: boolean;
+    idTipoTramite: number;
+}
+export interface IncompetenciaRequest {
+    idExhortoRecibido: number;
+    justificacion: string;
+}
+export interface validaFirmaRequest {
+    idUsuario: number;
+    password: string;
+}
+export interface guardaFirmaTmpRequest {
+    idUsuario: number;
+    idArchivo: number;
+    idClasificacionArchivo: number;
+    passwordFirma: string;
+}
+export interface AgregarJuzgadoMat {
     idConfiguracion: number;
     idMunicipio: number;
     idCatMateria: number;
@@ -868,14 +856,14 @@ export interface CONATRIB_ExhortoRecibidoPromoventes
     activo: boolean;
 }
 // esta interfaz es la estructura del request que se le envia como parametro a la API para consultar el listado de exhortos recibidos
-export interface UI_ParamlistadoExhortosRecibidosRequest{
-    fechaIni?:Date;
-    fechaFin?:Date;
-    estatus?:number;
+export interface UI_ParamlistadoExhortosRecibidosRequest {
+    fechaIni?: Date;
+    fechaFin?: Date;
+    estatus?: number;
     perfil?: string;
 }
 //Listado de exhortos enviados
-export interface ListadoExhortosEnviados{
+export interface ListadoExhortosEnviados {
     idExhortoEnviado: number;
     exhortoOrigenId: string;
     municipioDestino: string;
@@ -899,73 +887,72 @@ export interface ListadoExhortosEnviados{
     areaTurnadoNombre: string;
     urlInfo: string;
 }
-export interface ListadoEstatus{
-   idEstatus : number;
-   descripcion : string;
-   Activo : boolean;
-   idTipoTramite : number;
- }
- // esta interfaz es la estructura del request que se le envia como parametro a la API para consultar el listado de exhortos recibidos
-export interface UI_ParamlistadoExhortosRecibidosRequest{
-    fechaIni?:Date;
-    fechaFin?:Date;
-    estatus?:number;
+export interface ListadoEstatus {
+    idEstatus: number;
+    descripcion: string;
+    Activo: boolean;
+    idTipoTramite: number;
+}
+// esta interfaz es la estructura del request que se le envia como parametro a la API para consultar el listado de exhortos recibidos
+export interface UI_ParamlistadoExhortosRecibidosRequest {
+    fechaIni?: Date;
+    fechaFin?: Date;
+    estatus?: number;
     perfil?: string;
 }
 //Esta interfaz es la estructura que recibimos de la api cuando consultamos el listado de exhortos recibidos
-export interface ListadoExhortosRecibidosI{
-    idExhortoRecibido:number;
-    estadoOrigen:string;
-    juzgadoOrigenNombre:string;
-    municipioDestino:string;
-    materiaNombre:string;
-    numeroExpedienteOrigen:string;
-    numeroOficioOrigen:string;
-    fechaHoraRecepcion:string;
-    folioSeguimiento:string;
-    estatus:string;
-    respuesta : number;
-    numeroExhorto:string;
-    municipioOrigen:string;
-    url:string;
-    fechaOrigen:string;
-    observaciones:string;
-    tipoJuicioAsuntoDelitos:string;
-    diasResponder:number;
-    fojas:number;
-    juezExhortante:string;
-    tipoDiligenciacionNombre:string;
-    juzgadoDestino:string;
+export interface ListadoExhortosRecibidosI {
+    idExhortoRecibido: number;
+    estadoOrigen: string;
+    juzgadoOrigenNombre: string;
+    municipioDestino: string;
+    materiaNombre: string;
+    numeroExpedienteOrigen: string;
+    numeroOficioOrigen: string;
+    fechaHoraRecepcion: string;
+    folioSeguimiento: string;
+    estatus: string;
+    respuesta: number;
+    numeroExhorto: string;
+    municipioOrigen: string;
+    url: string;
+    fechaOrigen: string;
+    observaciones: string;
+    tipoJuicioAsuntoDelitos: string;
+    diasResponder: number;
+    fojas: number;
+    juezExhortante: string;
+    tipoDiligenciacionNombre: string;
+    juzgadoDestino: string;
 }
 //Interfaz de la respuesta del exhorto enviado
-export interface respuestExhortoEnviado{
+export interface respuestExhortoEnviado {
     generales: generalesRespuestaExhortoEnviado;
     archivos: archivoExhortoEnviado[];
     videos: videosExhortosEnviadosrespuesta[];
 }
-export interface ConfirmacionDatosPromocionRecibida
-{
-    folioOrigenPromocion:string;
-    fechaHora:string;
+export interface ConfirmacionDatosPromocionRecibida {
+    folioOrigenPromocion: string;
+    fechaHora: string;
 }
-export interface ArchivoRecibidoPromocionConAcuse{
+export interface ArchivoRecibidoPromocionConAcuse {
     archivo: ArchivoRecibidoResponse;
     acuse: AcusePromocionRecibida;
     restantes: ArchivosRestantesResponse[];
 }
-export interface actualizacionesExhortoEnviado{
-    actualizacionOrigenId:string;
-    idTipoActualizacion:number;
-    tipoActualizacionNombre:string;
-    fechaHora:string;
-    fechaHoraRecibido:string;
-    descripcion:string;
+export interface actualizacionesExhortoEnviado {
+    actualizacionOrigenId: string;
+    idTipoActualizacion: number;
+    tipoActualizacionNombre: string;
+    fechaHora: string;
+    fechaHoraRecibido: string;
+    descripcion: string;
 }
 export interface VerMovimientosEnviadosResponse {
-    idExhortoEnviado:number;
-    cargoTurna:string,
-    idUsuarioTurna:number,
-    nombreUsuarioTurna:string,
+    idExhortoEnviado: number;
+    cargoTurna: string,
+    idUsuarioTurna: number,
+    nombreUsuarioTurna: string,
     fechaTurnado: Date;
     idUsuarioRecibe: number;
     nombreUsuarioRecibe: string;
@@ -977,37 +964,37 @@ export interface IdArchivoPromcionesEnviada {
     idArchivo: number;
 }
 export interface PromocionExhortoEnviado {
-    idPromocionEnviado:number;
+    idPromocionEnviado: number;
     idExhortoEnviado: number;
-    folioOrigenPromocion:string;
+    folioOrigenPromocion: string;
     fojas: number;
-    fechaOrigen:string;
+    fechaOrigen: string;
     observaciones: string
-    fechaHora : string
-    fechaRecepcion : string;
-    folioPromocionRecibida:string;
+    fechaHora: string
+    fechaRecepcion: string;
+    folioPromocionRecibida: string;
     promoventes: ProvomenteExhortoEnviado[]
-    archivos : archivoPromocionExhortoEnviado[]
+    archivos: archivoPromocionExhortoEnviado[]
 }
 //Objeto retornado por la api cuando se inserta los datos generales y los promoventes en una promocion del exhorto enviado
 //******************************************* */
-export interface folioPromocionExhortoEnviado{
+export interface folioPromocionExhortoEnviado {
     folioOrigenPromocion: string;
     idPromocionEnviada: number
 }
- export interface IncompetenciaRequest{
-  idExhortoRecibido: number;
-  justificacion: string;
- }
- export interface turnosResponse{
+export interface IncompetenciaRequest {
+    idExhortoRecibido: number;
+    justificacion: string;
+}
+export interface turnosResponse {
     resultado: boolean;
-    msg:string;
+    msg: string;
 }
 export interface VerMovimientosResponse {
-    idExhortoRecibido:number;
-    cargoTurna:string,
-    idUsuarioTurna:number,
-    nombreUsuarioTurna:string,
+    idExhortoRecibido: number;
+    cargoTurna: string,
+    idUsuarioTurna: number,
+    nombreUsuarioTurna: string,
     fechaTurnado: Date;
     idUsuarioRecibe: number;
     nombreUsuarioRecibe: string;
@@ -1025,36 +1012,46 @@ export interface DetalleExhortoRecibidoResponseI {
     actualizaciones: actualizacionesExhortoRecibido[];
 }
 //Interfaz para respuesta de exhortos
-export interface respuestaExhorto{
+export interface respuestaExhorto {
     generales: generales;
     archivos: archivos[];
 }
 //Interfaz de las promociones de exhortos recibidos
-export interface promocionExhortos{
+export interface promocionExhortos {
     promo: promo;
     archivos: archivoPromocion[];
-    promoventes:promoventes[];
+    promoventes: promoventes[];
 }
 //objeto que la api retorna cuando se envia los datos generales de la respuesta de un exhorto al estado exhortante
-export interface EnviadoRespuestaGeneralesResponse
-{
-    exhortoId:string;
-    respuestaOrigenId:string;
-    fechaHora:string;
+export interface EnviadoRespuestaGeneralesResponse {
+    exhortoId: string;
+    respuestaOrigenId: string;
+    fechaHora: string;
 }
 //objetos que la api retorna cuando se envian los archivos del exhorto al estado exhortante
 //******************************************* */
-export interface EnviadoRespuestaArchivosResponse
-{
+export interface EnviadoRespuestaArchivosResponse {
     archivo: ArchivoRecibidoResponse;
     acuse: AcuseRespuestaExhortoRecibido;
     restantes: ArchivosRestantesResponse[];
 }
 //Interfaz para el catálogo de tipo de diligenciado
-export interface ListadoCatalogoTipoDiligenciado{
+export interface ListadoCatalogoTipoDiligenciado {
     idTipoDiligenciado: number;
     descripcion: string;
 }
 export interface guardaExhortoRespuesta {
-    idRespuesta : number;
+    idRespuesta: number;
+}
+
+
+//Esta interfaz es la estructura que recibimos de la api cuando consultamos el listado de exhortos recibidos
+export interface ListadoPromocionRecibidasI {
+    idExhortoRecibido: number;
+    idPromocionRecibida: number;
+    exhortoOrigenId: string;
+    numeroExhorto: string;
+    folioOrigenPromocion: string;
+    fechaOrigen: string;
+    folioPromocionRecibida: string;
 }
