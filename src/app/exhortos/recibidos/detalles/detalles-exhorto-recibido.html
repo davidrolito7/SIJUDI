@@ -31,9 +31,10 @@
                 severity="help"></p-button>
             }
             }
-            @if (tienePermisoRecibir() && tienePermisoDeclararIncompetencia() && puedeDeclararIncompetencia() &&
-            detallesExhortos()?.actualizaciones?.length===0 && detallesExhortos()?.generales?.idEstatus !== 9 ) {
-            <p-button type="button" (click)="dialogIncomp.open(idExhortoRecibido)" label="Declarar incompetencia"
+            <!--Declarar incompetencia: visible con el permiso hasta que el juez firma el acuerdo y lo turna de
+            vuelta al secretario; a partir de ese movimiento se oculta-->
+            @if (tienePermisoDeclararIncompetencia() && !juezYaTurnoAlSecretario()) {
+            <p-button type="button" (click)="dialogIncomp.open(idExhortoRecibido)" label="Devolución"
                 icon="pi pi-ban" severity="danger" [outlined]="true"></p-button>
             <app-incompetencia-dialog #dialogIncomp></app-incompetencia-dialog>
             }

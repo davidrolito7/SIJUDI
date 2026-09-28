@@ -51,6 +51,14 @@ export class DetallesExhortoRecibido {
     const movs = this.movimientos();
     return movs.length > 0 && movs[0].fechaRecepcion === null;
   });
+  //El boton "Declarar incompetencia" se muestra hasta que el juez firma el acuerdo y lo turna de vuelta
+  //al secretario (el juez solo puede turnar una vez que ya firmo). Mientras no exista ese movimiento
+  //Juez -> Secretario, el boton sigue visible
+  juezYaTurnoAlSecretario = computed(() =>
+    this.movimientos().some(m =>
+      m.cargoOrigen?.trim() === 'Juez' && m.cargoDestino?.trim() === 'Secretario'
+    )
+  );
   //true una vez que el ultimo movimiento ya forma parte del flujo del acuerdo (Secretario->Juez,
   //Juez->Secretario, Secretario->Notificador, Notificador->Secretario). A partir de aqui, Recibir y Turnar
   //se hacen desde generar-acuerdo.html (no en esta pantalla), para no duplicar el flujo en dos lugares.
