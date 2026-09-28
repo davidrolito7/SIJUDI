@@ -22,7 +22,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ListadoExhortosRecibidosI, UI_ParamlistadoExhortosRecibidosRequest, ListadoEstatus } from "../../interfaces/exhortos.model";
+import { ListadoPromocionRecibidasI, UI_ParamlistadoExhortosRecibidosRequest, ListadoEstatus } from "../../interfaces/exhortos.model";
 
 @Component({
   selector: 'app-listado-promociones',
@@ -43,8 +43,8 @@ export class ListadoPromociones {
   fechaFin: Date | undefined;
   fechaMaxima: Date | undefined;
   formSubmitted: boolean = false;
-  response!: GenericResponse<ListadoExhortosRecibidosI[]>;
-  listadosExhortos = signal<ListadoExhortosRecibidosI[]>([]);
+  response!: GenericResponse<ListadoPromocionRecibidasI[]>;
+  listadoPromocionRecibidas = signal<ListadoPromocionRecibidasI[]>([]);
   tienePermisoVerAcuerdo = signal<boolean>(false);
 
   verAcuerdos(idExhortoRecibido: number) {
@@ -63,7 +63,7 @@ export class ListadoPromociones {
 
   }
   ngOnInit(): void {
-
+  this.getListado()
   }
 
   //Obtenemos el listado de promociones recibidas
@@ -92,20 +92,18 @@ export class ListadoPromociones {
       const obj = {
         fechaIni: fechaIni,
         fechaFin: fechaFin,
-        ////  perfil: perfil,
         estatus: this.selectedEstatus?.idEstatus,
-        ////   IdAreaAdminAplicaciones : area 
       };
       console.log(this.selectedEstatus?.idEstatus);
 
       this.cd.detectChanges();
 
-      this.exhortoService.getExhortosRecibidosListado(obj).subscribe({
+      this.exhortoService.getPromocionesRecibidasListado(obj).subscribe({
         next: (res => {
           this.response = res as any;
           if (this.response.success) {
             //console.log("Respuesta del servidor:", this.response);
-            this.listadosExhortos.set(this.response.data);
+            this.listadoPromocionRecibidas.set(this.response.data);
 
           } else {
             // Manejo de errores
@@ -165,7 +163,7 @@ export class ListadoPromociones {
     this.fechaFin = undefined;
 
     // Limpiar resultados visibles
-    this.listadosExhortos.set([]);
+    this.listadoPromocionRecibidas.set([]);
 
     // Mostrar mensaje opcional
     this.messageService.add({

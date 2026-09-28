@@ -16,7 +16,8 @@ import {
   DetalleExhortoRecibidoResponseI, respuestaExhorto, promocionExhortos, EnviadoRespuestaGeneralesResponse,
   EnviadoRespuestaArchivosResponse, ListadoCatalogoTipoDiligenciado,
   generales,
-  ListadoCatalogoTipoProcedimiento
+  ListadoCatalogoTipoProcedimiento,
+  ListadoPromocionRecibidasI
 } from '../interfaces/exhortos.model';
 
 @Injectable({
@@ -231,8 +232,8 @@ export class ExhortosService {
   }
 
   //Obtiene las promociones recibidas (Trabajando.....)
-  getPromocionesRecibidasListado(param: UI_ParamlistadoExhortosRecibidosRequest): Observable<GenericResponse<ListadoExhortosRecibidosI>> {
-    return this.http.post<GenericResponse<ListadoExhortosRecibidosI>>(this.baseUrl + "ListadoExhortosRecibidos", param, { context: checkToken() });
+  getPromocionesRecibidasListado(param: UI_ParamlistadoExhortosRecibidosRequest): Observable<GenericResponse<ListadoPromocionRecibidasI>> {
+    return this.http.post<GenericResponse<ListadoPromocionRecibidasI>>(this.baseUrl + "ListadoPromocionesRecibidas", param, { context: checkToken() });
   }
 
   //obtiene la lista de actualizaciones de un exhorto enviado
