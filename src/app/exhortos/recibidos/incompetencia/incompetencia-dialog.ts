@@ -1,7 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { DialogModule } from "primeng/dialog";
 import {ButtonModule} from 'primeng/button';
-import { FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { TextareaModule } from 'primeng/textarea';
 import { MessageService } from 'primeng/api';
 import { IncompetenciaRequest } from '../../interfaces/exhortos.model';
 import { ExhortosService} from '../../services/exhorto.service';
@@ -9,7 +10,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-incompetencia-dialog',
-  imports: [DialogModule,ButtonModule,ReactiveFormsModule],
+  imports: [DialogModule,ButtonModule,ReactiveFormsModule,TextareaModule],
   templateUrl: './incompetencia-dialog.html',
   styleUrl: './incompetencia-dialog.css',
 })
@@ -18,7 +19,7 @@ export class IncompetenciaDialog {
   idExhorto: number | undefined;
 
    incompetenciaForm =new FormGroup({
-    justificacion: new FormControl('')
+    justificacion: new FormControl('', Validators.required)
   });
   
   request!:IncompetenciaRequest;

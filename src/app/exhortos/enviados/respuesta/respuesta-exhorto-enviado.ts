@@ -10,10 +10,13 @@ import { base64ToFile, downloadBase64 } from '../../../shared/functions/utils';
 import { TableModule } from "primeng/table";
 import { Button } from "primeng/button";
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
+import { Spinner } from "../../../shared/components/spinner/spinner";
+import { ToastModule } from "primeng/toast";
+import { TooltipModule } from "primeng/tooltip";
 
 @Component({
   selector: 'app-RespuestaExhortoEnviado',
-  imports: [CommonModule, TableModule, Button, PdfDialog],
+  imports: [CommonModule, TableModule, Button, PdfDialog, Spinner, ToastModule, TooltipModule],
   templateUrl: './respuesta-exhorto-enviado.html',
   styleUrl: './respuesta-exhorto-enviado.css',
   providers:[MessageService]
