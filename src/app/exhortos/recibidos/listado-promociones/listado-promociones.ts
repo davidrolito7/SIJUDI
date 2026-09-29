@@ -63,7 +63,7 @@ export class ListadoPromociones {
 
   }
   ngOnInit(): void {
-  this.getListado()
+    this.getListado()
   }
 
   //Obtenemos el listado de promociones recibidas
@@ -148,7 +148,7 @@ export class ListadoPromociones {
     }
   }
 
-  verDetalleNotificacion(idExhortoRecibido: number) {
+  verDetalleExhorto(idExhortoRecibido: number) {
     //console.log('Naavegando a detalle-exhorto con idExhortoRecibido:', idExhortoRecibido);
     this.router.navigate(['/exhortos/detalles-exhorto-recibido'], { state: { idExhortoRecibido } });
 
