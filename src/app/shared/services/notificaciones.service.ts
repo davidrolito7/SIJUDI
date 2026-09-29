@@ -1,9 +1,10 @@
 import { Injectable, inject, NgZone } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 import { TokenService } from '../../core/auth/service/token.service';
+import { checkToken } from '../../core/auth/interceptor/token.interceptor';
 import { BandejaNotificacionesResponse, CrearNotificacionRequest, GenericResponse, NotificacionResponse } from '../interface/shared.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -22,16 +23,10 @@ export class NotificacionesService {
     return this.tokenService.getToken() ?? '';
   }
 
-  private getHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      Authorization: `Bearer ${this.getToken()}`
-    });
-  }
-
   obtenerMisNotificaciones(): Observable<GenericResponse<BandejaNotificacionesResponse>> {
     return this.http.get<GenericResponse<BandejaNotificacionesResponse>>(
       `${this.apiUrl}/api/notificaciones`,
-      { headers: this.getHeaders() }
+      { context: checkToken() }
     );
   }
 
@@ -39,7 +34,7 @@ export class NotificacionesService {
     return this.http.post<GenericResponse<any>>(
       `${this.apiUrl}/api/notificaciones`,
       payload,
-      { headers: this.getHeaders() }
+      { context: checkToken() }
     );
   }
 
@@ -47,7 +42,7 @@ export class NotificacionesService {
     return this.http.put<GenericResponse<any>>(
       `${this.apiUrl}/api/notificaciones/${id}`,
       {},
-      { headers: this.getHeaders() }
+      { context: checkToken() }
     );
   }
 
@@ -66,12 +61,14 @@ export class NotificacionesService {
 
       return;
     }
+    const url = new URL(this.apiUrl);
+    const basePath = url.pathname.replace(/\/+$/, '');
 
-    this.socket = io(this.apiUrl, {
-      transports: ['websocket'],
-      auth: { token }
+    this.socket = io(url.origin, {
+      path: `${basePath}/socket.io`,
+      auth: { token },
     });
-
+    
     this.socket.on('connect', () => {
       console.log('[NotificacionesService] Socket.IO conectado:', this.socket?.id);
     });
@@ -81,7 +78,7 @@ export class NotificacionesService {
     });
 
     this.socket.on('notificacion', (data: NotificacionResponse) => {
-        console.log('[Socket notificacion raw]', data);
+      console.log('[Socket notificacion raw]', data);
 
       this.ngZone.run(() => {
         this.notificacion$.next({

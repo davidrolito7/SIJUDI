@@ -11,11 +11,13 @@ import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { StyleClassModule } from 'primeng/styleclass';
 import { RippleModule } from 'primeng/ripple';
+import { TooltipModule } from 'primeng/tooltip';
 import { TokenService } from '../../../core/auth/service/token.service';
 import { AuthService } from '../../../core/auth/service/auth.service';
 import { NotificacionesService } from '../../services/notificaciones.service';
 import { NotificacionResponse } from '../../interface/shared.interface';
 import { NotificacionToastComponent } from '../notificacion-toast/notificacion-toast';
+import { estiloNotificacion, origenResumen } from '../notificacion-toast/notificacion-estilos';
 import { UserMenuStore } from '../../../core/layout/siderbar/user-menu.store';
 import { svgSrcForPantalla, svgSrcForModulo } from '../../../core/layout/siderbar/icon/menu-icons.map';
 import { ModulosUsuario } from '../../../core/auth/interface/login.interfaces';
@@ -35,6 +37,7 @@ import { ModulosUsuario } from '../../../core/auth/interface/login.interfaces';
     RouterLinkActive,
     StyleClassModule,
     RippleModule,
+    TooltipModule,
   ],
   templateUrl: './header.html',
   styleUrl: './header.css',
@@ -117,8 +120,8 @@ export class Header implements OnInit, OnDestroy {
       }
     });
 
-   // this.notificacionesService.conectarSocket();
-  //  this.cargarNotificaciones();
+    this.notificacionesService.conectarSocket();
+    this.cargarNotificaciones();
 
     this.navigationSub = this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
@@ -196,8 +199,31 @@ export class Header implements OnInit, OnDestroy {
       });
   }
 
+  //Estilos compartidos con el toast para que las notificaciones se vean igual en ambos lugares
+  readonly estilo = estiloNotificacion;
+  readonly origenResumen = origenResumen;
+
   onToastCerrada(): void {
     this.notificacionToast.set(null);
+  }
+
+  //Marca la notificacion como leida y lleva a la ruta de su tipo de tramite; el idTramite viaja en window.history.state.id
+  abrirNotificacion(notif: NotificacionResponse): void {
+    this.marcarNotificacionLeida(notif);
+
+    const route = notif?.tipoTramite?.route;
+    if (!route) return;
+
+    const url = `/${route.replace(/^\/+/, '')}`;
+    const navegar = () => this.router.navigateByUrl(url, { state: { id: notif.idTramite } });
+
+    //Si ya estamos en esa ruta Angular ignora la navegacion y el componente no se recrea;
+    //se pasa por una ruta intermedia sin tocar la URL para que vuelva a ejecutar ngOnInit con el nuevo state
+    if (this.router.url.split('?')[0] === url) {
+      this.router.navigateByUrl('/home', { skipLocationChange: true }).then(() => navegar());
+    } else {
+      navegar();
+    }
   }
 
   get abogadoNombre(): string {

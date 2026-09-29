@@ -116,12 +116,14 @@ export class DetallesExhortoRecibido {
         //     this.getRespuestaExistente(idExhorto); //verificar si ya existe una respuesta
         //     this.getPromocionExhorto(idExhorto); //verificar si el exhorto tiene promociones
         // });
-        const state = window.history.state as { idExhortoRecibido: number };
+        //idExhortoRecibido viene de los listados; id viene de las notificaciones del header (idTramite)
+        const state = window.history.state as { idExhortoRecibido?: number; id?: number };
+        const idExhortoRecibido = state?.idExhortoRecibido ?? state?.id;
 
         //console.log('State recibido:', state);
 
-        if (state && state.idExhortoRecibido) {
-            this.idExhortoRecibido = state.idExhortoRecibido;
+        if (idExhortoRecibido) {
+            this.idExhortoRecibido = idExhortoRecibido;
             this.cargarDetallesExhorto(this.idExhortoRecibido); // Cargar los detalles de la notifiacion con el idNotificacion
              this.getRespuestaExistente(this.idExhortoRecibido); //verificar si ya existe una respuesta
              this.getPromocionExhorto(this.idExhortoRecibido); //verificar si el exhorto tiene promociones

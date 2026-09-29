@@ -59,15 +59,22 @@ export interface OrigenNotificacion {
   sistemaPerfil: OrigenSistemaPerfil;
 }
 
+export interface TipoTramiteNotificacion {
+  idCatTipoTramite: number;
+  descripcion: string;
+  route: string;
+}
+
 export interface NotificacionResponse {
   id: number;
   idTramite: number;
   idCatTipoTramite: number;
   folio: string;
-  accion: string;
+  accion?: string;
   mensaje: string;
   fecha_creacion: string;
   leida: boolean;
+  tipoTramite?: TipoTramiteNotificacion;
   origen: OrigenNotificacion;
 }
 
