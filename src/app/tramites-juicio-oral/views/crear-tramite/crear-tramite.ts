@@ -9,7 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ApiService } from '../../service/api.service';
-import { ApiResponse, CatJuzgadoResponse, TramitesElectronicosRecibidosResponse, ValidarCausaResponse } from '../../interface/tramites-juicio-oral.model';
+import { ApiResponse, CatEtapaResponse, CatJuzgadoResponse, TramitesElectronicosRecibidosResponse, ValidarCausaResponse } from '../../interface/tramites-juicio-oral.model';
 import { finalize } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -51,6 +51,9 @@ export class CrearTramite implements OnInit {
   //* === LISTAS Y DATOS TEMPORALES ===
   tramitesElectronicosRecibidos: TramitesElectronicosRecibidosResponse | null = null;
   catJuzgados: CatJuzgadoResponse[] = [];
+  catTribunal: CatJuzgadoResponse[] = [];
+  catEtapas: CatEtapaResponse[] = [];
+  
   documentosAnexados: File[] = [];
   causaValidada: ValidarCausaResponse | null = null;
 
@@ -83,12 +86,16 @@ export class CrearTramite implements OnInit {
     { label: 'CUADERNO ANTECEDENTE', value: 34 },
     // { label: 'CUADERNO DE EJECUCIÓN', value: 47 },
   ];
+  tipoTramiteFiltrado = signal<{ label: string; value: number }[]>(this.catTipoTramite);
 
   constructor() {
     this.busquedaForm = this.fb.group({
       idCatTipoTramite: [null, Validators.required],
       numeroExpediente: ['', Validators.required],
       idJuzgado: [{ value: null, disabled: true }, Validators.required],
+      idTribunal: [{ value: null, disabled: true }, Validators.required],
+      idEtapa: [{ value: null}, Validators.required],
+      
       // idPantalla: [1]
     });
     this.documentosForm = this.fb.group({
@@ -104,16 +111,64 @@ export class CrearTramite implements OnInit {
   ngOnInit(): void {
     if (!this.eresAbogado()) {
       this.cargarTodosLosJuzgados();
+      
     }
+    this.cargarEtapas();
+    this.cargaTribunales();
   }
+  cargarEtapas(){
+    this.isLoading.set(true);
+    this.apiService.getEtapas().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
+      next: (response) => {
+        this.catEtapas = response.data;
 
+      },
+      error: (error: unknown) => {
+        console.error('Error al cargar todos los juzgados:', error);
+      }
+    });
+  }
+  cargaTribunales(){
+    const tribunalCtrl = this.busquedaForm.get('idTribunal');
+
+    this.isLoading.set(true);
+    this.apiService.getTribunales().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
+      next: (response) => {
+        this.catTribunal = response.data;
+        tribunalCtrl?.setValue(null, { emitEvent: false });
+        //tribunalCtrl?.disable({ emitEvent: false });
+
+      },
+      error: (error: unknown) => {
+        console.error('Error al cargar todos los tribunales:', error);
+      }
+    });
+  }
   // ngAfterViewInit(): void {
   //   // Retrasamos un poco la ejecución para asegurar que la vista esté completamente renderizada.
   //   setTimeout(() => {
   //     this.startTutorial();
   //   }, 100);
   // }
-
+  onEtapaChange(idEtapa: number | null): void {
+    const tribunalControl = this.busquedaForm.get('idTribunal');
+    if(idEtapa == 2) {
+       this.tipoTramiteFiltrado.set(this.catTipoTramite.filter(tipo => tipo.value === 33 || tipo.value === 34));
+       tribunalControl?.clearValidators();
+       //tribunalControl?.disable(); // si lo quieres deshabilitar
+       tribunalControl?.setValue(0, { emitEvent: false }); // limipamos el control
+    }
+    else{
+      this.tipoTramiteFiltrado.set(this.catTipoTramite.filter(tipo => tipo.value === 33 ));
+      tribunalControl?.setValidators([Validators.required]);
+      tribunalControl?.setValue(null, { emitEvent: false }); // limipamos el control
+      //tribunalControl?.enable(); // si lo quieres habilitar
+    }
+  }
   onTipoTramiteChange(idTipoTramite: number | null): void {
     if(idTipoTramite === 33 || idTipoTramite === 34) {
       this.tipoNumeroExpediente.set(idTipoTramite === 33 ? 'causa' : 'cuaderno');
@@ -127,6 +182,7 @@ export class CrearTramite implements OnInit {
 
   cargarCatalogoJuzgados(idCatTipoTramite: number | null): void {
     const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
+    const tribunalControl = this.busquedaForm.get('idTribunal');
 
     this.busquedaForm.get('numeroExpediente')?.reset('', { emitEvent: false });
     this.mostrarAddDocumentos.set(false);
@@ -152,6 +208,7 @@ export class CrearTramite implements OnInit {
       next: (response) => {
         this.catJuzgados = response.data;
         juzgadoCtrl?.enable({ emitEvent: false });
+        tribunalControl?.enable({ emitEvent: false })
       },
       error: (error: unknown) => {
         console.error('Error al cargar juzgados:', error);
@@ -165,6 +222,7 @@ export class CrearTramite implements OnInit {
 
   private cargarTodosLosJuzgados(): void {
     const juzgadoCtrl = this.busquedaForm.get('idJuzgado');
+    const tribunalControl = this.busquedaForm.get('idTribunal');
 
     this.isLoading.set(true);
     this.apiService.getAllCatJuzgados().pipe(
@@ -174,6 +232,7 @@ export class CrearTramite implements OnInit {
         this.catJuzgados = response.data;
         juzgadoCtrl?.setValue(null, { emitEvent: false });
         juzgadoCtrl?.enable({ emitEvent: false });
+        tribunalControl?.enable({ emitEvent: false });
       },
       error: (error: unknown) => {
         console.error('Error al cargar todos los juzgados:', error);
@@ -367,6 +426,8 @@ export class CrearTramite implements OnInit {
     formData.append('idCatTipoTramite', busquedaValue.idCatTipoTramite?.toString() ?? '0');
     formData.append('IdCatJuzgado', this.causaValidada?.idCatJuzgado?.toString() ?? '0');
     formData.append('Observaciones', documentosValue.observaciones ?? '');
+    formData.append('idEtapa', busquedaValue.idEtapa?.toString() ?? '0');
+    formData.append('idTribunal', busquedaValue.idTribunal?.toString() ?? '0');
 
     this.documentosAnexados.forEach((file) => {
       formData.append('Archivos', file, file.name);
@@ -392,9 +453,11 @@ export class CrearTramite implements OnInit {
   private resetForms(): void {
     this.mostrarAddDocumentos.set(false);
     this.busquedaForm.reset({
+      idEtapa: null,
       idCatTipoTramite: null,
       numeroExpediente: '',
       idJuzgado: null,
+      idTribunal: null,
       //idPantalla: 1
     });
     this.documentosForm.reset();
