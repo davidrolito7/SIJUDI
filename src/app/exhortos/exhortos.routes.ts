@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { redirectGuard } from '../core/auth/guard/redirect-guard';
+import { RecibirExhortoJuzgado } from './recibidos/recibir-exhorto-juzgado/recibir-exhorto-juzgado';
 
 export const EXHORTOS_ROUTES: Routes = [
   { path: 'lista-exhortos-enviados', loadComponent: () => import('../exhortos/enviados/listar/lista-exhorto-Enviado').then(m => m.ListaExhortosEnviados), title: 'Exhortos enviados'/*, canActivate: [RedirectGuard]*/ },
@@ -15,4 +16,5 @@ export const EXHORTOS_ROUTES: Routes = [
   { path: 'promocion-exhorto-enviado', loadComponent: () => import('../exhortos/enviados/promocion/promocion-exhorto-enviado').then(m => m.PromocionExhortoEnviadoComponent), title: 'Promocionar Exhorto Enviado'/*, canActivate: [RedirectGuard] */ },
   { path: 'configuracionJuzgado', loadComponent: () => import('../exhortos/views/ambitos-de-competencia/ambitos-de-competencia').then(m => m.AmbitosDeCompetencia) },
   { path: 'lista-exhortos-recibidos', loadComponent: () => import('../exhortos/recibidos/listar/lista-exhorto-recibido').then(m => m.ListaExhortosRecibidos) },
+  { path: 'asignarJuzgado', component: RecibirExhortoJuzgado, title: 'Recibir Exhorto' },
 ];

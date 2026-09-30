@@ -17,7 +17,10 @@ import {
   EnviadoRespuestaArchivosResponse, ListadoCatalogoTipoDiligenciado,
   generales,
   ListadoCatalogoTipoProcedimiento,
-  ListadoPromocionRecibidasI
+  ListadoPromocionRecibidasI,
+  ReasignarJuzgado,
+  ConfirmacionActualizacion,
+  actualizacionesExhortoRecibido
 } from '../interfaces/exhortos.model';
 
 @Injectable({
@@ -348,4 +351,16 @@ export class ExhortosService {
     return this.http.post(`${this.apiAcuerdo}actualizarRespuestaExhortoRecibido`, { idRespuesta, observaciones, idTipoDiligenciado, idCatTipoProcedimiento }, { context: checkToken() });
   }
 
+
+    postReasignarJuzgado(param: ReasignarJuzgado): Observable<GenericResponse<ReasignarJuzgado>>{
+    return this.http.post<GenericResponse<ReasignarJuzgado>>(this.configJuz+"/ReasignarJuzgado",param,{context: checkToken()});
+  }
+  enviarActualizacionesExhorto(idExhorto: number): Observable<GenericResponse<ConfirmacionActualizacion>>{
+    return this.http.post<GenericResponse<ConfirmacionActualizacion>>(this.apiAcuerdo+"/EntregarActualizacionesExhortoRecibido?idExhortoRecibido="+idExhorto,null,{context: checkToken()});
+  }
+     //obtiene la lista de actualizaciones de un exhorto recibido
+  getActualizacionesExhortoRecibido(idExhortoRecibido : number ):Observable<GenericResponse<actualizacionesExhortoRecibido[]>>{
+    return this.http.get<GenericResponse<actualizacionesExhortoRecibido[]>>(this.apiAcuerdo + "ListaActualizacionesExhortosRecibidos?idExhortoRecibido="+idExhortoRecibido,{context:checkToken()});
+  }
+  
 }

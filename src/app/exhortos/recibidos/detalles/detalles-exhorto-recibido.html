@@ -24,11 +24,13 @@
         </div>
 
         <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
-          
+            @if (tienePermisoReasignarExhorto()) {
+            @if (!existeacuerdo() && (detallesExhortos() !== undefined ?
+            detallesExhortos()?.generales?.estatus==='Incompetencia': false)) {
             <p-button type="button" (click)="reasignarExhorto()" label="Reasignar Exhorto" icon="pi pi-sync"
                 severity="help"></p-button>
-            
-            
+            }
+            }
             <!--Declarar incompetencia: visible con el permiso hasta que el juez firma el acuerdo y lo turna de
             vuelta al secretario; a partir de ese movimiento se oculta-->
             @if (tienePermisoDeclararIncompetencia() && !juezYaTurnoAlSecretario()) {
