@@ -14,6 +14,9 @@ export interface TramitesElectronicosRecibidosResponse {
     observaciones: string;
     cantidadAnexos: number;
     activo: boolean;
+    etapa: string;
+    idEtapa: number;
+    tribunal: string;
 
     //este campo llega al enviar la promocion, no en el listado 
     juzgado?: string;
@@ -38,7 +41,10 @@ export interface CatJuzgadoResponse {
     idCatJuzgado: number;
     descripcion: string;
 }
-
+export interface CatEtapaResponse {
+    idEtapa: number;
+    descripcion: string;
+}
 export interface ValidarCausaVictima {
     idVictima: number;
     nombre: string;

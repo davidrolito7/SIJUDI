@@ -70,6 +70,17 @@
 
             <!-- Campos -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-end">
+                <!-- Etapa -->
+                <div id="tipoTramite" class="md:col-span-2">
+                    <label for="idCatTipoTramite"
+                        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+                        Etapa<strong>*</strong>
+                    </label>
+
+                    <p-select class="w-full text-sm" [options]="catEtapas" formControlName="idEtapa"
+                        (onChange)="onEtapaChange($event.value)" optionValue="idEtapa" optionLabel="descripcion"
+                        placeholder="Selecciona una etapa" [filter]="true" appendTo="body" fluid />
+                </div>
                 <!-- Tipo -->
                 <div id="tipoTramite" class="md:col-span-2">
                     <label for="idCatTipoTramite"
@@ -77,7 +88,7 @@
                         Tipo<strong>*</strong>
                     </label>
 
-                    <p-select class="w-full text-sm" [options]="catTipoTramite" formControlName="idCatTipoTramite"
+                    <p-select class="w-full text-sm" [options]="tipoTramiteFiltrado()" formControlName="idCatTipoTramite"
                         (onChange)="onTipoTramiteChange($event.value)" optionValue="value" optionLabel="label"
                         placeholder="Selecciona un tipo de trámite" [filter]="true" appendTo="body" fluid />
                 </div>
@@ -96,10 +107,10 @@
                 <!-- Juzgado -->
                 <div id="juzgado" class="md:col-span-2">
                     <label for="idJuzgado" class="mb-1.5 inline-flex items-center rounded-md
-           bg-blue-100 dark:bg-blue-950/80
-           px-2.5 
-           text-sm font-medium text-surface-700 dark:text-surface-300
-          ">
+                        bg-blue-100 dark:bg-blue-950/80
+                        px-2.5 
+                        text-sm font-medium text-surface-700 dark:text-surface-300
+                        ">
                         Juzgado origen<strong>*</strong>
                     </label>
 
@@ -107,7 +118,22 @@
                         optionValue="idCatJuzgado" optionLabel="descripcion" placeholder="Selecciona un juzgado"
                         [filter]="true" appendTo="body" fluid />
                 </div>
+                <!-- Tribunal -->
+                 @if(busquedaForm.get('idEtapa')?.value === 3) {
+                    <div id="tribunal" class="md:col-span-2">
+                        <label for="idTribunal" class="mb-1.5 inline-flex items-center rounded-md
+                            bg-blue-100 dark:bg-blue-950/80
+                            px-2.5 
+                            text-sm font-medium text-surface-700 dark:text-surface-300
+                            ">
+                            Tribunal<strong>*</strong>
+                        </label>
 
+                        <p-select class="w-full text-sm" [options]="catTribunal" formControlName="idTribunal"
+                            optionValue="idCatJuzgado" optionLabel="descripcion" placeholder="Selecciona un tribunal"
+                            [filter]="true" appendTo="body" fluid />
+                    </div>
+                }
                 <!-- Buscar -->
                 <div id="botonBuscar" class="md:col-span-1">
                     <button pButton class="w-full" (click)="onValidarCausa()" [disabled]="busquedaForm.invalid">
@@ -623,14 +649,26 @@
                         {{ tramitesElectronicosRecibidos?.folio || '—' }}
                     </span>
                 </div>
-
+                <div class="flex justify-between items-center gap-4 px-3 py-2 ">
+                    <span class="font-semibold text-color-secondary shrink-0">Etapa</span>
+                    <span class="font-medium text-right min-w-0">
+                        {{ tramitesElectronicosRecibidos?.etapa || '—' }}
+                    </span>
+                </div>
                 <div class="flex justify-between items-center gap-4 px-3 py-2 ">
                     <span class="font-semibold text-color-secondary shrink-0">Juzgado</span>
                     <span class="font-medium text-right min-w-0">
                         {{ tramitesElectronicosRecibidos?.juzgado || '—' }}
                     </span>
                 </div>
-
+                @if(tramitesElectronicosRecibidos?.idEtapa === 3) {
+                    <div class="flex justify-between items-center gap-4 px-3 py-2 ">
+                        <span class="font-semibold text-color-secondary shrink-0">Tribunal</span>
+                        <span class="font-medium text-right min-w-0">
+                            {{ tramitesElectronicosRecibidos.tribunal  }}
+                        </span>
+                    </div>
+                }
                 <div class="flex justify-between items-center gap-4 px-3 py-2  bg-surface-100 dark:bg-surface-800">
                     <span class="font-semibold text-color-secondary shrink-0">Fecha de envío</span>
                     <span class="font-medium text-right min-w-0">

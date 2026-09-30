@@ -1,7 +1,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiResponse, CatJuzgadoResponse, DetalleTramiteElectronicoRecibidoResponse, TramitesElectronicosRecibidosResponse, ValidarCausaResponse } from '../interface/tramites-juicio-oral.model';
+import { ApiResponse, CatEtapaResponse, CatJuzgadoResponse, DetalleTramiteElectronicoRecibidoResponse, TramitesElectronicosRecibidosResponse, ValidarCausaResponse } from '../interface/tramites-juicio-oral.model';
 import { checkToken } from '../../core/auth/interceptor/token.interceptor';
 import { environment } from '../../../environments/environment';
 @Injectable({
@@ -34,7 +34,14 @@ export class ApiService {
     const url = `${this.apiUrl}/CatalogoJuzgadosActivos`;
     return this.http.get<ApiResponse<CatJuzgadoResponse[]>>(url, { context: checkToken() });
   }
-
+  getEtapas() {
+    const url = `${this.apiUrl}/CatalogoEtapas`;
+    return this.http.get<ApiResponse<CatEtapaResponse[]>>(url, { context: checkToken() });
+  }
+  getTribunales(){
+    const url = `${this.apiUrl}/CatalogoTribunales`;
+    return this.http.get<ApiResponse<CatJuzgadoResponse[]>>(url, { context: checkToken() });
+  }
   postValidarCausa(params?: any): Observable<ApiResponse<ValidarCausaResponse>> {
     const url = `${this.apiUrl}/ValidarCausa`;
     return this.http.post<ApiResponse<ValidarCausaResponse>>(
