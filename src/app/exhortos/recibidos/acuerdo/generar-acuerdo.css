@@ -1,0 +1,16 @@
+/* Seccion de documentos: margen para que no quede pegada al borde/encabezado al hacer scroll */
+.seccion-documentos {
+  scroll-margin-top: 5rem;
+  transition: box-shadow 0.4s ease;
+}
+
+/* Resaltado temporal al aparecer despues de guardar: 3 pulsos azules (4.2s en total) */
+.resaltar-seccion {
+  animation: resaltar-documentos 1.4s ease-out 3;
+}
+
+@keyframes resaltar-documentos {
+  0%   { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); border-color: #3b82f6; }
+  70%  { box-shadow: 0 0 0 14px rgba(59, 130, 246, 0); border-color: #3b82f6; }
+  100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}

@@ -1,25 +1,36 @@
-<p-dialog
-  [visible]="visible()"
-  (visibleChange)="visible.set($event)"
-  [modal]="true"
-  [closable]="true"
-  appendTo="body"
-  [style]="{width: '400px'}"
-  header="Mi diálogo personalizado">
+<p-dialog [visible]="visible()" (visibleChange)="visible.set($event)" [modal]="true" [closable]="true"
+  appendTo="body" [style]="{ width: '500px' }" [breakpoints]="{ '575px': '95vw' }">
+  <ng-template #header>
+    <div class="flex items-center gap-3">
+      <div
+        class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+        <i class="pi pi-ban text-red-500"></i>
+      </div>
+      <div>
+        <span class="block text-base font-semibold leading-5 text-surface-900 dark:text-surface-0">
+          Devolución de exhorto
+        </span>
+      </div>
+    </div>
+  </ng-template>
+
+  <p class="mb-4 text-sm leading-5 text-surface-500 dark:text-surface-400">
+    Indica el motivo por el cual el juzgado no es competente para atender este exhorto.
+  </p>
 
   <form [formGroup]="incompetenciaForm">
-    <div class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-        <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
-            
-            <label for="message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Escriba la justificación por la que se declara la incompetencia</label>
-            <textarea #Justificacion id="Justificacion" formControlName="justificacion" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" ></textarea>
-
-        </div>
-        
+    <div class="w-full">
+      <label for="justificacion" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+        Justificación<strong>*</strong>
+      </label>
+      <textarea pTextarea id="justificacion" formControlName="justificacion" rows="5" class="w-full"
+        [autoResize]="true" placeholder="Escriba la justificación de la incompetencia"></textarea>
     </div>
-</form>
+  </form>
 
-    <button pButton  icon="pi pi-times" text (click)="close()">Cancel</button> 
-    <button  pButton  icon="pi pi-check" (click)="GuardarIncompetencia()" >Agregar</button>
+  <ng-template #footer>
+    <p-button label="Cancelar" icon="pi pi-times" text (click)="close()" />
+    <p-button label="Declarar incompetencia" icon="pi pi-check" severity="danger"
+      [disabled]="!incompetenciaForm.valid" (click)="GuardarIncompetencia()" />
+  </ng-template>
 </p-dialog>
-

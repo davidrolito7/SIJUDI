@@ -89,9 +89,9 @@
         </div>
         <div class="border-t-[0.5px] border-surface-200 dark:border-surface-800"></div>
 
-        <p-table class="personalizado" #dt1 [value]="listadosExhortos()" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
-            [paginator]="true"
-            [globalFilterFields]="['estadoOrigen','juzgadoOrigenNombre','numeroExpedienteOrigen','municipioDestino']">
+        <p-table class="personalizado" #dt1 [value]="listadoPromocionRecibidas()" [rows]="10"
+            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+            [globalFilterFields]="['NumeroExhorto','folioOrigenPromocion','folioPromocionRecibida']">
             <ng-template #caption>
                 <div class="flex p-2">
                     <p-button label="Limpiar" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
@@ -105,13 +105,11 @@
 
             <ng-template #header>
                 <tr>
-                    <th class="text-base font-semibold">Estado exhortante</th>
-                    <th class="text-base font-semibold">Juzgado origen</th>
-                    <th class="text-base font-semibold">Exp. origen</th>
-                    <th class="text-base font-semibold">Materia</th>
-                    <th class="text-base font-semibold">Municipio destino</th>
-                    <th class="text-base font-semibold">Fecha de recepción</th>
-                    <th class="text-base font-semibold">Estatus</th>
+                    <th class="text-base font-semibold">Exhorto origen</th>
+                    <th class="text-base font-semibold">Número Exhorto</th>
+                    <th class="text-base font-semibold">Folio Origen Promocion</th>
+                    <th class="text-base font-semibold">Fecha Origen</th>
+                    <th class="text-base font-semibold">Folio Promocion Recibida</th>
                     <th pFrozenColumn alignFrozen="right" class="text-base font-semibold" style="min-width: 9rem">
                         Acciones</th>
                 </tr>
@@ -119,28 +117,15 @@
 
             <ng-template #body let-listado>
                 <tr>
-                    <td>{{ listado.estadoOrigen }}</td>
-                    <td>{{ listado.juzgadoOrigenNombre}}</td>
-                    <td>{{ listado.numeroExpedienteOrigen }}</td>
-                    <td>{{ listado.materiaNombre }}</td>
-                    <td>{{ listado.municipioDestino }}</td>
-                    <td>{{ listado.fechaHoraRecepcion | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                    <td>
-                        <p-tag [icon]="getTagConfig(listado.estatus).icon"
-                            [severity]="getTagConfig(listado.estatus).severity" [value]="listado.estatus" />
-                    </td>
+                    <td>{{ listado.exhortoOrigenId }}</td>
+                    <td>{{ listado.numeroExhorto}}</td>
+                    <td>{{ listado.folioOrigenPromocion }}</td>
+                    <td>{{ listado.fechaOrigen }}</td>
+                    <td>{{ listado.folioPromocionRecibida }}</td>
                     <td pFrozenColumn alignFrozen="right" class="text-end whitespace-nowrap">
-                        @if (tienePermisoVerAcuerdo()) {
-                        @if (listado.respuesta != 0) {
-                        <p-button (click)="verAcuerdos(listado.idExhortoRecibido)" [rounded]="true" [text]="true"
-                            [raised]="true" severity="success" [rounded]="true" icon="pi pi-file-check"
-                            pTooltip="Ver acuerdos" tooltipPosition="top" class="mr-2"></p-button>
-                        }
-                        }
-
-                        <p-button (click)="verDetalleNotificacion(listado.idExhortoRecibido)" [rounded]="true"
-                            [text]="true" [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye"
-                            pTooltip="Ver detalle" tooltipPosition="top"></p-button>
+                        <p-button (click)="verDetalleExhorto(listado.idExhortoRecibido)" [rounded]="true" [text]="true"
+                            [raised]="true" severity="info" [rounded]="true" icon="pi pi-eye" pTooltip="Ver detalle"
+                            tooltipPosition="top"></p-button>
                     </td>
                 </tr>
             </ng-template>
@@ -148,7 +133,7 @@
             <ng-template #emptymessage>
                 <tr>
                     <td colspan="8" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
-                        Sin exhortos.
+                        Sin promociones.
                     </td>
                 </tr>
             </ng-template>

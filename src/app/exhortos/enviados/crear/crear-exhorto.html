@@ -26,7 +26,33 @@
       </p>
     </div>
     <div class="mt-6 md:mt-0 flex items-center gap-2">
-      @if(tienePermisoGuardar()){
+      <!-- @if (generalesPendientesEnvio && mensajeTurnado()) {
+      <span class="flex items-center gap-1 text-sm text-surface-500 dark:text-surface-400">
+        <i class="pi pi-clock text-xs"></i> {{ mensajeTurnado() }}
+      </span>
+      } -->
+      <!--turnado previo al envio de generales: el destinatario del ultimo movimiento (16 Secretario->Juez,
+      17 Juez->Secretario) lo recibe o lo revoca; el secretario turna al juez una vez que firmo el oficio y el
+      juez lo regresa una vez que firmo-->
+      @if (generalesPendientesEnvio) {
+      @if (puedeRecibir()) {
+      <p-button (onClick)="recibir()" label="Recibir" icon="pi pi-check"></p-button>
+      }
+      @if (puedeRevocar()) {
+      <p-button (onClick)="revocar()" label="Revocar" icon="pi pi-replay" severity="secondary"></p-button>
+      }
+      @if (puedeTurnar() && !modoEdicion()) {
+      <p-button (onClick)="turnar()" [label]="esJuez() ? 'Turnar a secretario' : 'Turnar a juez'" icon="pi pi-send">
+      </p-button>
+      }
+      <!--listo para turnar al juez: formulario en solo lectura; Editar lo habilita hasta que vuelva a guardar-->
+      @if (bloqueadoListoParaTurnar() && puedeGuardar()) {
+      <p-button (onClick)="habilitarEdicion()" label="Editar" icon="pi pi-pencil" severity="secondary"
+        [outlined]="true">
+      </p-button>
+      }
+      }
+      @if(puedeGuardar() && !formularioBloqueadoPorTurno()){
       @if (mostrarBotonGuardar && (!mostrarBotonEnviarGenerales || modoEdicion())) {
       <p-button (onClick)="guardarOActualizarExhorto()" label="Guardar" icon="pi pi-save">
       </p-button>
@@ -40,7 +66,7 @@
         </p-button>
       </span>
       }
-      @if(tienePermisoGuardar()){
+      @if(puedeGuardar() && !formularioBloqueadoPorTurno()){
       <p-button (onClick)="habilitarEdicion()" label="Editar" icon="pi pi-pencil" severity="secondary"
         [outlined]="true">
       </p-button>
@@ -48,7 +74,7 @@
       }
       @if (mostrarBotonEnviarArchivos) {
       @if(tienePermisoEnviarArchvios()){
-      <button pButton (click)="enviarArchivos()" ><svg data-p-icon="paperclip"></svg>Enviar archivos
+      <button pButton (click)="enviarArchivos()"><svg data-p-icon="paperclip"></svg>Enviar archivos
       </button>
 
       }
@@ -276,7 +302,7 @@
                 <i pButtonIcon class="pi pi-user-plus"></i>
                 <span pButtonLabel>Agregar</span>
             </p-button> -->
-      @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
+      @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion()) && !formularioBloqueadoPorTurno()) {
       <p-button class="whitespace-nowrap" (onClick)="openNewParte()">
         <i pButtonIcon class="pi pi-plus"></i>
         <span pButtonLabel>Agregar parte </span>
@@ -301,7 +327,7 @@
               <th>Tipo parte</th>
               <th>correo</th>
               <th>Teléfono</th>
-              @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
+              @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion()) && !formularioBloqueadoPorTurno()) {
               <th>Acciones</th>
               }
             </tr>
@@ -332,7 +358,8 @@
               <td style="font-size: small;">
                 {{ promo.telefono }}
               </td>
-              @if(idEstatus <= 1 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) { <td class="px-6 py-3">
+              @if(idEstatus <= 1 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion()) && !formularioBloqueadoPorTurno()) {
+                <td class="px-6 py-3">
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                   (click)="eliminarParte(promo)"></p-button>
                 </td>
@@ -384,7 +411,7 @@
                 <i pButtonIcon class="pi pi-user-plus"></i>
                 <span pButtonLabel>Agregar</span>
             </p-button> -->
-      @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
+      @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion()) && !formularioBloqueadoPorTurno()) {
       <p-button class="whitespace-nowrap" (onClick)="openNewPromovente()">
         <i pButtonIcon class="pi pi-plus"></i>
         <span pButtonLabel>Agregar Promovente </span>
@@ -408,7 +435,7 @@
               <th>Tipo parte</th>
               <th>Correo</th>
               <th>Teléfono</th>
-              @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
+              @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion()) && !formularioBloqueadoPorTurno()) {
               <th>Acciones</th>
               }
             </tr>
@@ -439,7 +466,8 @@
               <td style="font-size: small;">
                 {{ promo.telefono }}
               </td>
-              @if(idEstatus <= 1 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) { <td class="px-6 py-3">
+              @if(idEstatus <= 1 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion()) && !formularioBloqueadoPorTurno()) {
+                <td class="px-6 py-3">
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                   (click)="eliminarPromovente(promo)"></p-button>
                 </td>
@@ -466,7 +494,8 @@
 </div>
 @if(exhortoGuardado)
 {
-<div #seccionDocumentos [class.resaltar-seccion]="resaltarDocumentos()" class="seccion-documentos relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
+<div #seccionDocumentos [class.resaltar-seccion]="resaltarDocumentos()"
+  class="seccion-documentos relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
   <!-- Esquinas decorativas -->
   <span
     class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
@@ -494,11 +523,12 @@
     <div class="mt-4 md:mt-0 flex items-center">
       @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
       <div class="relative" style="margin-right: 1rem;">
-        <button pButton (click)="openNewFirma()" severity="warn" > <svg data-p-icon="signature" [size]="16"></svg> Firmar con FIREL
+        <button pButton (click)="openNewFirma()" severity="warn"> <svg data-p-icon="signature" [size]="16"></svg> Firmar
+          con FIREL
         </button>
       </div>
       }
-      @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())) {
+      @if (idEstatus !== 10 && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion()) && !documentosBloqueadosPorTurno()) {
       <p-fileupload mode="basic" [customUpload]="true" [auto]="true" [multiple]="true" chooseIcon="pi pi-upload"
         accept="application/pdf" (onSelect)="onAnexosSelect($event)" chooseLabel="Agregar documento" />
       }
@@ -534,7 +564,7 @@
           </ng-template>
           <ng-template #body let-documento let-i="rowIndex">
             <tr>
-              <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo){
+              <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo && puedeSeleccionarParaFirma()){
                 <p-checkbox [binary]="true" [(ngModel)]="documento.selecParaFirma"
                   [ngModelOptions]="{ standalone: true }" (onChange)="archivo_seleccionado(documento)" />
                 }
@@ -557,24 +587,40 @@
               </td>
               <td style="font-size: small;">{{ documento.firmado ? 'Sí' : 'No' }}</td>
               <td style="font-size: small;">{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
-              <td>
-                <table>
-                  @for (firmante of documento.firmantes; track firmante) {
-                  <tr>
-                    @if(firmante != undefined)
-                    {
-                    <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
-                    @if(!documento.firmado){
-                    <td class="px-4">
-                      <!--<a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">Eliminar</a>-->
-                      <p-button (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true"
-                        icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>
-                    </td>
+              <td class="align-middle">
+                <!--firmantes como chips: inicial del nombre, nombre (recortado si es largo) y, solo para la firma
+                propia del Secretario/Juez mientras no se apliquen las firmas, el boton para eliminarla-->
+                <div class="flex flex-col items-start gap-1.5">
+                  @for (firmante of documento.firmantes; track firmante.idFirmaTmp) {
+                  @if (firmante) {
+                  <div class="group inline-flex max-w-56 items-center gap-2 rounded-full border py-0.5 pl-0.5 pr-2
+                    border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-800">
+                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[0.6rem] font-semibold uppercase
+                      bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-200">
+                      {{ firmante.nombre?.charAt(0) }}
+                    </span>
+                    <span class="truncate text-xs text-surface-700 dark:text-surface-200" [title]="firmante.nombre">
+                      {{ firmante.nombre }}
+                    </span>
+                    @if (documento.firmado) {
+                    <i class="pi pi-check-circle shrink-0 text-xs text-green-600 dark:text-green-400" title="Firma aplicada"></i>
                     }
+                    @else if (puedeEliminarFirma(firmante)) {
+                    <button type="button" (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)"
+                      class="-mr-1 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-surface-400
+                        transition-colors hover:bg-red-100 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-red-500
+                        dark:hover:bg-red-950/40 dark:hover:text-red-400"
+                      title="Eliminar mi firma" aria-label="Eliminar mi firma">
+                      <i class="pi pi-times" style="font-size: 0.6rem;"></i>
+                    </button>
                     }
-                  </tr>
+                  </div>
                   }
-                </table>
+                  }
+                  @empty {
+                  <span class="text-xs italic text-surface-400 dark:text-surface-500">Sin firmas</span>
+                  }
+                </div>
               </td>
               <td style="font-size: small;">{{ ((documento.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
 
@@ -584,8 +630,9 @@
                   class="mr-2" title="cargar documento">
                 </p-button>
                 }
-                <!--APLICAR FIRMAS-->
-                @if(!documento.firmado){
+                <!--APLICAR FIRMAS: solo el Secretario, una vez que recibio de vuelta del juez y ya estan cargadas
+                las firmas del juez y del abogado-->
+                @if(puedeAplicarFirmas(documento)){
                 <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
                   icon="pi pi-key" class="mr-2" title="Aplicar firmas">
                 </p-button>
@@ -597,7 +644,8 @@
                   class="mr-2" title="Descargar PDF"></p-button>
 
                 <!--ELIMINAR DOCUMENTO-->
-                @if((idEstatus == 1 || idEstatus==0) && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales || modoEdicion())){
+                @if((idEstatus == 1 || idEstatus==0) && !mostrarBotonEnviarArchivos && (!mostrarBotonEnviarGenerales ||
+                modoEdicion()) && !documentosBloqueadosPorTurno()){
                 <!--//Pendiente de enviar-->
                 @if(tienePermisoEliminarArchivo()){
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
@@ -661,6 +709,21 @@
 </app-confirm-dialog>
 <!--MODAL PARA CONFIRMAR LA ELIMINACION DE ARCHIVO-->
 <app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro de eliminar el documento?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODALES DE CONFIRMACION DEL TURNADO (Secretario <-> Juez) -->
+<app-confirm-dialog key="turnarExhorto" title="Confirmación" message="¿Está seguro de que desea turnar el exhorto?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<app-confirm-dialog key="recibirExhorto" title="Confirmación" message="¿Está seguro de que desea recibir el exhorto?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<app-confirm-dialog key="revocarTurno" title="Confirmación" message="¿Está seguro de que desea revocar el turno?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!-- MODAL DE CONFIRMACION PARA ELIMINAR UNA FIRMA -->
+<app-confirm-dialog key="eliminarFirma" title="Confirmación"
+  message="¿Está seguro de eliminar su firma? Tendrá que volver a firmar el documento con FIREL."
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 
@@ -758,7 +821,7 @@
             <div class="mt-4 flex flex-col items-center gap-2 border-t border-surface-200 dark:border-surface-800 pt-4">
               <span class="text-surface-500 dark:text-surface-400 font-medium text-sm">Código QR de verificación</span>
               @if (archivoRecibidoConAcuse?.acuse?.urlInfo) {
-              <app-qr-generator-component qrData="archivoRecibidoConAcuse?.acuse?.urlInfo" />
+              <app-qr-generator-component [qrData]="archivoRecibidoConAcuse.acuse.urlInfo" />
               } @else {
               <app-qr-generator-component qrData="https://tribunaloaxaca.gob.mx" />
               }
@@ -767,7 +830,12 @@
           </div>
         </div>
         <!-- Botón imprimir -->
-        <div class="flex justify-end">
+        <div class="flex justify-end gap-2">
+          <!--abre en otra pestaña la pagina de consulta del exhorto (la misma url que codifica el QR)-->
+          @if (archivoRecibidoConAcuse?.acuse?.urlInfo) {
+          <p-button icon="pi pi-external-link" label="Consultar exhorto" severity="secondary" [outlined]="true"
+            (click)="abrirConsultaAcuse()" />
+          }
           <p-button icon="pi pi-print" label="Imprimir" severity="secondary" [outlined]="true"
             (click)="printDivContent()" />
         </div>

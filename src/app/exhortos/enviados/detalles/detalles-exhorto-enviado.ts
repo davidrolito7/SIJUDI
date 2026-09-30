@@ -22,6 +22,7 @@ import generateExEnviadosPDF from '../../reportes/rptExhortoEnviado';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { TagModule } from "primeng/tag";
 import { HttpErrorResponse } from '@angular/common/http';
+import { construirDatosEdicionExhorto } from '../../functions/edicion-exhorto-enviado';
 
 @Component({
   selector: 'app-DetallesExhortoEnviado',
@@ -262,37 +263,7 @@ export class DetallesExhortoEnviado {
   }
 
   editarExhorto() {
-    const payload = {
-      municipioDestinoId: this.detallesExhortos()?.generales.municipioDestino,
-      materiaOrigenId: this.detallesExhortos()?.generales.idMateriaOrigen,
-      estadoOrigenId: this.detallesExhortos()?.generales.estadoOrigenId,
-      municipioOrigenId: this.detallesExhortos()?.generales.municipioOrigen,
-      municipioOrigenTrue: this.detallesExhortos()?.generales.idMunicipioOrigen,
-      juzgadoOrigenId: this.detallesExhortos()?.generales.juzgadoOrigenId,
-      juzgadoOrigenNombre: this.detallesExhortos()?.generales.juzgadoOrigenNombre,
-      numeroExpedienteOrigen: this.detallesExhortos()?.generales.numeroExpedienteOrigen,
-      numeroOficioOrigen: this.detallesExhortos()?.generales.numeroOficioOrigen,
-      idCatTipoVia: this.detallesExhortos()?.generales.idCatTipoVia,
-      tipoJuicioAsuntoDelitos: this.detallesExhortos()?.generales.tipoJuicioAsuntoDelitos,
-      juezExhortante: this.detallesExhortos()?.generales.juezExhortante,
-      partes: this.detallesExhortos()?.partes,
-      fojas: this.detallesExhortos()?.generales.fojas,
-      diasResponder: this.detallesExhortos()?.generales.diasResponder,
-      tipoDiligenciaId: this.detallesExhortos()?.generales.tipoDiligenciaId,
-      tipoDiligenciacionNombre: this.detallesExhortos()?.generales.tipoDiligenciacionNombre,
-      observaciones: this.detallesExhortos()?.generales.observaciones,
-      idUsuario: this.detallesExhortos()?.generales.idUsuario,
-      materiaNombre: this.detallesExhortos()?.generales.materiaNombre,
-      estadoDestinoId: this.detallesExhortos()?.generales.estadoDestino,
-      promoventes: this.detallesExhortos()?.promoventes,
-      idCatMateria: this.detallesExhortos()?.generales.materiaNombreOrigen,
-      idExhortoEnviado: this.detallesExhortos()?.generales.idExhortoEnviado, // importante para actualizar
-      fechaHora: this.detallesExhortos()?.generales.fechaHora,
-      fechaHoraRecepcion: this.detallesExhortos()?.generales.fechaHoraRecepcion,
-      numeroExhorto: this.detallesExhortos()?.generales.numeroExhorto,
-      idEstatus: this.detallesExhortos()?.generales.idEstatus,
-      estatus: this.detallesExhortos()?.generales.estatus
-    };
+    const payload = construirDatosEdicionExhorto(this.detallesExhortos());
     //console.log('Payload enviado a crear-exhorto:', payload);
     //console.log('Detalles del exhorto:', this.detallesExhortos);
     this.router.navigate(['/exhortos/crear-exhorto'], { state: { datosExhorto: payload, modoEdicion: true } });
