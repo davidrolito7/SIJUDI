@@ -1,453 +1,452 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
 <p-toast></p-toast>
-  <!-- BREADCRUMB -->
- <div class="sticky top-0 z-50 bg-surface-50 dark:bg-surface-950 flex flex-col gap-4">
-  <!-- BREADCRUMB -->
-      <!-- <app-header></app-header> -->
 
+<!-- ENCABEZADO -->
+<div class="relative border border-surface-200 bg-white p-5 mt-4 dark:border-surface-800 dark:bg-surface-900">
+  <!-- Esquinas decorativas -->
+  <span
+    class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200">
+  </span>
 
-  <!-- ENCABEZADO -->
-  <div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4">
-    <div class="flex items-start flex-col md:flex-row justify-between">
-      <div>
-        <label class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4 md:mb-0">
-          Crear Promoción
-        </label>
-
-        <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-          <div class="flex items-center gap-2">
-            <i class="pi pi-users text-base! leading-normal!"></i>
-            <span>Iniciar una promoción</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Botones -->
-      <div class="flex flex-wrap items-center gap-3">
-
-        @if(fechaHora == null){
-          @if(tienePermisoGuardar()){
-            <p-button
-              (onClick)="guardarPromocion(myForm)"
-              styleClass="w-full">
-              Guardar
-            </p-button>
-          }
-        }
-
-        @if(!hayCambiosSinGuardar && listaDocumentos().length >= 1){
-          @if(fechaHora == null){
-            @if(tienePermisoEnviarGenerales()){
-              <p-button
-                (onClick)="enviarPromocionGenerales(idExhortoEnviado)"
-                styleClass="w-full">
-                Enviar generales
-              </p-button>
-            }
-          }
-
-          @if(tienePermisoEnviarArchvios()){
-            @if(fechaRecepcion == null && fechaHora != null){
-              <p-button
-                (onClick)="enviarPromocionArchivos(idPromocionEnviado,idExhortoEnviado)"
-                icon="pi pi-send"
-                styleClass="w-full">
-                Enviar archivos
-              </p-button>
-            }
-          }
-        }
-
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4 mt-4">
-    <!-- Información de exhorto -->
-    <div class="border-b border-surface mb-4 pb-2">
-        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0">Información del Exhorto</h3>
+  <div class="flex flex-col md:flex-row justify-between gap-4">
+    <div>
+      <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+        <span class="pi pi-file-edit text-lg text-primary"></span> Crear promoción
+      </h2>
+      <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+        Captura de la promoción del exhorto enviado.
+      </p>
     </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-        <!-- Columna 1 -->
-        <div class="flex flex-col">
-          <div>
-            <p class=" text-gray-500">ExhortoOrigenId</p>
-            <p>{{ detallesExhortos()?.generales?.idExhortoEnviado }}</p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Estado</p>
-            <p>{{ detallesExhortos()?.generales?.estadoDestino }}</p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Juez Exhortante</p>
-            <p class="font-semibold">
-              {{ detallesExhortos()?.generales?.juezExhortante }}
-            </p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Fecha de Envío</p>
-            <p>{{ detallesExhortos()?.generales?.fechaHora }}</p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Término (Días)</p>
-            <p>{{ detallesExhortos()?.generales?.diasResponder }}</p>
-          </div>
-
-        </div>
-
-        <!-- Columna 2 -->
-        <div class="flex flex-col">
-
-          <div>
-            <p class=" text-gray-500">Num Exhorto</p>
-            <p class="text-red-500 font-bold">
-              {{ detallesExhortos()?.generales?.numeroExhorto }}
-            </p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Municipio</p>
-            <p>{{ detallesExhortos()?.generales?.municipioOrigen }}</p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Tipo de Juicio</p>
-            <p>{{ detallesExhortos()?.generales?.tipoJuicioAsuntoDelitos }}</p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Expediente</p>
-            <p class="font-semibold">
-              {{ detallesExhortos()?.generales?.numeroExpedienteOrigen }}
-            </p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Fojas</p>
-            <p>{{ detallesExhortos()?.generales?.fojas }}</p>
-          </div>
-
-        </div>
-
-        <!-- Columna 3 -->
-        <div class="flex flex-col">
-
-          <div>
-            <p class=" text-gray-500">Juzgado</p>
-            <p>{{ detallesExhortos()?.generales?.juzgadoOrigenNombre }}</p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Diligencia</p>
-            <p>{{ detallesExhortos()?.generales?.tipoDiligenciacionNombre }}</p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Oficio</p>
-            <p>{{ detallesExhortos()?.generales?.numeroOficioOrigen }}</p>
-          </div>
-
-          <div>
-            <p class=" text-gray-500">Estatus</p>
-            <span class="inline-flex items-center px-3 py-1 rounded-md bg-green-400 text-black font-bold text-xs">
-              <i class="pi pi-send mr-1"></i>
-              {{ detallesExhortos()?.generales?.estatus }}
-            </span>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- Observaciones -->
-      <div class="mt-4 text-sm">
-        <p class=" text-gray-500">Observaciones</p>
-        <p class="italic font-semibold">
-          {{ detallesExhortos()?.generales?.observaciones }}
-        </p>
-      </div>
-
-    
-
-  
-
-</div>
-
-<div class="bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl p-4 mt-4">       
-    <form #myForm="ngForm" class="grid grid-cols-12 gap-4 w-full items-end" >
-
-                <!-- Número de fojas -->
-                <div class="col-span-12 sm:col-span-3">
-                    <label class="block mb-2 text-sm font-medium">Número de fojas*</label>
-                    <p-inputnumber 
-                            inputId="fojas" 
-                            name="fojas"
-                            [(ngModel)]="fojas" 
-                            [showButtons]="true" 
-                            mode="decimal" [min]="0"
-                            [max]="5000" 
-                            [useGrouping]="false" 
-                            class="w-full" fluid 
-                            (ngModelChange)="marcarCambios()">
-                        </p-inputnumber>
-                </div>
-                <!-- Observaciones -->
-                <div class="col-span-12">
-                    <label class="block mb-2 text-sm font-medium">Observaciones</label>
-                        <textarea id="observaciones"  
-                                [(ngModel)]="observaciones"
-                                name="observaciones" 
-                                rows="4" 
-                                pInputTextarea 
-                                class="w-full"
-                                (ngModelChange)="marcarCambios()" 
-                                maxlength="1000">
-                        </textarea>
-                </div>                
-    </form>
-</div>
-<!--LISTA PROMOVENTES-->
-<div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
-  <div class="flex items-start flex-col md:justify-between md:flex-row">
-    <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Promoventes</div>
-
-    <div class="flex items-center">
-
-      <!-- <p-button routerLink="/form" [outlined]="true" class="mr-3">
-                <i pButtonIcon class="pi pi-user-plus"></i>
-                <span pButtonLabel>Agregar</span>
-            </p-button> -->
-      <p-button class="whitespace-nowrap" (onClick)="openNewPromovente()">
-        <i pButtonIcon class="pi pi-plus"></i>
-        <span pButtonLabel>Agregar Promovente </span>
-      </p-button>
-    </div>
-  </div>
-
-  <div class="w-full">
-    <div class="grid grid-cols-6 gap-4 w-full items-end">
-      @if (provomenteExhortoEnviado.length > 0) {
-      <div class="col-span-6 sm:col-span-6 ">
-
-        <p-table [value]="provomenteExhortoEnviado" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
-          <ng-template #header>
-            <tr class="uppercase text-xs">
-              <th>Nombre</th>
-              <th>Apellido paterno</th>
-              <th>Apellido materno</th>
-              <th>Género</th>
-              <th>Tipo persona</th>
-              <th>Tipo parte</th>
-              <th>Correo</th>
-              <th>Teléfono</th>
-              <!--@if(idEstatus == 1) {
-              <th>Acciones</th>
-            }-->
-            </tr>
-          </ng-template>
-          <ng-template #body let-promo let-i="index">
-            <tr>
-              <td style="font-size: small;">
-                {{ promo.nombre }}
-              </td>
-              <td style="font-size: small;">
-                {{ promo.apellidoPaterno }}
-              </td>
-              <td style="font-size: small;">
-                {{ promo.apellidoMaterno }}
-              </td>
-              <td style="font-size: small;">
-                {{ promo.genero }}
-              </td>
-              <td style="font-size: small;">
-                {{ promo.esPersonaMoral ? "Moral" : "Física" }}
-              </td>
-              <td style="font-size: small;">
-                {{ promo.tipoParteNombre }}
-              </td>
-              <td style="font-size: small;">
-                {{ promo.correoElectronico }}
-              </td>
-              <td style="font-size: small;">
-                {{ promo.telefono }}
-              </td>
-              <!--@if(idEstatus <= 1) {
-              <td class="px-6 py-3">
-                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
-                  (click)="eliminarParte(promo)"></p-button>
-              </td>
-              }-->
-            </tr>
-          </ng-template>
-        </p-table>
-
-
-      </div>
+    <!-- Botones -->
+    <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
+      @if(fechaHora == null){
+      @if(tienePermisoGuardar()){
+      <p-button type="button" (onClick)="guardarPromocion(myForm)" label="Guardar" icon="pi pi-save"></p-button>
+      }
       }
 
-      <!-- <div class="col-span-6 sm:col-span-1 flex justify-end">
-                <p-button routerLink="/form">
-                    <i pButtonIcon class="pi pi-user-plus"></i>
-                    <span pButtonLabel>Agregar</span>
-                </p-button>
-            </div> -->
-    </div>
+      @if(!hayCambiosSinGuardar && listaDocumentos().length >= 1){
+      @if(fechaHora == null){
+      @if(tienePermisoEnviarGenerales()){
+      <p-button type="button" (onClick)="enviarPromocionGenerales(idExhortoEnviado)" label="Enviar generales"
+        icon="pi pi-send"></p-button>
+      }
+      }
 
+      @if(tienePermisoEnviarArchvios()){
+      @if(fechaRecepcion == null && fechaHora != null){
+      <p-button type="button" (onClick)="enviarPromocionArchivos(idPromocionEnviado,idExhortoEnviado)"
+        label="Enviar archivos" icon="pi pi-paperclip"></p-button>
+      }
+      }
+      }
+    </div>
   </div>
-</div>    
-@if(idPromocionEnviado !== 0)
-{
-  @if(tienePermisoCargarArchivo()){
-      <div class="relative z-0 mt-4 bg-surface-50 dark:bg-surface-950 border border-surface rounded-2xl mb-4 p-4">
-        <div class="flex items-start flex-col md:justify-between md:flex-row">
-            <div class="font-bold text-2xl text-surface-900 dark:text-surface-0 mb-4">Agregar documentos</div>
+</div>
 
-            <div class="flex items-center">
-              @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
-                  <div class="relative" style="margin-right: 1rem;">
-                    <p-button 
-                      (click)="openNewFirma()"
-                      severity="warn"
-                      icon="pi pi-pen-to-square"
-                      label="Firmar con FIREL">
-                    </p-button>
-                  </div>
-                }
-                <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload"
-                    accept="application/pdf"  (onSelect)="onAnexosSelect($event)" [auto]="true"
-                    chooseLabel="Agregar documento" />
+<!-- INFORMACIÓN DEL EXHORTO -->
+<div class="relative mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+  <!-- Esquinas decorativas -->
+  <span
+    class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200">
+  </span>
 
-                <!-- <p-button routerLink="/form" [outlined]="true" class="mr-3">
-                    <i pButtonIcon class="pi pi-user-plus"></i>
-                    <span pButtonLabel>Agregar</span>
-                </p-button>
-                <p-button class="whitespace-nowrap">
-                    <i pButtonIcon class="pi pi-check"></i>
-                    <span pButtonLabel>Guardar </span>
-                </p-button> -->
-              
-            </div>
-        </div>
+  <div class="mb-5">
+    <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+      <span class="pi pi-info-circle text-lg text-primary"></span> Información del exhorto
+    </h2>
+    <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+      Datos del juzgado y expediente del exhorto enviado.
+    </p>
+  </div>
 
-        <div class="w-full">
-            <div class="grid grid-cols-6 gap-4 w-full items-end">
-                @if (listaDocumentos().length > 0) {
-                <div class="col-span-6 sm:col-span-6 ">
+  <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
 
-                    <p-table [value]="listaDocumentos()" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
-                        <ng-template #header>
-                            <tr class="uppercase text-xs">
-                                <th>para firmar</th>
-                                <th>Documento</th>
-                                <th>Tipo documento</th>
-                                <th>¿Firma aplicado?</th>
-                                <th>Fecha firmado</th>
-                                <th>Firmantes</th>
-                                <th>Peso</th>
-                                <th style="min-width: 10rem">Acciones</th>
-                            </tr>
-                        </ng-template>
-                        <ng-template #body let-documento let-i="rowIndex">
-                            <tr>
-                                <td>@if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo){
-                                  <input  (change)="archivo_seleccionado(documento)"
-                                          [id]="documento.selecParaFirma"
-                                          type="checkbox" [checked]="documento.selecParaFirma" [value]="documento.selecParaFirma"/>
-                                }
-                                </td>
-                                <td style="font-size: small;">{{ documento.nombreArchivo }}</td>
-                                <td style="font-size: small;">
-                                  @if(documento.idArchivo === 0){
-                                    <form [formGroup]="doctosForm">
-                                      <p-select id="tipoDocumento" inputId="tipoDocumento-dropdown"
-                                        formControlName="tipoDocumento"
-                                        [options]="listadoTipoDocumento"
-                                        optionLabel="nombre"
-                                        placeholder="seleccione" 
-                                        appendTo="body"
-                                        filterPlaceholder="Buscar tipo..."
-                                        class="w-full md:w-56"
-                                        fluid>
-                                      </p-select>
-                                    </form>
-                                  }
-                                  @else{
-                                    <span>
-                                      {{ documento.tipoDocumento.nombre }}
-                                    </span>
-                                  }
-                                </td>
-                                <td style="font-size: small;">{{ documento.firmado ? 'Sí' : 'No' }}</td>
-                                <td style="font-size: small;">{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
-                                <td>
-                                  <table>
-                                      @for (firmante of documento.firmantes; track firmante) {
-                                        <tr>
-                                          @if(firmante != undefined)
-                                            {
-                                            <td class="underline" style="font-size:0.75rem ;">{{firmante.nombre}}</td>
-                                            @if(!documento.firmado){
-                                              <td class="px-4">
-                                                <!--<a href="#" class="font-medium text-red-500 dark:text-red-500 hover:underline">Eliminar</a>-->
-                                                <p-button  (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)" [rounded]="true" icon="pi pi-times" title="Eliminar firma" styleClass="btn-icon-rojo"></p-button>
-                                              </td>
-                                            }
-                                          }
-                                        </tr>
-                                      }
-                                  </table>
-                                </td>
-                                <td style="font-size: small;">{{ ((documento.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
-                              
-                                <td class="text-center">
-                                  @if(documento.idArchivo === 0 && idPromocionEnviado!==0){
-                                    <p-button (click)="onUpload(documento.file)" severity="success" [rounded]="true"
-                                          icon="pi pi-upload" class="mr-2" title="cargar documento">
-                                    </p-button>
-                                  }
-                                    <!--APLICAR FIRMAS-->
-                                  @if(!documento.firmado && documento.firmantes.length>0 ){
-                                      <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
-                                        icon="pi pi-key" class="mr-2" title="Aplicar firmas">
-                                      </p-button>
-                                                              
-                                  }
-                                  <!--VER O DESCARGAR DOCUMENTO-->
-                                  <p-button (click)="getFile(documento,4)" severity="success" [rounded]="true"
-                                                            icon="pi pi-file-pdf" class="mr-2" title="Descargar PDF"></p-button>
-
-                                  <!--ELIMINAR DOCUMENTO-->
-                                  @if((idEstatus == 1 || idEstatus==0) && fechaHora == null ){ <!--//Pendiente de enviar-->
-                                    @if(tienePermisoEliminarArchivo()){
-                                      <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
-                                      (click)="eliminarDocumento(documento,i)" ></p-button>
-                                      
-                                    }
-                                  }
-
-                                </td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                    <!-- @if(mostrarDocumento()){
-                      <app-pdf-dialog [header]="nombre" [url]="documentoUrl" [(visible)]="mostrarDocumento">
-                      </app-pdf-dialog>
-                    } -->
-                </div>
-                }
-                
-            </div>
-            <div>
-            </div>
-        </div>
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Exhorto origen id</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50 font-mono">{{
+        detallesExhortos()?.generales?.idExhortoEnviado }}</span>
     </div>
-  }
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Núm. exhorto</span>
+      <span class="text-sm font-semibold text-red-500 font-mono">{{ detallesExhortos()?.generales?.numeroExhorto
+        }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Estatus</span>
+      <span>
+        <span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold
+          bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
+          <i class="pi pi-send" style="font-size: 0.7rem;"></i>
+          {{ detallesExhortos()?.generales?.estatus }}
+        </span>
+      </span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Estado</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50">{{ detallesExhortos()?.generales?.estadoDestino
+        }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Municipio</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50">{{ detallesExhortos()?.generales?.municipioOrigen
+        }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Juzgado</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50">{{ detallesExhortos()?.generales?.juzgadoOrigenNombre
+        }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Juez exhortante</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50">{{ detallesExhortos()?.generales?.juezExhortante
+        }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Tipo de juicio</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50">{{
+        detallesExhortos()?.generales?.tipoJuicioAsuntoDelitos }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Diligencia</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50">{{
+        detallesExhortos()?.generales?.tipoDiligenciacionNombre }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Fecha de envío</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50">{{ detallesExhortos()?.generales?.fechaHora }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Expediente</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50 font-mono">{{
+        detallesExhortos()?.generales?.numeroExpedienteOrigen }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Oficio</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50 font-mono">{{
+        detallesExhortos()?.generales?.numeroOficioOrigen }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Término (días)</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50">{{ detallesExhortos()?.generales?.diasResponder
+        }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Fojas</span>
+      <span class="text-sm text-surface-900 dark:text-surface-50">{{ detallesExhortos()?.generales?.fojas }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1 md:col-span-2 lg:col-span-3">
+      <span class="text-sm font-medium text-surface-500 dark:text-surface-400">Observaciones</span>
+      <p class="text-sm text-surface-900 dark:text-surface-50 italic">
+        {{ detallesExhortos()?.generales?.observaciones }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- DATOS DE LA PROMOCIÓN -->
+<div class="relative mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+  <!-- Esquinas decorativas -->
+  <span
+    class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200">
+  </span>
+
+  <div class="mb-5">
+    <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+      <span class="pi pi-pencil text-lg text-primary"></span> Datos de la promoción
+    </h2>
+    <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+      Captura el número de fojas y las observaciones de la promoción.
+    </p>
+  </div>
+
+  <div class="my-4 border-t border-surface-200 dark:border-surface-800"></div>
+
+  <form #myForm="ngForm" class="grid grid-cols-1 gap-4 md:grid-cols-6 md:items-start">
+    <!-- Número de fojas -->
+    <div class="md:col-span-2">
+      <label for="fojas" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+        Número de fojas<strong>*</strong>
+      </label>
+      <p-inputnumber inputId="fojas" name="fojas" [(ngModel)]="fojas" [showButtons]="true" mode="decimal" [min]="0"
+        [max]="5000" [useGrouping]="false" class="w-full" fluid (ngModelChange)="marcarCambios()">
+      </p-inputnumber>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="md:col-span-4">
+      <label for="observaciones"
+        class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">Observaciones</label>
+      <textarea id="observaciones" [(ngModel)]="observaciones" name="observaciones" rows="1" pInputTextarea
+        class="w-full text-sm" (ngModelChange)="marcarCambios()" maxlength="1000"
+        placeholder="Escribe algo aquí..."></textarea>
+    </div>
+  </form>
+</div>
+
+<!-- PROMOVENTES -->
+<div class="relative mt-4 border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+  <!-- Esquinas decorativas -->
+  <span
+    class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200">
+  </span>
+
+  <div class="flex items-start flex-col md:justify-between md:flex-row mb-5">
+    <div>
+      <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+        <span class="pi pi-users text-lg text-primary"></span> Promoventes
+      </h2>
+      <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+        Personas que presentan la promoción.
+      </p>
+    </div>
+
+    <div class="mt-4 md:mt-0 flex items-center gap-2">
+      <p-button type="button" (onClick)="openNewPromovente()" label="Agregar promovente" icon="pi pi-plus"></p-button>
+    </div>
+  </div>
+
+  <div class="relative overflow-x-auto">
+    <p-table [value]="provomenteExhortoEnviado" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template #header>
+        <tr class="uppercase text-xs">
+          <th>Nombre</th>
+          <th>Apellido paterno</th>
+          <th>Apellido materno</th>
+          <th>Género</th>
+          <th>Tipo persona</th>
+          <th>Tipo parte</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-promo let-i="index">
+        <tr>
+          <td style="font-size: small;">{{ promo.nombre }}</td>
+          <td style="font-size: small;">{{ promo.apellidoPaterno }}</td>
+          <td style="font-size: small;">{{ promo.apellidoMaterno }}</td>
+          <td style="font-size: small;">{{ promo.genero }}</td>
+          <td style="font-size: small;">{{ promo.esPersonaMoral ? "Moral" : "Física" }}</td>
+          <td style="font-size: small;">{{ promo.tipoParteNombre }}</td>
+          <td style="font-size: small;">{{ promo.correoElectronico }}</td>
+          <td style="font-size: small;">{{ promo.telefono }}</td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="8" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
+            No se han agregado promoventes.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- AGREGAR DOCUMENTOS -->
+@if(idPromocionEnviado !== 0) {
+@if(tienePermisoCargarArchivo()) {
+<div class="relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
+  <!-- Esquinas decorativas -->
+  <span
+    class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200">
+  </span>
+
+  <div class="flex items-start flex-col md:justify-between md:flex-row mb-5">
+    <div>
+      <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+        <span class="pi pi-file text-lg text-primary"></span> Agregar documentos
+      </h2>
+      <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+        Carga y firma los documentos de la promoción.
+      </p>
+    </div>
+
+    <div class="mt-4 md:mt-0 flex items-center gap-2">
+      @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
+      <p-button type="button" (click)="openNewFirma()" severity="warn" icon="pi pi-pen-to-square"
+        label="Firmar con FIREL"></p-button>
+      }
+      <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload" accept="application/pdf"
+        (onSelect)="onAnexosSelect($event)" [auto]="true" chooseLabel="Agregar documento" />
+    </div>
+  </div>
+
+  <div class="relative overflow-x-auto">
+    <p-table [value]="listaDocumentos()" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template #header>
+        <tr class="uppercase text-xs">
+          <th>para firmar</th>
+          <th>Documento</th>
+          <th>Tipo documento</th>
+          <th>¿Firma aplicada?</th>
+          <th>Fecha firmado</th>
+          <th>Firmantes</th>
+          <th>Peso</th>
+          <th style="min-width: 10rem">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-documento let-i="rowIndex">
+        <tr>
+          <td>
+            @if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo){
+            <!--archivo_seleccionado ya invierte selecParaFirma, por eso el ngModel es solo de lectura-->
+            <p-checkbox [binary]="true" [ngModel]="documento.selecParaFirma"
+              (onChange)="archivo_seleccionado(documento)" />
+            }
+          </td>
+          <td style="font-size: small;">{{ documento.nombreArchivo }}</td>
+          <td style="font-size: small;">
+            @if(documento.idArchivo === 0){
+            <form [formGroup]="doctosForm">
+              <p-select id="tipoDocumento" inputId="tipoDocumento-dropdown" formControlName="tipoDocumento"
+                [options]="listadoTipoDocumento" optionLabel="nombre" placeholder="seleccione" appendTo="body"
+                filterPlaceholder="Buscar tipo..." class="w-full md:w-56" fluid>
+              </p-select>
+            </form>
+            }
+            @else{
+            <span>{{ documento.tipoDocumento.nombre }}</span>
+            }
+          </td>
+          <td style="font-size: small;">{{ documento.firmado ? 'Sí' : 'No' }}</td>
+          <td style="font-size: small;">{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+          <td class="align-middle">
+            <!--firmantes como chips: inicial del nombre, nombre (recortado si es largo) y, mientras no se
+            apliquen las firmas, el boton para eliminarla-->
+            <div class="flex flex-col items-start gap-1.5">
+              @for (firmante of documento.firmantes; track firmante) {
+              @if (firmante) {
+              <div class="group inline-flex max-w-56 items-center gap-2 rounded-full border py-0.5 pl-0.5 pr-2
+                border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-800">
+                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[0.6rem] font-semibold uppercase
+                  bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-200">
+                  {{ firmante.nombre?.charAt(0) }}
+                </span>
+                <span class="truncate text-xs text-surface-700 dark:text-surface-200" [title]="firmante.nombre">
+                  {{ firmante.nombre }}
+                </span>
+                @if (documento.firmado) {
+                <i class="pi pi-check-circle shrink-0 text-xs text-green-600 dark:text-green-400"
+                  title="Firma aplicada"></i>
+                }
+                @else {
+                <button type="button" (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)"
+                  class="-mr-1 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-surface-400
+                    transition-colors hover:bg-red-100 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-red-500
+                    dark:hover:bg-red-950/40 dark:hover:text-red-400"
+                  title="Eliminar firma" aria-label="Eliminar firma">
+                  <i class="pi pi-times" style="font-size: 0.6rem;"></i>
+                </button>
+                }
+              </div>
+              }
+              }
+              @empty {
+              <span class="text-xs italic text-surface-400 dark:text-surface-500">Sin firmas</span>
+              }
+            </div>
+          </td>
+          <td style="font-size: small;">{{ ((documento.tamanio / 1024)/1024) | number:'1.0-2' }} MB</td>
+
+          <td class="text-center">
+            @if(documento.idArchivo === 0 && idPromocionEnviado!==0){
+            <p-button (click)="onUpload(documento.file)" severity="success" [rounded]="true" icon="pi pi-upload"
+              class="mr-2" title="cargar documento">
+            </p-button>
+            }
+            <!--APLICAR FIRMAS-->
+            @if(!documento.firmado && documento.firmantes.length>0){
+            <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
+              icon="pi pi-key" class="mr-2" title="Aplicar firmas">
+            </p-button>
+            }
+            <!--VER O DESCARGAR DOCUMENTO-->
+            <p-button (click)="getFile(documento,4)" severity="success" [rounded]="true" icon="pi pi-file-pdf"
+              class="mr-2" title="Descargar PDF"></p-button>
+
+            <!--ELIMINAR DOCUMENTO: solo mientras la promocion esta pendiente de enviar-->
+            @if((idEstatus === 1 || idEstatus === 0) && fechaHora == null){
+            @if(tienePermisoEliminarArchivo()){
+            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+              (click)="eliminarDocumento(documento,i)"></p-button>
+            }
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="8" class="py-4 text-center text-sm text-surface-500 dark:text-surface-400">
+            No se han agregado documentos.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+}
 }
 
 <!--* MODAL DE CONFIRMACION GUADAR PROMOCION -->
@@ -455,116 +454,169 @@
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA ENVIAR GENERALES DE LA PROMOCION -->
-<app-confirm-dialog key="enviarGeneralesPromocion" title="Confirmación" message="¿Está seguro de enviar los generales de la promoción?"
-  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+<app-confirm-dialog key="enviarGeneralesPromocion" title="Confirmación"
+  message="¿Está seguro de enviar los generales de la promoción?" icon="pi pi-question" circleClass="bg-primary"
+  acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
-<!--* MODAL DE CONFIRMACION PARA ENVIAR GENERALES DE LA PROMOCION -->
-<app-confirm-dialog key="enviarArchivosPromocion" title="Confirmación" message="¿Está seguro de enviar los archivos de la promoción?"
-  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+<!--* MODAL DE CONFIRMACION PARA ENVIAR ARCHIVOS DE LA PROMOCION -->
+<app-confirm-dialog key="enviarArchivosPromocion" title="Confirmación"
+  message="¿Está seguro de enviar los archivos de la promoción?" icon="pi pi-question" circleClass="bg-primary"
+  acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION PARA AGREGAR PROMOVENTES -->
 <app-confirm-dialog key="agregarPromovente" title="Confirmación" message="¿Está seguro de agregar los promoventes?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!--MODAL PARA CONFIRMACION DE APLICAR FIRMAS-->
-<app-confirm-dialog key="aplicarFirmas" title="Confirmación" message="¿Está seguro que desea aplicar las firmas en el archivo?"
-  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+<app-confirm-dialog key="aplicarFirmas" title="Confirmación"
+  message="¿Está seguro que desea aplicar las firmas en el archivo?" icon="pi pi-question" circleClass="bg-primary"
+  acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 <!--MODAL PARA CONFIRMAR LA ELIMINACION DE ARCHIVO-->
 <app-confirm-dialog key="eliminarArchivo" title="Confirmación" message="¿Está seguro de eliminar el documento?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
 </app-confirm-dialog>
 
-
 <!--*DIALOG PARA AGREGAR PROMOVENTES-->
-<p-dialog [(visible)]="promoDialog" [style]="{ width: '600px' }" header="Agregra promovente" [modal]="true">
+<p-dialog [(visible)]="promoDialog" [style]="{ width: '600px' }" [modal]="true">
+  <ng-template #header>
+    <div class="flex items-center gap-3">
+      <div
+        class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+        <i class="pi pi-user-plus text-surface-800 dark:text-surface-100"></i>
+      </div>
+      <div>
+        <span class="block text-base font-semibold leading-5 text-surface-900 dark:text-surface-0">
+          Agregar promovente
+        </span>
+      </div>
+    </div>
+  </ng-template>
+
+  <p class="mb-4 text-sm leading-5 text-surface-500 dark:text-surface-400">
+    Captura los datos de la persona que presenta la promoción.
+  </p>
+
   <form [formGroup]="promoventesForm">
     <div class="grid grid-cols-6 gap-4 w-full items-end">
 
       <!-- Nombre del promovente -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Nombre del promovente*</label>
-        <input id="nombre" name="nombre" pInputText type="text" formControlName="nombre" class="w-full" maxlength="200" />
+        <label for="nombre" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+          Nombre del promovente<strong>*</strong>
+        </label>
+        <input id="nombre" name="nombre" pInputText type="text" formControlName="nombre" class="w-full"
+          maxlength="200" />
       </div>
 
       <!-- ¿Es persona moral? -->
-      <div class="col-span-6 sm:col-span-3 w-full flex items-center justify-center gap-2 h-full">
-        <div class="flex items-center justify-center w-full h-full">
-          <p-checkbox inputId="moral" name="moral" binary="true" formControlName="moral"></p-checkbox>
-          <label for="moral" class="ml-2 text-sm font-medium mb-0">¿Es persona moral?</label>
-        </div>
+      <div class="col-span-6 sm:col-span-3 w-full flex items-center gap-2 h-full">
+        <p-checkbox inputId="moral" name="moral" binary="true" formControlName="moral"></p-checkbox>
+        <label for="moral" class="text-sm font-medium text-surface-700 dark:text-surface-300">¿Es persona
+          moral?</label>
       </div>
 
       <!-- Apellido paterno -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Apellido paterno</label>
-        <input id="paterno" name="paterno" pInputText type="text" formControlName="paterno" class="w-full" maxlength="50" />
+        <label for="paterno" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">Apellido
+          paterno</label>
+        <input id="paterno" name="paterno" pInputText type="text" formControlName="paterno" class="w-full"
+          maxlength="50" />
       </div>
 
       <!-- Apellido materno -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Apellido materno</label>
-        <input id="materno" name="materno" pInputText type="text" formControlName="materno" class="w-full" maxlength="50" />
+        <label for="materno" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">Apellido
+          materno</label>
+        <input id="materno" name="materno" pInputText type="text" formControlName="materno" class="w-full"
+          maxlength="50" />
       </div>
 
       <!-- Género -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Género</label>
+        <label for="genero-dropdown"
+          class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">Género</label>
         <p-select id="genero" name="genero" [options]="listaGenero()" formControlName="genero" optionLabel="descripcion"
           appendTo="body" inputId="genero-dropdown" class="w-full" fluid></p-select>
       </div>
 
       <!-- Tipo de parte -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Tipo de parte*</label>
+        <label for="tipoParte-dropdown" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+          Tipo de parte<strong>*</strong>
+        </label>
         <p-select id="tipoParte" name="tipoParte" [options]="listaTipoParte()" formControlName="tipoParte"
           optionLabel="descripcion" appendTo="body" inputId="tipoParte-dropdown" class="w-full" fluid></p-select>
       </div>
 
       <!-- Correo electrónico -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Correo electrónico</label>
-        <input id="correo" name="correo" pInputText type="text" formControlName="correo"
-          class="w-full" maxlength="50" />
+        <label for="correo" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">Correo
+          electrónico</label>
+        <input id="correo" name="correo" pInputText type="text" formControlName="correo" class="w-full"
+          maxlength="50" />
       </div>
 
       <!-- Teléfono -->
       <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Teléfono</label>
+        <label for="telefono"
+          class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">Teléfono</label>
         <input id="telefono" pInputText type="text" formControlName="telefono" class="w-full" maxlength="10"
-          (onBlur)="validarTelefonoPromo()" placeholder="9999999999"/>
-           <div *ngIf="promoventesForm.get('telefono')?.hasError('pattern')" class="error-text">
-            Debe capturar exactamente 10 dígitos
-          </div>
+          (onBlur)="validarTelefonoPromo()" placeholder="9999999999" />
+        @if (promoventesForm.get('telefono')?.hasError('pattern')) {
+        <small class="mt-1 block text-xs text-red-600 dark:text-red-400">
+          Debe capturar exactamente 10 dígitos
+        </small>
+        }
       </div>
     </div>
   </form>
 
   <ng-template #footer>
-    <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogPromovente()" />
+    <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialogPromovente()" />
     <p-button label="Agregar" icon="pi pi-check" (click)="AgregarPromovente()" />
   </ng-template>
 </p-dialog>
-<!--*DIALOG PARA FIRMAR-->
-<p-dialog [(visible)]="firmaDialog" [style]="{ width: '600px' }" header="Firmado de documento" [modal]="true">
-  <form [formGroup]="formularioFirma">
-    <div class="grid grid-cols-6 gap-4 w-full items-end">
 
-      <!-- Nombre del promovente -->
-      <div class="col-span-6 sm:col-span-3 w-full">
-        <label class="block mb-2 text-sm font-medium">Contraseña de su firma*</label>
-        <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'" formControlName="password" class="w-full" maxlength="20" />
-        <p-inputicon class="cursor-pointer text-white/70! hover:text-white!" (click)="togglePasswordVisibility()">
-            <i [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
-        </p-inputicon>
+<!--*DIALOG PARA FIRMAR-->
+<p-dialog [(visible)]="firmaDialog" [style]="{ width: '450px' }" [modal]="true">
+  <ng-template #header>
+    <div class="flex items-center gap-3">
+      <div
+        class="flex h-9 w-9 shrink-0 items-center justify-center border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-900">
+        <i class="pi pi-pen-to-square text-surface-800 dark:text-surface-100"></i>
       </div>
+      <div>
+        <span class="block text-base font-semibold leading-5 text-surface-900 dark:text-surface-0">
+          Firmado de documento
+        </span>
+      </div>
+    </div>
+  </ng-template>
+
+  <p class="mb-4 text-sm leading-5 text-surface-500 dark:text-surface-400">
+    Ingresa la contraseña de tu firma electrónica para firmar el documento seleccionado.
+  </p>
+
+  <form [formGroup]="formularioFirma">
+    <div class="w-full">
+      <label for="password" class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">
+        Contraseña de su firma<strong>*</strong>
+      </label>
+      <p-iconfield icon-position="right" class="w-full">
+        <input id="password" name="password" pInputText [type]="showPassword ? 'text' : 'password'"
+          formControlName="password" class="w-full" maxlength="20" placeholder="Contraseña" />
+        <p-inputicon class="cursor-pointer pi pi-{{ showPassword ? 'eye-slash' : 'eye' }}"
+          (click)="togglePasswordVisibility()">
+        </p-inputicon>
+      </p-iconfield>
     </div>
   </form>
 
   <ng-template #footer>
-    <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialogFirma()" />
-    <p-button label="Firmar" icon="pi pi-check" (click)="iniciarFirmaDocumentos()" />
+    <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialogFirma()" />
+    <p-button label="Firmar" icon="pi pi-check" [disabled]="!formularioFirma.valid"
+      (click)="iniciarFirmaDocumentos()" />
   </ng-template>
 </p-dialog>
 <p-confirmdialog [style]="{ width: '600px' }" />
-

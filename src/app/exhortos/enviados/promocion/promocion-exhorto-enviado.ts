@@ -29,6 +29,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { SafeResourceUrl,DomSanitizer } from '@angular/platform-browser';
 import { PdfDialog } from "../../../shared/components/pdf-dialog/pdf-dialog";
 import { InputIconModule } from "primeng/inputicon";
+import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { validarFirmasUsuarioPromEnviado } from '../../functions/firmas';
 import { Spinner } from "../../../shared/components/spinner/spinner";
@@ -39,7 +40,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-PromocionExhortoEnviadoComponent',
-  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, InputIconModule, ConfirmDialogModule, Spinner],
+  imports: [Toast, ConfirmDialog, ButtonModule, CheckboxModule, InputTextModule, InputNumberModule, CommonModule, FormsModule, ReactiveFormsModule, SelectModule, FileUpload, TextareaModule, TableModule, Dialog, InputMaskModule, InputIconModule, IconFieldModule, ConfirmDialogModule, Spinner],
   templateUrl: './promocion-exhorto-enviado.html',
   styleUrl: './promocion-exhorto-enviado.css',
   providers:[MessageService,ConfirmationService]
