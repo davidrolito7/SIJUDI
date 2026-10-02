@@ -1964,22 +1964,10 @@ export class CrearExhortoComponent {
     //this.confirmacionEnviarGenerales = false
   }
 
-  /*abrirConfirmacionEnvioArchivos(){
-    if(this.idExhorto !== undefined)
-    {
-      this.confirmacionEnviarArchivos = true
-    }else{
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se a guardado el exhorto' });
-    }
-  }*/
-  // ...existing code...
-
-  // ...existing code...
   enviarArchivos() {
     this.confirmationService.confirm({
       key: 'enviarArchivos',
-      accept: () => this.onEnviarArchivos(),
-      reject: () => { }
+      accept: () => this.onEnviarArchivos()
     });
   }
   onEnviarArchivos() {

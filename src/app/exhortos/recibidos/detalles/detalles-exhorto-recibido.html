@@ -22,20 +22,34 @@
                 Consulta la información general, partes, documentos y movimientos del exhorto.
             </p>
         </div>
-
+        <div style="font-size: 0.65rem; color: #999; line-height: 1.1;">
+            perfil: {{ debugPerfilActual() }}<br>
+            existeDocumentoTipo1: {{ debugExisteDocumentoTipo1() }}<br>
+            puedeTurnar: {{ puedeTurnar() }}<br>
+            tienePermisoTurnar: {{ tienePermisoTurnar() }}<br>
+            ultimoMovimiento: {{ ultimoMovimiento() }}
+        </div>
         <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
+            <div style="font-size: 0.65rem; color: #999; line-height: 1.1;">
+                tienePermisoReasignarExhorto: {{ tienePermisoReasignarExhorto() }}<br>
+                existeacuerdo: {{ existeacuerdo() }}<br>
+                detallesExhortos: {{ detallesExhortos() }}<br>
+                generales: {{ detallesExhortos()?.generales }}<br>
+                estatus: {{ detallesExhortos()?.generales?.estatus }}<br>
+            </div>
+
             @if (tienePermisoReasignarExhorto()) {
-            @if (!existeacuerdo() && (detallesExhortos() !== undefined ?
-            detallesExhortos()?.generales?.estatus==='Incompetencia': false)) {
+            @if (!existeacuerdo() && detallesExhortos()?.generales?.idEstatus === 9) {
             <p-button type="button" (click)="reasignarExhorto()" label="Reasignar Exhorto" icon="pi pi-sync"
                 severity="help"></p-button>
             }
             }
             <!--Declarar incompetencia: visible con el permiso hasta que el juez firma el acuerdo y lo turna de
             vuelta al secretario; a partir de ese movimiento se oculta-->
-            @if (tienePermisoDeclararIncompetencia() && !juezYaTurnoAlSecretario()) {
-            <p-button type="button" (click)="dialogIncomp.open(idExhortoRecibido)" label="Devolución"
-                icon="pi pi-ban" severity="danger" [outlined]="true"></p-button>
+            @if (tienePermisoDeclararIncompetencia() && !juezYaTurnoAlSecretario() &&
+            detallesExhortos()?.generales?.idEstatus !== 9) {
+            <p-button type="button" (click)="dialogIncomp.open(idExhortoRecibido)" label="Devolución" icon="pi pi-ban"
+                severity="danger" [outlined]="true"></p-button>
             <app-incompetencia-dialog #dialogIncomp></app-incompetencia-dialog>
             }
             <!--Recibir y Turnar aqui son solo para el exhorto en si (antes de que el secretario reciba el
@@ -46,13 +60,7 @@
             <p-button type="button" (click)="recibir()" label="Recibir" icon="pi pi-check">
             </p-button>
             }
-            <div style="font-size: 0.65rem; color: #999; line-height: 1.1;">
-              perfil: {{ debugPerfilActual() }}<br>
-              existeDocumentoTipo1: {{ debugExisteDocumentoTipo1() }}<br>
-              puedeTurnar: {{ puedeTurnar() }}<br>
-              tienePermisoTurnar: {{ tienePermisoTurnar() }}<br>
-              ultimoMovimiento: {{ ultimoMovimiento() }}
-            </div>
+
             @if(puedeTurnar() && !esMovimientoAcuerdo()){
             @if (tienePermisoTurnar()) {
             <p-button type="button" (click)="turnar()" label="Turnar" icon="pi pi-send"></p-button>
@@ -457,8 +465,8 @@
         </p>
     </div>
 
-    <p-table class="personalizado" #dt [value]="promociones" dataKey="idPromocionRecibida" [expandedRowKeys]="expandedRows"
-        (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
+    <p-table class="personalizado" #dt [value]="promociones" dataKey="idPromocionRecibida"
+        [expandedRowKeys]="expandedRows" (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
         <ng-template #header>
             <tr>
                 <th></th>

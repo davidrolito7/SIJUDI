@@ -235,53 +235,7 @@ export class DetallesExhortoRecibido {
       }
     });
   }
-  /*
-  setBanderasUltimoMovimiento(){
-    const perfil = this.authService.getRoleNameUsuario(); 
-    
-    if(this.movimientos().length > 0)
-    {
-      this.puedeRecibir.set((this.movimientos()[this.movimientos().length-1].cargoDestino == perfil) && (this.movimientos()[this.movimientos().length-1].fechaRecepcion == null ));
-      this.puedeTurnar.set((this.movimientos()[this.movimientos().length-1].cargoDestino == perfil) && (this.movimientos()[this.movimientos().length-1].fechaRecepcion != null )) ;
-      if (this.movimientos()[this.movimientos().length-1].idMovimiento == 8 && (perfil == 'Secretario'))
-      {
-        //si ya fue recibido por el secretario puede acordarlo
-        this.habilitarparaacordar.set((this.movimientos()[this.movimientos().length-1].fechaRecepcion != null )&& (!this.existeacuerdo()))
-        this.puedeTurnar.set(this.existeacuerdo() );
-      }
-      else if (this.movimientos()[this.movimientos().length-1].idMovimiento == 9 && (perfil == 'Juez'))
-      {
-        //obtenemos el idUsuario del token
-        const userData = this.tokenService.getUserFromToken();
-        var idUsuario=0;
-        if(userData !== null){
-          idUsuario = userData.idGeneral;
-        }
-        // Validar si ya firmó en un archivo tipo 2
-        const yaFirmoEnTipo2 = this.respuesta.some(r =>
-          r.archivos.some(a =>
-            a.idTipoDocumento === 2 &&
-            a.firmantes.some(f => f.idUsuario === idUsuario)
-          )
-        );
-        //en el perfil del juez nos aseguramos que ua haya firmado en el acuerdo para poder turnar al secretario
-        this.puedeTurnar.set(yaFirmoEnTipo2);
-
-      }
-      else
-      {
-        this.habilitarparaacordar.set((this.movimientos()[this.movimientos().length-1].idMovimiento > 8) && (!this.existeacuerdo()))
-      } 
-    }
-    // Nadie puede revocar el primer movimiento, por eso se valida que si ya tiene mas de 1 movimiento entonces se
-    //habilita el boton de revocar. El primer movimiento es cuando el juzgado exhortante turna a oficialia y aqui no podemos revocar
-    if(this.movimientos().length>1)
-    {
-        this.puedeRevocar.set(this.puedeRecibir());
-    }  
-  }
-  */
-
+  
   setBanderasUltimoMovimiento() {
     const perfil = this.authService.getRoleNameUsuario();
     const movimientos = this.movimientos();

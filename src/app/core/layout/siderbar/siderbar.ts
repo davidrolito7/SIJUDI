@@ -72,8 +72,8 @@ export const sidebarAnimations = [
 
   trigger('footerNotice', [
     transition(':enter', [
-      style({ opacity: 1, transform: 'translateX(-100%)' }),
-      animate('20s linear', style({ opacity: 1, transform: 'translateX(100vw)' })),
+      style({ opacity: 1, transform: 'translateX(100vw)' }),
+      animate('20s linear', style({ opacity: 1, transform: 'translateX(-100%)' })),
     ]),
   ]),
 
