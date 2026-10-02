@@ -1,10 +1,10 @@
-<app-spinner [isLoading]="isLoading()"></app-spinner>
+<!--<app-spinner [isLoading]="isLoading()"></app-spinner>
 <div class="min-h-dvh md:h-dvh overflow-hidden px-6 pt-[max(env(safe-area-inset-top),1rem)] pb-[max(env(safe-area-inset-bottom),1rem)] md:pt-0 md:pb-0 flex items-center justify-center backdrop-blur-3xl bg-cover! bg-center! bg-no-repeat! bg-[#e7efe9] md:bg-transparent"
     style="background-image: url('FondoSIJUDI2.png')">
     <div
         class="panel px-10 py-5 flex flex-col items-center gap-12 w-full backdrop-blur-2xl rounded-2xl bg-white/10 border border-white/10 max-w-md">
         <div class="flex flex-col items-center gap-4 w-full">
-            <!-- Logo en imagen en lugar de SVG -->
+            <!-- Logo en imagen en lugar de SVG 
             <svg id="Capa_1" data-name="Capa 1" class="w-30 h-40" xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 313.12 411.53">
                 <defs>
@@ -157,7 +157,10 @@
                         <label for="rememberme">Recordarme</label>
                     </div>
 
-                </div> -->
+                </div>
+        
+
+                 
             </div>
 
             <button pButton (click)="validarUsuario()" [disabled]="isLoading()" fluid>
@@ -175,4 +178,590 @@
         </div>
     </div>
 </div>
+<p-toast></p-toast>
+-->
+
+<app-spinner [isLoading]="isLoading()"></app-spinner>
+
+<div
+  class="
+    relative
+    min-h-dvh
+    overflow-hidden
+
+    flex
+    items-center
+    justify-center
+
+    px-4
+    pt-10
+    pb-20
+
+    xl:px-6
+    xl:pt-8
+    xl:pb-24
+  "
+>
+
+
+  <img
+    src="logo-inicio/LOGIN-_SIJUDI.webp"
+    alt=""
+    class="
+      absolute
+      inset-0
+      w-full
+      h-full
+      object-cover
+    "
+  />
+
+
+  <div
+    class="
+      absolute
+      inset-0
+      bg-[var(--color-secondary-500)]/18
+    "
+  ></div>
+
+
+
+  <section
+    class="
+      relative
+      z-10
+
+      w-full
+      max-w-[420px]
+      xl:max-w-[480px]
+
+      overflow-hidden
+
+      rounded-[24px]
+      xl:rounded-[32px]
+
+      bg-white
+
+      shadow-[0_25px_65px_rgba(0,0,0,.24)]
+    "
+  >
+
+
+    <img
+      src="logo-inicio/sijudi.webp"
+      alt="SIJUDI - Sistema de Justicia Digital"
+      class="
+        block
+        w-full
+        h-auto
+      "
+    />
+
+
+
+    <div
+      class="
+        relative
+        w-full
+
+        bg-white
+
+        px-5
+        pt-5
+        pb-7
+
+        xl:px-10
+        xl:pt-7
+        xl:pb-10
+      "
+    >
+
+ 
+
+      <div class="w-full mb-4 xl:mb-5">
+
+        <label
+          for="usuario"
+          class="
+            block
+            mb-2
+
+            text-[11px]
+
+            font-semibold
+            uppercase
+            tracking-[0.12em]
+
+            text-[var(--color-secondary-700)]
+          "
+        >
+          Cuenta de usuario
+        </label>
+
+
+        <div class="relative w-full">
+
+           <!--ICONO USUARIO -->
+
+          <i
+            class="
+              pi
+              pi-user
+
+              absolute
+              left-4
+              top-1/2
+              -translate-y-1/2
+
+              text-[var(--color-secondary-500)]
+              text-lg
+
+              pointer-events-none
+
+              z-10
+            "
+          ></i>
+
+
+          <!-- INPUT USUARIO -->
+
+          <input
+            id="usuario"
+            type="text"
+
+            [(ngModel)]="usuario"
+
+            (keydown.enter)="passwordFocus()"
+
+            placeholder="Ingresa tu usuario"
+
+            autocomplete="username"
+
+            class="
+              block
+              w-full
+
+              h-12
+
+              pl-12
+              pr-4
+
+              rounded-[18px]
+
+              bg-white
+
+              border
+              border-[#d8c9a8]
+
+              text-gray-800
+
+              shadow-sm
+
+              outline-none
+
+              transition-all
+              duration-200
+
+              placeholder:text-gray-400
+
+              focus:border-[var(--color-secondary-500)]
+              focus:ring-2
+              focus:ring-[var(--color-secondary-500)]/15
+            "
+          />
+
+        </div>
+
+      </div>
+
+
+
+
+      <div class="w-full mb-4">
+
+        <label
+          for="password"
+          class="
+            block
+            mb-2
+
+            text-[11px]
+
+            font-semibold
+            uppercase
+            tracking-[0.12em]
+
+            text-[var(--color-secondary-700)]
+          "
+        >
+          Contraseña
+        </label>
+
+
+        <div class="relative w-full">
+
+        
+
+          <i
+            class="
+              pi
+              pi-lock
+
+              absolute
+              left-4
+              top-1/2
+              -translate-y-1/2
+
+              text-[var(--color-secondary-500)]
+              text-lg
+
+              pointer-events-none
+
+              z-10
+            "
+          ></i>
+
+
+       
+
+          <input
+            id="password"
+
+            [type]="verPassword ? 'text' : 'password'"
+
+            [(ngModel)]="contrasenia"
+
+            (keydown.enter)="passwordEnter()"
+
+            #passwordInput
+
+            placeholder="Ingresa tu contraseña"
+
+            autocomplete="current-password"
+
+            class="
+              block
+              w-full
+
+              h-12
+
+              pl-12
+              pr-12
+
+              rounded-[18px]
+
+              bg-white
+
+              border
+              border-[#d8c9a8]
+
+              text-gray-800
+
+              shadow-sm
+
+              outline-none
+
+              transition-all
+              duration-200
+
+              placeholder:text-gray-400
+
+              focus:border-[var(--color-secondary-500)]
+              focus:ring-2
+              focus:ring-[var(--color-secondary-500)]/15
+            "
+          />
+
+
+   
+
+          <button
+            type="button"
+
+            (click)="togglePassword()"
+
+            class="
+              absolute
+              right-3
+              top-1/2
+              -translate-y-1/2
+
+              w-8
+              h-8
+
+              rounded-full
+
+              border-0
+              bg-transparent
+
+              flex
+              items-center
+              justify-center
+
+              cursor-pointer
+
+              text-[var(--color-secondary-700)]
+
+              transition-colors
+              duration-200
+
+              hover:bg-[var(--color-secondary-500)]/10
+              hover:text-[var(--color-secondary-500)]
+
+              z-10
+            "
+            [attr.aria-label]="
+              verPassword
+                ? 'Ocultar contraseña'
+                : 'Mostrar contraseña'
+            "
+          >
+
+            <i
+              [class]="
+                verPassword
+                  ? 'pi pi-eye-slash'
+                  : 'pi pi-eye'
+              "
+            ></i>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+
+      <div
+        class="
+          w-full
+
+          flex
+          items-center
+          justify-between
+
+          gap-3
+          xl:gap-4
+
+          mb-5
+          xl:mb-6
+        "
+      >
+
+      
+
+
+
+
+    
+
+        <button
+          type="button"
+
+          (click)="forgotPassword()"
+
+          class="
+            p-0
+
+            border-0
+            bg-transparent
+
+            text-xs
+            xl:text-sm
+
+            font-semibold
+            text-right
+
+            text-[var(--color-secondary-700)]
+
+            cursor-pointer
+
+            transition-colors
+            duration-200
+
+            hover:text-[var(--color-secondary-500)]
+          "
+        >
+          ¿Olvidaste tu contraseña?
+        </button>
+
+      </div>
+
+
+      <button
+        type="button"
+
+        (click)="validarUsuario()"
+
+        [disabled]="isLoading()"
+
+        class="
+          w-full
+          h-12
+
+          rounded-[18px]
+
+          border-0
+
+          bg-[var(--color-secondary-500)]
+
+          text-white
+          font-bold
+
+          cursor-pointer
+
+          flex
+          items-center
+          justify-center
+          gap-2
+
+          transition-all
+          duration-300
+
+          shadow-[0_8px_20px_rgba(0,0,0,.10)]
+
+          hover:bg-[var(--color-secondary-600)]
+          hover:-translate-y-[2px]
+          hover:shadow-[0_12px_25px_rgba(0,0,0,.16)]
+
+          active:bg-[var(--color-secondary-700)]
+
+          disabled:opacity-60
+          disabled:cursor-not-allowed
+          disabled:hover:translate-y-0
+          disabled:hover:bg-[var(--color-secondary-500)]
+        "
+      >
+
+        <span>
+          Continuar
+        </span>
+
+        <i class="pi pi-arrow-right text-sm"></i>
+
+      </button>
+
+
+
+      <div
+        class="
+          w-full
+
+          flex
+          flex-wrap
+          items-center
+          justify-center
+
+          gap-x-1
+          gap-y-1
+
+          mt-5
+          xl:mt-7
+
+          text-center
+        "
+      >
+
+        <span
+          class="
+            text-xs
+            text-gray-600
+          "
+        >
+          ¿Aún no tienes una cuenta?
+        </span>
+
+
+        <button
+          type="button"
+
+          (click)="preRegistro()"
+
+          class="
+            p-0
+
+            border-0
+            bg-transparent
+
+            text-xs
+            font-bold
+
+            text-[var(--color-secondary-700)]
+
+            cursor-pointer
+
+            transition-colors
+            duration-200
+
+            hover:text-[var(--color-secondary-500)]
+          "
+        >
+          Regístrate aquí
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <div
+    class="
+      absolute
+      bottom-0
+      left-0
+
+      w-full
+
+      h-[55px]
+      xl:h-[75px]
+
+      z-20
+
+      overflow-hidden
+      leading-none
+
+      pointer-events-none
+    "
+  >
+
+    <svg
+      viewBox="0 0 1440 75"
+
+      xmlns="http://www.w3.org/2000/svg"
+
+      preserveAspectRatio="none"
+
+      class="
+        block
+        w-full
+        h-full
+      "
+    >
+
+      <path
+        d="
+          M0 20
+          Q360 50 720 30
+          Q1080 10 1440 25
+          L1440 75
+          L0 75
+          Z
+        "
+
+        fill="#315d53"
+      />
+
+    </svg>
+
+  </div>
+
+</div>
+
+
+
+
 <p-toast></p-toast>
