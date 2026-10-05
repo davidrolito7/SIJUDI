@@ -31,13 +31,13 @@ export class ExhortosService {
   private exhortoEnviar: string = environment.urlApiExhortosElectronicos + "/ExhortosEnviar/";
   private cat: string = environment.urlApiExhortosElectronicos + "/Catalogos/";
   private Juz = environment.urlApiExhortosElectronicos + "/Juzgado";
-  private configMatJuz = environment.urlApiExhortosElectronicos + "/Configuraciones/getConfigMunicipioMateriaJuzgado";
+  private configMatJuz = environment.urlApiExhortosElectronicos + "/Configuraciones/getConfigMunicipioMateriaJuzgado/";
   private apiAcuerdo: string = environment.urlApiExhortosElectronicos + "/ExhortoRecibidoAcuerdo/";
   private apiUI: string = environment.urlApiExhortosElectronicos + "/UI";
   private eFirma = environment.urlApiEfirma;
   private ExhortosEfirma = environment.urlApiExhortosElectronicos + "/eFirma/";
   private deleteConfigMatJuz = environment.urlApiExhortosElectronicos + "/Configuraciones/quitarAsignacionJuzgado";//'https://api.tribunaloaxaca.gob.mx/exhortoselectronicos/api/Configuraciones/quitarAsignacionJuzgado'
-  private configJuz = environment.urlApiExhortosElectronicos + "/Configuraciones";//'https://api.tribunaloaxaca.gob.mx/exhortoselectronicos/api/Configuraciones';
+  private configJuz = environment.urlApiExhortosElectronicos + "/Configuraciones/";//'https://api.tribunaloaxaca.gob.mx/exhortoselectronicos/api/Configuraciones';
   private turnos = environment.urlApiExhortosElectronicos + "/Turnos";
   private permisos = environment.ConstantsService.ruta + "/api/Permisos";
   constructor(private http: HttpClient) { }
@@ -352,15 +352,15 @@ export class ExhortosService {
   }
 
 
-    postReasignarJuzgado(param: ReasignarJuzgado): Observable<GenericResponse<ReasignarJuzgado>>{
-    return this.http.post<GenericResponse<ReasignarJuzgado>>(this.configJuz+"/ReasignarJuzgado",param,{context: checkToken()});
+  postReasignarJuzgado(param: ReasignarJuzgado): Observable<GenericResponse<ReasignarJuzgado>> {
+    return this.http.post<GenericResponse<ReasignarJuzgado>>(this.configJuz + "ReasignarJuzgado", param, { context: checkToken() });
   }
-  enviarActualizacionesExhorto(idExhorto: number): Observable<GenericResponse<ConfirmacionActualizacion>>{
-    return this.http.post<GenericResponse<ConfirmacionActualizacion>>(this.apiAcuerdo+"/EntregarActualizacionesExhortoRecibido?idExhortoRecibido="+idExhorto,null,{context: checkToken()});
+  enviarActualizacionesExhorto(idExhorto: number): Observable<GenericResponse<ConfirmacionActualizacion>> {
+    return this.http.post<GenericResponse<ConfirmacionActualizacion>>(this.apiAcuerdo + "EntregarActualizacionesExhortoRecibido?idExhortoRecibido=" + idExhorto, null, { context: checkToken() });
   }
-     //obtiene la lista de actualizaciones de un exhorto recibido
-  getActualizacionesExhortoRecibido(idExhortoRecibido : number ):Observable<GenericResponse<actualizacionesExhortoRecibido[]>>{
-    return this.http.get<GenericResponse<actualizacionesExhortoRecibido[]>>(this.apiAcuerdo + "ListaActualizacionesExhortosRecibidos?idExhortoRecibido="+idExhortoRecibido,{context:checkToken()});
+  //obtiene la lista de actualizaciones de un exhorto recibido
+  getActualizacionesExhortoRecibido(idExhortoRecibido: number): Observable<GenericResponse<actualizacionesExhortoRecibido[]>> {
+    return this.http.get<GenericResponse<actualizacionesExhortoRecibido[]>>(this.apiAcuerdo + "ListaActualizacionesExhortosRecibidos?idExhortoRecibido=" + idExhortoRecibido, { context: checkToken() });
   }
-  
+
 }
