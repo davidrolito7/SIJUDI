@@ -12,7 +12,7 @@ import {
   guardaFirmaTmpRequest, AgregarJuzgadoMat, CatalogoRegion, CatJuzgado, UI_ParamlistadoExhortosRecibidosRequest,
   ListadoExhortosEnviados, ListadoEstatus, ListadoExhortosRecibidosI, respuestExhortoEnviado, ConfirmacionDatosPromocionRecibida,
   ArchivoRecibidoPromocionConAcuse, actualizacionesExhortoEnviado, VerMovimientosEnviadosResponse, IdArchivoPromcionesEnviada,
-  PromocionExhortoEnviado, folioPromocionExhortoEnviado, IncompetenciaRequest, turnosResponse, VerMovimientosResponse,
+  PromocionExhortoEnviado, folioPromocionExhortoEnviado, IncompetenciaRequest, turnosResponse, VerMovimientosResponse, VerMovimientosPromocionResponse,
   DetalleExhortoRecibidoResponseI, respuestaExhorto, promocionExhortos, EnviadoRespuestaGeneralesResponse,
   EnviadoRespuestaArchivosResponse, ListadoCatalogoTipoDiligenciado,
   generales,
@@ -297,6 +297,23 @@ export class ExhortosService {
   revocarEnviado(idNot: number): Observable<any> {
     const url = `${this.turnos}/RevocarEnviados?idExhortoEnviado=${idNot}`;
     return this.http.post(url, null, { context: checkToken() });
+  }
+  //Turnado de promociones de exhortos enviados (Secretario <-> Juez)
+  getMovimientosPromocion(idPromocionEnviada: number): Observable<GenericResponse<VerMovimientosPromocionResponse[]>> {
+    const url = `${this.turnos}/verMovimientosPromocion?idPromocionEnviada=${idPromocionEnviada}`;
+    return this.http.get<GenericResponse<VerMovimientosPromocionResponse[]>>(url, { context: checkToken() });
+  }
+  turnarPromocion(idPromocionEnviada: number, perfil: string): Observable<GenericResponse<turnosResponse>> {
+    const url = `${this.turnos}/TurnarPromocion?idPromocionEnviada=${idPromocionEnviada}&cargo=${perfil}`;
+    return this.http.post<GenericResponse<turnosResponse>>(url, null, { context: checkToken() });
+  }
+  recibirPromocion(idPromocionEnviada: number, perfil: string): Observable<GenericResponse<turnosResponse>> {
+    const url = `${this.turnos}/RecibirPromocion?idPromocionEnviada=${idPromocionEnviada}&cargo=${perfil}`;
+    return this.http.post<GenericResponse<turnosResponse>>(url, null, { context: checkToken() });
+  }
+  revocarPromocion(idPromocionEnviada: number): Observable<GenericResponse<turnosResponse>> {
+    const url = `${this.turnos}/RevocarPromocion?idPromocionEnviada=${idPromocionEnviada}`;
+    return this.http.post<GenericResponse<turnosResponse>>(url, null, { context: checkToken() });
   }
   enviarActualizacion(idActualizacion: number): Observable<any> {
     const url = `${this.apiAcuerdo}EntregarActualizacionExhortoRec?idActualizacion=${idActualizacion}`;

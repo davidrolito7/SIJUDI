@@ -641,6 +641,21 @@ export interface VerMovimientosEnviadosResponse {
     idMovimiento: number;
     movimiento: string;
 }
+//movimientos (turnado Secretario <-> Juez) de una promocion de exhorto enviado
+export interface VerMovimientosPromocionResponse {
+    idPromocionEnviada: number;
+    cargoTurna: string,
+    idUsuarioTurna: number,
+    nombreUsuarioTurna: string,
+    fechaTurnado: Date;
+    idUsuarioRecibe: number;
+    nombreUsuarioRecibe: string;
+    fechaRecepcion: Date | null;
+    idMovimiento: number;
+    movimiento?: string;
+    cargoOrigen?: string;
+    cargoDestino?: string;
+}
 //objeto que la api retorna cuando se envia los datos generales de la respuesta de un exhorto al estado exhortante
 export interface EnviadoRespuestaGeneralesResponse {
     exhortoId: string;

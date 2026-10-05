@@ -46,8 +46,9 @@
             }
             <!--Declarar incompetencia: visible con el permiso hasta que el juez firma el acuerdo y lo turna de
             vuelta al secretario; a partir de ese movimiento se oculta-->
+            <!--no se puede devolver un exhorto ya devuelto (9) ni uno ya respondido (8)-->
             @if (tienePermisoDeclararIncompetencia() && !juezYaTurnoAlSecretario() &&
-            detallesExhortos()?.generales?.idEstatus !== 9) {
+            ![8, 9].includes(detallesExhortos()?.generales?.idEstatus ?? 0)) {
             <p-button type="button" (click)="dialogIncomp.open(idExhortoRecibido)" label="Devolución" icon="pi pi-ban"
                 severity="danger" [outlined]="true"></p-button>
             <app-incompetencia-dialog #dialogIncomp></app-incompetencia-dialog>

@@ -25,24 +25,53 @@
       <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
         Captura de la promoción del exhorto enviado.
       </p>
+      @if (mensajeTurnado()) {
+      <span class="mt-2 inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-semibold
+        bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+        <i class="pi pi-sync" style="font-size: 0.7rem;"></i>
+        {{ mensajeTurnado() }}
+      </span>
+      }
+      @if (pendienteParaTurnar) {
+      <p class="mt-2 flex items-center gap-1.5 text-xs text-surface-500 dark:text-surface-400">
+        <i class="pi pi-info-circle" style="font-size: 0.75rem;"></i>
+        {{ pendienteParaTurnar }}
+      </p>
+      }
     </div>
 
     <!-- Botones -->
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
-      @if(fechaHora == null){
-      @if(tienePermisoGuardar()){
+      <!--Guardar mientras sea el turno del perfil actual y aun no este lista para turnar (o si presiono "Editar");
+      una vez lista se muestra en solo lectura con Editar + Turnar, igual que en generar-acuerdo-->
+      @if (puedeGuardar() && mostrarFormularioEditable) {
       <p-button type="button" (onClick)="guardarPromocion(myForm)" label="Guardar" icon="pi pi-save"></p-button>
       }
-      }
-
-      @if(!hayCambiosSinGuardar && listaDocumentos().length >= 1){
-      @if(fechaHora == null){
-      @if(tienePermisoEnviarGenerales()){
-      <p-button type="button" (onClick)="enviarPromocionGenerales(idExhortoEnviado)" label="Enviar generales"
+      @if (puedeTurnar && !modoEdicion()) {
+      <p-button type="button" (click)="activarEdicion()" label="Editar" icon="pi pi-pencil"
+        severity="secondary"></p-button>
+        tiene permiso {{tienePermisoTurnar()}} 
+      @if (tienePermisoTurnar()) {
+      <p-button type="button" (click)="turnar()" [label]="esJuez() ? 'Turnar al secretario' : 'Turnar al juez'"
         icon="pi pi-send"></p-button>
       }
       }
 
+      <!--recibir / revocar: el destinatario del ultimo movimiento mientras aun no lo recibe-->
+      @if (tienePermisoRecibir() && puedeRecibir()) {
+      <p-button type="button" (click)="recibir()" label="Recibir" icon="pi pi-check"></p-button>
+      }
+      @if (tienePermisoRevocar() && puedeRevocar()) {
+      <p-button type="button" (click)="revocar()" label="Revocar" icon="pi pi-replay" severity="secondary"></p-button>
+      }
+
+      <!--enviar generales: solo el secretario, una vez que recibio de vuelta del juez y con las firmas aplicadas-->
+      @if (tienePermisoEnviarGenerales() && puedeEnviarGenerales) {
+      <p-button type="button" (onClick)="enviarPromocionGenerales(idExhortoEnviado)" label="Enviar generales"
+        icon="pi pi-send"></p-button>
+      }
+
+      @if(!hayCambiosSinGuardar && listaDocumentos().length >= 1){
       @if(tienePermisoEnviarArchvios()){
       @if(fechaRecepcion == null && fechaHora != null){
       <p-button type="button" (onClick)="enviarPromocionArchivos(idPromocionEnviado,idExhortoEnviado)"
@@ -212,7 +241,8 @@
         Número de fojas<strong>*</strong>
       </label>
       <p-inputnumber inputId="fojas" name="fojas" [(ngModel)]="fojas" [showButtons]="true" mode="decimal" [min]="0"
-        [max]="5000" [useGrouping]="false" class="w-full" fluid (ngModelChange)="marcarCambios()">
+        [max]="5000" [useGrouping]="false" class="w-full" fluid (ngModelChange)="marcarCambios()"
+        [disabled]="!mostrarFormularioEditable">
       </p-inputnumber>
     </div>
 
@@ -221,7 +251,7 @@
       <label for="observaciones"
         class="mb-1.5 block text-sm font-medium text-surface-700 dark:text-surface-300">Observaciones</label>
       <textarea id="observaciones" [(ngModel)]="observaciones" name="observaciones" rows="1" pInputTextarea
-        class="w-full text-sm" (ngModelChange)="marcarCambios()" maxlength="1000"
+        class="w-full text-sm" (ngModelChange)="marcarCambios()" maxlength="1000" [disabled]="!mostrarFormularioEditable"
         placeholder="Escribe algo aquí..."></textarea>
     </div>
   </form>
@@ -254,7 +284,9 @@
     </div>
 
     <div class="mt-4 md:mt-0 flex items-center gap-2">
+      @if (mostrarFormularioEditable) {
       <p-button type="button" (onClick)="openNewPromovente()" label="Agregar promovente" icon="pi pi-plus"></p-button>
+      }
     </div>
   </div>
 
@@ -296,8 +328,8 @@
 </div>
 
 <!-- AGREGAR DOCUMENTOS -->
+<!--la seccion se muestra a todos (el juez tambien firma aqui); solo el boton de cargar depende de CargarArchivo-->
 @if(idPromocionEnviado !== 0) {
-@if(tienePermisoCargarArchivo()) {
 <div class="relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
   <!-- Esquinas decorativas -->
   <span
@@ -324,12 +356,15 @@
     </div>
 
     <div class="mt-4 md:mt-0 flex items-center gap-2">
-      @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
+      @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma() && puedeSeleccionarParaFirma) {
       <p-button type="button" (click)="openNewFirma()" severity="warn" icon="pi pi-pen-to-square"
         label="Firmar con FIREL"></p-button>
       }
+      <!--solo el secretario carga documentos, y unicamente antes de turnar al juez-->
+      @if (tienePermisoCargarArchivo() && puedeEditarDocumentos) {
       <p-fileupload mode="basic" name="demo[]" [multiple]="true" chooseIcon="pi pi-upload" accept="application/pdf"
         (onSelect)="onAnexosSelect($event)" [auto]="true" chooseLabel="Agregar documento" />
+      }
     </div>
   </div>
 
@@ -350,7 +385,7 @@
       <ng-template #body let-documento let-i="rowIndex">
         <tr>
           <td>
-            @if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo){
+            @if(!documento.firmado && documento.idArchivo !==0 && !documento.usrYaFirmo && puedeSeleccionarParaFirma){
             <!--archivo_seleccionado ya invierte selecParaFirma, por eso el ngModel es solo de lectura-->
             <p-checkbox [binary]="true" [ngModel]="documento.selecParaFirma"
               (onChange)="archivo_seleccionado(documento)" />
@@ -373,8 +408,8 @@
           <td style="font-size: small;">{{ documento.firmado ? 'Sí' : 'No' }}</td>
           <td style="font-size: small;">{{ documento.fechaFirmado | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
           <td class="align-middle">
-            <!--firmantes como chips: inicial del nombre, nombre (recortado si es largo) y, mientras no se
-            apliquen las firmas, el boton para eliminarla-->
+            <!--firmantes como chips: inicial del nombre, nombre (recortado si es largo) y, solo para la firma
+            propia (segun puedeEliminarFirma) mientras no se apliquen las firmas, el boton para eliminarla-->
             <div class="flex flex-col items-start gap-1.5">
               @for (firmante of documento.firmantes; track firmante) {
               @if (firmante) {
@@ -391,7 +426,7 @@
                 <i class="pi pi-check-circle shrink-0 text-xs text-green-600 dark:text-green-400"
                   title="Firma aplicada"></i>
                 }
-                @else {
+                @else if (puedeEliminarFirma(firmante)) {
                 <button type="button" (click)="eliminarFirma(firmante.idFirmaTmp, documento.idArchivo)"
                   class="-mr-1 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-surface-400
                     transition-colors hover:bg-red-100 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-red-500
@@ -416,8 +451,8 @@
               class="mr-2" title="cargar documento">
             </p-button>
             }
-            <!--APLICAR FIRMAS-->
-            @if(!documento.firmado && documento.firmantes.length>0){
+            <!--APLICAR FIRMAS: solo el secretario, una vez que recibio de vuelta del juez-->
+            @if(puedeAplicarFirmas(documento)){
             <p-button (click)="aplicarFirmas(documento.idArchivo)" severity="success" [rounded]="true"
               icon="pi pi-key" class="mr-2" title="Aplicar firmas">
             </p-button>
@@ -426,8 +461,9 @@
             <p-button (click)="getFile(documento,4)" severity="success" [rounded]="true" icon="pi pi-file-pdf"
               class="mr-2" title="Descargar PDF"></p-button>
 
-            <!--ELIMINAR DOCUMENTO: solo mientras la promocion esta pendiente de enviar-->
-            @if((idEstatus === 1 || idEstatus === 0) && fechaHora == null){
+            <!--ELIMINAR DOCUMENTO: solo el secretario mientras la promocion esta pendiente de enviar y antes de
+            turnar al juez (o despues de presionar "Editar")-->
+            @if((idEstatus === 1 || idEstatus === 0) && fechaHora == null && puedeEditarDocumentos){
             @if(tienePermisoEliminarArchivo()){
             <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
               (click)="eliminarDocumento(documento,i)"></p-button>
@@ -447,8 +483,80 @@
   </div>
 </div>
 }
+
+<!-- MOVIMIENTOS (TURNADO) -->
+@if (movimientos().length > 0) {
+<div class="relative mt-4 border border-surface-200 bg-white mb-4 p-5 dark:border-surface-800 dark:bg-surface-900">
+  <!-- Esquinas decorativas -->
+  <span
+    class="pointer-events-none absolute -left-px -top-px h-3 w-3 border-l border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -right-px -top-px h-3 w-3 border-r border-t border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -left-px h-3 w-3 border-b border-l border-surface-800 dark:border-surface-200">
+  </span>
+  <span
+    class="pointer-events-none absolute -bottom-px -right-px h-3 w-3 border-b border-r border-surface-800 dark:border-surface-200">
+  </span>
+
+  <div class="mb-5">
+    <h2 class="text-xl font-medium tracking-tight text-surface-900 dark:text-surface-0">
+      <span class="pi pi-history text-lg text-primary"></span> Movimientos
+    </h2>
+    <p class="mt-1 text-sm leading-5 text-surface-500 dark:text-surface-400">
+      Historial del turnado de la promoción entre secretario y juez.
+    </p>
+  </div>
+
+  <div class="relative overflow-x-auto">
+    <p-table [value]="movimientos()" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template #header>
+        <tr class="uppercase text-xs">
+          <th>Movimiento</th>
+          <th>Turna</th>
+          <th>Fecha turnado</th>
+          <th>Recibe</th>
+          <th>Fecha recepción</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-mov>
+        <tr>
+          <td style="font-size: small;">{{ mov.movimiento || NOMBRE_MOVIMIENTO[mov.idMovimiento] }}</td>
+          <td style="font-size: small;">
+            {{ mov.nombreUsuarioTurna }}
+            <span class="block text-xs text-surface-500 dark:text-surface-400">{{ mov.cargoTurna }}</span>
+          </td>
+          <td style="font-size: small;">{{ mov.fechaTurnado | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+          <td style="font-size: small;">{{ mov.nombreUsuarioRecibe }}</td>
+          <td style="font-size: small;">
+            @if (mov.fechaRecepcion) {
+            {{ mov.fechaRecepcion | date: 'yyyy-MM-dd HH:mm:ss' }}
+            } @else {
+            <span class="text-xs italic text-amber-600 dark:text-amber-400">Pendiente de recibir</span>
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
 }
 
+<!--* MODAL DE CONFIRMACION PARA TURNAR LA PROMOCION -->
+<app-confirm-dialog key="turnarPromocion" title="Confirmación" message="¿Está seguro de que desea turnar la promoción?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA RECIBIR LA PROMOCION -->
+<app-confirm-dialog key="recibirPromocion" title="Confirmación"
+  message="¿Está seguro de que desea recibir la promoción?" icon="pi pi-question" circleClass="bg-primary"
+  acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
+<!--* MODAL DE CONFIRMACION PARA REVOCAR EL TURNO DE LA PROMOCION -->
+<app-confirm-dialog key="revocarPromocion" title="Confirmación" message="¿Está seguro de que desea revocar el turno?"
+  icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">
+</app-confirm-dialog>
 <!--* MODAL DE CONFIRMACION GUADAR PROMOCION -->
 <app-confirm-dialog key="guardarPromocion" title="Confirmación" message="¿Está seguro de guardar la promoción?"
   icon="pi pi-question" circleClass="bg-primary" acceptLabel="Aceptar" acceptStyleClass="bg-primary">

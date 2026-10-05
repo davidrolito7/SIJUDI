@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, signal, Signal, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ViewChild, signal, Signal, ChangeDetectorRef, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { FileRemoveEvent, FileSelectEvent, FileUpload, FileUploadEvent } from 'primeng/fileupload';
 import { FormControl, FormGroup, NgForm, Validators,FormsModule ,ReactiveFormsModule} from '@angular/forms';
@@ -9,7 +9,8 @@ import {ButtonModule} from 'primeng/button';
 import { TokenService } from '../../../core/auth/service/token.service';
 import {ExhortosService} from '../../services/exhorto.service';
 import { AuthService } from '../../../core/auth/service/auth.service';
-import { archivoPromocionExhortoEnviado, ArchivoRecibidoPromocionConAcuse, CatalogoGenero, CatalogoTipoParte, detalleExhortosEnviados, ListadoCatalogoTipoDocumento, PromocionExhortoEnviado, ProvomenteExhortoEnviado } from '../../interfaces/exhortos.model';
+import { archivoPromocionExhortoEnviado, ArchivoRecibidoPromocionConAcuse, CatalogoGenero, CatalogoTipoParte, detalleExhortosEnviados, Firmantes, ListadoCatalogoTipoDocumento, PromocionExhortoEnviado, ProvomenteExhortoEnviado, turnosResponse, VerMovimientosPromocionResponse } from '../../interfaces/exhortos.model';
+import { finalize, Observable } from 'rxjs';
 import { secciones } from '../../../core/auth/interface/login.interfaces';
 import { GenericResponse } from '../../../shared/interface/shared.interface';
 import { base64ToFile, downloadBase64, downloadFile, validaPdf } from '../../../shared/functions/utils';
@@ -174,6 +175,180 @@ export class PromocionExhortoEnviadoComponent {
   seleccionadosParaFirma= signal(false);
   showPassword: boolean = false;
   detallesExhortos = signal<detalleExhortosEnviados | null>(null);
+
+  //---- TURNADO DE LA PROMOCION (Secretario <-> Juez), misma logica que generar-acuerdo / crear-exhorto ----
+  movimientos = signal<VerMovimientosPromocionResponse[]>([]);
+  tienePermisoTurnar = signal<boolean>(false);
+  tienePermisoRecibir = signal<boolean>(false);
+  tienePermisoRevocar = signal<boolean>(false);
+  esSecretario = computed(() => this.tokenService.getPerfilNombre() === 'Secretario');
+  esJuez = computed(() => this.tokenService.getPerfilNombre() === 'Juez');
+  //true mientras el usuario presiono "Editar" para volver a habilitar la promocion aun cuando ya esta lista para turnar
+  modoEdicion = signal<boolean>(false);
+  //idMovimiento del turnado de la promocion:
+  //18: Captura de promocion (radica en el Secretario, captura inicial)
+  //19: Secretario -> Juez (revisa y firma la promocion)
+  //20: Juez -> Secretario (envia la promocion al juzgado exhortado)
+  readonly ID_MOV_CAPTURA_PROMOCION = 18;
+  readonly ID_MOV_SECRETARIO_JUEZ = 19;
+  readonly ID_MOV_JUEZ_SECRETARIO = 20;
+  //nombre a mostrar de cada movimiento cuando la api no regresa la descripcion
+  readonly NOMBRE_MOVIMIENTO: Record<number, string> = {
+    18: 'Captura de promoción',
+    19: 'Secretario - Juez',
+    20: 'Juez - Secretario',
+  };
+  //fase del turnado segun el ultimo movimiento (revocar elimina el ultimo, por eso siempre se usa el ultimo):
+  //- sinTurnar: sin movimientos o solo la captura (18); el secretario captura, carga documentos y firma
+  //- turnadoAJuez / juezRecibio: movimiento 19 pendiente de recibir / ya recibido por el juez
+  //- turnadoASecretario / secretarioRecibio: movimiento 20 pendiente de recibir / ya recibido por el secretario
+  faseTurnado = computed<'sinTurnar' | 'turnadoAJuez' | 'juezRecibio' | 'turnadoASecretario' | 'secretarioRecibio'>(() => {
+    const lista = this.movimientos();
+    if (!lista || lista.length === 0) {
+      return 'sinTurnar';
+    }
+    const ultimo = lista[lista.length - 1];
+    const recibido = ultimo.fechaRecepcion != null;
+    if (ultimo.idMovimiento === this.ID_MOV_SECRETARIO_JUEZ) {
+      return recibido ? 'juezRecibio' : 'turnadoAJuez';
+    }
+    if (ultimo.idMovimiento === this.ID_MOV_JUEZ_SECRETARIO) {
+      return recibido ? 'secretarioRecibio' : 'turnadoASecretario';
+    }
+    return 'sinTurnar';
+  });
+  //el destinatario del movimiento 19 (Juez) o 20 (Secretario) puede recibirlo, o revocarlo, mientras aun no
+  //lo recibe; la captura (18) nunca se recibe ni se revoca
+  puedeRecibir = computed(() => {
+    const fase = this.faseTurnado();
+    if (fase === 'turnadoAJuez') {
+      return this.esJuez();
+    }
+    if (fase === 'turnadoASecretario') {
+      return this.esSecretario();
+    }
+    return false;
+  });
+  puedeRevocar = computed(() => this.puedeRecibir());
+  //perfil que tiene actualmente la promocion: el secretario antes de turnar y al recibirla de vuelta; el juez
+  //una vez que la recibio. Solo quien tiene el turno puede editar, cargar documentos y firmar
+  esTurnoActual = computed(() => {
+    const fase = this.faseTurnado();
+    if (fase === 'sinTurnar' || fase === 'secretarioRecibio') {
+      return this.esSecretario();
+    }
+    if (fase === 'juezRecibio') {
+      return this.esJuez();
+    }
+    return false;
+  });
+  //tipo de documento obligatorio para poder turnar la promocion
+  readonly ID_TIPO_DOCUMENTO_ACUERDO = 2;
+  //existe al menos un documento tipo Acuerdo (2) guardado. El tipo puede venir en idTipoDocumento o solo dentro
+  //de tipoDocumento, segun el endpoint que haya llenado la lista
+  private esDocumentoAcuerdo(doc: archivoPromocionExhortoEnviado): boolean {
+    return doc.idArchivo !== 0 && doc.activo !== false &&
+      Number(doc.idTipoDocumento || doc.tipoDocumento?.idTipoDocumento) === this.ID_TIPO_DOCUMENTO_ACUERDO;
+  }
+  existeAcuerdo = computed(() => this.listaDocumentos().some(doc => this.esDocumentoAcuerdo(doc)));
+  //true si el usuario actual ya cargo su firma (temporal) en el documento tipo Acuerdo
+  usuarioFirmoAcuerdo = computed(() => {
+    const userData = this.tokenService.getUserFromToken();
+    const idUsuario = userData !== null ? Number(userData.idGeneral) : 0;
+    return this.listaDocumentos().some(doc =>
+      this.esDocumentoAcuerdo(doc) && (doc.firmantes ?? []).some(f => f && Number(f.idUsuario) === idUsuario));
+  });
+  //true cuando el usuario presiono Guardar teniendo ya su firma en el Acuerdo (o la promocion se abre cumpliendo
+  //ya esa condicion); a partir de ahi aparecen "Editar" y "Turnar". Se apaga al firmar/eliminar firma o al turnar,
+  //para que tenga que volver a guardar
+  guardadoConFirmaParaTurnar = signal<boolean>(false);
+  //en la primera carga de documentos se marca guardadoConFirmaParaTurnar si ya se cumple la condicion
+  private cargaInicialDocumentos = true;
+  //Turnar (igual que generar-acuerdo / crear-exhorto):
+  //- Secretario (sinTurnar): al juez, una vez que cargo un documento tipo Acuerdo, lo firmo y guardo
+  //- Juez (juezRecibio): de vuelta al secretario, una vez que firmo el Acuerdo y guardo
+  //No se puede turnar con cambios o documentos sin guardar
+  get puedeTurnar(): boolean {
+    if (this.idPromocionEnviado === 0 || this.fechaHora != null || this.hayCambiosSinGuardar) {
+      return false;
+    }
+    if (this.listaDocumentos().some(doc => doc.idArchivo === 0)) {
+      return false;
+    }
+    const fase = this.faseTurnado();
+    const turnoParaTurnar = (fase === 'sinTurnar' && this.esSecretario()) || (fase === 'juezRecibio' && this.esJuez());
+    return turnoParaTurnar && this.usuarioFirmoAcuerdo() && this.guardadoConFirmaParaTurnar();
+  }
+  //indica que falta para poder turnar; se muestra en el encabezado mientras sea el turno del perfil actual
+  get pendienteParaTurnar(): string {
+    const fase = this.faseTurnado();
+    const turnoParaTurnar = (fase === 'sinTurnar' && this.esSecretario()) || (fase === 'juezRecibio' && this.esJuez());
+    if (!turnoParaTurnar || this.fechaHora != null || this.puedeTurnar) {
+      return '';
+    }
+    if (this.idPromocionEnviado === 0) {
+      return 'Guarda la promoción para poder cargar el acuerdo.';
+    }
+    if (!this.existeAcuerdo()) {
+      return 'Para turnar debe cargar un documento de tipo Acuerdo.';
+    }
+    if (!this.usuarioFirmoAcuerdo()) {
+      return 'Para turnar debe firmar el Acuerdo con FIREL.';
+    }
+    return 'Guarda la promoción para poder turnar.';
+  }
+  //la promocion se muestra editable (Guardar) mientras sea el turno del perfil actual y aun no este lista para
+  //turnar; una vez lista se muestra en solo lectura con los botones Editar + Turnar, hasta presionar "Editar".
+  //Una vez enviados los generales (fechaHora) ya nadie la edita
+  get mostrarFormularioEditable(): boolean {
+    if (this.fechaHora != null) {
+      return false;
+    }
+    return this.esTurnoActual() && (!this.puedeTurnar || this.modoEdicion());
+  }
+  //el juez normalmente no tiene la seccion "Guardar" en esta pantalla, pero una vez que recibio la promocion
+  //puede editarla y guardarla
+  puedeGuardar = computed(() =>
+    this.tienePermisoGuardar() || (this.esJuez() && this.faseTurnado() === 'juezRecibio')
+  );
+  //solo el secretario agrega/elimina documentos, y unicamente antes de turnar al juez; el juez solo firma
+  get puedeEditarDocumentos(): boolean {
+    return this.esSecretario() && this.faseTurnado() === 'sinTurnar' && this.mostrarFormularioEditable;
+  }
+  //quien tiene el turno selecciona documentos para firmar (firma temporal) mientras no este en solo lectura
+  get puedeSeleccionarParaFirma(): boolean {
+    return this.mostrarFormularioEditable && this.faseTurnado() !== 'secretarioRecibio';
+  }
+  //cada usuario solo elimina su propia firma, y solo mientras tiene el turno y no esta en solo lectura
+  puedeEliminarFirma(firmante: Firmantes): boolean {
+    if (!this.mostrarFormularioEditable) {
+      return false;
+    }
+    const userData = this.tokenService.getUserFromToken();
+    const idUsuario = userData !== null ? Number(userData.idGeneral) : 0;
+    return Number(firmante.idUsuario) === idUsuario;
+  }
+  //solo el secretario, una vez que recibio de vuelta del juez, aplica las firmas al pdf
+  puedeAplicarFirmas(documento: archivoPromocionExhortoEnviado): boolean {
+    return !documento.firmado && (documento.firmantes ?? []).length > 0 &&
+      this.esSecretario() && this.faseTurnado() === 'secretarioRecibio';
+  }
+  //"Enviar generales" solo lo hace el secretario despues de recibir de vuelta del juez, con todas las firmas aplicadas
+  get puedeEnviarGenerales(): boolean {
+    const documentos = this.listaDocumentos();
+    return this.fechaHora == null && !this.hayCambiosSinGuardar && documentos.length > 0 &&
+      this.esSecretario() && this.faseTurnado() === 'secretarioRecibio' && documentos.every(doc => doc.firmado);
+  }
+  //texto informativo del estado del turnado para el encabezado
+  mensajeTurnado = computed(() => {
+    switch (this.faseTurnado()) {
+      case 'turnadoAJuez': return 'Turnada al juez, pendiente de recibir';
+      case 'juezRecibio': return 'En revisión y firma del juez';
+      case 'turnadoASecretario': return 'Devuelta al secretario, pendiente de recibir';
+      case 'secretarioRecibio': return 'Recibida de vuelta por el secretario';
+      default: return '';
+    }
+  });
 /*formatEmail() {
     let value = this.emailControl.value || '';
 
@@ -221,6 +396,7 @@ export class PromocionExhortoEnviadoComponent {
 
       if(this.idPromocionEnviado!=0){
         this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado,this.idPromocionEnviado);
+        this.obtenerMovimientos(this.idPromocionEnviado);
       }
 
       this.loadDetalles(this.idExhortoEnviado);
@@ -732,6 +908,12 @@ cargarDetallesExhortoEnviado(idExhortoEnviado: number): Promise<void> {
         }
         const documentosValidados = validarFirmasUsuarioPromEnviado(responsePromocion.data.archivos,idUsuario);
         this.listaDocumentos.set(documentosValidados);
+        //al abrir una promocion que ya tiene el Acuerdo firmado por el usuario (ya guardado antes) no se le
+        //obliga a guardar de nuevo para que aparezcan Editar/Turnar
+        if (this.cargaInicialDocumentos) {
+          this.cargaInicialDocumentos = false;
+          this.guardadoConFirmaParaTurnar.set(this.usuarioFirmoAcuerdo());
+        }
 
         //this.listaDocumentos.set(responsePromocion.data.archivos);
         this.fechaHora = responsePromocion.data.fechaHora
@@ -775,7 +957,11 @@ cargarDetallesExhortoEnviado(idExhortoEnviado: number): Promise<void> {
                 detail: 'Promoción guardada exitosamente con folio: ' + this.folioOrigenPromocion,
                 life: 4000
               });
+              //al guardar se sale del modo "Editar"; si ya firmo el Acuerdo quedan Editar + Turnar (solo lectura)
+              this.modoEdicion.set(false);
+              this.guardadoConFirmaParaTurnar.set(this.usuarioFirmoAcuerdo());
               this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado,this.idPromocionEnviado);
+              this.obtenerMovimientos(this.idPromocionEnviado);
             }
             else
             {
@@ -817,7 +1003,11 @@ cargarDetallesExhortoEnviado(idExhortoEnviado: number): Promise<void> {
                 detail: 'Promoción guardada exitosamente con folio: ' + this.folioOrigenPromocion,
                 life: 4000
               });
+              //al guardar se sale del modo "Editar"; si ya firmo el Acuerdo quedan Editar + Turnar (solo lectura)
+              this.modoEdicion.set(false);
+              this.guardadoConFirmaParaTurnar.set(this.usuarioFirmoAcuerdo());
               this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado,this.idPromocionEnviado);
+              this.obtenerMovimientos(this.idPromocionEnviado);
             }
             else
             {
@@ -944,6 +1134,8 @@ async iniciarFirmaDocumentos(){
                 this.archivos_firmados++;
             }
             this.seleccionadosParaFirma.set(false); //apagamos la señal para ocultar el boton firmar
+            //despues de firmar debe guardar para que aparezcan Editar/Turnar
+            this.guardadoConFirmaParaTurnar.set(false);
             this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado, this.idPromocionEnviado);
             //this.cerrarVentanaModal();
             this.firmaDialog=false;
@@ -1130,6 +1322,9 @@ showDialog(idArchivo: number): void {
                     this.tienePermisoCargarArchivo.set(false);
                     this.tienePermisoFirmarArchivo.set(false);
                     this.tienePermisoEliminarArchivo.set(false);
+                    this.tienePermisoTurnar.set(false);
+                    this.tienePermisoRecibir.set(false);
+                    this.tienePermisoRevocar.set(false);
                 }
                 else if(this.secciones.length > 0 ){
                   this.tienePermisoGuardar.set(this.secciones.some(s => s.descripcion === 'Guardar'));
@@ -1138,7 +1333,10 @@ showDialog(idArchivo: number): void {
                   this.tienePermisoSeleccionarArchivo.set(this.secciones.some(s => s.descripcion === 'SeleccionarArchivo'));
                   this.tienePermisoCargarArchivo.set(this.secciones.some(s => s.descripcion === 'CargarArchivo'));
                   this.tienePermisoFirmarArchivo.set(this.secciones.some(s => s.descripcion === 'FirmarArchivo'));
-                  this.tienePermisoEliminarArchivo.set(this.secciones.some(s => s.descripcion === 'EliminarArchivo'));  
+                  this.tienePermisoEliminarArchivo.set(this.secciones.some(s => s.descripcion === 'EliminarArchivo'));
+                  this.tienePermisoTurnar.set(this.secciones.some(s => s.nombre === 'Turnar' || s.descripcion === 'Turnar'));
+                  this.tienePermisoRecibir.set(this.secciones.some(s => s.nombre === 'Recibir' || s.descripcion === 'Recibir'));
+                  this.tienePermisoRevocar.set(this.secciones.some(s => s.nombre === 'Revocar' || s.descripcion === 'Revocar'));
                 }
           } else {
             this.messageService.add({ severity: 'error', summary: res.message, detail: res.errors });
@@ -1175,6 +1373,8 @@ showDialog(idArchivo: number): void {
                 }
                 const documentosValidados = validarFirmasUsuarioPromEnviado(this.listaDocumentos(),idUsuario);
                 this.listaDocumentos.set(documentosValidados);
+                //sin su firma en el Acuerdo ya no puede turnar; al volver a firmar debe guardar de nuevo
+                this.guardadoConFirmaParaTurnar.set(false);
 
               }
             }
@@ -1368,6 +1568,86 @@ showDialog(idArchivo: number): void {
             console.error('Documento inválido');
           } 
         }
+  //habilita nuevamente la promocion aunque ya este lista para turnar; se apaga al guardar o al turnar
+  activarEdicion() {
+    this.modoEdicion.set(true);
+  }
+  //movimientos de la promocion; determinan la fase del turnado (Secretario <-> Juez)
+  obtenerMovimientos(idPromocionEnviada: number) {
+    if (!idPromocionEnviada) {
+      return;
+    }
+    this.ExhortosService.getMovimientosPromocion(idPromocionEnviada).subscribe({
+      next: (response) => {
+        this.movimientos.set(response.data ?? []);
+        this.cd.detectChanges();
+      },
+      error: (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message, sticky: true });
+      }
+    });
+  }
+  //al terminar turnar/recibir/revocar se recargan movimientos y documentos, y se limpia la seleccion para firma
+  private refrescarDespuesDeTurno() {
+    this.modoEdicion.set(false);
+    //quien recibe (p.ej. el juez) debe firmar el Acuerdo y guardar antes de poder turnar
+    this.guardadoConFirmaParaTurnar.set(false);
+    this.seleccionadosParaFirma.set(false);
+    this.obtenerMovimientos(this.idPromocionEnviado);
+    this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado, this.idPromocionEnviado);
+  }
+  //maneja la respuesta comun de TurnarPromocion / RecibirPromocion / RevocarPromocion
+  private procesarRespuestaTurno(peticion: Observable<GenericResponse<turnosResponse>>) {
+    this.isLoading = true;
+    this.cd.detectChanges();
+    peticion.pipe(
+      finalize(() => {
+        this.isLoading = false;
+        this.cd.detectChanges();
+      })
+    ).subscribe({
+      next: (response) => {
+        if (response.success && response.data?.resultado) {
+          this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.data.msg, icon: 'pi pi-check-circle' });
+          this.refrescarDespuesDeTurno();
+        } else if (response.success) {
+          this.messageService.add({ severity: 'warn', summary: 'Atención', detail: response.data?.msg });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, sticky: true });
+        }
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, sticky: true });
+      }
+    });
+  }
+  //Secretario -> Juez, o Juez -> Secretario
+  turnar() {
+    if (!this.puedeTurnar) {
+      return;
+    }
+    this.confirmationService.confirm({
+      key: 'turnarPromocion',
+      accept: () => this.procesarRespuestaTurno(
+        this.ExhortosService.turnarPromocion(this.idPromocionEnviado, this.authService.getRoleNameUsuario())),
+      reject: () => { }
+    });
+  }
+  recibir() {
+    this.confirmationService.confirm({
+      key: 'recibirPromocion',
+      accept: () => this.procesarRespuestaTurno(
+        this.ExhortosService.recibirPromocion(this.idPromocionEnviado, this.authService.getRoleNameUsuario())),
+      reject: () => { }
+    });
+  }
+  revocar() {
+    this.confirmationService.confirm({
+      key: 'revocarPromocion',
+      accept: () => this.procesarRespuestaTurno(this.ExhortosService.revocarPromocion(this.idPromocionEnviado)),
+      reject: () => { }
+    });
+  }
   validarTelefonoPromo() {
     if (!this.promoventesForm.value.telefono || this.promoventesForm.value.telefono.length !== 10) { //
       this.promoventesForm.get('telefono')?.setErrors({ 'invalidPhone': true, 'message': 'El teléfono debe tener 10 dígitos.' });

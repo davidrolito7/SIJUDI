@@ -80,6 +80,11 @@ export class GenerarAcuerdo {
   );
   listaDocumentos = signal<archivos[]>([]);
   datosExhortoRecibido: ListadoExhortosRecibidosI | null = null;
+  //idEstatus del exhorto (no del acuerdo); se guarda en un signal para que los computed reaccionen al cargarlo
+  idEstatusExhorto = signal<number | null>(null);
+  //cuando el exhorto esta en Devolucion (idEstatus 9) ya no se puede realizar ninguna accion sobre el acuerdo
+  //(guardar, editar, turnar, recibir, revocar, enviar, firmar, cargar/eliminar documentos); solo consulta
+  exhortoEnDevolucion = computed(() => this.idEstatusExhorto() === 9);
   acuseEnviarAcuerdoArchivos!: EnviadoRespuestaArchivosResponse;
   detallesAcuerdo = signal<respuestaExhorto>(<respuestaExhorto>{});
   //true cuando el documento de tipo acuerdo ya tiene las dos firmas (secretario y juez); solo aplica cuando
@@ -123,6 +128,9 @@ export class GenerarAcuerdo {
   //tipo 1 (oficio) una vez que recibio de vuelta del notificador; tipo 2 (acuerdo) una vez que recibio de
   //vuelta del juez
   puedeAplicarFirmasDocumento(documento: any): boolean {
+    if (this.exhortoEnDevolucion()) {
+      return false;
+    }
     if (documento.idTipoDocumento === 2) {
       return this.secretarioYaRecibioDeJuez();
     }
@@ -150,7 +158,7 @@ export class GenerarAcuerdo {
     this.secretarioYaRecibioDeJuez() && this.existeDocumentoTipo2Firmado() && this.idTipoProcedimientoSeleccionado() === 2
   );
   puedeEnviarGenerales = computed(() =>
-    this.puedeEnviarGeneralesDeNotificador() || this.puedeEnviarGeneralesDeJuez()
+    !this.exhortoEnDevolucion() && (this.puedeEnviarGeneralesDeNotificador() || this.puedeEnviarGeneralesDeJuez())
   );
 
   //true desde que el secretario turno el acuerdo al juez (idMovimiento 9) en adelante; oculta Guardar y eliminar archivo
@@ -171,6 +179,9 @@ export class GenerarAcuerdo {
   //solo secretario (mientras no haya turnado al juez, idMovimiento 9) y notificador (mientras no haya turnado de
   //vuelta al secretario, idMovimiento 12, y solo una vez que ya recibio su turno) pueden cargar documentos
   puedeCargarDocumento = computed(() => {
+    if (this.exhortoEnDevolucion()) {
+      return false;
+    }
     const perfil = this.tokenService.getPerfilNombre();
     const lista = this.movimientos();
     const maxId = lista && lista.length > 0 ? Math.max(...lista.map(m => m.idMovimiento)) : 0;
@@ -215,7 +226,7 @@ export class GenerarAcuerdo {
   puedeRecibir = computed(() => {
     const perfil = this.tokenService.getPerfilNombre();
     const lista = this.movimientos();
-    if (!lista || lista.length === 0) {
+    if (this.exhortoEnDevolucion() || !lista || lista.length === 0) {
       return false;
     }
     const ultimoMovimiento = lista[lista.length - 1];
@@ -253,7 +264,7 @@ export class GenerarAcuerdo {
   puedeTurnar = computed(() => {
     const perfil = this.tokenService.getPerfilNombre();
     const lista = this.movimientos();
-    if (!lista || lista.length === 0) {
+    if (this.exhortoEnDevolucion() || !lista || lista.length === 0) {
       return false;
     }
     const ultimoMovimiento = lista[lista.length - 1];
@@ -306,7 +317,7 @@ export class GenerarAcuerdo {
   //Una vez que ya esta listo (para turnar o para enviar generales) se muestra en modo lectura con los
   //botones Editar + Turnar o Editar + Enviar generales
   mostrarFormularioEditable = computed(() =>
-    !this.esNotificador() && ((this.esDestinatarioActual() && !this.puedeTurnar() && !this.puedeEnviarGenerales()) || this.modoEdicion())
+    !this.exhortoEnDevolucion() && !this.esNotificador() && ((this.esDestinatarioActual() && !this.puedeTurnar() && !this.puedeEnviarGenerales()) || this.modoEdicion())
   );
   //idMovimiento del ultimo movimiento registrado, igual que en detalles-exhorto-recibido
   ultimoMovimiento = computed<number | null>(() => {
@@ -339,7 +350,7 @@ export class GenerarAcuerdo {
   puedeEliminarFirma(firmante: Firmantes): boolean {
     const userData = this.tokenService.getUserFromToken();
     const idUsuario = userData !== null ? userData.idGeneral : 0;
-    if (firmante.idUsuario !== idUsuario) {
+    if (this.exhortoEnDevolucion() || firmante.idUsuario !== idUsuario) {
       return false;
     }
     if (this.esJuez()) {
@@ -367,7 +378,7 @@ export class GenerarAcuerdo {
   //se le turno (es el destinatario actual y ya recibio) y mientras aun no lo turne de vuelta al secretario
   //(idMovimiento 12). Tambien puede quitar de la lista un archivo seleccionado que aun no se ha subido (idArchivo 0)
   puedeEliminarDocumentoNotificador(documento: archivos): boolean {
-    if (!this.esNotificador() || !this.esDestinatarioActual() || this.notificadorYaTurno()) {
+    if (this.exhortoEnDevolucion() || !this.esNotificador() || !this.esDestinatarioActual() || this.notificadorYaTurno()) {
       return false;
     }
     return documento.idArchivo === 0 || this.TIPOS_DOCUMENTO_NOTIFICADOR.includes(Number(documento.idTipoDocumento));
@@ -388,7 +399,7 @@ export class GenerarAcuerdo {
   );
   //una vez enviados los generales ya nadie puede seleccionar documentos para firma, sin importar el tipo
   puedeSeleccionarParaFirma = computed(() =>
-    this.generalesPendientesEnvio() &&
+    !this.exhortoEnDevolucion() && this.generalesPendientesEnvio() &&
     (this.esNotificador() || ((this.esSecretario() || this.esJuez()) && this.esDestinatarioActual()))
   );
   //acuerdo!: generales;
@@ -566,6 +577,7 @@ export class GenerarAcuerdo {
           this.isLoading = false;
           this.cd.detectChanges();
           this.datosExhortoRecibido = response.data.generales;
+          this.idEstatusExhorto.set(response.data.generales?.idEstatus ?? null);
 
 
           //this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });

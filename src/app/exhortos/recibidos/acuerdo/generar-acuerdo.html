@@ -61,7 +61,7 @@
       }
 
       }
-      @if (tienePermisoEnviarArchvios()) {
+      @if (tienePermisoEnviarArchvios() && !exhortoEnDevolucion()) {
       @if (detallesAcuerdo().generales?.idEstatus === 12) {
       <button pButton (click)="enviarAcuerdoArchivos(this.idExhortoRecibido)"><svg data-p-icon="paperclip"></svg>Enviar
         archivos</button>
@@ -430,7 +430,7 @@
       DEBUG seleccionadosParaFirma(): {{seleccionadosParaFirma()}} <br>
       DEBUG esNotificador(): {{esNotificador()}} <br>
       @if([0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0)){
-      @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma()) {
+      @if (tienePermisoFirmarArchivo() && seleccionadosParaFirma() && !exhortoEnDevolucion()) {
 
       <button pButton (click)="openNewFirma()" severity="warn"> <svg data-p-icon="signature" [size]="16"></svg> Firmar
         con FIREL
@@ -558,7 +558,7 @@
                 <!--ELIMINAR DOCUMENTO: el secretario solo mientras el acuerdo esta pendiente de enviar y no
                 se ha turnado al juez; el notificador unicamente sus documentos tipo 1 o 3, solo si ya
                 se le turno y mientras no haya turnado de vuelta al secretario-->
-                @if(tienePermisoEliminarArchivo() && !documento.firmado && (
+                @if(tienePermisoEliminarArchivo() && !documento.firmado && !exhortoEnDevolucion() && (
                 (esSecretario() && [0, 11].includes(detallesAcuerdo().generales?.idEstatus ?? 0) &&
                 !yaTurnadoAJuez() && !bloqueadoPorFirmaSecretario())
                 || puedeEliminarDocumentoNotificador(documento)
