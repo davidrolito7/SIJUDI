@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, Signal, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, inject, Signal, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Breadcrumb } from 'primeng/breadcrumb';
 import { Avatar } from 'primeng/avatar';
@@ -77,6 +77,10 @@ export class DetallesExhortoEnviado {
   tienePermisoPromocionEnviarArchivos = signal<boolean>(false);
 
   //@ViewChild('modal2') modal2!: ModalComponent;
+  //seccion de promociones; se resalta al regresar de enviar los archivos de una promocion
+  @ViewChild('seccionPromociones') seccionPromociones?: ElementRef<HTMLElement>;
+  resaltarPromociones = signal(false);
+  private irAPromociones = false;
   archivoRecibidoPromocionConAcuse! :ArchivoRecibidoPromocionConAcuse;
 
   constructor(
@@ -105,7 +109,8 @@ export class DetallesExhortoEnviado {
     //     this.getRespuestaExhorto(idExhortoEnviado);//verificar si el exhorto enviado tiene respuesta
     // });
 
-    const state = window.history.state as { idExhortoEnviado: number };
+    const state = window.history.state as { idExhortoEnviado: number; irAPromociones?: boolean };
+    this.irAPromociones = state?.irAPromociones === true;
 
     //console.log('State recibido:', state);
 
@@ -139,6 +144,17 @@ export class DetallesExhortoEnviado {
     this.router.navigate(['/exhortos/promocion-exhorto-enviado'], {state: {idExhortoEnviado: this.idExhortoEnviado, numExhorto: this.detallesExhortos()?.generales.numeroExhorto} });
   }
 
+  //lleva al usuario a la seccion de promociones y la resalta con un pulso azul (igual que crear-exhorto)
+  irASeccionPromociones() {
+    //se espera al siguiente ciclo para que la tabla de promociones ya este renderizada
+    setTimeout(() => {
+      this.seccionPromociones?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.resaltarPromociones.set(true);
+      //debe coincidir con la duracion total de la animacion resaltar-seccion (3 pulsos x 1.4s)
+      setTimeout(() => this.resaltarPromociones.set(false), 4200);
+    }, 100);
+  }
+
   async loadDetalles(idExhortoEnviado: number){
     await this.cargarDetallesExhortoEnviado(idExhortoEnviado);
   }
@@ -157,7 +173,12 @@ export class DetallesExhortoEnviado {
             
 
             this.detallesExhortosPromocion.set(response.data.promociones);
-            
+            //al llegar despues de enviar los archivos de una promocion se lleva al usuario a esa seccion
+            if (this.irAPromociones) {
+              this.irAPromociones = false;
+              this.irASeccionPromociones();
+            }
+
             //console.log('detallesExhortoPromocion: ',this.detallesExhortosPromocion)
             /*if(this.detallesExhortosPromocion()[0].fechaHora == null){
               this.generalesPromocionEnviado=true;

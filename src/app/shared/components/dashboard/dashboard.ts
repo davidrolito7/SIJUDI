@@ -84,7 +84,7 @@ export class Dashboard implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.selectedDashboard = this.esAbogado() ? 'estadisticas' : 'oficialia';
     this.actualizarHora();
-    this.contadoresService.cargarContadores();
+ //   this.contadoresService.cargarContadores();
   }
 
   ngOnDestroy(): void {
