@@ -43,13 +43,17 @@
     <!-- Botones -->
     <div class="mt-2 md:mt-0 flex flex-wrap items-center gap-2">
       <!--Guardar mientras sea el turno del perfil actual y aun no este lista para turnar (o si presiono "Editar");
-      una vez lista se muestra en solo lectura con Editar + Turnar, igual que en generar-acuerdo-->
+      una vez lista se muestra en solo lectura con Editar + Turnar, igual que en generar-acuerdo. Al recibir de
+      vuelta del juez y aplicar las firmas: primero solo Guardar, despues Editar + Enviar generales y, una vez
+      enviados los generales, solo Enviar archivos-->
       @if (puedeGuardar() && mostrarFormularioEditable) {
       <p-button type="button" (onClick)="guardarPromocion(myForm)" label="Guardar" icon="pi pi-save"></p-button>
       }
-      @if (puedeTurnar && !modoEdicion()) {
+      @if ((puedeTurnar || listaParaEnviarGenerales) && !modoEdicion()) {
       <p-button type="button" (click)="activarEdicion()" label="Editar" icon="pi pi-pencil"
         severity="secondary"></p-button>
+      }
+      @if (puedeTurnar && !modoEdicion()) {
         tiene permiso {{tienePermisoTurnar()}} 
       @if (tienePermisoTurnar()) {
       <p-button type="button" (click)="turnar()" [label]="esJuez() ? 'Turnar al secretario' : 'Turnar al juez'"
@@ -73,7 +77,7 @@
 
       @if(!hayCambiosSinGuardar && listaDocumentos().length >= 1){
       @if(tienePermisoEnviarArchvios()){
-      @if(fechaRecepcion == null && fechaHora != null){
+      @if(fechaRecepcion == null && fechaHora != null && !archivosPromocionEnviado){
       <p-button type="button" (onClick)="enviarPromocionArchivos(idPromocionEnviado,idExhortoEnviado)"
         label="Enviar archivos" icon="pi pi-paperclip"></p-button>
       }

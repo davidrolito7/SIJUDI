@@ -262,6 +262,15 @@ export class PromocionExhortoEnviadoComponent {
   //ya esa condicion); a partir de ahi aparecen "Editar" y "Turnar". Se apaga al firmar/eliminar firma o al turnar,
   //para que tenga que volver a guardar
   guardadoConFirmaParaTurnar = signal<boolean>(false);
+  //true cuando el secretario presiono Guardar teniendo ya todas las firmas aplicadas (o la promocion se abre
+  //cumpliendo ya esa condicion); a partir de ahi aparecen "Editar" y "Enviar generales". Se apaga al aplicar
+  //firmas o al turnar, para que primero tenga que guardar
+  guardadoConFirmasAplicadas = signal<boolean>(false);
+  //todos los documentos de la promocion ya tienen las firmas aplicadas al pdf
+  todasLasFirmasAplicadas = computed(() => {
+    const documentos = this.listaDocumentos();
+    return documentos.length > 0 && documentos.every(doc => doc.firmado);
+  });
   //en la primera carga de documentos se marca guardadoConFirmaParaTurnar si ya se cumple la condicion
   private cargaInicialDocumentos = true;
   //Turnar (igual que generar-acuerdo / crear-exhorto):
@@ -304,7 +313,7 @@ export class PromocionExhortoEnviadoComponent {
     if (this.fechaHora != null) {
       return false;
     }
-    return this.esTurnoActual() && (!this.puedeTurnar || this.modoEdicion());
+    return this.esTurnoActual() && (!(this.puedeTurnar || this.listaParaEnviarGenerales) || this.modoEdicion());
   }
   //el juez normalmente no tiene la seccion "Guardar" en esta pantalla, pero una vez que recibio la promocion
   //puede editarla y guardarla
@@ -333,11 +342,15 @@ export class PromocionExhortoEnviadoComponent {
     return !documento.firmado && (documento.firmantes ?? []).length > 0 &&
       this.esSecretario() && this.faseTurnado() === 'secretarioRecibio';
   }
-  //"Enviar generales" solo lo hace el secretario despues de recibir de vuelta del juez, con todas las firmas aplicadas
+  //"Enviar generales" solo lo hace el secretario despues de recibir de vuelta del juez, con todas las firmas
+  //aplicadas y ya guardado (primero solo aparece Guardar; al guardar quedan Editar + Enviar generales)
+  get listaParaEnviarGenerales(): boolean {
+    return this.fechaHora == null && !this.hayCambiosSinGuardar && this.esSecretario() &&
+      this.faseTurnado() === 'secretarioRecibio' && this.todasLasFirmasAplicadas() && this.guardadoConFirmasAplicadas();
+  }
+  //mientras esta en modo "Editar" se oculta Enviar generales y solo queda Guardar
   get puedeEnviarGenerales(): boolean {
-    const documentos = this.listaDocumentos();
-    return this.fechaHora == null && !this.hayCambiosSinGuardar && documentos.length > 0 &&
-      this.esSecretario() && this.faseTurnado() === 'secretarioRecibio' && documentos.every(doc => doc.firmado);
+    return this.listaParaEnviarGenerales && !this.modoEdicion();
   }
   //texto informativo del estado del turnado para el encabezado
   mensajeTurnado = computed(() => {
@@ -597,8 +610,10 @@ cargarDetallesExhortoEnviado(idExhortoEnviado: number): Promise<void> {
         if(response.success){
 
           this.messageService.add({ severity: 'success', summary: 'Enviado', detail: 'Promoción enviado' });
+          //oculta "Enviar archivos" y regresa al detalle del exhorto enviado, directo a la seccion de promociones
           this.archivosPromocionEnviado=true;
           this.archivoRecibidoPromocionConAcuse=response.data;
+          this.router.navigate(['/exhortos/detalles-exhorto-enviado'], { state: { idExhortoEnviado, irAPromociones: true } });
           //this.modalService.open('modal2');
           // Aquí podrías actualizar la lista de documentos si es necesario
         }
@@ -616,7 +631,6 @@ cargarDetallesExhortoEnviado(idExhortoEnviado: number): Promise<void> {
       complete:() =>{
         this.isLoading = false;
         this.cd.detectChanges();
-        this.router.navigate(['/inicio/exhortos/exhortos-enviados/detalle'], { state: { idExhortoEnviado } });
        // this.modalService.open('modal2');
       },
     });
@@ -913,6 +927,7 @@ cargarDetallesExhortoEnviado(idExhortoEnviado: number): Promise<void> {
         if (this.cargaInicialDocumentos) {
           this.cargaInicialDocumentos = false;
           this.guardadoConFirmaParaTurnar.set(this.usuarioFirmoAcuerdo());
+          this.guardadoConFirmasAplicadas.set(this.todasLasFirmasAplicadas());
         }
 
         //this.listaDocumentos.set(responsePromocion.data.archivos);
@@ -960,6 +975,7 @@ cargarDetallesExhortoEnviado(idExhortoEnviado: number): Promise<void> {
               //al guardar se sale del modo "Editar"; si ya firmo el Acuerdo quedan Editar + Turnar (solo lectura)
               this.modoEdicion.set(false);
               this.guardadoConFirmaParaTurnar.set(this.usuarioFirmoAcuerdo());
+              this.guardadoConFirmasAplicadas.set(this.todasLasFirmasAplicadas());
               this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado,this.idPromocionEnviado);
               this.obtenerMovimientos(this.idPromocionEnviado);
             }
@@ -1006,6 +1022,7 @@ cargarDetallesExhortoEnviado(idExhortoEnviado: number): Promise<void> {
               //al guardar se sale del modo "Editar"; si ya firmo el Acuerdo quedan Editar + Turnar (solo lectura)
               this.modoEdicion.set(false);
               this.guardadoConFirmaParaTurnar.set(this.usuarioFirmoAcuerdo());
+              this.guardadoConFirmasAplicadas.set(this.todasLasFirmasAplicadas());
               this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado,this.idPromocionEnviado);
               this.obtenerMovimientos(this.idPromocionEnviado);
             }
@@ -1423,6 +1440,8 @@ showDialog(idArchivo: number): void {
       next:(response:any)=>{
           if(response.success){
             this.messageService.add({ severity: 'success', summary: 'Ok', detail: response.message });
+            //despues de aplicar firmas primero debe guardar para que aparezcan Editar + Enviar generales
+            this.guardadoConFirmasAplicadas.set(false);
             this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado, this.idPromocionEnviado);
           }else{
             this.messageService.add({ severity: 'warn', summary: 'error', detail: `${response.message}\n${ response.errors==undefined ? "" : response.errors.join(", ")}`});
@@ -1592,6 +1611,7 @@ showDialog(idArchivo: number): void {
     this.modoEdicion.set(false);
     //quien recibe (p.ej. el juez) debe firmar el Acuerdo y guardar antes de poder turnar
     this.guardadoConFirmaParaTurnar.set(false);
+    this.guardadoConFirmasAplicadas.set(false);
     this.seleccionadosParaFirma.set(false);
     this.obtenerMovimientos(this.idPromocionEnviado);
     this.getDetallePromocionExhortoEnviado(this.idExhortoEnviado, this.idPromocionEnviado);
